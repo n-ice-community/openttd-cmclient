@@ -63,20 +63,20 @@ jobs:
       is_tag: ${{ needs.source.outputs.is_tag }}
       survey_key: ${{ needs.source.outputs.survey_key }}
 
-  windows-store:
-    name: Windows Store
-    needs:
-    - source
-    - windows
+  #windows-store:
+    #name: Windows Store
+    #needs:
+    #- source
+    #- windows
 
-    if: ${{ false }}  # CM
+    #if: ${{ false }}  # CM
     # if: needs.source.outputs.is_tag == 'true'
 
-    uses: ./.github/workflows/release-windows-store.yml
-    secrets: inherit
+    #uses: ./.github/workflows/release-windows-store.yml
+    #secrets: inherit
 
-    with:
-      version: ${{ needs.source.outputs.version }}
+    #with:
+      #version: ${{ needs.source.outputs.version }}
 
   upload:
     name: Upload
@@ -86,7 +86,7 @@ jobs:
     - linux
     - macos
     - windows
-    - windows-store
+    #- windows-store
 
     if: ${{ false }}  # CM
     # As windows-store is condition, we need to check ourselves if we need to run.
@@ -101,65 +101,65 @@ jobs:
       run: |
         true
 
-  upload-cdn:
-    name: Upload (CDN)
-    needs:
-    - source
-    - upload
+  #upload-cdn:
+    #name: Upload (CDN)
+    #needs:
+    #- source
+    #- upload
 
     # As windows-store is condition, we need to check ourselves if we need to run.
     # The always() makes sure the rest is always evaluated.
     # Yes, you even need to do this if you yourself don't depend on the condition.
-    if: always() && needs.source.result == 'success' && needs.upload.result == 'success'
+    #if: always() && needs.source.result == 'success' && needs.upload.result == 'success'
 
-    uses: ./.github/workflows/upload-cdn.yml
-    secrets: inherit
+    #uses: ./.github/workflows/upload-cdn.yml
+    #secrets: inherit
 
-    with:
-      version: ${{ needs.source.outputs.version }}
-      folder: ${{ needs.source.outputs.folder }}
-      trigger_type: ${{ needs.source.outputs.trigger_type }}
+    #with:
+     # version: ${{ needs.source.outputs.version }}
+      #folder: ${{ needs.source.outputs.folder }}
+      #trigger_type: ${{ needs.source.outputs.trigger_type }}
 
-  upload-steam:
-    name: Upload (Steam)
-    needs:
-    - source
-    - upload
+  #upload-steam:
+   # name: Upload (Steam)
+    #needs:
+    #- source
+    #- upload
 
     # As windows-store is condition, we need to check ourselves if we need to run.
     # The always() makes sure the rest is always evaluated.
     # Yes, you even need to do this if you yourself don't depend on the condition.
     # Additionally, only nightlies and releases go to Steam; not PRs.
     # if: always() && needs.source.result == 'success' && needs.upload.result == 'success' && (needs.source.outputs.trigger_type == 'new-master' || needs.source.outputs.trigger_type == 'new-tag')
-    if: ${{ false }}  # CM
+    #if: ${{ false }}  # CM
 
-    uses: ./.github/workflows/upload-steam.yml
-    secrets: inherit
+    #uses: ./.github/workflows/upload-steam.yml
+    #secrets: inherit
 
-    with:
-      version: ${{ needs.source.outputs.version }}
-      trigger_type: ${{ needs.source.outputs.trigger_type }}
+    #with:
+      #version: ${{ needs.source.outputs.version }}
+      #trigger_type: ${{ needs.source.outputs.trigger_type }}
 
-  upload-gog:
-    name: Upload (GOG)
-    needs:
-    - source
-    - upload
+  #upload-gog:
+    #name: Upload (GOG)
+    #needs:
+    #- source
+    #- upload
 
     # As windows-store is condition, we need to check ourselves if we need to run.
     # The always() makes sure the rest is always evaluated.
     # Yes, you even need to do this if you yourself don't depend on the condition.
     # Additionally, only releases go to GOG; not nightlies or PRs.
     # if: always() && needs.source.result == 'success' && needs.upload.result == 'success' && needs.source.outputs.trigger_type == 'new-tag'
-    if: ${{ false }}  # CM
+    #if: ${{ false }}  # CM
 
-    uses: ./.github/workflows/upload-gog.yml
-    secrets: inherit
+    #uses: ./.github/workflows/upload-gog.yml
+    #secrets: inherit
 
-    with:
-      version: ${{ needs.source.outputs.version }}
+    #with:
+      #version: ${{ needs.source.outputs.version }}
 
-  cm-upload-github:
+  upload-to-github:
     name: Release GitHub assets
     needs:
     - source
@@ -185,31 +185,31 @@ jobs:
           citymania-client-*/*.xz
           citymania-client-*/*.dmg
 
-  cm-upload-citymania:
-    name: Upload to CityMania
-    needs:
-    - source
-    - linux
-    - macos
-    - windows
+  #cm-upload-citymania:
+    #name: Upload to CityMania
+    #needs:
+    #- source
+    #- linux
+    #- macos
+    #- windows
 
     # if: ${{ false }}
-    if: needs.source.outputs.trigger_type == 'new-master' || needs.source.outputs.trigger_type == 'new-tag'
+    #if: needs.source.outputs.trigger_type == 'new-master' || needs.source.outputs.trigger_type == 'new-tag'
 
-    runs-on: ubuntu-20.04
+    #runs-on: ubuntu-20.04
 
-    steps:
-    - name: Download all bundles
-      uses: actions/download-artifact@v4
+    #steps:
+    #- name: Download all bundles
+      #uses: actions/download-artifact@v4
 
-    - name: Upload to CityMania
-      uses: appleboy/scp-action@master
+    #- name: Upload to CityMania
+      #uses: appleboy/scp-action@master
       # if: startsWith(github.ref, 'refs/tags/')
-      with:
-        host: ${{ secrets.UPLOAD_HOST }}
-        username: ${{ secrets.UPLOAD_USERNAME }}
-        key: ${{ secrets.UPLOAD_KEY }}
-        port: ${{ secrets.UPLOAD_PORT }}
-        source: "citymania-client-*/*.zip,citymania-client-*/*.xz,citymania-client-*/*.dmg"
-        strip_components: 1
-        target: ${{ secrets.UPLOAD_PATH }}
+      #with:
+        #host: ${{ secrets.UPLOAD_HOST }}
+        #username: ${{ secrets.UPLOAD_USERNAME }}
+        #key: ${{ secrets.UPLOAD_KEY }}
+        #port: ${{ secrets.UPLOAD_PORT }}
+        #source: "citymania-client-*/*.zip,citymania-client-*/*.xz,citymania-client-*/*.dmg"
+        #strip_components: 1
+        #target: ${{ secrets.UPLOAD_PATH }}
