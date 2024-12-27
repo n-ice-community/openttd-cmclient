@@ -518,7 +518,7 @@ struct BuildRoadToolbarWindow : Window {
 				break;
 
 			case WID_ROT_BUS_STATION: {
-				if (citymania::HandleStationPlacePushButton(this, WID_ROT_BUS_STATION, std::make_shared<citymania::RoadStationPreview>(ROADSTOP_BUS))) {
+				if (HandlePlacePushButton(this, WID_ROT_BUS_STATION, SPR_CURSOR_BUS_STATION, HT_RECT, DDSP_BUILD_BUSSTOP)) {
 					ShowRVStationPicker(this, ROADSTOP_BUS);
 					this->last_started_action = widget;
 				}
@@ -526,7 +526,7 @@ struct BuildRoadToolbarWindow : Window {
 			}
 
 			case WID_ROT_TRUCK_STATION:
-				if (citymania::HandleStationPlacePushButton(this, WID_ROT_BUS_STATION, std::make_shared<citymania::RoadStationPreview>(ROADSTOP_TRUCK))) {
+				if (HandlePlacePushButton(this, WID_ROT_TRUCK_STATION, SPR_CURSOR_TRUCK_STATION, HT_RECT, DDSP_BUILD_TRUCKSTOP)) {
 					ShowRVStationPicker(this, ROADSTOP_TRUCK);
 					this->last_started_action = widget;
 				}
