@@ -247,14 +247,15 @@ bool is_cached_industry(const Industry *ind) {
 }
 
 MinimapIndustryKdtreeEntry get_industry_entry(const Industry *ind) {
-	auto x = TileX(ind->location.tile) * TILE_SIZE + ind->location.w * TILE_SIZE / 2;
-	auto y = TileY(ind->location.tile) * TILE_SIZE + ind->location.h * TILE_SIZE / 2;
-	uint num_outputs = 0;
-	for (auto i = 0; i < INDUSTRY_NUM_OUTPUTS; i++)
-		if (ind->produced[i].cargo != INVALID_CARGO)
-			num_outputs++;
-	_max_industry_outputs = std::max(_max_industry_outputs, num_outputs);
-	return {(int16)((y - x) / 8), (int16)((y + x) / 8), ind->index};
+    auto x = TileX(ind->location.tile) * TILE_SIZE + ind->location.w * TILE_SIZE / 2;
+    auto y = TileY(ind->location.tile) * TILE_SIZE + ind->location.h * TILE_SIZE / 2;
+    uint num_outputs = std::ranges::count_if(
+        ind->produced, [](const Industry::ProducedCargo &p) {
+            return p.cargo != INVALID_CARGO;
+        });
+
+    _max_industry_outputs = std::max(_max_industry_outputs, num_outputs);
+    return {(int16)((y - x) / 8), (int16)((y + x) / 8), ind->index};
 }
 
 void minimap_add_industry(const Industry *ind) {
@@ -1034,18 +1035,18 @@ void SmallMapWindow::DrawIndustryProduction(const DrawPixelInfo *dpi) const
 			);
 
 			IconTextSizeHelper its{SPR_CARGO_COAL, WidgetDimensions::scaled.framerect};
-			for (auto i = 0; i < INDUSTRY_NUM_OUTPUTS; i++) {
-				if (ind->produced[i].cargo == INVALID_CARGO) continue;
-				its.add(GetString(STR_JUST_INT, ind->produced[i].history[LAST_MONTH].production), FS_SMALL);
+			for (const auto& p : ind->produced) {
+				if (p.cargo == INVALID_CARGO) continue;
+				its.add(GetString(STR_JUST_INT, p.history[LAST_MONTH].production), FS_SMALL);
 			}
 			its.calculate();
 			this->industry_max_sign = maxdim(this->industry_max_sign, its.size);
 			auto [r, ir] = its.make_rects(pt.x, pt.y);
 	        GfxFillRect(r, PALETTE_TO_TRANSPARENT, FILLRECT_RECOLOUR);
-			for (auto i = 0; i < INDUSTRY_NUM_OUTPUTS; i++) {
-				if (ind->produced[i].cargo == INVALID_CARGO) continue;
-				DrawSprite(CargoSpec::Get(ind->produced[i].cargo)->GetCargoIcon(), PAL_NONE, ir.left, ir.top + its.icon_ofs_y);
-				auto str = GetString(STR_JUST_INT, ind->produced[i].history[LAST_MONTH].production);
+			for (const auto& p : ind->produced) {
+				if (p.cargo == INVALID_CARGO) continue;
+				DrawSprite(CargoSpec::Get(p.cargo)->GetCargoIcon(), PAL_NONE, ir.left, ir.top + its.icon_ofs_y);
+				auto str = GetString(STR_JUST_INT, p.history[LAST_MONTH].production);
 				DrawString(ir.left + its.text_ofs_x, ir.right, ir.top + its.text_ofs_y, str, TC_WHITE, SA_LEFT, false, FS_SMALL);
 				ir.top += its.line_height;
 			}
