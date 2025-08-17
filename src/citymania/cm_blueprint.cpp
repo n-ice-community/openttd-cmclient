@@ -4,6 +4,7 @@
 
 #include "cm_commands.hpp"
 #include "cm_highlight.hpp"
+#include "cm_station_gui.hpp"
 
 #include "../console_func.h"
 #include "../command_func.h"
@@ -26,6 +27,7 @@ extern RailType _cur_railtype;
 extern void GetStationLayout(byte *layout, uint numtracks, uint plat_len, const StationSpec *statspec);
 
 // from rail_gui.cpp
+/*
 struct RailStationGUISettings {
     Axis orientation;                 ///< Currently selected rail station orientation
 
@@ -34,7 +36,8 @@ struct RailStationGUISettings {
     byte station_type;                ///< %Station type within the currently selected custom station class (if newstations is \c true )
     byte station_count;               ///< Number of custom stations (if newstations is \c true )
 };
-extern RailStationGUISettings _railstation; ///< Settings of the station builder GUI
+*/
+extern citymania::RailStationGUISettings _railstation; ///< Settings of the station builder GUI
 
 namespace citymania {
 

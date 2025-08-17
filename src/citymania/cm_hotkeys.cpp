@@ -2,6 +2,7 @@
 
 #include "cm_hotkeys.hpp"
 #include "cm_settings.hpp"
+#include "cm_station_gui.hpp"
 
 #include "../newgrf_station.h"
 #include "../settings_type.h"
@@ -19,6 +20,7 @@
 
 #include "../safeguards.h"
 
+/*
 struct RailStationGUISettings {
     Axis orientation;                 ///< Currently selected rail station orientation
 
@@ -27,7 +29,8 @@ struct RailStationGUISettings {
     byte station_type;                ///< %Station type within the currently selected custom station class (if newstations is \c true )
     byte station_count;               ///< Number of custom stations (if newstations is \c true )
 };
-extern RailStationGUISettings _railstation; ///< Settings of the station builder GUI
+*/
+extern citymania::RailStationGUISettings _railstation; ///< Settings of the station builder GUI
 extern bool _generating_world;
 
 namespace citymania {

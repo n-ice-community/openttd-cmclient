@@ -58,6 +58,7 @@ extern RailType _cur_railtype;  // rail_gui.cpp
 extern RoadType _cur_roadtype;  // road_gui.cpp
 extern void GetStationLayout(byte *layout, uint numtracks, uint plat_len, const StationSpec *statspec);
 
+/*
 struct RailStationGUISettings {
     Axis orientation;                 ///< Currently selected rail station orientation
 
@@ -66,7 +67,8 @@ struct RailStationGUISettings {
     byte station_type;                ///< %Station type within the currently selected custom station class (if newstations is \c true )
     byte station_count;               ///< Number of custom stations (if newstations is \c true )
 };
-extern RailStationGUISettings _railstation; //rail_gui.cpp
+*/
+extern citymania::RailStationGUISettings _railstation; //rail_gui.cpp
 
 struct RoadStopGUISettings {
     DiagDirection orientation;
@@ -1403,6 +1405,7 @@ up<Command> AirportBuildTool::SizedPlacementHandler::GetCommand(TileIndex tile, 
 
 bool AirportBuildTool::SizedPlacementHandler::Execute(TileIndex tile) {
     this->tool.ExecuteBuildCommand(this, &CcBuildAirport, tile);
+    return false;
 }
 
 std::optional<ObjectHighlight> AirportBuildTool::SizedPlacementHandler::GetObjectHighlight(TileIndex tile) {
