@@ -252,9 +252,9 @@ void ShowLandTooltips(TileIndex tile, Window *parent) {
         }
         case MP_STATION: {
             if (_settings_client.gui.cm_land_tooltips_for_stations) {
-                if (IsRailWaypoint(tile) || HasTileWaterGround(tile)) break;
+                if (IsRailWaypoint(tile) || HasTileWaterGround(tile) || IsRoadWaypoint(tile)) break;
                 const Station *st = Station::GetByTile(tile);
-                param |= ((st->index.base() & 0xFFFF) << 16) | MP_STATION;
+                param = ((st->index.base() & 0xFFFF) << 16) | MP_STATION;
                 break;
             }
         }
