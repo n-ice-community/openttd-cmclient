@@ -111,9 +111,9 @@ public:
 		this->town = Town::Get(window_number);
 		this->InitNested(window_number);
 
-		if(this->town->cm.fund_regularly.Test(_local_company)) this->LowerWidget(WID_CB_FUND_REGULAR);
-		if(this->town->cm.do_powerfund.Test(_local_company)) this->LowerWidget(WID_CB_POWERFUND);
-		if(this->town->cm.advertise_regularly.Test(_local_company)) this->LowerWidget(WID_CB_ADVERT_REGULAR);
+		if(this->town->cm.fund_regularly.Test(_current_company)) this->LowerWidget(WID_CB_FUND_REGULAR);
+		if(this->town->cm.do_powerfund.Test(_current_company)) this->LowerWidget(WID_CB_POWERFUND);
+        if(ToPercent8(this->town->cm.ad_rating_goal) > 0) this->LowerWidget(WID_CB_ADVERT_REGULAR);
 	}
 
 	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
@@ -133,22 +133,20 @@ public:
 				TownExecuteAction(this->town, TownAction::FundBuildings);
 				break;
 			case WID_CB_FUND_REGULAR:
-				this->town->cm.fund_regularly.Flip(_local_company);
-				this->SetWidgetLoweredState(widget, this->town->cm.fund_regularly.Test(_local_company));
+				this->town->cm.fund_regularly.Flip(_current_company);
+				this->SetWidgetLoweredState(widget, this->town->cm.fund_regularly.Test(_current_company));
 				this->SetWidgetDirty(widget);
 				break;
 			case WID_CB_POWERFUND:
-				this->town->cm.do_powerfund.Flip(_local_company);
-				this->SetWidgetLoweredState(widget, this->town->cm.do_powerfund.Test(_local_company));
+				this->town->cm.do_powerfund.Flip(_current_company);
+				this->SetWidgetLoweredState(widget, this->town->cm.do_powerfund.Test(_current_company));
 				this->SetWidgetDirty(widget);
 				break;
-			case WID_CB_ADVERT_REGULAR:
-				if (this->town->cm.advertise_regularly.None()) {
-					auto str = GetString(STR_JUST_INT, ToPercent8(this->town->cm.ad_rating_goal));
-					ShowQueryString(str, CM_STR_CB_ADVERT_REGULAR_RATING_TO_KEEP,
-					                4, this, CS_NUMERAL, QueryStringFlag::AcceptUnchanged);
-				} else this->OnQueryTextFinished(std::nullopt);
+			case WID_CB_ADVERT_REGULAR: {
+				auto str = GetString(STR_JUST_INT, ToPercent8(this->town->cm.ad_rating_goal));
+				ShowQueryString(str, CM_STR_CB_ADVERT_REGULAR_RATING_TO_KEEP, 4, this, CS_NUMERAL, {});
 				break;
+			}
 			case WID_CB_TOWN_VIEW: // Town view window
 				ShowTownViewWindow(this->window_number);
 				break;
@@ -158,17 +156,24 @@ public:
 		}
 	}
 
+	/*  for advertise regularly only */
 	void OnQueryTextFinished(std::optional<std::string> str) override
 	{
-		if (!str.has_value()) this->town->cm.advertise_regularly.Set(_local_company);
-		else this->town->cm.advertise_regularly.Reset(_local_company);
+		if (!str.has_value()) {
+            this->town->cm.advertise_regularly.Set(_current_company);
+            this->RaiseWidgetWhenLowered(WID_CB_ADVERT_REGULAR);
+            this->town->cm.ad_rating_goal = 0;
+        }
+		else this->town->cm.advertise_regularly.Reset(_current_company);
+        
 		this->town->cm.ad_ref_goods_entry = std::nullopt;
-		this->SetWidgetLoweredState(WID_CB_ADVERT_REGULAR, this->town->cm.advertise_regularly.Test(_local_company));
-		this->SetWidgetDirty(WID_CB_ADVERT_REGULAR);
-
 		if (!str.has_value()) return;
-		uint val = Clamp(str->empty()? 0 : strtol(str->c_str(), NULL, 10), 1, 100);
-		this->town->cm.ad_rating_goal = ((val << 8) + 255) / 101;
+		uint val = Clamp(str->empty()? 0 : strtol(str->c_str(), NULL, 10), 0, 100);
+        this->town->cm.ad_rating_goal = val * 255 / 100;
+
+		if (val > 0) this->LowerWidget(WID_CB_ADVERT_REGULAR);
+        else this->RaiseWidgetWhenLowered(WID_CB_ADVERT_REGULAR);
+        this->SetWidgetDirty(WID_CB_ADVERT_REGULAR);
 	}
 
     std::string GetWidgetString(WidgetID widget, StringID stringid) const override
@@ -432,7 +437,7 @@ static const NWidgetPart _nested_cb_town_widgets[] = {
 		NWidget(NWID_VERTICAL),
 			NWidget(NWID_SPACER), SetMinimalSize(0, 5),  SetResize(1, 0), SetFill(1, 0),
 			NWidget(NWID_HORIZONTAL),
-				NWidget(WWT_EMPTY, INVALID_COLOUR, WID_CB_DETAILS), SetMinimalSize(66, 0), SetResize(1, 0), SetFill(1, 0),
+				NWidget(WWT_EMPTY, INVALID_COLOUR, WID_CB_DETAILS), SetMinimalSize(260, 0), SetResize(1, 0), SetFill(1, 0),
 				NWidget(NWID_VERTICAL),
 					NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize),
 						NWidget(WWT_PUSHTXTBTN, COLOUR_BROWN, WID_CB_ADVERT),SetMinimalSize(33, 12),SetFill(1, 0), SetStringTip(CM_STR_CB_LARGE_ADVERTISING_CAMPAIGN),
