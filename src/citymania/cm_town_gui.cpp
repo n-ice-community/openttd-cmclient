@@ -111,8 +111,8 @@ public:
 		this->town = Town::Get(window_number);
 		this->InitNested(window_number);
 
-		if(this->town->cm.fund_regularly.Test(_current_company)) this->LowerWidget(WID_CB_FUND_REGULAR);
-		if(this->town->cm.do_powerfund.Test(_current_company)) this->LowerWidget(WID_CB_POWERFUND);
+		if(this->town->cm.fund_regularly.Test(_local_company)) this->LowerWidget(WID_CB_FUND_REGULAR);
+		if(this->town->cm.do_powerfund.Test(_local_company)) this->LowerWidget(WID_CB_POWERFUND);
         if(ToPercent8(this->town->cm.ad_rating_goal) > 0) this->LowerWidget(WID_CB_ADVERT_REGULAR);
 	}
 
@@ -133,13 +133,13 @@ public:
 				TownExecuteAction(this->town, TownAction::FundBuildings);
 				break;
 			case WID_CB_FUND_REGULAR:
-				this->town->cm.fund_regularly.Flip(_current_company);
-				this->SetWidgetLoweredState(widget, this->town->cm.fund_regularly.Test(_current_company));
+				this->town->cm.fund_regularly.Flip(_local_company);
+				this->SetWidgetLoweredState(widget, this->town->cm.fund_regularly.Test(_local_company));
 				this->SetWidgetDirty(widget);
 				break;
 			case WID_CB_POWERFUND:
-				this->town->cm.do_powerfund.Flip(_current_company);
-				this->SetWidgetLoweredState(widget, this->town->cm.do_powerfund.Test(_current_company));
+				this->town->cm.do_powerfund.Flip(_local_company);
+				this->SetWidgetLoweredState(widget, this->town->cm.do_powerfund.Test(_local_company));
 				this->SetWidgetDirty(widget);
 				break;
 			case WID_CB_ADVERT_REGULAR: {
@@ -159,14 +159,8 @@ public:
 	/*  for advertise regularly only */
 	void OnQueryTextFinished(std::optional<std::string> str) override
 	{
-		if (!str.has_value()) {
-            this->town->cm.advertise_regularly.Set(_current_company);
-            this->RaiseWidgetWhenLowered(WID_CB_ADVERT_REGULAR);
-            this->town->cm.ad_rating_goal = 0;
-        }
-		else this->town->cm.advertise_regularly.Reset(_current_company);
-        
 		this->town->cm.ad_ref_goods_entry = std::nullopt;
+
 		if (!str.has_value()) return;
 		uint val = Clamp(str->empty()? 0 : strtol(str->c_str(), NULL, 10), 0, 100);
         this->town->cm.ad_rating_goal = val * 255 / 100;
