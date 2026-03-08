@@ -1028,7 +1028,7 @@ static void DoRegularFunding(Town *t)
 }
 
 static void DoRegularAdvertising(Town *t) {
-	if (t->cm.advertise_regularly.Test(_local_company))
+    if (t->cm.ad_rating_goal == 0)
 		return;
 
 	if (!t->cm.ad_ref_goods_entry.has_value()) {
@@ -2361,7 +2361,8 @@ static void DoCreateTown(Town *t, TileIndex tile, uint32_t townnameparts, TownSi
 	}
 
 	t->fund_buildings_months = 0;
-	//CB
+
+	/* citymania code */
 	t->cm.cb.growth_state = citymania::TownGrowthState::NOT_GROWING;
 	for (uint i = 0; i < NUM_CARGO ; i++) {
 		t->cm.cb.stored[i] = 0;
@@ -2373,9 +2374,9 @@ static void DoCreateTown(Town *t, TileIndex tile, uint32_t townnameparts, TownSi
 	t->cm.fund_regularly = {};
 	t->cm.do_powerfund = {};
 	t->cm.advertise_regularly = {};
-	t->cm.ad_rating_goal = 95;
+	t->cm.ad_rating_goal = 0;
 	t->cm.ad_ref_goods_entry = std::nullopt;
-	//CB
+    /* end */
 
 	for (uint i = 0; i != MAX_COMPANIES; i++) t->ratings[i] = RATING_INITIAL;
 
