@@ -20,6 +20,7 @@ enum TownWindowHotkeys : int32_t {
 bool TownExecuteAction(const Town *town, TownAction action);
 void DrawExtraTownInfo(Rect &r, const Town *town, uint line, bool show_house_states_info);
 void ShowCBTownWindow(TownID town);
+void ResetRegularAdvertise(); 
 
 } // namespace citymania
 

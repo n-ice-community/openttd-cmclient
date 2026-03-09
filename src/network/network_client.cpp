@@ -41,6 +41,7 @@
 #include "../citymania/cm_commands.hpp"
 #include "../citymania/cm_newgrf_revisions.hpp"
 #include "../citymania/cm_commands_gui.hpp" /* Admin company buttons */
+#include "../citymania/cm_town_gui.hpp"
 
 #include "../safeguards.h"
 
@@ -1205,6 +1206,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_CONFIG_UPDATE(P
 	citymania::CreateCommunityServerList();  //@cm_commands_gui.cpp
 	CSleep(3 * MILLISECONDS_PER_TICK);
 	citymania::ShowLoginWindow(); //@cm_commands_gui.cpp
+    citymania::ResetRegularAdvertise();  //@cm_town_gui.cpp: reset cm.ad_rating_goal
 
 	Debug(net, 9, "Client::Receive_SERVER_CONFIG_UPDATE(): max_companies={}", _network_server_max_companies);
 

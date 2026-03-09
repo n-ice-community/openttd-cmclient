@@ -491,4 +491,14 @@ void ShowCBTownWindow(TownID town) {
 	AllocateWindowDescFront<CBTownWindow>(_cb_town_desc, town);
 }
 
+/**
+ * Workaround: Sometimes cm.ad_rating_goal was set with value while joining server.
+ * This function will be called from network client only.
+ */
+void ResetRegularAdvertise() {
+	for (Town *town : Town::Iterate()) {
+        town->cm.ad_rating_goal = 0;
+        }
+}
+
 } // namespace citymania

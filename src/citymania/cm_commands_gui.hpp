@@ -10,6 +10,7 @@ void CheckAdmin();
 void ShowAdminCompanyButtons(int left, int top, int width, int company2, bool draw, bool redraw);
 void CreateCommunityServerList();
 void ShowServerButtons(int left, int top, int height, int width);
+void ResetRegularAdvertise();
 
 bool GetAdmin();
 } // namespace citymania
