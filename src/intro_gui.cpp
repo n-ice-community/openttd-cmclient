@@ -9,6 +9,7 @@
 
 #include "fontcache.h"
 #include "gfx_type.h"
+#include "timer/timer_game_tick.h"
 #include "goal_type.h"
 #include "palette_func.h"
 #include "sortlist_type.h"
@@ -59,7 +60,7 @@ using namespace std::string_literals;
 namespace  {
 	TextColour climateColour(LandscapeType climate)
 	{
-		switch(climate)
+		switch (climate)
 		{
 			case LandscapeType::Arctic:
 				return TC_BLUE;
@@ -84,8 +85,8 @@ namespace  {
 		Rect green = area.WithWidth(middle, false);
 		Rect red = area.WithWidth(total - middle, true);
 
-		if (middle != 100)  GfxFillRect(red, colour_notdone );
-		if (middle != 0) GfxFillRect(green, colour_done );
+		if (middle != total) GfxFillRect(red, colour_notdone);
+		if (middle != 0)     GfxFillRect(green, colour_done);
 
 		/* Draw it */
 		DrawString(area, GetString(STR_PERFORMANCE_DETAIL_PERCENT, 100 * per), TC_WHITE, SA_HOR_CENTER);
@@ -110,8 +111,10 @@ struct ServerInfo {
 };
 
 struct ServerFilter {
-	CommunityID cid;
-	GoalTypeID gid;
+	int cid;      ///< Community filter index (0 = any)
+	int gid;      ///< Goal type filter index (0 = any)
+	int climate;  ///< Climate filter index (0 = any)
+	int duration; ///< Duration filter index (0 = any)
 };
 
 /**
@@ -183,6 +186,32 @@ struct SelectGameWindow : public Window {
 	uint mouse_idle_time = 0;
 	Point mouse_idle_pos{};
 	Scrollbar *vscroll = nullptr; ///< Cache of the vertical scrollbar
+
+	int filter_community = 0; ///< Current community filter index (0 = any)
+	int filter_goal_type = 0; ///< Current goal type filter index (0 = any)
+	int filter_climate   = 0; ///< Current climate filter index (0 = any)
+	int filter_duration  = 0; ///< Current duration filter index (0 = any)
+
+	std::vector<ServerInfo *> all_servers; ///< All servers before filtering (owns the allocations)
+
+	/// Real-world minutes × 10 per game year.
+	/// Uses tenths-of-ms to represent 3.3ms execution overhead as integer 33.
+	/// Formula: 365 days × 74 ticks × (MILLISECONDS_PER_TICK×10 + 33) / 600,000
+	/// With MILLISECONDS_PER_TICK=27: 365 × 74 × 303 / 600,000 = 136 (i.e. 13.6 min/year)
+	static constexpr uint32_t REAL_MINUTES_X10_PER_YEAR =
+	    365u * Ticks::DAY_TICKS * (MILLISECONDS_PER_TICK * 10u + 33u) / 600'000u;
+
+	static constexpr uint32_t DURATION_SHORT_MAX_MINUTES_X10  =  2u * 60u * 10u;  ///< 2 hours
+	static constexpr uint32_t DURATION_MEDIUM_MAX_MINUTES_X10 =  8u * 60u * 10u;  ///< 8 hours
+
+	/** Maps climate filter dropdown index (1-4) to LandscapeType. Index 0 unused (any). */
+	static constexpr LandscapeType CLIMATE_FILTER_MAP[] = {
+		LandscapeType::Temperate, ///< 0: any (unused)
+		LandscapeType::Arctic,    ///< 1
+		LandscapeType::Temperate, ///< 2
+		LandscapeType::Toyland,   ///< 3
+		LandscapeType::Tropic,    ///< 4
+	};
 
 	static inline const StringID communities[] = {
 		CM_STR_INTRO_COMMUNITY_CARD_ANY_COMMUNITY,
@@ -290,9 +319,8 @@ struct SelectGameWindow : public Window {
 		this->CreateNestedTree();
 		this->vscroll = this->GetScrollbar(WID_SGI_SERVER_LIST_SCROLLBAR);
 		this->FinishInitNested(0);
-		this->OnInvalidateData();
 
-		content.push_back( 
+		all_servers.push_back(
 			new ServerInfo {
 				.cid = 0,
 				.name = "#1 CV"s,
@@ -307,7 +335,7 @@ struct SelectGameWindow : public Window {
 				.climateID = LandscapeType::Arctic,
 				.gid = 1,
 			});
-		content.push_back( 
+		all_servers.push_back(
 			new ServerInfo {
 				.cid = 0,
 				.name = "#2 CV"s,
@@ -323,7 +351,7 @@ struct SelectGameWindow : public Window {
 				.gid = 1,
 			}
 		);
-		content.push_back( 
+		all_servers.push_back(
 			new ServerInfo {
 				.cid = 1,
 				.name = "#3 CV"s,
@@ -339,7 +367,7 @@ struct SelectGameWindow : public Window {
 				.gid = 1,
 			}
 		);
-		content.push_back( 
+		all_servers.push_back(
 			new ServerInfo {
 				.cid = 1,
 				.name = "#3 CV"s,
@@ -355,7 +383,7 @@ struct SelectGameWindow : public Window {
 				.gid = 1,
 			}
 		);
-		content.push_back( 
+		all_servers.push_back(
 			new ServerInfo {
 				.cid = 2,
 				.name = "#4 Long Description CV"s,
@@ -371,7 +399,7 @@ struct SelectGameWindow : public Window {
 				.gid = 0,
 			}
 		);
-		content.push_back( 
+		all_servers.push_back(
 			new ServerInfo {
 				.cid = 2,
 				.name = "#1 Even Longer Description CB"s,
@@ -387,7 +415,7 @@ struct SelectGameWindow : public Window {
 				.gid = 1,
 			}
 		);
-		content.push_back( 
+		all_servers.push_back(
 			new ServerInfo {
 				.cid = 2,
 				.name = "#5 Even Longer Description CB"s,
@@ -403,7 +431,7 @@ struct SelectGameWindow : public Window {
 				.gid = 1,
 			}
 		);
-		content.push_back( 
+		all_servers.push_back(
 			new ServerInfo {
 				.cid = 1,
 				.name = "#19 Even Longer Description CB"s,
@@ -427,7 +455,32 @@ struct SelectGameWindow : public Window {
 
 		this->ReadIntroGameViewportCommands();
 
-		this->vscroll->SetCount(this->content.size()); // Update the scrollbar
+		this->OnInvalidateData();
+	}
+
+	~SelectGameWindow()
+	{
+		for (ServerInfo *si : this->all_servers) delete si;
+	}
+
+	void OnInvalidateData([[maybe_unused]] int data = 0, bool gui_scope = true) override
+	{
+		if (!gui_scope) return;
+		this->content.clear();
+		for (ServerInfo *si : this->all_servers) {
+			if (filter_community != 0 && si->cid != (CommunityID)(filter_community - 1)) continue;
+			if (filter_goal_type != 0 && si->gid != (GoalTypeID)(filter_goal_type - 1)) continue;
+			if (filter_climate != 0 && si->climateID != CLIMATE_FILTER_MAP[filter_climate]) continue;
+			if (filter_duration != 0) {
+				uint32_t span_minutes_x10 = (si->end_year - si->starting_year) * REAL_MINUTES_X10_PER_YEAR;
+				int cat = (span_minutes_x10 < DURATION_SHORT_MAX_MINUTES_X10)  ? 1
+				        : (span_minutes_x10 < DURATION_MEDIUM_MAX_MINUTES_X10) ? 2 : 3;
+				if (cat != filter_duration) continue;
+			}
+			this->content.push_back(si);
+		}
+		this->vscroll->SetCount(this->content.size());
+		this->SetDirty();
 	}
 
 	void OnRealtimeTick(uint delta_ms) override
@@ -476,6 +529,7 @@ struct SelectGameWindow : public Window {
 		if (changed_command) FixTitleGameZoom(vc.zoom_adjust);
 
 		/* Calculate current command position (updates followed vehicle coordinates). */
+		if (mw->viewport == nullptr) return;
 		Point pos = vc.PositionForViewport(*mw->viewport);
 
 		/* Calculate panning (linear interpolation between current and next command position). */
@@ -521,17 +575,18 @@ struct SelectGameWindow : public Window {
 
 			case WID_SGI_SERVER_LIST:
 				const NWidgetBase *nwid = this->GetWidget<NWidgetBase>(widget);
+				if (nwid == nullptr) break;
 				Rect tr = r.WithHeight(nwid->resize_y).Shrink(WidgetDimensions::scaled.matrix);
 
 				auto [first, last] = this->vscroll->GetVisibleRangeIterators(this->content);
 
 				for (auto iter = first; iter != last; iter++) {
 					const ServerInfo *ci = *iter;
-					// Background
-					//GfxFillRect(tr, climateColour(ci->climateID));
 
-					DrawString(tr.left, tr.right, tr.top, GetString(CM_STR_INTRO_COMMUNITY_CARD_TITLE, communities[ci->cid] + 1, ci->name), climateColour(ci->climateID), SA_LEFT);
-					DrawString(tr.left, tr.right, tr.top + WidgetDimensions::scaled.vsep_normal + GetCharacterHeight(FS_NORMAL), GetString(CM_STR_INTRO_COMMUNITY_CARD_GOAL, ci->goal, goal_countables[ci->gid], ci->goal * ci->main_goal_completion), TC_WHITE, SA_LEFT);
+					if (ci->cid + 1 < std::size(communities))
+						DrawString(tr.left, tr.right, tr.top, GetString(CM_STR_INTRO_COMMUNITY_CARD_TITLE, communities[ci->cid + 1], ci->name), climateColour(ci->climateID), SA_LEFT);
+					if (ci->gid < std::size(goal_countables))
+						DrawString(tr.left, tr.right, tr.top + WidgetDimensions::scaled.vsep_normal + GetCharacterHeight(FS_NORMAL), GetString(CM_STR_INTRO_COMMUNITY_CARD_GOAL, ci->goal, goal_countables[ci->gid], ci->goal * ci->main_goal_completion), TC_WHITE, SA_LEFT);
 					int top = tr.top + WidgetDimensions::scaled.vsep_normal + GetCharacterHeight(FS_NORMAL);
 					Rect bar = tr.WithY(top, top + GetCharacterHeight(FS_NORMAL));
 					bar.left = bar.right - bar.Width()/2;
@@ -613,16 +668,16 @@ struct SelectGameWindow : public Window {
 			case WID_SGI_EXIT:            HandleExitGameRequest(); break;
 
 			case WID_SGI_DROPDOWN_COMMUNITY:
-				ShowDropDownMenu(this, SelectGameWindow::communities, 0, WID_SGI_DROPDOWN_COMMUNITY, 0, 0);
+				ShowDropDownMenu(this, SelectGameWindow::communities, filter_community, WID_SGI_DROPDOWN_COMMUNITY, 0, 0);
 				break;
 			case WID_SGI_DROPDOWN_GOAL_TYPE:
-				ShowDropDownMenu(this, SelectGameWindow::goal_types, 0, WID_SGI_DROPDOWN_GOAL_TYPE, 0, 0);
+				ShowDropDownMenu(this, SelectGameWindow::goal_types, filter_goal_type, WID_SGI_DROPDOWN_GOAL_TYPE, 0, 0);
 				break;
 			case WID_SGI_DROPDOWN_DURATION:
-				ShowDropDownMenu(this, SelectGameWindow::durations, 0, WID_SGI_DROPDOWN_DURATION, 0, 0);
+				ShowDropDownMenu(this, SelectGameWindow::durations, filter_duration, WID_SGI_DROPDOWN_DURATION, 0, 0);
 				break;
 			case WID_SGI_DROPDOWN_CLIMATE:
-				ShowDropDownMenu(this, SelectGameWindow::climates, 0, WID_SGI_DROPDOWN_CLIMATE, 0, 0);
+				ShowDropDownMenu(this, SelectGameWindow::climates, filter_climate, WID_SGI_DROPDOWN_CLIMATE, 0, 0);
 				break;
 		}
 	}
@@ -634,7 +689,6 @@ struct SelectGameWindow : public Window {
 			case WID_SGI_SERVER_LIST:
 				size.width = fill.width = resize.width = GetCharacterHeight(FS_NORMAL) * 30;
 				fill.height = resize.height = GetCharacterHeight(FS_NORMAL) * 3 + (WidgetDimensions::scaled.vsep_normal + padding.height ) * 2;
-				Debug(misc, 0, "Resize {}", resize.height);
 				size.height = 5 * resize.height;
 
 				break;
@@ -645,14 +699,23 @@ struct SelectGameWindow : public Window {
 	{
 		switch (widget) {
 			case WID_SGI_DROPDOWN_COMMUNITY:
-			break;
-
+				filter_community = index;
+				this->GetWidget<NWidgetCore>(widget)->SetString(communities[index]);
+				break;
 			case WID_SGI_DROPDOWN_GOAL_TYPE:
-			break;
-
+				filter_goal_type = index;
+				this->GetWidget<NWidgetCore>(widget)->SetString(goal_types[index]);
+				break;
+			case WID_SGI_DROPDOWN_DURATION:
+				filter_duration = index;
+				this->GetWidget<NWidgetCore>(widget)->SetString(durations[index]);
+				break;
 			case WID_SGI_DROPDOWN_CLIMATE:
-			break;
-		};
+				filter_climate = index;
+				this->GetWidget<NWidgetCore>(widget)->SetString(climates[index]);
+				break;
+		}
+		this->OnInvalidateData();
 	}
 
 	static bool NameSorter(const ServerInfo * const &a, const ServerInfo * const &b)
@@ -672,11 +735,13 @@ struct SelectGameWindow : public Window {
 	/** Filter content by tags/name */
 	static bool CommunityFilter(const ServerInfo * const *a, ServerFilter &filter)
 	{
-		return (*a)->cid ==  filter.cid;
+		if (filter.cid == 0) return true;
+		return (*a)->cid == (CommunityID)(filter.cid - 1);
 	}
 	static bool GoalTypeFilter(const ServerInfo * const *a, ServerFilter &filter)
 	{
-		return (*a)->gid ==  filter.gid;
+		if (filter.gid == 0) return true;
+		return (*a)->gid == (GoalTypeID)(filter.gid - 1);
 	}
 };
 
@@ -739,13 +804,13 @@ static constexpr std::initializer_list<NWidgetPart> _nested_select_game_widgets 
 		EndContainer(),
 		NWidget(NWID_VERTICAL),
 			NWidget(WWT_CAPTION, COLOUR_GREY), SetStringTip(STR_INTRO_CAPTION),
-            NWidget(NWID_HORIZONTAL),
+		NWidget(NWID_HORIZONTAL),
 				NWidget(WWT_DROPDOWN, COLOUR_ORANGE, WID_SGI_DROPDOWN_COMMUNITY), SetFill(1,0), SetToolTip(STR_TOOLTIP_SORT_CRITERIA),
 				NWidget(WWT_DROPDOWN, COLOUR_ORANGE, WID_SGI_DROPDOWN_GOAL_TYPE), SetFill(1,0), SetToolTip(STR_TOOLTIP_SORT_CRITERIA),
 				NWidget(WWT_DROPDOWN, COLOUR_ORANGE, WID_SGI_DROPDOWN_DURATION), SetFill(1,0), SetToolTip(STR_TOOLTIP_SORT_CRITERIA),
 				NWidget(WWT_DROPDOWN, COLOUR_ORANGE, WID_SGI_DROPDOWN_CLIMATE), SetFill(1,0), SetToolTip(STR_TOOLTIP_SORT_CRITERIA),
 			EndContainer(),
-            NWidget(NWID_HORIZONTAL),
+		NWidget(NWID_HORIZONTAL),
 				NWidget(WWT_MATRIX, COLOUR_GREY, WID_SGI_SERVER_LIST), SetFill(1,1), SetScrollbar(WID_SGI_SERVER_LIST_SCROLLBAR),
 				NWidget(NWID_VSCROLLBAR, COLOUR_GREY, WID_SGI_SERVER_LIST_SCROLLBAR),
 			EndContainer(),
