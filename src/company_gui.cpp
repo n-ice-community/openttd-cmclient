@@ -491,8 +491,8 @@ struct CompanyFinancesWindow : Window {
 			const Company *c = Company::Get(company);
 			this->SetWidgetDisabledState(WID_CF_INCREASE_LOAN, c->current_loan >= c->GetMaxLoan()); // Borrow button only shows when there is any more money to loan.
 			this->SetWidgetDisabledState(WID_CF_REPAY_LOAN, company != _local_company || c->current_loan == 0); // Repay button only shows when there is any more money to repay.
+            this->SetDirty();
 		}
-
 		this->DrawWidgets();
 	}
 
