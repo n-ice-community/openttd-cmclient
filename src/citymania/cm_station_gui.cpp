@@ -94,14 +94,6 @@ std::pair<uint, uint> GetOrderDistances(VehicleOrderID prev, VehicleOrderID cur,
 }
 
 bool UseImprovedStationJoin() {
-    /* workaround: enable cm_use_improved_station_join and distant_join_staions */
-    if (!_settings_client.gui.cm_use_improved_station_join) {
-        _settings_client.gui.cm_use_improved_station_join = true;
-    }
-    if (!_settings_game.station.distant_join_stations) {
-        _settings_game.station.distant_join_stations = true;
-    }
-
     return _settings_client.gui.cm_use_improved_station_join && _settings_game.station.distant_join_stations;
 }
 
