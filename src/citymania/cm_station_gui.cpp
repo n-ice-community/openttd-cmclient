@@ -679,7 +679,7 @@ static void UpdateStationAction(std::optional<TileArea> area, up<Command> cmdptr
         return;
     }
 
-    auto cmd = dynamic_cast<cmd::BuildRailStation *>(cmdptr.get());
+    auto cmd = dynamic_cast<StationBuildCommand *>(cmdptr.get());
     if (cmd == nullptr) return;
 
     cmd->station_to_join = NEW_STATION;
@@ -867,7 +867,14 @@ ToolGUIInfo PlacementAction::PrepareGUIInfo(std::optional<ObjectHighlight> ohl, 
 
     if (to_join != StationID::Invalid()) {
         auto station_cmd = dynamic_cast<StationBuildCommand *>(cmd.get());
-        if (station_cmd != nullptr) station_cmd->station_to_join = to_join;
+        if (station_cmd != nullptr) {
+            if (!_settings_game.station.distant_join_stations && to_join != NEW_STATION) {
+                station_cmd->station_to_join = NEW_STATION;
+                station_cmd->adjacent = false;
+            } else {
+                station_cmd->station_to_join = to_join;
+            }
+        }
     }
 
     CommandCost cost = cmd->test();
@@ -1139,6 +1146,14 @@ template<typename Taction, typename Tcallback, typename Targ>
 bool PostBuildStationCommand(Taction *action, Tcallback callback, Targ arg, StationID join_to) {
     auto cmd = action->GetCommand(arg, join_to);
     if (cmd == nullptr) return false;
+
+    if (!_settings_game.station.distant_join_stations && join_to != NEW_STATION && join_to != StationID::Invalid()) {
+        if (auto station_cmd = dynamic_cast<StationBuildCommand *>(cmd.get())) {
+            station_cmd->station_to_join = NEW_STATION;
+            station_cmd->adjacent = false;
+        }
+    }
+
     if (UseImprovedStationJoin()) {
         cmd->with_callback([](bool res)->bool {
             if (!res) return false;
