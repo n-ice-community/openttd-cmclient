@@ -50,6 +50,7 @@ enum NetworkGameWidgets : WidgetID {
 	CM_WID_NG_REDDIT,             ///< filter reddit
 	CM_WID_NG_NICE,               ///< filter n-ice
 	CM_WID_NG_BTPRO,              ///< filter btpro
+	CM_WID_NG_OPENTTDPRO,         ///< filter openttdpro
 	CM_WID_NG_TEAMGAME,           ///< filter TeamGame
 };
 

@@ -767,10 +767,10 @@ public:
 				_network_coordinator_client.GetListing();
 				this->filter_editbox.text.Assign("citymania");
 				break;
-			case CM_WID_NG_REDDIT:
-				_network_coordinator_client.GetListing();
-				this->filter_editbox.text.Assign("reddit");
-				break;
+            case CM_WID_NG_REDDIT:
+                _network_coordinator_client.GetListing();
+                this->filter_editbox.text.Assign("reddit");
+                break;
 			case CM_WID_NG_NICE:
 				_network_coordinator_client.GetListing();
 				this->filter_editbox.text.Assign("n-ice");
@@ -779,6 +779,10 @@ public:
 				_network_coordinator_client.GetListing();
 				this->filter_editbox.text.Assign("BTPro");
 				break;
+            case CM_WID_NG_OPENTTDPRO:
+                _network_coordinator_client.GetListing();
+                this->filter_editbox.text.Assign("*OpenTTD.pro*");
+                break;
 			case CM_WID_NG_TEAMGAME:
 				_network_coordinator_client.GetListing();
 				this->filter_editbox.text.Assign("TG");
@@ -906,6 +910,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_network_game_widgets
 						NWidget(WWT_PUSHTXTBTN, COLOUR_WHITE, CM_WID_NG_BTPRO), SetFill(1, 0), SetStringTip(CM_STR_NETWORK_SERVER_LIST_FILTER_BTPRO, CM_STR_NETWORK_SERVER_LIST_FILTER_TOOLTIP),
 						NWidget(WWT_PUSHTXTBTN, COLOUR_WHITE, CM_WID_NG_NICE), SetFill(1, 0), SetStringTip(CM_STR_NETWORK_SERVER_LIST_FILTER_NICE, CM_STR_NETWORK_SERVER_LIST_FILTER_TOOLTIP),
 						NWidget(WWT_PUSHTXTBTN, COLOUR_WHITE, CM_WID_NG_REDDIT), SetFill(1, 0), SetStringTip(CM_STR_NETWORK_SERVER_LIST_FILTER_REDDIT, CM_STR_NETWORK_SERVER_LIST_FILTER_TOOLTIP),
+						NWidget(WWT_PUSHTXTBTN, COLOUR_WHITE, CM_WID_NG_OPENTTDPRO), SetFill(1, 0), SetStringTip(CM_STR_NETWORK_SERVER_LIST_FILTER_OPENTTDPRO, CM_STR_NETWORK_SERVER_LIST_FILTER_TOOLTIP),
 						// NWidget(WWT_PUSHTXTBTN, COLOUR_WHITE, CM_WID_NG_TEAMGAME), SetFill(1, 0), SetStringTip(CM_STR_NETWORK_SERVER_LIST_FILTER_TEAMGAME, CM_STR_NETWORK_SERVER_LIST_FILTER_TOOLTIP),
 					EndContainer(),
 					/* end CityMania code */
