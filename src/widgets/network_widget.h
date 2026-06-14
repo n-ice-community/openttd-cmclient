@@ -46,12 +46,15 @@ enum NetworkGameWidgets : WidgetID {
 	WID_NG_ADD,                ///< 'Add server' button.
 	WID_NG_START,              ///< 'Start server' button.
 
-	CM_WID_NG_CITYMANIA,          ///< filter citymania
-	CM_WID_NG_REDDIT,             ///< filter reddit
-	CM_WID_NG_NICE,               ///< filter n-ice
-	CM_WID_NG_BTPRO,              ///< filter btpro
-	CM_WID_NG_OPENTTDPRO,         ///< filter openttdpro
-	CM_WID_NG_TEAMGAME,           ///< filter TeamGame
+	CM_WID_NG_CITYMANIA,       ///< filter citymania
+	CM_WID_NG_REDDIT,          ///< filter reddit
+	CM_WID_NG_NICE,            ///< filter n-ice
+	CM_WID_NG_BTPRO,           ///< filter btpro
+	CM_WID_NG_OPENTTDPRO,      ///< filter openttdpro
+	CM_WID_NG_TEAMGAME,        ///< filter TeamGame
+
+	CM_WID_NG_IDENTITY_SEL,    ///< Identity selection panel
+	CM_WID_NG_IDENTITY,        ///< Identity dropdown
 };
 
 /** Widgets of the #NetworkStartServerWindow class. */
