@@ -154,6 +154,22 @@ public:
     virtual std::pair<StationCoverageType, uint> GetCatchmentParams() = 0;
 };
 
+class StationPickerAction : public Action {
+protected:
+    sp<PlacementAction> placement_action;
+public:
+    StationPickerAction(sp<PlacementAction> placement_action)
+        :placement_action{placement_action} {};
+    ~StationPickerAction() override = default;
+
+    void Update(Point /* pt */, TileIndex /* tile */) override {};
+    std::optional<TileArea> GetArea() const override { return this->placement_action->GetArea(); };
+    bool HandleMousePress() override { return false; };
+    void HandleMouseRelease() override {};
+    ToolGUIInfo GetGUIInfo() override { return this->placement_action->GetGUIInfo(); };
+    void OnStationRemoved(const Station *) override { /* TODO */ };
+};
+
 class StationBuildTool : public Tool {
 public:
     StationBuildTool();
@@ -165,6 +181,7 @@ public:
     void OnStationRemoved(const Station *station) override {
         if (this->action) this->action->OnStationRemoved(station);
     }
+    void SwitchToPicker();
 protected:
 };
 
@@ -203,7 +220,7 @@ public:
     void Update(Point pt, TileIndex tile) override;
     CursorID GetCursor() override;
 private:
-    enum class Mode { REMOVE, SELECT, DRAGDROP, SIZED };
+    enum class Mode { REMOVE, SELECT, DRAGDROP, SIZED, PICKER };
     Mode mode;
 };
 
@@ -248,7 +265,7 @@ public:
     void Update(Point pt, TileIndex tile) override;
     CursorID GetCursor() override;
 private:
-    enum class Mode { REMOVE, SELECT, DRAGDROP };
+    enum class Mode { REMOVE, SELECT, DRAGDROP, PICKER };
     Mode mode;
     RoadStopType stop_type;
 };
@@ -280,7 +297,7 @@ public:
     void Update(Point pt, TileIndex tile) override;
     CursorID GetCursor() override;
 private:
-    enum class Mode { REMOVE, SELECT, SIZED };
+    enum class Mode { REMOVE, SELECT, SIZED, PICKER };
     Mode mode;
 };
 
@@ -310,7 +327,7 @@ public:
     void Update(Point pt, TileIndex tile) override;
     CursorID GetCursor() override;
 private:
-    enum class Mode { REMOVE, SELECT, SIZED };
+    enum class Mode { REMOVE, SELECT, SIZED, PICKER };
     Mode mode;
 };
 
