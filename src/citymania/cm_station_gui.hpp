@@ -130,7 +130,7 @@ public:
     void HandleMouseRelease() override;
     ToolGUIInfo GetGUIInfo() override;
     void OnStationRemoved(const Station *) override;
-    virtual up<Command> GetCommand(TileIndex tile, StationID to_join) = 0;
+    virtual up<Command> GetCommand(TileIndex tile, StationID to_join, bool adjacent) = 0;
     virtual bool Execute(TileIndex tile) = 0;
     virtual std::optional<ObjectHighlight> GetObjectHighlight(TileIndex tile) = 0;
     virtual std::pair<StationCoverageType, uint> GetCatchmentParams() = 0;
@@ -148,7 +148,7 @@ public:
     void HandleMouseRelease() override;
     ToolGUIInfo GetGUIInfo() override;
     void OnStationRemoved(const Station *) override;
-    virtual up<Command> GetCommand(TileArea area, StationID to_join) = 0;
+    virtual up<Command> GetCommand(TileArea area, StationID to_join, bool adjacent) = 0;
     virtual bool Execute(TileArea area) = 0;
     virtual std::optional<ObjectHighlight> GetObjectHighlight(TileArea area) = 0;
     virtual std::pair<StationCoverageType, uint> GetCatchmentParams() = 0;
@@ -198,7 +198,7 @@ private:
     class SizedPlacementAction : public citymania::SizedPlacementAction {
     public:
         ~SizedPlacementAction() override  = default;
-        up<Command> GetCommand(TileIndex tile, StationID to_join) override;
+        up<Command> GetCommand(TileIndex tile, StationID to_join, bool adjacent) override;
         bool Execute(TileIndex tile) override;
         std::optional<ObjectHighlight> GetObjectHighlight(TileIndex tile) override;
         std::pair<StationCoverageType, uint> GetCatchmentParams() override { return {SCT_ALL, CA_TRAIN}; };
@@ -208,7 +208,7 @@ private:
     class DragNDropPlacementAction: public citymania::DragNDropPlacementAction {
     public:
         ~DragNDropPlacementAction() override  = default;
-        up<Command> GetCommand(TileArea area, StationID to_join) override;
+        up<Command> GetCommand(TileArea area, StationID to_join, bool adjacent) override;
         bool Execute(TileArea area) override;
         std::optional<ObjectHighlight> GetObjectHighlight(TileArea area) override;
         std::pair<StationCoverageType, uint> GetCatchmentParams() override { return {SCT_ALL, CA_TRAIN}; };
@@ -250,7 +250,7 @@ private:
         //     :ddir{ddir}, stop_type{stop_type}, spec_class{spec_class}, spec_index{spec_index} {}
         ~DragNDropPlacementAction() override  = default;
         void Update(Point pt, TileIndex tile) override;
-        up<Command> GetCommand(TileArea area, StationID to_join) override;
+        up<Command> GetCommand(TileArea area, StationID to_join, bool adjacent) override;
         bool Execute(TileArea area) override;
         std::optional<ObjectHighlight> GetObjectHighlight(TileArea area) override;
         std::pair<StationCoverageType, uint> GetCatchmentParams() override {
@@ -283,7 +283,7 @@ private:
     class SizedPlacementAction : public citymania::SizedPlacementAction {
     public:
         ~SizedPlacementAction() override = default;
-        up<Command> GetCommand(TileIndex tile, StationID to_join) override;
+        up<Command> GetCommand(TileIndex tile, StationID to_join, bool adjacent) override;
         bool Execute(TileIndex tile) override;
         std::optional<ObjectHighlight> GetObjectHighlight(TileIndex tile) override;
         std::pair<StationCoverageType, uint> GetCatchmentParams() override { return {SCT_ALL, CA_DOCK}; };
@@ -314,7 +314,7 @@ private:
     class SizedPlacementAction : public citymania::SizedPlacementAction {
     public:
         ~SizedPlacementAction() override = default;
-        up<Command> GetCommand(TileIndex tile, StationID to_join) override;
+        up<Command> GetCommand(TileIndex tile, StationID to_join, bool adjacent) override;
         bool Execute(TileIndex tile) override;
         std::optional<ObjectHighlight> GetObjectHighlight(TileIndex tile) override;
         std::pair<StationCoverageType, uint> GetCatchmentParams() override;
