@@ -41,13 +41,22 @@ foreach(MOD_NAME IN LISTS ICU_FIND_COMPONENTS)
 
     # Check the libraries returned by pkg-config really exist.
     unset(PC_LIBRARIES)
-    foreach(LIBRARY IN LISTS PC_ICU_${MOD_NAME}_LIBRARIES)
+    foreach(LIBRARY ${PC_ICU_${MOD_NAME}_LIBRARIES})
+        # Clear cache entries cleanly at the start of every iteration
         unset(PC_LIBRARY CACHE)
-        find_library(PC_LIBRARY NAMES ${LIBRARY})
-        if(NOT PC_LIBRARY)
-            unset(PC_ICU_${MOD_NAME}_FOUND)
+        unset(PC_LIBRARY)
+
+        # Skip empty iterations or literal string flags passed downstream by vcpkg's pkgconfig
+        if(NOT LIBRARY OR "${LIBRARY}" STREQUAL "" OR "${LIBRARY}" MATCHES "^-")
+            continue()
         endif()
-        list(APPEND PC_LIBRARIES ${PC_LIBRARY})
+
+        find_library(PC_LIBRARY NAMES ${LIBRARY} PATHS ${PC_ICU_${MOD_NAME}_LIBRARY_DIRS} NO_DEFAULT_PATH)
+        
+        # Guard against adding raw "-NOTFOUND" words directly into the linker target matrix
+        if(PC_LIBRARY)
+            list(APPEND PC_LIBRARIES ${PC_LIBRARY})
+        endif()
     endforeach()
     unset(PC_LIBRARY CACHE)
 
