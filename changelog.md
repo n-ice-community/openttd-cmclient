@@ -1,5 +1,10 @@
 ## 15.x
 
+### 15.3a (2026-07-31)
+
+- Sync with citymania master
+- Fix: error while compiling generic linux
+
 ### 15.3 (2026-04-04)
 
 - Fix: Conditional orders could require a maximum reliability over 100% (#15409)
