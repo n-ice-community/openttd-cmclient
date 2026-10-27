@@ -1,9 +1,12 @@
 ## 15.x
 
+### 15.3c (2026-10-27)
+
+- Change: Use IP4 address for serverbuttons instead of domain name
+
 ### 15.3b (2026-10-27)
 
 - Change: n-ice login http
-
 
 ### 15.3a (2026-07-31)
 
