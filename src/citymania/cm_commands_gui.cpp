@@ -53,7 +53,7 @@ int _servercount;                // how many servers
 static const int HTTPBUFLEN = 1024;
 static const int MAX_COMMUNITY_STRING_LEN = 128;
 
-static constexpr std::string_view NICE_HTTP_LOGIN          = "http://n-ice.org/openttd/gettoken_md5salt.php?user={}&password={}";
+static constexpr std::string_view NICE_HTTP_LOGIN          = "https://n-ice.org/gettoken_md5salt.php?user={}&password={}";
 static constexpr std::string_view BTPRO_HTTP_LOGIN         = "https://openttd.btpro.nl/gettoken-enc.php?user={}&password={}";
 
 static const std::string CFG_LOGIN_FILE  = "citymania.cfg";
@@ -725,7 +725,7 @@ void CommunityServerManagerSend()
     std::string uri;
 
     if (_community == 1) {
-        uri = fmt::format("http://n-ice.org/openttd/serverlist.txt");
+        uri = fmt::format("https://n-ice.org/serverlist.txt");
     } else if (_community == 2) {
         uri = fmt::format("https://openttd.btpro.nl/btproservers.txt");
     } else if (_community == 3) {

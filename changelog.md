@@ -1,5 +1,10 @@
 ## 15.x
 
+### 15.3b (2026-10-27)
+
+- Change: n-ice login http
+
+
 ### 15.3a (2026-07-31)
 
 - Sync with citymania master
