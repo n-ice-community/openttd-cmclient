@@ -760,6 +760,12 @@ bool GetCommunityServer(int number, bool findonly) {
 		server = fmt::format("SERVER{}", number);
 		port = fmt::format("PORT{}", number);
 	}
+
+	// previous code, not working now because domain name doesnt link to the
+    // ip address anymore, so we need to find the ip address after the
+    // domain name and before the next semicolon
+
+	/*
 	size_t posaddress = _server_list_text.find(server);
 	size_t posport = _server_list_text.find(port);
 
@@ -776,6 +782,62 @@ bool GetCommunityServer(int number, bool findonly) {
 		return true;
 	}
 	else if(findonly) return false;
+
+	*/
+
+	/* new code */
+
+	// function to trim whitespace from a string
+    auto trim = [](std::string s) {
+		size_t start = s.find_first_not_of(" \t\r\n");
+		size_t end = s.find_last_not_of(" \t\r\n");
+		return (start == std::string::npos)
+                       ? ""
+                       : s.substr(start, end - start + 1);
+    };
+
+	size_t posaddress = _server_list_text.find(server);
+	size_t posport = _server_list_text.find(port);
+
+	if (posaddress != std::string::npos && posport != std::string::npos) {
+
+		size_t first_semi = _server_list_text.find(";", posaddress); //find first semicolon after the server name
+		if (first_semi == std::string::npos) return false;
+
+		// extract the field1 value (between server name and first semicolon) and trim whitespace
+		size_t start_field1 = posaddress + server.length();
+		while (start_field1 < first_semi && (_server_list_text[start_field1] == ':' || _server_list_text[start_field1] == ' ')) {
+			start_field1++;
+        }
+		std::string field1 = _server_list_text.substr(start_field1, first_semi - start_field1);
+		field1 = trim(field1);
+ 
+		if (field1 == "DISABLED") return false; // skip this server if field1 is "DISABLED"
+
+		size_t second_semi = _server_list_text.find(";", first_semi + 1); //find second semicolon after the first one
+		if (second_semi == std::string::npos) return false;
+		std::string saddress = _server_list_text.substr(first_semi + 1, second_semi - first_semi - 1); //extract ip address between the 2 semicolons
+                saddress = trim(saddress);  // trim whitespace
+
+        // extract the port number and trim whitespace
+        size_t port_value_start = posport + port.length();
+		while (port_value_start < _server_list_text.length() && (_server_list_text[port_value_start] == ':'
+			|| _server_list_text[port_value_start] == ' ')) {
+				port_value_start++;
+		}
+
+		size_t endport = _server_list_text.find(";", port_value_start);
+		if (endport == std::string::npos) return false;
+
+		std::string sport = _server_list_text.substr(port_value_start, endport - port_value_start);
+		sport = trim(sport);
+    
+		_cc_address = saddress;
+        _cc_porti = std::stoi(sport);
+
+        return true;
+
+    } else if (findonly) return false;
 
 	ShowErrorMessage(GetEncodedString(CM_STR_SB_SERVER_LIST_ERROR_FILE), {}, WL_ERROR);
 	return false;
