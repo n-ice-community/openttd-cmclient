@@ -101,7 +101,7 @@ Game::Game() {
             }
         }
         for (auto t : Map::Iterate()) {
-            if (!IsTileType(t, MP_HOUSE)) continue;
+            if (!IsTileType(t, TileType::House)) continue;
             Town *town = Town::GetByTile(t);
             if (!IsHouseCompleted(t))
                 town->cm.houses_constructing++;

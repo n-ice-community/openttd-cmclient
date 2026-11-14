@@ -5,12 +5,12 @@ from pathlib import Path
 from pprint import pprint
 
 RX_COMMAND = re.compile(r'(?P<returns>CommandCost|std::tuple<CommandCost, [^>]*>) (?P<name>Cmd\w*)\((?P<args>[^)]*)\);')
-RX_DEF_TRAIT = re.compile(r'DEF_CMD_TRAIT\((?P<constant>\w+),\s+(?P<function>\w+),\s+(?P<flags>[^,()]+(?:\([^)]+\))?),\s+(?P<category>[\w:]+)\)')
+RX_DEF_TRAIT = re.compile(r'DEF_CMD_TRAIT\(Commands::(?P<constant>\w+),\s+(?P<function>\w+),\s+(?P<flags>[^,()]+(?:\([^)]+\))?),\s+(?P<category>[\w:]+)\)')
 RX_ARG = re.compile(r'(?P<type>(:?const |)[\w:]* &?)(?P<name>\w*)')
 RX_CALLBACK = re.compile(r'void\s+(?P<name>Cc\w+)\(Commands')
 RX_CALLBACK_REF = re.compile(r'CommandCallback(?:Data|)\s+(?P<name>Cc\w+);')
 RX_CAMEL_TO_SNAKE = re.compile(r'(?<!^)(?=[A-Z])')
-RX_CMD_CONSTANT = re.compile(r'CMD_[\w_]+')
+RX_CMD_CONSTANT = re.compile(r'^\s*\w+')
 
 FILES = [
     'misc_cmd.h',
@@ -44,48 +44,48 @@ TYPE_CONVERT = {
 }
 
 AREA_CODE = {
-    ('CMD_BUILD_RAIL_STATION',): (
+    ('Commands::BuildRailStation',): (
         'if (this->axis == AXIS_X) return CommandArea(this->tile, this->plat_len, this->numtracks);\n'
         'return CommandArea(this->tile, this->numtracks, this->plat_len);\n'
     ),
-    ('CMD_BUILD_AIRPORT',): (
+    ('Commands::BuildRailAirport',): (
         'const AirportSpec *as = AirportSpec::Get(this->airport_type);\n'
         'if (!as->IsAvailable()) return CommandArea(this->tile);\n'
         'return CommandArea(this->tile, as->size_x, as->size_y);\n'
     ),
-    ('CMD_BUILD_ROAD_STOP',):
+    ('Commands::BuildRoadStop',):
         'return CommandArea(this->tile, this->width, this->length);\n',
     #TODO diagonal areas
     (
-        'CMD_PLANT_TREE',
-        'CMD_BUILD_RAILROAD_TRACK',
-        'CMD_REMOVE_RAILROAD_TRACK',
-        'CMD_BUILD_LONG_ROAD',
-        'CMD_REMOVE_LONG_ROAD',
-        'CMD_CLEAR_AREA',
-        'CMD_BUILD_CANAL',
-        'CMD_LEVEL_LAND',
-        'CMD_BUILD_BRIDGE',
+        'Commands::PlantTree',
+        'Commands::BuildRailLong',
+        'Commands::RemoveRailLong',
+        'Commands::BuildRoadLong',
+        'Commands::RemoveRoadLong',
+        'Commands::ClearArea',
+        'Commands::BuildCanal',
+        'Commands::LevelLand',
+        'Commands::BuildBridge',
     ): 'return CommandArea(this->start_tile, this->tile);\n',
     (
-        'CMD_BUILD_BRIDGE',
+        'Commands::BuildBridge',
     ): 'return CommandArea(this->tile_start, this->tile);\n',
     (
-        'CMD_BUILD_SINGLE_RAIL',
-        'CMD_BUILD_TRAIN_DEPOT',
-        'CMD_BUILD_BUOY',
-        'CMD_BUILD_ROAD',
-        'CMD_BUILD_ROAD_DEPOT',
-        'CMD_PLACE_SIGN',
-        'CMD_LANDSCAPE_CLEAR',
-        'CMD_TERRAFORM_LAND',
-        'CMD_FOUND_TOWN',  # TODO
-        'CMD_BUILD_DOCK',  # TODO
-        'CMD_BUILD_SHIP_DEPOT',  # TODO
-        'CMD_BUILD_LOCK',  # TODO
-        'CMD_BUILD_OBJECT',  # TODO
-        'CMD_BUILD_INDUSTRY',  # TODO
-        'CMD_BUILD_TUNNEL',  # TODO find other end
+        'Commands::BuildRail',
+        'Commands::BuildRailDepot',
+        'Commands::BuildBuoy',
+        'Commands::BuildRoad',
+        'Commands::BuildRoadDepot',
+        'Commands::PlaceSign',
+        'Commands::LandscapeClear',
+        'Commands::TerraformLand',
+        'Commands::FoundTown',  # TODO
+        'Commands::BuildDock',  # TODO
+        'Commands::BuildShipDepot',  # TODO
+        'Commands::BuildLock',  # TODO
+        'Commands::BuildObject',  # TODO
+        'Commands::BuildIndustry',  # TODO
+        'Commands::BuildTunnel',  # TODO find other end
     ): 'return CommandArea(this->tile);\n'
 }
 
@@ -98,13 +98,21 @@ def parse_commands():
 
     command_ids = {}
     cid = 0
-    for l in open(BASE_DIR / 'src' / 'command_type.h'):
-        cl = RX_CMD_CONSTANT.findall(l)
+    dec_line_found = False
+    for line in open(BASE_DIR / 'src' / 'command_type.h'):
+        if not dec_line_found and "enum class Commands" in line:
+            dec_line_found = True
+            continue
+        elif not dec_line_found:
+            continue
+
+        if "}" in line:
+            break
+
+        cl = RX_CMD_CONSTANT.findall(line)
         if not cl:
             continue
-        cmd = cl[0]
-        if cmd == 'CMD_END':
-            break
+        cmd = cl[0].strip()
         command_ids[cmd] = cid
         cid += 1
 
@@ -152,7 +160,7 @@ def parse_commands():
             default_run_as = 'INVALID_COMPANY'
             if 'Deity' in flags:
                 default_run_as = 'OWNER_DEITY'
-            if 'Server' in flags or 'CMD_SPECTATOR' in flags:
+            if 'Server' in flags or 'Spectator' in flags:
                 default_run_as = 'COMPANY_SPECTATOR'  # same as INVALID though
 
             res.append({
@@ -334,13 +342,13 @@ def run():
                 sep_args_type_list = ', ' + args_type_list
                 sep_this_args_list = ', ' + this_args_list
             f.write(
-                f'Commands {name}::get_command() {{ return {constant}; }}\n'
-                f'static constexpr auto _{name}_dispatch = MakeDispatchTable<{constant}{sep_args_type_list}>();\n'
+                f'Commands {name}::get_command() {{ return Commands::{constant}; }}\n'
+                    f'static constexpr auto _{name}_dispatch = MakeDispatchTable<Commands::{constant}{sep_args_type_list}>();\n'
                 f'bool {name}::_post(::CommandCallback *callback) {{\n'
                 f'    return _{name}_dispatch[FindCallbackIndex(callback)](this->error{sep_this_args_list});\n'
                 '}\n'
                 f'CommandCost {name}::_do(DoCommandFlags flags) {{\n'
-                f'    return {cost_getter}(::Command<{constant}>::Do(flags, {test_args_list}));\n'
+                f'    return {cost_getter}(::Command<Commands::{constant}>::Do(flags, {test_args_list}));\n'
                 '}\n'
             )
             f.write('\n')

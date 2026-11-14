@@ -15,7 +15,7 @@ namespace citymania {
 
 up<Game> _game = nullptr;
 
-static IntervalTimer<TimerGameCalendar> _event_new_month({TimerGameCalendar::MONTH, TimerGameCalendar::Priority::NONE}, [](auto) {
+static IntervalTimer<TimerGameCalendar> _event_new_month({TimerGameCalendar::Trigger::Month, TimerGameCalendar::Priority::None}, [](auto) {
     Emit(event::NewMonth{});
 });
 
@@ -25,7 +25,7 @@ void ResetGame() {
 }
 
 void SwitchToMode(SwitchMode new_mode) {
-    if (new_mode != SM_SAVE_GAME) ResetGame();
+    if (new_mode != SwitchMode::SaveGame) ResetGame();
 }
 
 template <typename T>
@@ -53,13 +53,13 @@ template void Emit<event::CompanyBalanceChanged>(const event::CompanyBalanceChan
 // template void Emit<event::>(const event:: &);
 
 void ToggleSmallMap() {
-    SmallMapWindow *w = dynamic_cast<citymania::SmallMapWindow*>(FindWindowById(WC_SMALLMAP, 0));
+    SmallMapWindow *w = dynamic_cast<citymania::SmallMapWindow*>(FindWindowById(WindowClass::SmallMap, 0));
     if (w == nullptr) ShowSmallMap();
     else w->Close();
 }
 
 void NetworkClientSendChatToServer(const std::string &msg) {
-    NetworkClientSendChat(NETWORK_ACTION_CHAT_CLIENT, DESTTYPE_CLIENT, CLIENT_ID_SERVER, msg);
+	NetworkClientSendChat(NetworkAction::ChatClient, NetworkChatDestinationType::Client, to_underlying(ClientID::Server), msg);
 }
 
 } // namespace citymania

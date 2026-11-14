@@ -1068,10 +1068,10 @@ Rect ScrollRect(Rect r, const Scrollbar &sb, int resize_step = 1);
 /**
  * #WindowPopup positioning types
  */
-enum WindowPopupType {
-	WPUT_ORIGIN = 1,      ///< Align with the top-left corner of the window.
-	WPUT_WIDGET_RELATIVE, ///< Align from a nested widget.
-	WPUT_CENTERED,        ///< Center the widget under the cursor. Ignore modifiers.
+enum class WindowPopupType {
+	Origin = 1,     ///< Align with the top-left corner of the window.
+	WidgetRelative, ///< Align from a nested widget.
+	Centred,        ///< Centre the widget under the cursor. Ignore modifiers.
 };
 
 /**
@@ -1081,7 +1081,7 @@ enum WindowPopupType {
  */
 struct WindowPopup: public Window {
 public:
-	WindowPopup(WindowDesc &desc, WindowPopupType t = WPUT_ORIGIN);
+	WindowPopup(WindowDesc &desc, WindowPopupType t = WindowPopupType::Origin);
 	Point OnInitialPosition(int16 sm_width, int16 sm_height, int window_number) override;
 protected:
 	uint wpu_widget; ///< The widget to which the computation would be made from when type is #WPUT_WIDGET_RELATIVE.
@@ -1103,9 +1103,9 @@ inline bool MayBeShown(const Window *w)
 	if (!_in_modal_progress) [[ likely ]] return true;
 
 	switch (w->window_class) {
-		case WC_MAIN_WINDOW:    ///< The background, i.e. the game.
-		case WC_MODAL_PROGRESS: ///< The actual progress window.
-		case WC_CONFIRM_POPUP_QUERY: ///< The abort window.
+		case WindowClass::MainWindow:    ///< The background, i.e. the game.
+		case WindowClass::ModalProgress: ///< The actual progress window.
+		case WindowClass::ConfirmPopupQuery: ///< The abort window.
 			return true;
 
 		default:

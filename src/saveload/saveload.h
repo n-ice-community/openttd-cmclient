@@ -10,6 +10,7 @@
 #ifndef SAVELOAD_H
 #define SAVELOAD_H
 
+#include "saveload_filter.h"
 #include "saveload_type.h"
 #include "../core/label_type.hpp"
 #include "../autoreplace_base.h"
@@ -439,6 +440,9 @@ enum SavegameType : uint8_t {
 	Invalid = 0xFF, ///< broken savegame (used internally)
 };
 
+/** Unique 4-letter tag for the different saveload formats. */
+using SaveLoadFormatTag = Label<struct SaveLoadFormatLabelTag>;
+
 namespace citymania {
 
 enum class CompressionMethod : uint8_t {
@@ -449,20 +453,19 @@ enum class CompressionMethod : uint8_t {
 	LZMA = 4u,
 };
 
-#error Cross check
 /** The format for a reader/writer type of a savegame */
 struct SaveLoadFormat {
-	uint8_t id;                             ///< unique integer id of this savegame format (olny used for networkking so is not guaranteed to be preserved between versions)
+	uint8_t id;            ///< unique integer id of this savegame format (olny used for networkking so is not guaranteed to be preserved between versions)
 	std::string_view name; ///< name of the compressor/decompressor (debug-only)
-	uint32_t tag;                           ///< the 4-letter tag by which it is identified in the savegame
+	SaveLoadFormatTag tag; ///< the 4-letter tag by which it is identified in the savegame
 
-	std::shared_ptr<LoadFilter> (*init_load)(std::shared_ptr<LoadFilter> chain); ///< Constructor for the load filter.
+	std::shared_ptr<LoadFilter> (*init_load)(std::shared_ptr<LoadFilter> chain);                       ///< Constructor for the load filter.
 	std::shared_ptr<SaveFilter> (*init_write)(std::shared_ptr<SaveFilter> chain, uint8_t compression); ///< Constructor for the save filter.
 
-	CompressionMethod method;             ///< compression method used in this format
-	uint8_t min_compression;                 ///< the minimum compression level of this format
-	uint8_t default_compression;             ///< the default compression level of this format
-	uint8_t max_compression;                 ///< the maximum compression level of this format
+	CompressionMethod method;    ///< compression method used in this format
+	uint8_t min_compression;     ///< the minimum compression level of this format
+	uint8_t default_compression; ///< the default compression level of this format
+	uint8_t max_compression;     ///< the maximum compression level of this format
 };
 
 /** The preset to use for generating savegames */
@@ -476,21 +479,7 @@ uint8_t GetAvailableLoadFormats();
 
 } // namespace citymania
 
-extern FileToSaveLoad _file_to_saveload;
-
-std::string GenerateDefaultSaveName();
 void SetSaveLoadError(StringID str);
-EncodedString GetSaveLoadErrorType();
-EncodedString GetSaveLoadErrorMessage();
-SaveOrLoadResult SaveOrLoad(std::string_view filename, SaveLoadOperation fop, DetailedFileType dft, Subdirectory sb, bool threaded = true);
-void WaitTillSaved();
-void ProcessAsyncSaveFinish();
-void DoExitSave();
-
-void DoAutoOrNetsave(FiosNumberedSaveName &counter);
-
-SaveOrLoadResult SaveWithFilter(std::shared_ptr<struct SaveFilter> writer, bool threaded, citymania::SavePreset preset);
-SaveOrLoadResult LoadWithFilter(std::shared_ptr<struct LoadFilter> reader);
 
 typedef void AutolengthProc(int);
 

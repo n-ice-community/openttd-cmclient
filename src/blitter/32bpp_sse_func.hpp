@@ -512,9 +512,9 @@ bm_normal:
 		case BlitterMode::BlackRemap: Draw<BlitterMode::BlackRemap, ReadMode::None, BlockType::None, true>(bp, zoom); return;
 		case BlitterMode::CMTintRemap:
 			if (bp->skip_left != 0 || bp->width <= MARGIN_REMAP_THRESHOLD) {
-				Draw<BlitterMode::CMTintRemap, RM_WITH_SKIP, BT_NONE, true>(bp, zoom); return;
+				Draw<BlitterMode::CMTintRemap, ReadMode::WithSkip, BlockType::None, true>(bp, zoom); return;
 			} else {
-				Draw<BlitterMode::CMTintRemap, RM_WITH_MARGIN, BT_NONE, true>(bp, zoom); return;
+				Draw<BlitterMode::CMTintRemap, ReadMode::WithMargin, BlockType::None, true>(bp, zoom); return;
 			}
 	}
 }

@@ -21,8 +21,6 @@
 #include "../track_type.h"
 #include "../vehiclelist.h"
 
-enum StationClassID : uint16_t;
-
 namespace citymania {
 
 typedef std::function<bool(bool)> CommandCallback;

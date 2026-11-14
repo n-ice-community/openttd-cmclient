@@ -14,6 +14,7 @@
 #include "../map_type.h"
 #include "../map_func.h"
 #include "../roadveh.h"
+#include "../saveload/saveload_func.h"
 #include "../strings_func.h"
 #include "../ship.h"
 #include "../town.h"
@@ -112,7 +113,7 @@ bool ConTreeMap(std::span<std::string_view> argv) {
 
     std::string_view filename = std::string_view(argv[1]);
 
-    if (_game_mode != GM_EDITOR) {
+    if (_game_mode != GameMode::Editor) {
         IConsolePrint(CC_ERROR, "This command is only available in scenario editor.");
         return true;
     }
@@ -125,9 +126,9 @@ bool ConTreeMap(std::span<std::string_view> argv) {
 
     auto ext = filename.substr(filename.length() - 4, 4);
     DetailedFileType dft;
-    if (ext == ".bmp") dft = DFT_HEIGHTMAP_BMP;
+    if (ext == ".bmp") dft = DetailedFileType::HeightmapBmp;
 #ifdef WITH_PNG
-    else if (ext == ".png") dft = DFT_HEIGHTMAP_PNG;
+    else if (ext == ".png") dft = DetailedFileType::HeightmapPng;
 #endif
     else {
 #ifdef WITH_PNG
@@ -152,7 +153,7 @@ bool ConTreeMap(std::span<std::string_view> argv) {
         auto tree_count = std::min(t / 51, 4);
         // auto tree_growth = (uint)(t % 51) * 7 / 50;
         for (auto i = 0; i < tree_count; i++) {
-            ::Command<CMD_PLANT_TREE>::Post(tile, tile, TREE_INVALID, false);
+            ::Command<Commands::PlantTree>::Post(tile, tile, TREE_INVALID, false);
         }
     }
 
@@ -179,7 +180,7 @@ bool ConResetTownGrowth(std::span<std::string_view> argv) {
 
 void MakeReplaySave() {
     auto filename = fmt::format("replay_{}.sav", _replay_ticks);
-    if (SaveOrLoad(filename, SLO_SAVE, DFT_GAME_FILE, SAVE_DIR) != SL_OK) {
+    if (SaveOrLoad(filename, SaveLoadOperation::Save, DetailedFileType::GameFile, Subdirectory::Save, false) != SaveLoadResult::Ok) {
         IConsolePrint(CC_ERROR, "Replay save failed");
     } else {
         IConsolePrint(CC_DEFAULT, "Replay saved to {}", filename);
@@ -247,10 +248,10 @@ bool ConGameStats(std::span<std::string_view> argv) {
         if (!v->IsPrimaryVehicle()) continue;
         switch (v->type) {
             default: break;
-            case VEH_TRAIN: num_trains++; break;
-            case VEH_ROAD: num_rvs++; break;
-            case VEH_AIRCRAFT: num_aircraft++; break;
-            case VEH_SHIP: num_ships++; break;
+            case VehicleType::Train: num_trains++; break;
+            case VehicleType::Road: num_rvs++; break;
+            case VehicleType::Aircraft: num_aircraft++; break;
+            case VehicleType::Ship: num_ships++; break;
         }
     }
 

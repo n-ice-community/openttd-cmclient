@@ -73,6 +73,7 @@ extern SpriteID (*GetDefaultTrainSprite)(uint8_t, Direction);  // train_cmd.cpp
 
 namespace data_export {
 
+#warning "TODO use included json"
 class JsonWriter {
 protected:
     int i = 0;
@@ -115,19 +116,7 @@ public:
         f << (val ? "true" : "false");
     }
 
-    void value(unsigned int val) {
-        f << val;
-    }
-
-    void value(uint64_t val) {
-        f << val;
-    }
-
     void value(Money val) {
-        f << val;
-    }
-
-    void value(int val) {
         f << val;
     }
 
@@ -137,6 +126,31 @@ public:
 
     void value(const std::string &s) {
         f << "\"" << s << "\"";
+    }
+
+    void value(const BaseLabel& label) {
+    	value(label.AsString());
+    }
+
+    void value(const StringID sid) {
+    	value(GetString(sid));
+    }
+
+
+	void value(const std::integral auto val) {
+		f << val;
+	}
+
+	template <typename T>
+		requires is_scoped_enum_v<T>
+	void value(const T val)
+	{
+		f << to_underlying(val);
+	}
+
+	template<typename E, typename T>
+    void value(const EnumBitSet<E, T> val){
+		f << std::hex << val.base();
     }
 
     template<typename T>
@@ -223,7 +237,6 @@ void WriteHouseSpecInfo(JsonWriter &j) {
 
 void WriteCargoSpecInfo(JsonWriter &j) {
     j.begin_list_with_key("cargo_specs");
-    char cargo_label[16];
     for (const CargoSpec *cs : CargoSpec::Iterate()) {
         j.begin_dict();
         JKV(j, cs->initial_payment);
@@ -242,13 +255,9 @@ void WriteCargoSpecInfo(JsonWriter &j) {
         j.ks("quantifier", cs->quantifier);
         j.ks("abbrev", cs->abbrev);
 
-        auto label = cs->label.base();
-        for (uint i = 0; i < sizeof(cs->label); i++) {
-            cargo_label[i] = GB(label, (uint8_t)(sizeof(label) - i - 1) * 8, 8);
-        }
-        cargo_label[sizeof(label)] = '\0';
+        auto label = cs->label.AsString();
         JKV(j, label);
-        j.kv("label_str", cargo_label);
+        j.kv("label_str", label);
         j.end_dict();
     }
     j.end_list();
@@ -273,12 +282,12 @@ void WritePaletteInfo(JsonWriter &j) {
     }
     j.end_list();
     j.begin_list_with_key("gradients");
-    for (auto i = 0; i < COLOUR_END; i++) {
+    for (auto i = 0; i < static_cast<int>(Colours::End); i++) {
         if (i != 0) j.f << ",";
         j.f << std::endl << "[";
         for (auto k = 0; k < 8; k++) {
             if (k != 0) j.f << ", ";
-            j.f << GetColourGradient((Colours)i, (ColourShade)k).p << " ";
+            j.f << GetColourGradient((Colours)i, (Shade)k).p << " ";
         }
         j.f << "]";
     }
@@ -289,7 +298,7 @@ void WritePaletteInfo(JsonWriter &j) {
 void WriteEngineInfo(JsonWriter &j) {
     j.begin_list_with_key("engines");
     for (const Engine *e : Engine::Iterate()) {
-        if (e->type != VEH_TRAIN) continue;
+        if (e->type != VehicleType::Train) continue;
         j.begin_dict();
         JKV(j, e->index.base());
         j.kv("name", e->name);
@@ -313,23 +322,23 @@ void WriteEngineInfo(JsonWriter &j) {
             const RailVehicleInfo *rvi = &e->VehInfo<RailVehicleInfo>();
             j.begin_dict_with_key("rail");
             JKV(j, rvi->image_index);
-            JKV(j, rvi->railveh_type);
+            JKV(j, rvi->railveh_type); // XXX
             JKV(j, rvi->railtypes.base());
             JKV(j, rvi->max_speed);
             JKV(j, rvi->power);
             JKV(j, rvi->weight);
             JKV(j, rvi->running_cost);
-            JKV(j, rvi->running_cost_class);
-            JKV(j, rvi->engclass);
+            JKV(j, rvi->running_cost_class); // XXX
+            JKV(j, rvi->engclass); // XXX
             JKV(j, rvi->tractive_effort);
             JKV(j, rvi->air_drag);
             JKV(j, rvi->capacity);
-            SpriteID sprite = GetDefaultTrainSprite(e->original_image_index, DIR_W);
+            SpriteID sprite = GetDefaultTrainSprite(e->original_image_index, Direction::W);
             JKV(j, sprite);
-            if (rvi->railveh_type == RAILVEH_MULTIHEAD) {
+            if (rvi->railveh_type == RailVehicleType::Multihead) {
                 j.kv("rev_sprite",
-                     GetDefaultTrainSprite(e->original_image_index + 1, DIR_W));
-            } else if (rvi->railveh_type == RAILVEH_WAGON) {
+                     GetDefaultTrainSprite(e->original_image_index + 1, Direction::W));
+            } else if (rvi->railveh_type == RailVehicleType::Wagon) {
                 j.kv("full_sprite",
                      sprite + _wagon_full_adder[e->original_image_index]);
             }
@@ -361,7 +370,7 @@ void ViewportExportJson(const Viewport &vp, int left, int top, int right, int bo
     ViewportExportDrawBegin(vp, left, top, right, bottom);
 
     auto fname = fmt::format("snaps/tick_{}.json", TimerGameTick::counter);
-    Debug(misc, 0, "Exporting tick {} into {} box ({},{})-({},{}) ", TimerGameTick::counter, fname, left, top, right, bottom);
+    Debug(Facility::Misc, Severity::Trace1, "Exporting tick {} into {} box ({},{})-({},{}) ", TimerGameTick::counter, fname, left, top, right, bottom);
     data_export::JsonWriter j(fname);
     j.begin_dict();
     j.kv("tick", TimerGameTick::counter);
@@ -441,7 +450,7 @@ void ViewportExportJson(const Viewport &vp, int left, int top, int right, int bo
 
 void ExportFrameSpritesJson() {
     Viewport vp = SetupScreenshotViewport(SC_VIEWPORT);
-    Window *w = FindWindowById(WC_MAIN_WINDOW, 0);
+    Window *w = FindWindowById(WindowClass::MainWindow, 0);
     vp.zoom = w->viewport->zoom;
     ViewportExportJson(vp,
         vp.virtual_left,
@@ -485,7 +494,7 @@ void ViewportExport(const Viewport &vp, int left, int top, int right, int bottom
     ViewportExportDrawBegin(vp, left, top, right, bottom);
 
     auto fname = fmt::format("snaps/tick_{}.bin", TimerGameTick::counter);
-    Debug(misc, 0, "Exporting tick {} into {} box ({},{})-({},{}) ", TimerGameTick::counter, fname, left, top, right, bottom);
+    Debug(Facility::Misc, Severity::Notice, "Exporting tick {} into {} box ({},{})-({},{}) ", TimerGameTick::counter, fname, left, top, right, bottom);
     std::ofstream f(fname, std::ios::binary);
     auto &tile_sprites = ViewportExportGetTileSprites();
     uint64 n = tile_sprites.size();
@@ -515,7 +524,7 @@ bool _is_recording = false;
 void ExportFrameSprites() {
     if (!_is_recording) return;
     Viewport vp = SetupScreenshotViewport(SC_VIEWPORT);
-    Window *w = FindWindowById(WC_MAIN_WINDOW, 0);
+    Window *w = FindWindowById(WindowClass::MainWindow, 0);
     vp.zoom = w->viewport->zoom;
     ViewportExport(vp,
         vp.virtual_left,

@@ -230,7 +230,7 @@ struct Town : TownPool::PoolItem<&_town_pool> {
 	StringID Label() const{
 		if (!_settings_client.gui.population_in_label)
 			return STR_TOWN_NAME;
-		if (!(_game_mode == GM_EDITOR) && (_local_company < MAX_COMPANIES)) {
+		if (!(_game_mode == GameMode::Editor) && (_local_company < MAX_COMPANIES)) {
 			// FIXME rating colour
 			return CM_STR_VIEWPORT_TOWN_POP_VERY_POOR_RATING + this->cm.town_label;
 		}

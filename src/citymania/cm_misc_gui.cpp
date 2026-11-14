@@ -23,12 +23,12 @@
 namespace citymania {
 
 static const NWidgetPart _nested_land_info_widgets[] = {
-    NWidget(WWT_PANEL, COLOUR_GREY, WID_LI_BACKGROUND), SetMinimalSize(64, 32), EndContainer(),
+    NWidget(WWT_PANEL, Colours::Grey, WID_LI_BACKGROUND), SetMinimalSize(64, 32), EndContainer(),
 };
 
 static WindowDesc _land_info_desc(
-    WDP_MANUAL, {}, 0, 0,
-    WC_LAND_INFO, WC_NONE,
+    WindowPosition::Manual, {}, 0, 0,
+    WindowClass::LandInfo, WindowClass::None,
     {},
     _nested_land_info_widgets
 );
@@ -70,12 +70,12 @@ public:
 
         Rect ir = r.Shrink(WidgetDimensions::scaled.frametext);
         for (size_t i = 0; i < this->landinfo_data.size(); i++) {
-            DrawString(ir, this->landinfo_data[i], i == 0 ? TC_LIGHT_BLUE : TC_FROMSTRING, SA_HOR_CENTER);
-            ir.top += GetCharacterHeight(FS_NORMAL) + (i == 0 ? WidgetDimensions::scaled.vsep_wide : WidgetDimensions::scaled.vsep_normal);
+            DrawString(ir, this->landinfo_data[i], i == 0 ? TextColour::LightBlue : TextColour::FromString, {AlignmentH::Start, AlignmentV::Middle});
+            ir.top += GetCharacterHeight(FontSize::Normal) + (i == 0 ? WidgetDimensions::scaled.vsep_wide : WidgetDimensions::scaled.vsep_normal);
         }
 
         if (!this->cargo_acceptance.empty()) {
-            DrawStringMultiLine(ir, this->cargo_acceptance, TC_FROMSTRING, SA_CENTER);
+            DrawStringMultiLine(ir, this->cargo_acceptance, TextColour::FromString, {AlignmentH::Start, AlignmentV::Middle});
         }
     }
 
@@ -88,7 +88,7 @@ public:
             uint width = GetStringBoundingBox(this->landinfo_data[i]).width + WidgetDimensions::scaled.frametext.Horizontal();
             size.width = std::max(size.width, width);
 
-            size.height += GetCharacterHeight(FS_NORMAL) + (i == 0 ? WidgetDimensions::scaled.vsep_wide : WidgetDimensions::scaled.vsep_normal);
+            size.height += GetCharacterHeight(FontSize::Normal) + (i == 0 ? WidgetDimensions::scaled.vsep_wide : WidgetDimensions::scaled.vsep_normal);
         }
 
         if (!this->cargo_acceptance.empty()) {

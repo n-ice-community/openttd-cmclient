@@ -20,31 +20,31 @@ namespace cmd {
  */
 static constexpr auto _callback_tuple = std::make_tuple(
     (::CommandCallback *)nullptr, // Make sure this is actually a pointer-to-function.
-    &CcBuildDocks,
-    &CcPlaySound_CONSTRUCTION_WATER,
-    &CcMoveWaypointName,
-    &CcMoveStationName,
     &CcRoadDepot,
     &CcRoadStop,
     &CcPlaySound_CONSTRUCTION_OTHER,
     &CcBuildRoadTunnel,
-    &CcBuildWagon,
-    &CcPlaceSign,
-    &CcBuildPrimaryVehicle,
-    &CcStartStopVehicle,
-    &CcBuildAirport,
+    &CcMoveWaypointName,
+    &CcCreateGroup,
+    &CcAddVehicleNewGroup,
+    &CcMoveStationName,
+    &CcFoundRandomTown,
+    &CcFoundTown,
     &CcTerraform,
     &CcPlaySound_EXPLOSION,
     &CcCloneVehicle,
+    &CcBuildDocks,
+    &CcPlaySound_CONSTRUCTION_WATER,
+    &CcBuildAirport,
+    &CcPlaceSign,
     &CcRailDepot,
     &CcPlaySound_CONSTRUCTION_RAIL,
     &CcStation,
     &CcBuildRailTunnel,
-    &CcFoundRandomTown,
-    &CcFoundTown,
+    &CcBuildWagon,
+    &CcBuildPrimaryVehicle,
+    &CcStartStopVehicle,
     &CcBuildBridge,
-    &CcCreateGroup,
-    &CcAddVehicleNewGroup,
     &CcAI,
     &CcGame
 );
@@ -109,1309 +109,1318 @@ inline constexpr auto MakeDispatchTable() noexcept
     return MakeDispatchTableHelper<Tcmd, Targs...>(std::make_index_sequence<_callback_tuple_size>{});
 }
 
-Commands CreateStoryPage::get_command() { return CMD_CREATE_STORY_PAGE; }
-static constexpr auto _CreateStoryPage_dispatch = MakeDispatchTable<CMD_CREATE_STORY_PAGE, CompanyID, const EncodedString &>();
-bool CreateStoryPage::_post(::CommandCallback *callback) {
-    return _CreateStoryPage_dispatch[FindCallbackIndex(callback)](this->error, this->company, this->text);
-}
-CommandCost CreateStoryPage::_do(DoCommandFlags flags) {
-    return std::get<0>(::Command<CMD_CREATE_STORY_PAGE>::Do(flags, company, text));
-}
-
-Commands CreateStoryPageElement::get_command() { return CMD_CREATE_STORY_PAGE_ELEMENT; }
-static constexpr auto _CreateStoryPageElement_dispatch = MakeDispatchTable<CMD_CREATE_STORY_PAGE_ELEMENT, TileIndex, StoryPageID, StoryPageElementType, uint32_t, const EncodedString &>();
-bool CreateStoryPageElement::_post(::CommandCallback *callback) {
-    return _CreateStoryPageElement_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->page_id, this->type, this->reference, this->text);
-}
-CommandCost CreateStoryPageElement::_do(DoCommandFlags flags) {
-    return std::get<0>(::Command<CMD_CREATE_STORY_PAGE_ELEMENT>::Do(flags, tile, page_id, type, reference, text));
-}
-
-Commands UpdateStoryPageElement::get_command() { return CMD_UPDATE_STORY_PAGE_ELEMENT; }
-static constexpr auto _UpdateStoryPageElement_dispatch = MakeDispatchTable<CMD_UPDATE_STORY_PAGE_ELEMENT, TileIndex, StoryPageElementID, uint32_t, const EncodedString &>();
-bool UpdateStoryPageElement::_post(::CommandCallback *callback) {
-    return _UpdateStoryPageElement_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->page_element_id, this->reference, this->text);
-}
-CommandCost UpdateStoryPageElement::_do(DoCommandFlags flags) {
-    return (::Command<CMD_UPDATE_STORY_PAGE_ELEMENT>::Do(flags, tile, page_element_id, reference, text));
-}
-
-Commands SetStoryPageTitle::get_command() { return CMD_SET_STORY_PAGE_TITLE; }
-static constexpr auto _SetStoryPageTitle_dispatch = MakeDispatchTable<CMD_SET_STORY_PAGE_TITLE, StoryPageID, const EncodedString &>();
-bool SetStoryPageTitle::_post(::CommandCallback *callback) {
-    return _SetStoryPageTitle_dispatch[FindCallbackIndex(callback)](this->error, this->page_id, this->text);
-}
-CommandCost SetStoryPageTitle::_do(DoCommandFlags flags) {
-    return (::Command<CMD_SET_STORY_PAGE_TITLE>::Do(flags, page_id, text));
-}
-
-Commands SetStoryPageDate::get_command() { return CMD_SET_STORY_PAGE_DATE; }
-static constexpr auto _SetStoryPageDate_dispatch = MakeDispatchTable<CMD_SET_STORY_PAGE_DATE, StoryPageID, TimerGameCalendar::Date>();
-bool SetStoryPageDate::_post(::CommandCallback *callback) {
-    return _SetStoryPageDate_dispatch[FindCallbackIndex(callback)](this->error, this->page_id, this->date);
-}
-CommandCost SetStoryPageDate::_do(DoCommandFlags flags) {
-    return (::Command<CMD_SET_STORY_PAGE_DATE>::Do(flags, page_id, date));
-}
-
-Commands ShowStoryPage::get_command() { return CMD_SHOW_STORY_PAGE; }
-static constexpr auto _ShowStoryPage_dispatch = MakeDispatchTable<CMD_SHOW_STORY_PAGE, StoryPageID>();
-bool ShowStoryPage::_post(::CommandCallback *callback) {
-    return _ShowStoryPage_dispatch[FindCallbackIndex(callback)](this->error, this->page_id);
-}
-CommandCost ShowStoryPage::_do(DoCommandFlags flags) {
-    return (::Command<CMD_SHOW_STORY_PAGE>::Do(flags, page_id));
-}
-
-Commands RemoveStoryPage::get_command() { return CMD_REMOVE_STORY_PAGE; }
-static constexpr auto _RemoveStoryPage_dispatch = MakeDispatchTable<CMD_REMOVE_STORY_PAGE, StoryPageID>();
-bool RemoveStoryPage::_post(::CommandCallback *callback) {
-    return _RemoveStoryPage_dispatch[FindCallbackIndex(callback)](this->error, this->page_id);
-}
-CommandCost RemoveStoryPage::_do(DoCommandFlags flags) {
-    return (::Command<CMD_REMOVE_STORY_PAGE>::Do(flags, page_id));
-}
-
-Commands RemoveStoryPageElement::get_command() { return CMD_REMOVE_STORY_PAGE_ELEMENT; }
-static constexpr auto _RemoveStoryPageElement_dispatch = MakeDispatchTable<CMD_REMOVE_STORY_PAGE_ELEMENT, StoryPageElementID>();
-bool RemoveStoryPageElement::_post(::CommandCallback *callback) {
-    return _RemoveStoryPageElement_dispatch[FindCallbackIndex(callback)](this->error, this->page_element_id);
-}
-CommandCost RemoveStoryPageElement::_do(DoCommandFlags flags) {
-    return (::Command<CMD_REMOVE_STORY_PAGE_ELEMENT>::Do(flags, page_element_id));
-}
-
-Commands StoryPageButton::get_command() { return CMD_STORY_PAGE_BUTTON; }
-static constexpr auto _StoryPageButton_dispatch = MakeDispatchTable<CMD_STORY_PAGE_BUTTON, TileIndex, StoryPageElementID, VehicleID>();
-bool StoryPageButton::_post(::CommandCallback *callback) {
-    return _StoryPageButton_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->page_element_id, this->reference);
-}
-CommandCost StoryPageButton::_do(DoCommandFlags flags) {
-    return (::Command<CMD_STORY_PAGE_BUTTON>::Do(flags, tile, page_element_id, reference));
-}
-
-Commands BuildRailWaypoint::get_command() { return CMD_BUILD_RAIL_WAYPOINT; }
-static constexpr auto _BuildRailWaypoint_dispatch = MakeDispatchTable<CMD_BUILD_RAIL_WAYPOINT, TileIndex, Axis, uint8_t, uint8_t, StationClassID, uint16_t, StationID, bool>();
-bool BuildRailWaypoint::_post(::CommandCallback *callback) {
-    return _BuildRailWaypoint_dispatch[FindCallbackIndex(callback)](this->error, this->start_tile, this->axis, this->width, this->height, this->spec_class, this->spec_index, this->station_to_join, this->adjacent);
-}
-CommandCost BuildRailWaypoint::_do(DoCommandFlags flags) {
-    return (::Command<CMD_BUILD_RAIL_WAYPOINT>::Do(flags, start_tile, axis, width, height, spec_class, spec_index, station_to_join, adjacent));
-}
-
-Commands RemoveFromRailWaypoint::get_command() { return CMD_REMOVE_FROM_RAIL_WAYPOINT; }
-static constexpr auto _RemoveFromRailWaypoint_dispatch = MakeDispatchTable<CMD_REMOVE_FROM_RAIL_WAYPOINT, TileIndex, TileIndex, bool>();
-bool RemoveFromRailWaypoint::_post(::CommandCallback *callback) {
-    return _RemoveFromRailWaypoint_dispatch[FindCallbackIndex(callback)](this->error, this->start, this->end, this->keep_rail);
-}
-CommandCost RemoveFromRailWaypoint::_do(DoCommandFlags flags) {
-    return (::Command<CMD_REMOVE_FROM_RAIL_WAYPOINT>::Do(flags, start, end, keep_rail));
-}
-
-Commands BuildRoadWaypoint::get_command() { return CMD_BUILD_ROAD_WAYPOINT; }
-static constexpr auto _BuildRoadWaypoint_dispatch = MakeDispatchTable<CMD_BUILD_ROAD_WAYPOINT, TileIndex, Axis, uint8_t, uint8_t, RoadStopClassID, uint16_t, StationID, bool>();
-bool BuildRoadWaypoint::_post(::CommandCallback *callback) {
-    return _BuildRoadWaypoint_dispatch[FindCallbackIndex(callback)](this->error, this->start_tile, this->axis, this->width, this->height, this->spec_class, this->spec_index, this->station_to_join, this->adjacent);
-}
-CommandCost BuildRoadWaypoint::_do(DoCommandFlags flags) {
-    return (::Command<CMD_BUILD_ROAD_WAYPOINT>::Do(flags, start_tile, axis, width, height, spec_class, spec_index, station_to_join, adjacent));
-}
-
-Commands RemoveFromRoadWaypoint::get_command() { return CMD_REMOVE_FROM_ROAD_WAYPOINT; }
-static constexpr auto _RemoveFromRoadWaypoint_dispatch = MakeDispatchTable<CMD_REMOVE_FROM_ROAD_WAYPOINT, TileIndex, TileIndex>();
-bool RemoveFromRoadWaypoint::_post(::CommandCallback *callback) {
-    return _RemoveFromRoadWaypoint_dispatch[FindCallbackIndex(callback)](this->error, this->start, this->end);
-}
-CommandCost RemoveFromRoadWaypoint::_do(DoCommandFlags flags) {
-    return (::Command<CMD_REMOVE_FROM_ROAD_WAYPOINT>::Do(flags, start, end));
-}
-
-Commands BuildBuoy::get_command() { return CMD_BUILD_BUOY; }
-static constexpr auto _BuildBuoy_dispatch = MakeDispatchTable<CMD_BUILD_BUOY, TileIndex>();
-bool BuildBuoy::_post(::CommandCallback *callback) {
-    return _BuildBuoy_dispatch[FindCallbackIndex(callback)](this->error, this->tile);
-}
-CommandCost BuildBuoy::_do(DoCommandFlags flags) {
-    return (::Command<CMD_BUILD_BUOY>::Do(flags, tile));
-}
-
-Commands RenameWaypoint::get_command() { return CMD_RENAME_WAYPOINT; }
-static constexpr auto _RenameWaypoint_dispatch = MakeDispatchTable<CMD_RENAME_WAYPOINT, StationID, const std::string &>();
-bool RenameWaypoint::_post(::CommandCallback *callback) {
-    return _RenameWaypoint_dispatch[FindCallbackIndex(callback)](this->error, this->waypoint_id, this->text);
-}
-CommandCost RenameWaypoint::_do(DoCommandFlags flags) {
-    return (::Command<CMD_RENAME_WAYPOINT>::Do(flags, waypoint_id, text));
-}
-
-Commands MoveWaypointName::get_command() { return CMD_MOVE_WAYPOINT_NAME; }
-static constexpr auto _MoveWaypointName_dispatch = MakeDispatchTable<CMD_MOVE_WAYPOINT_NAME, StationID, TileIndex>();
-bool MoveWaypointName::_post(::CommandCallback *callback) {
-    return _MoveWaypointName_dispatch[FindCallbackIndex(callback)](this->error, this->waypoint_id, this->tile);
-}
-CommandCost MoveWaypointName::_do(DoCommandFlags flags) {
-    return std::get<0>(::Command<CMD_MOVE_WAYPOINT_NAME>::Do(flags, waypoint_id, tile));
-}
-
-Commands BuildAirport::get_command() { return CMD_BUILD_AIRPORT; }
-static constexpr auto _BuildAirport_dispatch = MakeDispatchTable<CMD_BUILD_AIRPORT, TileIndex, uint8_t, uint8_t, StationID, bool>();
-bool BuildAirport::_post(::CommandCallback *callback) {
-    return _BuildAirport_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->airport_type, this->layout, this->station_to_join, this->adjacent);
-}
-CommandCost BuildAirport::_do(DoCommandFlags flags) {
-    return (::Command<CMD_BUILD_AIRPORT>::Do(flags, tile, airport_type, layout, station_to_join, adjacent));
-}
-
-Commands BuildDock::get_command() { return CMD_BUILD_DOCK; }
-static constexpr auto _BuildDock_dispatch = MakeDispatchTable<CMD_BUILD_DOCK, TileIndex, StationID, bool>();
-bool BuildDock::_post(::CommandCallback *callback) {
-    return _BuildDock_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->station_to_join, this->adjacent);
-}
-CommandCost BuildDock::_do(DoCommandFlags flags) {
-    return (::Command<CMD_BUILD_DOCK>::Do(flags, tile, station_to_join, adjacent));
-}
-
-Commands BuildRailStation::get_command() { return CMD_BUILD_RAIL_STATION; }
-static constexpr auto _BuildRailStation_dispatch = MakeDispatchTable<CMD_BUILD_RAIL_STATION, TileIndex, RailType, Axis, uint8_t, uint8_t, StationClassID, uint16_t, StationID, bool>();
-bool BuildRailStation::_post(::CommandCallback *callback) {
-    return _BuildRailStation_dispatch[FindCallbackIndex(callback)](this->error, this->tile_org, this->rt, this->axis, this->numtracks, this->plat_len, this->spec_class, this->spec_index, this->station_to_join, this->adjacent);
-}
-CommandCost BuildRailStation::_do(DoCommandFlags flags) {
-    return (::Command<CMD_BUILD_RAIL_STATION>::Do(flags, tile_org, rt, axis, numtracks, plat_len, spec_class, spec_index, station_to_join, adjacent));
-}
-
-Commands RemoveFromRailStation::get_command() { return CMD_REMOVE_FROM_RAIL_STATION; }
-static constexpr auto _RemoveFromRailStation_dispatch = MakeDispatchTable<CMD_REMOVE_FROM_RAIL_STATION, TileIndex, TileIndex, bool>();
-bool RemoveFromRailStation::_post(::CommandCallback *callback) {
-    return _RemoveFromRailStation_dispatch[FindCallbackIndex(callback)](this->error, this->start, this->end, this->keep_rail);
-}
-CommandCost RemoveFromRailStation::_do(DoCommandFlags flags) {
-    return (::Command<CMD_REMOVE_FROM_RAIL_STATION>::Do(flags, start, end, keep_rail));
-}
-
-Commands BuildRoadStop::get_command() { return CMD_BUILD_ROAD_STOP; }
-static constexpr auto _BuildRoadStop_dispatch = MakeDispatchTable<CMD_BUILD_ROAD_STOP, TileIndex, uint8_t, uint8_t, RoadStopType, bool, DiagDirection, RoadType, RoadStopClassID, uint16_t, StationID, bool>();
-bool BuildRoadStop::_post(::CommandCallback *callback) {
-    return _BuildRoadStop_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->width, this->length, this->stop_type, this->is_drive_through, this->ddir, this->rt, this->spec_class, this->spec_index, this->station_to_join, this->adjacent);
-}
-CommandCost BuildRoadStop::_do(DoCommandFlags flags) {
-    return (::Command<CMD_BUILD_ROAD_STOP>::Do(flags, tile, width, length, stop_type, is_drive_through, ddir, rt, spec_class, spec_index, station_to_join, adjacent));
-}
-
-Commands RemoveRoadStop::get_command() { return CMD_REMOVE_ROAD_STOP; }
-static constexpr auto _RemoveRoadStop_dispatch = MakeDispatchTable<CMD_REMOVE_ROAD_STOP, TileIndex, uint8_t, uint8_t, RoadStopType, bool>();
-bool RemoveRoadStop::_post(::CommandCallback *callback) {
-    return _RemoveRoadStop_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->width, this->height, this->stop_type, this->remove_road);
-}
-CommandCost RemoveRoadStop::_do(DoCommandFlags flags) {
-    return (::Command<CMD_REMOVE_ROAD_STOP>::Do(flags, tile, width, height, stop_type, remove_road));
-}
-
-Commands RenameStation::get_command() { return CMD_RENAME_STATION; }
-static constexpr auto _RenameStation_dispatch = MakeDispatchTable<CMD_RENAME_STATION, StationID, const std::string &>();
-bool RenameStation::_post(::CommandCallback *callback) {
-    return _RenameStation_dispatch[FindCallbackIndex(callback)](this->error, this->station_id, this->text);
-}
-CommandCost RenameStation::_do(DoCommandFlags flags) {
-    return (::Command<CMD_RENAME_STATION>::Do(flags, station_id, text));
-}
-
-Commands MoveStationName::get_command() { return CMD_MOVE_STATION_NAME; }
-static constexpr auto _MoveStationName_dispatch = MakeDispatchTable<CMD_MOVE_STATION_NAME, StationID, TileIndex>();
-bool MoveStationName::_post(::CommandCallback *callback) {
-    return _MoveStationName_dispatch[FindCallbackIndex(callback)](this->error, this->station_id, this->tile);
-}
-CommandCost MoveStationName::_do(DoCommandFlags flags) {
-    return std::get<0>(::Command<CMD_MOVE_STATION_NAME>::Do(flags, station_id, tile));
-}
-
-Commands OpenCloseAirport::get_command() { return CMD_OPEN_CLOSE_AIRPORT; }
-static constexpr auto _OpenCloseAirport_dispatch = MakeDispatchTable<CMD_OPEN_CLOSE_AIRPORT, StationID>();
-bool OpenCloseAirport::_post(::CommandCallback *callback) {
-    return _OpenCloseAirport_dispatch[FindCallbackIndex(callback)](this->error, this->station_id);
-}
-CommandCost OpenCloseAirport::_do(DoCommandFlags flags) {
-    return (::Command<CMD_OPEN_CLOSE_AIRPORT>::Do(flags, station_id));
-}
-
-Commands CreateGoal::get_command() { return CMD_CREATE_GOAL; }
-static constexpr auto _CreateGoal_dispatch = MakeDispatchTable<CMD_CREATE_GOAL, CompanyID, ::GoalType, ::GoalTypeID, const EncodedString &>();
-bool CreateGoal::_post(::CommandCallback *callback) {
-    return _CreateGoal_dispatch[FindCallbackIndex(callback)](this->error, this->company, this->type, this->dest, this->text);
-}
-CommandCost CreateGoal::_do(DoCommandFlags flags) {
-    return std::get<0>(::Command<CMD_CREATE_GOAL>::Do(flags, company, type, dest, text));
-}
-
-Commands RemoveGoal::get_command() { return CMD_REMOVE_GOAL; }
-static constexpr auto _RemoveGoal_dispatch = MakeDispatchTable<CMD_REMOVE_GOAL, ::GoalID>();
-bool RemoveGoal::_post(::CommandCallback *callback) {
-    return _RemoveGoal_dispatch[FindCallbackIndex(callback)](this->error, this->goal);
-}
-CommandCost RemoveGoal::_do(DoCommandFlags flags) {
-    return (::Command<CMD_REMOVE_GOAL>::Do(flags, goal));
-}
-
-Commands SetGoalDestination::get_command() { return CMD_SET_GOAL_DESTINATION; }
-static constexpr auto _SetGoalDestination_dispatch = MakeDispatchTable<CMD_SET_GOAL_DESTINATION, ::GoalID, ::GoalType, ::GoalTypeID>();
-bool SetGoalDestination::_post(::CommandCallback *callback) {
-    return _SetGoalDestination_dispatch[FindCallbackIndex(callback)](this->error, this->goal, this->type, this->dest);
-}
-CommandCost SetGoalDestination::_do(DoCommandFlags flags) {
-    return (::Command<CMD_SET_GOAL_DESTINATION>::Do(flags, goal, type, dest));
-}
-
-Commands SetGoalText::get_command() { return CMD_SET_GOAL_TEXT; }
-static constexpr auto _SetGoalText_dispatch = MakeDispatchTable<CMD_SET_GOAL_TEXT, ::GoalID, const EncodedString &>();
-bool SetGoalText::_post(::CommandCallback *callback) {
-    return _SetGoalText_dispatch[FindCallbackIndex(callback)](this->error, this->goal, this->text);
-}
-CommandCost SetGoalText::_do(DoCommandFlags flags) {
-    return (::Command<CMD_SET_GOAL_TEXT>::Do(flags, goal, text));
-}
-
-Commands SetGoalProgress::get_command() { return CMD_SET_GOAL_PROGRESS; }
-static constexpr auto _SetGoalProgress_dispatch = MakeDispatchTable<CMD_SET_GOAL_PROGRESS, ::GoalID, const EncodedString &>();
-bool SetGoalProgress::_post(::CommandCallback *callback) {
-    return _SetGoalProgress_dispatch[FindCallbackIndex(callback)](this->error, this->goal, this->text);
-}
-CommandCost SetGoalProgress::_do(DoCommandFlags flags) {
-    return (::Command<CMD_SET_GOAL_PROGRESS>::Do(flags, goal, text));
-}
-
-Commands SetGoalCompleted::get_command() { return CMD_SET_GOAL_COMPLETED; }
-static constexpr auto _SetGoalCompleted_dispatch = MakeDispatchTable<CMD_SET_GOAL_COMPLETED, ::GoalID, bool>();
-bool SetGoalCompleted::_post(::CommandCallback *callback) {
-    return _SetGoalCompleted_dispatch[FindCallbackIndex(callback)](this->error, this->goal, this->completed);
-}
-CommandCost SetGoalCompleted::_do(DoCommandFlags flags) {
-    return (::Command<CMD_SET_GOAL_COMPLETED>::Do(flags, goal, completed));
-}
-
-Commands GoalQuestion::get_command() { return CMD_GOAL_QUESTION; }
-static constexpr auto _GoalQuestion_dispatch = MakeDispatchTable<CMD_GOAL_QUESTION, uint16_t, uint32_t, bool, uint32_t, GoalQuestionType, const EncodedString &>();
-bool GoalQuestion::_post(::CommandCallback *callback) {
-    return _GoalQuestion_dispatch[FindCallbackIndex(callback)](this->error, this->uniqueid, this->target, this->is_client, this->button_mask, this->type, this->text);
-}
-CommandCost GoalQuestion::_do(DoCommandFlags flags) {
-    return (::Command<CMD_GOAL_QUESTION>::Do(flags, uniqueid, target, is_client, button_mask, type, text));
-}
-
-Commands GoalQuestionAnswer::get_command() { return CMD_GOAL_QUESTION_ANSWER; }
-static constexpr auto _GoalQuestionAnswer_dispatch = MakeDispatchTable<CMD_GOAL_QUESTION_ANSWER, uint16_t, uint8_t>();
-bool GoalQuestionAnswer::_post(::CommandCallback *callback) {
-    return _GoalQuestionAnswer_dispatch[FindCallbackIndex(callback)](this->error, this->uniqueid, this->button);
-}
-CommandCost GoalQuestionAnswer::_do(DoCommandFlags flags) {
-    return (::Command<CMD_GOAL_QUESTION_ANSWER>::Do(flags, uniqueid, button));
-}
-
-Commands ChangeSetting::get_command() { return CMD_CHANGE_SETTING; }
-static constexpr auto _ChangeSetting_dispatch = MakeDispatchTable<CMD_CHANGE_SETTING, const std::string &, int32_t>();
-bool ChangeSetting::_post(::CommandCallback *callback) {
-    return _ChangeSetting_dispatch[FindCallbackIndex(callback)](this->error, this->name, this->value);
-}
-CommandCost ChangeSetting::_do(DoCommandFlags flags) {
-    return (::Command<CMD_CHANGE_SETTING>::Do(flags, name, value));
-}
-
-Commands ChangeCompanySetting::get_command() { return CMD_CHANGE_COMPANY_SETTING; }
-static constexpr auto _ChangeCompanySetting_dispatch = MakeDispatchTable<CMD_CHANGE_COMPANY_SETTING, const std::string &, int32_t>();
-bool ChangeCompanySetting::_post(::CommandCallback *callback) {
-    return _ChangeCompanySetting_dispatch[FindCallbackIndex(callback)](this->error, this->name, this->value);
-}
-CommandCost ChangeCompanySetting::_do(DoCommandFlags flags) {
-    return (::Command<CMD_CHANGE_COMPANY_SETTING>::Do(flags, name, value));
-}
-
-Commands CustomNewsItem::get_command() { return CMD_CUSTOM_NEWS_ITEM; }
-static constexpr auto _CustomNewsItem_dispatch = MakeDispatchTable<CMD_CUSTOM_NEWS_ITEM, NewsType, CompanyID, NewsReference, const EncodedString &>();
-bool CustomNewsItem::_post(::CommandCallback *callback) {
-    return _CustomNewsItem_dispatch[FindCallbackIndex(callback)](this->error, this->type, this->company, this->reference, this->text);
-}
-CommandCost CustomNewsItem::_do(DoCommandFlags flags) {
-    return (::Command<CMD_CUSTOM_NEWS_ITEM>::Do(flags, type, company, reference, text));
-}
-
-Commands BuildObject::get_command() { return CMD_BUILD_OBJECT; }
-static constexpr auto _BuildObject_dispatch = MakeDispatchTable<CMD_BUILD_OBJECT, TileIndex, ObjectType, uint8_t>();
-bool BuildObject::_post(::CommandCallback *callback) {
-    return _BuildObject_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->type, this->view);
-}
-CommandCost BuildObject::_do(DoCommandFlags flags) {
-    return (::Command<CMD_BUILD_OBJECT>::Do(flags, tile, type, view));
-}
-
-Commands BuildObjectArea::get_command() { return CMD_BUILD_OBJECT_AREA; }
-static constexpr auto _BuildObjectArea_dispatch = MakeDispatchTable<CMD_BUILD_OBJECT_AREA, TileIndex, TileIndex, ObjectType, uint8_t, bool>();
-bool BuildObjectArea::_post(::CommandCallback *callback) {
-    return _BuildObjectArea_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->start_tile, this->type, this->view, this->diagonal);
-}
-CommandCost BuildObjectArea::_do(DoCommandFlags flags) {
-    return (::Command<CMD_BUILD_OBJECT_AREA>::Do(flags, tile, start_tile, type, view, diagonal));
-}
-
-Commands BuildShipDepot::get_command() { return CMD_BUILD_SHIP_DEPOT; }
-static constexpr auto _BuildShipDepot_dispatch = MakeDispatchTable<CMD_BUILD_SHIP_DEPOT, TileIndex, Axis>();
-bool BuildShipDepot::_post(::CommandCallback *callback) {
-    return _BuildShipDepot_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->axis);
-}
-CommandCost BuildShipDepot::_do(DoCommandFlags flags) {
-    return (::Command<CMD_BUILD_SHIP_DEPOT>::Do(flags, tile, axis));
-}
-
-Commands BuildCanal::get_command() { return CMD_BUILD_CANAL; }
-static constexpr auto _BuildCanal_dispatch = MakeDispatchTable<CMD_BUILD_CANAL, TileIndex, TileIndex, WaterClass, bool>();
-bool BuildCanal::_post(::CommandCallback *callback) {
-    return _BuildCanal_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->start_tile, this->wc, this->diagonal);
-}
-CommandCost BuildCanal::_do(DoCommandFlags flags) {
-    return (::Command<CMD_BUILD_CANAL>::Do(flags, tile, start_tile, wc, diagonal));
-}
-
-Commands BuildLock::get_command() { return CMD_BUILD_LOCK; }
-static constexpr auto _BuildLock_dispatch = MakeDispatchTable<CMD_BUILD_LOCK, TileIndex>();
-bool BuildLock::_post(::CommandCallback *callback) {
-    return _BuildLock_dispatch[FindCallbackIndex(callback)](this->error, this->tile);
-}
-CommandCost BuildLock::_do(DoCommandFlags flags) {
-    return (::Command<CMD_BUILD_LOCK>::Do(flags, tile));
-}
-
-Commands BuildLongRoad::get_command() { return CMD_BUILD_LONG_ROAD; }
-static constexpr auto _BuildLongRoad_dispatch = MakeDispatchTable<CMD_BUILD_LONG_ROAD, TileIndex, TileIndex, RoadType, Axis, DisallowedRoadDirections, bool, bool, bool>();
-bool BuildLongRoad::_post(::CommandCallback *callback) {
-    return _BuildLongRoad_dispatch[FindCallbackIndex(callback)](this->error, this->end_tile, this->start_tile, this->rt, this->axis, this->drd, this->start_half, this->end_half, this->is_ai);
-}
-CommandCost BuildLongRoad::_do(DoCommandFlags flags) {
-    return (::Command<CMD_BUILD_LONG_ROAD>::Do(flags, end_tile, start_tile, rt, axis, drd, start_half, end_half, is_ai));
-}
-
-Commands RemoveLongRoad::get_command() { return CMD_REMOVE_LONG_ROAD; }
-static constexpr auto _RemoveLongRoad_dispatch = MakeDispatchTable<CMD_REMOVE_LONG_ROAD, TileIndex, TileIndex, RoadType, Axis, bool, bool>();
-bool RemoveLongRoad::_post(::CommandCallback *callback) {
-    return _RemoveLongRoad_dispatch[FindCallbackIndex(callback)](this->error, this->end_tile, this->start_tile, this->rt, this->axis, this->start_half, this->end_half);
-}
-CommandCost RemoveLongRoad::_do(DoCommandFlags flags) {
-    return std::get<0>(::Command<CMD_REMOVE_LONG_ROAD>::Do(flags, end_tile, start_tile, rt, axis, start_half, end_half));
-}
-
-Commands BuildRoad::get_command() { return CMD_BUILD_ROAD; }
-static constexpr auto _BuildRoad_dispatch = MakeDispatchTable<CMD_BUILD_ROAD, TileIndex, RoadBits, RoadType, DisallowedRoadDirections, TownID>();
-bool BuildRoad::_post(::CommandCallback *callback) {
-    return _BuildRoad_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->pieces, this->rt, this->toggle_drd, this->town_id);
-}
-CommandCost BuildRoad::_do(DoCommandFlags flags) {
-    return (::Command<CMD_BUILD_ROAD>::Do(flags, tile, pieces, rt, toggle_drd, town_id));
-}
-
-Commands BuildRoadDepot::get_command() { return CMD_BUILD_ROAD_DEPOT; }
-static constexpr auto _BuildRoadDepot_dispatch = MakeDispatchTable<CMD_BUILD_ROAD_DEPOT, TileIndex, RoadType, DiagDirection>();
-bool BuildRoadDepot::_post(::CommandCallback *callback) {
-    return _BuildRoadDepot_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->rt, this->dir);
-}
-CommandCost BuildRoadDepot::_do(DoCommandFlags flags) {
-    return (::Command<CMD_BUILD_ROAD_DEPOT>::Do(flags, tile, rt, dir));
-}
-
-Commands ConvertRoad::get_command() { return CMD_CONVERT_ROAD; }
-static constexpr auto _ConvertRoad_dispatch = MakeDispatchTable<CMD_CONVERT_ROAD, TileIndex, TileIndex, RoadType, bool>();
-bool ConvertRoad::_post(::CommandCallback *callback) {
-    return _ConvertRoad_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->area_start, this->to_type, this->diagonal);
-}
-CommandCost ConvertRoad::_do(DoCommandFlags flags) {
-    return (::Command<CMD_CONVERT_ROAD>::Do(flags, tile, area_start, to_type, diagonal));
-}
-
-Commands BuyCompany::get_command() { return CMD_BUY_COMPANY; }
-static constexpr auto _BuyCompany_dispatch = MakeDispatchTable<CMD_BUY_COMPANY, CompanyID, bool>();
-bool BuyCompany::_post(::CommandCallback *callback) {
-    return _BuyCompany_dispatch[FindCallbackIndex(callback)](this->error, this->target_company, this->hostile_takeover);
-}
-CommandCost BuyCompany::_do(DoCommandFlags flags) {
-    return (::Command<CMD_BUY_COMPANY>::Do(flags, target_company, hostile_takeover));
-}
-
-Commands LandscapeClear::get_command() { return CMD_LANDSCAPE_CLEAR; }
-static constexpr auto _LandscapeClear_dispatch = MakeDispatchTable<CMD_LANDSCAPE_CLEAR, TileIndex>();
-bool LandscapeClear::_post(::CommandCallback *callback) {
-    return _LandscapeClear_dispatch[FindCallbackIndex(callback)](this->error, this->tile);
-}
-CommandCost LandscapeClear::_do(DoCommandFlags flags) {
-    return (::Command<CMD_LANDSCAPE_CLEAR>::Do(flags, tile));
-}
-
-Commands ClearArea::get_command() { return CMD_CLEAR_AREA; }
-static constexpr auto _ClearArea_dispatch = MakeDispatchTable<CMD_CLEAR_AREA, TileIndex, TileIndex, bool>();
-bool ClearArea::_post(::CommandCallback *callback) {
-    return _ClearArea_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->start_tile, this->diagonal);
-}
-CommandCost ClearArea::_do(DoCommandFlags flags) {
-    return std::get<0>(::Command<CMD_CLEAR_AREA>::Do(flags, tile, start_tile, diagonal));
-}
-
-Commands MoveRailVehicle::get_command() { return CMD_MOVE_RAIL_VEHICLE; }
-static constexpr auto _MoveRailVehicle_dispatch = MakeDispatchTable<CMD_MOVE_RAIL_VEHICLE, TileIndex, VehicleID, VehicleID, bool>();
-bool MoveRailVehicle::_post(::CommandCallback *callback) {
-    return _MoveRailVehicle_dispatch[FindCallbackIndex(callback)](this->error, this->location, this->src_veh, this->dest_veh, this->move_chain);
-}
-CommandCost MoveRailVehicle::_do(DoCommandFlags flags) {
-    return (::Command<CMD_MOVE_RAIL_VEHICLE>::Do(flags, src_veh, dest_veh, move_chain));
-}
-
-Commands ForceTrainProceed::get_command() { return CMD_FORCE_TRAIN_PROCEED; }
-static constexpr auto _ForceTrainProceed_dispatch = MakeDispatchTable<CMD_FORCE_TRAIN_PROCEED, TileIndex, VehicleID>();
-bool ForceTrainProceed::_post(::CommandCallback *callback) {
-    return _ForceTrainProceed_dispatch[FindCallbackIndex(callback)](this->error, this->location, this->veh_id);
-}
-CommandCost ForceTrainProceed::_do(DoCommandFlags flags) {
-    return (::Command<CMD_FORCE_TRAIN_PROCEED>::Do(flags, veh_id));
-}
-
-Commands ReverseTrainDirection::get_command() { return CMD_REVERSE_TRAIN_DIRECTION; }
-static constexpr auto _ReverseTrainDirection_dispatch = MakeDispatchTable<CMD_REVERSE_TRAIN_DIRECTION, TileIndex, VehicleID, bool>();
-bool ReverseTrainDirection::_post(::CommandCallback *callback) {
-    return _ReverseTrainDirection_dispatch[FindCallbackIndex(callback)](this->error, this->location, this->veh_id, this->reverse_single_veh);
-}
-CommandCost ReverseTrainDirection::_do(DoCommandFlags flags) {
-    return (::Command<CMD_REVERSE_TRAIN_DIRECTION>::Do(flags, veh_id, reverse_single_veh));
-}
-
-Commands CreateSubsidy::get_command() { return CMD_CREATE_SUBSIDY; }
-static constexpr auto _CreateSubsidy_dispatch = MakeDispatchTable<CMD_CREATE_SUBSIDY, CargoType, Source, Source>();
-bool CreateSubsidy::_post(::CommandCallback *callback) {
-    return _CreateSubsidy_dispatch[FindCallbackIndex(callback)](this->error, this->cargo_type, this->src, this->dst);
-}
-CommandCost CreateSubsidy::_do(DoCommandFlags flags) {
-    return (::Command<CMD_CREATE_SUBSIDY>::Do(flags, cargo_type, src, dst));
-}
-
-Commands ScrollViewport::get_command() { return CMD_SCROLL_VIEWPORT; }
-static constexpr auto _ScrollViewport_dispatch = MakeDispatchTable<CMD_SCROLL_VIEWPORT, TileIndex, ViewportScrollTarget, uint32_t>();
-bool ScrollViewport::_post(::CommandCallback *callback) {
-    return _ScrollViewport_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->target, this->ref);
-}
-CommandCost ScrollViewport::_do(DoCommandFlags flags) {
-    return (::Command<CMD_SCROLL_VIEWPORT>::Do(flags, tile, target, ref));
-}
-
-Commands ChangeTimetable::get_command() { return CMD_CHANGE_TIMETABLE; }
-static constexpr auto _ChangeTimetable_dispatch = MakeDispatchTable<CMD_CHANGE_TIMETABLE, VehicleID, VehicleOrderID, ModifyTimetableFlags, uint16_t>();
-bool ChangeTimetable::_post(::CommandCallback *callback) {
-    return _ChangeTimetable_dispatch[FindCallbackIndex(callback)](this->error, this->veh, this->order_number, this->mtf, this->data);
-}
-CommandCost ChangeTimetable::_do(DoCommandFlags flags) {
-    return (::Command<CMD_CHANGE_TIMETABLE>::Do(flags, veh, order_number, mtf, data));
-}
-
-Commands BulkChangeTimetable::get_command() { return CMD_BULK_CHANGE_TIMETABLE; }
-static constexpr auto _BulkChangeTimetable_dispatch = MakeDispatchTable<CMD_BULK_CHANGE_TIMETABLE, VehicleID, ModifyTimetableFlags, uint16_t>();
-bool BulkChangeTimetable::_post(::CommandCallback *callback) {
-    return _BulkChangeTimetable_dispatch[FindCallbackIndex(callback)](this->error, this->veh, this->mtf, this->data);
-}
-CommandCost BulkChangeTimetable::_do(DoCommandFlags flags) {
-    return (::Command<CMD_BULK_CHANGE_TIMETABLE>::Do(flags, veh, mtf, data));
-}
-
-Commands SetVehicleOnTime::get_command() { return CMD_SET_VEHICLE_ON_TIME; }
-static constexpr auto _SetVehicleOnTime_dispatch = MakeDispatchTable<CMD_SET_VEHICLE_ON_TIME, VehicleID, bool>();
-bool SetVehicleOnTime::_post(::CommandCallback *callback) {
-    return _SetVehicleOnTime_dispatch[FindCallbackIndex(callback)](this->error, this->veh, this->apply_to_group);
-}
-CommandCost SetVehicleOnTime::_do(DoCommandFlags flags) {
-    return (::Command<CMD_SET_VEHICLE_ON_TIME>::Do(flags, veh, apply_to_group));
-}
-
-Commands AutofillTimetable::get_command() { return CMD_AUTOFILL_TIMETABLE; }
-static constexpr auto _AutofillTimetable_dispatch = MakeDispatchTable<CMD_AUTOFILL_TIMETABLE, VehicleID, bool, bool>();
-bool AutofillTimetable::_post(::CommandCallback *callback) {
-    return _AutofillTimetable_dispatch[FindCallbackIndex(callback)](this->error, this->veh, this->autofill, this->preserve_wait_time);
-}
-CommandCost AutofillTimetable::_do(DoCommandFlags flags) {
-    return (::Command<CMD_AUTOFILL_TIMETABLE>::Do(flags, veh, autofill, preserve_wait_time));
-}
-
-Commands SetTimetableStart::get_command() { return CMD_SET_TIMETABLE_START; }
-static constexpr auto _SetTimetableStart_dispatch = MakeDispatchTable<CMD_SET_TIMETABLE_START, VehicleID, bool, TimerGameTick::TickCounter>();
-bool SetTimetableStart::_post(::CommandCallback *callback) {
-    return _SetTimetableStart_dispatch[FindCallbackIndex(callback)](this->error, this->veh_id, this->timetable_all, this->start_tick);
-}
-CommandCost SetTimetableStart::_do(DoCommandFlags flags) {
-    return (::Command<CMD_SET_TIMETABLE_START>::Do(flags, veh_id, timetable_all, start_tick));
-}
-
-Commands PlantTree::get_command() { return CMD_PLANT_TREE; }
-static constexpr auto _PlantTree_dispatch = MakeDispatchTable<CMD_PLANT_TREE, TileIndex, TileIndex, uint8_t, bool>();
-bool PlantTree::_post(::CommandCallback *callback) {
-    return _PlantTree_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->start_tile, this->tree_to_plant, this->diagonal);
-}
-CommandCost PlantTree::_do(DoCommandFlags flags) {
-    return (::Command<CMD_PLANT_TREE>::Do(flags, tile, start_tile, tree_to_plant, diagonal));
-}
-
-Commands CreateLeagueTable::get_command() { return CMD_CREATE_LEAGUE_TABLE; }
-static constexpr auto _CreateLeagueTable_dispatch = MakeDispatchTable<CMD_CREATE_LEAGUE_TABLE, const EncodedString &, const EncodedString &, const EncodedString &>();
-bool CreateLeagueTable::_post(::CommandCallback *callback) {
-    return _CreateLeagueTable_dispatch[FindCallbackIndex(callback)](this->error, this->title, this->header, this->footer);
-}
-CommandCost CreateLeagueTable::_do(DoCommandFlags flags) {
-    return std::get<0>(::Command<CMD_CREATE_LEAGUE_TABLE>::Do(flags, title, header, footer));
-}
-
-Commands CreateLeagueTableElement::get_command() { return CMD_CREATE_LEAGUE_TABLE_ELEMENT; }
-static constexpr auto _CreateLeagueTableElement_dispatch = MakeDispatchTable<CMD_CREATE_LEAGUE_TABLE_ELEMENT, LeagueTableID, int64_t, CompanyID, const EncodedString &, const EncodedString &, LinkType, LinkTargetID>();
-bool CreateLeagueTableElement::_post(::CommandCallback *callback) {
-    return _CreateLeagueTableElement_dispatch[FindCallbackIndex(callback)](this->error, this->table, this->rating, this->company, this->text, this->score, this->link_type, this->link_target);
-}
-CommandCost CreateLeagueTableElement::_do(DoCommandFlags flags) {
-    return std::get<0>(::Command<CMD_CREATE_LEAGUE_TABLE_ELEMENT>::Do(flags, table, rating, company, text, score, link_type, link_target));
-}
-
-Commands UpdateLeagueTableElementData::get_command() { return CMD_UPDATE_LEAGUE_TABLE_ELEMENT_DATA; }
-static constexpr auto _UpdateLeagueTableElementData_dispatch = MakeDispatchTable<CMD_UPDATE_LEAGUE_TABLE_ELEMENT_DATA, LeagueTableElementID, CompanyID, const EncodedString &, LinkType, LinkTargetID>();
-bool UpdateLeagueTableElementData::_post(::CommandCallback *callback) {
-    return _UpdateLeagueTableElementData_dispatch[FindCallbackIndex(callback)](this->error, this->element, this->company, this->text, this->link_type, this->link_target);
-}
-CommandCost UpdateLeagueTableElementData::_do(DoCommandFlags flags) {
-    return (::Command<CMD_UPDATE_LEAGUE_TABLE_ELEMENT_DATA>::Do(flags, element, company, text, link_type, link_target));
-}
-
-Commands UpdateLeagueTableElementScore::get_command() { return CMD_UPDATE_LEAGUE_TABLE_ELEMENT_SCORE; }
-static constexpr auto _UpdateLeagueTableElementScore_dispatch = MakeDispatchTable<CMD_UPDATE_LEAGUE_TABLE_ELEMENT_SCORE, LeagueTableElementID, int64_t, const EncodedString &>();
-bool UpdateLeagueTableElementScore::_post(::CommandCallback *callback) {
-    return _UpdateLeagueTableElementScore_dispatch[FindCallbackIndex(callback)](this->error, this->element, this->rating, this->score);
-}
-CommandCost UpdateLeagueTableElementScore::_do(DoCommandFlags flags) {
-    return (::Command<CMD_UPDATE_LEAGUE_TABLE_ELEMENT_SCORE>::Do(flags, element, rating, score));
-}
-
-Commands RemoveLeagueTableElement::get_command() { return CMD_REMOVE_LEAGUE_TABLE_ELEMENT; }
-static constexpr auto _RemoveLeagueTableElement_dispatch = MakeDispatchTable<CMD_REMOVE_LEAGUE_TABLE_ELEMENT, LeagueTableElementID>();
-bool RemoveLeagueTableElement::_post(::CommandCallback *callback) {
-    return _RemoveLeagueTableElement_dispatch[FindCallbackIndex(callback)](this->error, this->element);
-}
-CommandCost RemoveLeagueTableElement::_do(DoCommandFlags flags) {
-    return (::Command<CMD_REMOVE_LEAGUE_TABLE_ELEMENT>::Do(flags, element));
-}
-
-Commands PlaceSign::get_command() { return CMD_PLACE_SIGN; }
-static constexpr auto _PlaceSign_dispatch = MakeDispatchTable<CMD_PLACE_SIGN, TileIndex, const std::string &>();
-bool PlaceSign::_post(::CommandCallback *callback) {
-    return _PlaceSign_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->text);
-}
-CommandCost PlaceSign::_do(DoCommandFlags flags) {
-    return std::get<0>(::Command<CMD_PLACE_SIGN>::Do(flags, tile, text));
-}
-
-Commands RenameSign::get_command() { return CMD_RENAME_SIGN; }
-static constexpr auto _RenameSign_dispatch = MakeDispatchTable<CMD_RENAME_SIGN, SignID, const std::string &>();
-bool RenameSign::_post(::CommandCallback *callback) {
-    return _RenameSign_dispatch[FindCallbackIndex(callback)](this->error, this->sign_id, this->text);
-}
-CommandCost RenameSign::_do(DoCommandFlags flags) {
-    return (::Command<CMD_RENAME_SIGN>::Do(flags, sign_id, text));
-}
-
-Commands MoveSign::get_command() { return CMD_MOVE_SIGN; }
-static constexpr auto _MoveSign_dispatch = MakeDispatchTable<CMD_MOVE_SIGN, SignID, TileIndex>();
-bool MoveSign::_post(::CommandCallback *callback) {
-    return _MoveSign_dispatch[FindCallbackIndex(callback)](this->error, this->sign_id, this->tile);
-}
-CommandCost MoveSign::_do(DoCommandFlags flags) {
-    return (::Command<CMD_MOVE_SIGN>::Do(flags, sign_id, tile));
-}
-
-Commands BuildVehicle::get_command() { return CMD_BUILD_VEHICLE; }
-static constexpr auto _BuildVehicle_dispatch = MakeDispatchTable<CMD_BUILD_VEHICLE, TileIndex, EngineID, bool, CargoType, ClientID>();
-bool BuildVehicle::_post(::CommandCallback *callback) {
-    return _BuildVehicle_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->eid, this->use_free_vehicles, this->cargo, this->client_id);
-}
-CommandCost BuildVehicle::_do(DoCommandFlags flags) {
-    return std::get<0>(::Command<CMD_BUILD_VEHICLE>::Do(flags, tile, eid, use_free_vehicles, cargo, client_id));
-}
-
-Commands SellVehicle::get_command() { return CMD_SELL_VEHICLE; }
-static constexpr auto _SellVehicle_dispatch = MakeDispatchTable<CMD_SELL_VEHICLE, TileIndex, VehicleID, bool, bool, ClientID>();
-bool SellVehicle::_post(::CommandCallback *callback) {
-    return _SellVehicle_dispatch[FindCallbackIndex(callback)](this->error, this->location, this->v_id, this->sell_chain, this->backup_order, this->client_id);
-}
-CommandCost SellVehicle::_do(DoCommandFlags flags) {
-    return (::Command<CMD_SELL_VEHICLE>::Do(flags, v_id, sell_chain, backup_order, client_id));
-}
-
-Commands RefitVehicle::get_command() { return CMD_REFIT_VEHICLE; }
-static constexpr auto _RefitVehicle_dispatch = MakeDispatchTable<CMD_REFIT_VEHICLE, TileIndex, VehicleID, CargoType, uint8_t, bool, bool, uint8_t>();
-bool RefitVehicle::_post(::CommandCallback *callback) {
-    return _RefitVehicle_dispatch[FindCallbackIndex(callback)](this->error, this->location, this->veh_id, this->new_cargo_type, this->new_subtype, this->auto_refit, this->only_this, this->num_vehicles);
-}
-CommandCost RefitVehicle::_do(DoCommandFlags flags) {
-    return std::get<0>(::Command<CMD_REFIT_VEHICLE>::Do(flags, veh_id, new_cargo_type, new_subtype, auto_refit, only_this, num_vehicles));
-}
-
-Commands SendVehicleToDepot::get_command() { return CMD_SEND_VEHICLE_TO_DEPOT; }
-static constexpr auto _SendVehicleToDepot_dispatch = MakeDispatchTable<CMD_SEND_VEHICLE_TO_DEPOT, VehicleID, DepotCommandFlags, const VehicleListIdentifier &>();
-bool SendVehicleToDepot::_post(::CommandCallback *callback) {
-    return _SendVehicleToDepot_dispatch[FindCallbackIndex(callback)](this->error, this->veh_id, this->depot_cmd, this->vli);
-}
-CommandCost SendVehicleToDepot::_do(DoCommandFlags flags) {
-    return (::Command<CMD_SEND_VEHICLE_TO_DEPOT>::Do(flags, veh_id, depot_cmd, vli));
-}
-
-Commands ChangeServiceInt::get_command() { return CMD_CHANGE_SERVICE_INT; }
-static constexpr auto _ChangeServiceInt_dispatch = MakeDispatchTable<CMD_CHANGE_SERVICE_INT, VehicleID, uint16_t, bool, bool>();
-bool ChangeServiceInt::_post(::CommandCallback *callback) {
-    return _ChangeServiceInt_dispatch[FindCallbackIndex(callback)](this->error, this->veh_id, this->serv_int, this->is_custom, this->is_percent);
-}
-CommandCost ChangeServiceInt::_do(DoCommandFlags flags) {
-    return (::Command<CMD_CHANGE_SERVICE_INT>::Do(flags, veh_id, serv_int, is_custom, is_percent));
-}
-
-Commands RenameVehicle::get_command() { return CMD_RENAME_VEHICLE; }
-static constexpr auto _RenameVehicle_dispatch = MakeDispatchTable<CMD_RENAME_VEHICLE, VehicleID, const std::string &>();
-bool RenameVehicle::_post(::CommandCallback *callback) {
-    return _RenameVehicle_dispatch[FindCallbackIndex(callback)](this->error, this->veh_id, this->text);
-}
-CommandCost RenameVehicle::_do(DoCommandFlags flags) {
-    return (::Command<CMD_RENAME_VEHICLE>::Do(flags, veh_id, text));
-}
-
-Commands CloneVehicle::get_command() { return CMD_CLONE_VEHICLE; }
-static constexpr auto _CloneVehicle_dispatch = MakeDispatchTable<CMD_CLONE_VEHICLE, TileIndex, VehicleID, bool>();
-bool CloneVehicle::_post(::CommandCallback *callback) {
-    return _CloneVehicle_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->veh_id, this->share_orders);
-}
-CommandCost CloneVehicle::_do(DoCommandFlags flags) {
-    return std::get<0>(::Command<CMD_CLONE_VEHICLE>::Do(flags, tile, veh_id, share_orders));
-}
-
-Commands StartStopVehicle::get_command() { return CMD_START_STOP_VEHICLE; }
-static constexpr auto _StartStopVehicle_dispatch = MakeDispatchTable<CMD_START_STOP_VEHICLE, TileIndex, VehicleID, bool>();
-bool StartStopVehicle::_post(::CommandCallback *callback) {
-    return _StartStopVehicle_dispatch[FindCallbackIndex(callback)](this->error, this->location, this->veh_id, this->evaluate_startstop_cb);
-}
-CommandCost StartStopVehicle::_do(DoCommandFlags flags) {
-    return (::Command<CMD_START_STOP_VEHICLE>::Do(flags, veh_id, evaluate_startstop_cb));
-}
-
-Commands MassStartStopVehicle::get_command() { return CMD_MASS_START_STOP; }
-static constexpr auto _MassStartStopVehicle_dispatch = MakeDispatchTable<CMD_MASS_START_STOP, TileIndex, bool, bool, const VehicleListIdentifier &>();
-bool MassStartStopVehicle::_post(::CommandCallback *callback) {
-    return _MassStartStopVehicle_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->do_start, this->vehicle_list_window, this->vli);
-}
-CommandCost MassStartStopVehicle::_do(DoCommandFlags flags) {
-    return (::Command<CMD_MASS_START_STOP>::Do(flags, tile, do_start, vehicle_list_window, vli));
-}
-
-Commands DepotSellAllVehicles::get_command() { return CMD_DEPOT_SELL_ALL_VEHICLES; }
-static constexpr auto _DepotSellAllVehicles_dispatch = MakeDispatchTable<CMD_DEPOT_SELL_ALL_VEHICLES, TileIndex, VehicleType>();
-bool DepotSellAllVehicles::_post(::CommandCallback *callback) {
-    return _DepotSellAllVehicles_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->vehicle_type);
-}
-CommandCost DepotSellAllVehicles::_do(DoCommandFlags flags) {
-    return (::Command<CMD_DEPOT_SELL_ALL_VEHICLES>::Do(flags, tile, vehicle_type));
-}
-
-Commands DepotMassAutoReplace::get_command() { return CMD_DEPOT_MASS_AUTOREPLACE; }
-static constexpr auto _DepotMassAutoReplace_dispatch = MakeDispatchTable<CMD_DEPOT_MASS_AUTOREPLACE, TileIndex, VehicleType>();
-bool DepotMassAutoReplace::_post(::CommandCallback *callback) {
-    return _DepotMassAutoReplace_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->vehicle_type);
-}
-CommandCost DepotMassAutoReplace::_do(DoCommandFlags flags) {
-    return (::Command<CMD_DEPOT_MASS_AUTOREPLACE>::Do(flags, tile, vehicle_type));
-}
-
-Commands TerraformLand::get_command() { return CMD_TERRAFORM_LAND; }
-static constexpr auto _TerraformLand_dispatch = MakeDispatchTable<CMD_TERRAFORM_LAND, TileIndex, Slope, bool>();
-bool TerraformLand::_post(::CommandCallback *callback) {
-    return _TerraformLand_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->slope, this->dir_up);
-}
-CommandCost TerraformLand::_do(DoCommandFlags flags) {
-    return std::get<0>(::Command<CMD_TERRAFORM_LAND>::Do(flags, tile, slope, dir_up));
-}
-
-Commands LevelLand::get_command() { return CMD_LEVEL_LAND; }
-static constexpr auto _LevelLand_dispatch = MakeDispatchTable<CMD_LEVEL_LAND, TileIndex, TileIndex, bool, LevelMode>();
-bool LevelLand::_post(::CommandCallback *callback) {
-    return _LevelLand_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->start_tile, this->diagonal, this->lm);
-}
-CommandCost LevelLand::_do(DoCommandFlags flags) {
-    return std::get<0>(::Command<CMD_LEVEL_LAND>::Do(flags, tile, start_tile, diagonal, lm));
-}
-
-Commands RenameDepot::get_command() { return CMD_RENAME_DEPOT; }
-static constexpr auto _RenameDepot_dispatch = MakeDispatchTable<CMD_RENAME_DEPOT, DepotID, const std::string &>();
-bool RenameDepot::_post(::CommandCallback *callback) {
-    return _RenameDepot_dispatch[FindCallbackIndex(callback)](this->error, this->depot_id, this->text);
-}
-CommandCost RenameDepot::_do(DoCommandFlags flags) {
-    return (::Command<CMD_RENAME_DEPOT>::Do(flags, depot_id, text));
-}
-
-Commands BuildRailroadTrack::get_command() { return CMD_BUILD_RAILROAD_TRACK; }
-static constexpr auto _BuildRailroadTrack_dispatch = MakeDispatchTable<CMD_BUILD_RAILROAD_TRACK, TileIndex, TileIndex, RailType, Track, bool, bool>();
-bool BuildRailroadTrack::_post(::CommandCallback *callback) {
-    return _BuildRailroadTrack_dispatch[FindCallbackIndex(callback)](this->error, this->end_tile, this->start_tile, this->railtype, this->track, this->auto_remove_signals, this->fail_on_obstacle);
-}
-CommandCost BuildRailroadTrack::_do(DoCommandFlags flags) {
-    return (::Command<CMD_BUILD_RAILROAD_TRACK>::Do(flags, end_tile, start_tile, railtype, track, auto_remove_signals, fail_on_obstacle));
-}
-
-Commands RemoveRailroadTrack::get_command() { return CMD_REMOVE_RAILROAD_TRACK; }
-static constexpr auto _RemoveRailroadTrack_dispatch = MakeDispatchTable<CMD_REMOVE_RAILROAD_TRACK, TileIndex, TileIndex, Track>();
-bool RemoveRailroadTrack::_post(::CommandCallback *callback) {
-    return _RemoveRailroadTrack_dispatch[FindCallbackIndex(callback)](this->error, this->end_tile, this->start_tile, this->track);
-}
-CommandCost RemoveRailroadTrack::_do(DoCommandFlags flags) {
-    return (::Command<CMD_REMOVE_RAILROAD_TRACK>::Do(flags, end_tile, start_tile, track));
-}
-
-Commands BuildSingleRail::get_command() { return CMD_BUILD_SINGLE_RAIL; }
-static constexpr auto _BuildSingleRail_dispatch = MakeDispatchTable<CMD_BUILD_SINGLE_RAIL, TileIndex, RailType, Track, bool>();
-bool BuildSingleRail::_post(::CommandCallback *callback) {
-    return _BuildSingleRail_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->railtype, this->track, this->auto_remove_signals);
-}
-CommandCost BuildSingleRail::_do(DoCommandFlags flags) {
-    return (::Command<CMD_BUILD_SINGLE_RAIL>::Do(flags, tile, railtype, track, auto_remove_signals));
-}
-
-Commands RemoveSingleRail::get_command() { return CMD_REMOVE_SINGLE_RAIL; }
-static constexpr auto _RemoveSingleRail_dispatch = MakeDispatchTable<CMD_REMOVE_SINGLE_RAIL, TileIndex, Track>();
-bool RemoveSingleRail::_post(::CommandCallback *callback) {
-    return _RemoveSingleRail_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->track);
-}
-CommandCost RemoveSingleRail::_do(DoCommandFlags flags) {
-    return (::Command<CMD_REMOVE_SINGLE_RAIL>::Do(flags, tile, track));
-}
-
-Commands BuildTrainDepot::get_command() { return CMD_BUILD_TRAIN_DEPOT; }
-static constexpr auto _BuildTrainDepot_dispatch = MakeDispatchTable<CMD_BUILD_TRAIN_DEPOT, TileIndex, RailType, DiagDirection>();
-bool BuildTrainDepot::_post(::CommandCallback *callback) {
-    return _BuildTrainDepot_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->railtype, this->dir);
-}
-CommandCost BuildTrainDepot::_do(DoCommandFlags flags) {
-    return (::Command<CMD_BUILD_TRAIN_DEPOT>::Do(flags, tile, railtype, dir));
-}
-
-Commands BuildSingleSignal::get_command() { return CMD_BUILD_SINGLE_SIGNAL; }
-static constexpr auto _BuildSingleSignal_dispatch = MakeDispatchTable<CMD_BUILD_SINGLE_SIGNAL, TileIndex, Track, SignalType, SignalVariant, bool, bool, bool, SignalType, SignalType, uint8_t, uint8_t>();
-bool BuildSingleSignal::_post(::CommandCallback *callback) {
-    return _BuildSingleSignal_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->track, this->sigtype, this->sigvar, this->convert_signal, this->skip_existing_signals, this->ctrl_pressed, this->cycle_start, this->cycle_stop, this->num_dir_cycle, this->signals_copy);
-}
-CommandCost BuildSingleSignal::_do(DoCommandFlags flags) {
-    return (::Command<CMD_BUILD_SINGLE_SIGNAL>::Do(flags, tile, track, sigtype, sigvar, convert_signal, skip_existing_signals, ctrl_pressed, cycle_start, cycle_stop, num_dir_cycle, signals_copy));
-}
-
-Commands RemoveSingleSignal::get_command() { return CMD_REMOVE_SINGLE_SIGNAL; }
-static constexpr auto _RemoveSingleSignal_dispatch = MakeDispatchTable<CMD_REMOVE_SINGLE_SIGNAL, TileIndex, Track>();
-bool RemoveSingleSignal::_post(::CommandCallback *callback) {
-    return _RemoveSingleSignal_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->track);
-}
-CommandCost RemoveSingleSignal::_do(DoCommandFlags flags) {
-    return (::Command<CMD_REMOVE_SINGLE_SIGNAL>::Do(flags, tile, track));
-}
-
-Commands ConvertRail::get_command() { return CMD_CONVERT_RAIL; }
-static constexpr auto _ConvertRail_dispatch = MakeDispatchTable<CMD_CONVERT_RAIL, TileIndex, TileIndex, RailType, bool>();
-bool ConvertRail::_post(::CommandCallback *callback) {
-    return _ConvertRail_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->area_start, this->totype, this->diagonal);
-}
-CommandCost ConvertRail::_do(DoCommandFlags flags) {
-    return (::Command<CMD_CONVERT_RAIL>::Do(flags, tile, area_start, totype, diagonal));
-}
-
-Commands BuildSignalTrack::get_command() { return CMD_BUILD_SIGNAL_TRACK; }
-static constexpr auto _BuildSignalTrack_dispatch = MakeDispatchTable<CMD_BUILD_SIGNAL_TRACK, TileIndex, TileIndex, Track, SignalType, SignalVariant, bool, bool, bool, uint8_t>();
-bool BuildSignalTrack::_post(::CommandCallback *callback) {
-    return _BuildSignalTrack_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->end_tile, this->track, this->sigtype, this->sigvar, this->mode, this->autofill, this->minimise_gaps, this->signal_density);
-}
-CommandCost BuildSignalTrack::_do(DoCommandFlags flags) {
-    return (::Command<CMD_BUILD_SIGNAL_TRACK>::Do(flags, tile, end_tile, track, sigtype, sigvar, mode, autofill, minimise_gaps, signal_density));
-}
-
-Commands RemoveSignalTrack::get_command() { return CMD_REMOVE_SIGNAL_TRACK; }
-static constexpr auto _RemoveSignalTrack_dispatch = MakeDispatchTable<CMD_REMOVE_SIGNAL_TRACK, TileIndex, TileIndex, Track, bool>();
-bool RemoveSignalTrack::_post(::CommandCallback *callback) {
-    return _RemoveSignalTrack_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->end_tile, this->track, this->autofill);
-}
-CommandCost RemoveSignalTrack::_do(DoCommandFlags flags) {
-    return (::Command<CMD_REMOVE_SIGNAL_TRACK>::Do(flags, tile, end_tile, track, autofill));
-}
-
-Commands CompanyCtrl::get_command() { return CMD_COMPANY_CTRL; }
-static constexpr auto _CompanyCtrl_dispatch = MakeDispatchTable<CMD_COMPANY_CTRL, CompanyCtrlAction, CompanyID, CompanyRemoveReason, ClientID>();
+Commands CompanyCtrl::get_command() { return Commands::CompanyControl; }
+static constexpr auto _CompanyCtrl_dispatch = MakeDispatchTable<Commands::CompanyControl, CompanyCtrlAction, CompanyID, CompanyRemoveReason, ClientID>();
 bool CompanyCtrl::_post(::CommandCallback *callback) {
     return _CompanyCtrl_dispatch[FindCallbackIndex(callback)](this->error, this->cca, this->company_id, this->reason, this->client_id);
 }
 CommandCost CompanyCtrl::_do(DoCommandFlags flags) {
-    return (::Command<CMD_COMPANY_CTRL>::Do(flags, cca, company_id, reason, client_id));
+    return (::Command<Commands::CompanyControl>::Do(flags, cca, company_id, reason, client_id));
 }
 
-Commands CompanyAllowListCtrl::get_command() { return CMD_COMPANY_ALLOW_LIST_CTRL; }
-static constexpr auto _CompanyAllowListCtrl_dispatch = MakeDispatchTable<CMD_COMPANY_ALLOW_LIST_CTRL, CompanyAllowListCtrlAction, const std::string &>();
+Commands CompanyAllowListCtrl::get_command() { return Commands::CompanyAllowListControl; }
+static constexpr auto _CompanyAllowListCtrl_dispatch = MakeDispatchTable<Commands::CompanyAllowListControl, CompanyAllowListCtrlAction, const std::string &>();
 bool CompanyAllowListCtrl::_post(::CommandCallback *callback) {
     return _CompanyAllowListCtrl_dispatch[FindCallbackIndex(callback)](this->error, this->action, this->public_key);
 }
 CommandCost CompanyAllowListCtrl::_do(DoCommandFlags flags) {
-    return (::Command<CMD_COMPANY_ALLOW_LIST_CTRL>::Do(flags, action, public_key));
+    return (::Command<Commands::CompanyAllowListControl>::Do(flags, action, public_key));
 }
 
-Commands GiveMoney::get_command() { return CMD_GIVE_MONEY; }
-static constexpr auto _GiveMoney_dispatch = MakeDispatchTable<CMD_GIVE_MONEY, Money, CompanyID>();
+Commands GiveMoney::get_command() { return Commands::GiveMoney; }
+static constexpr auto _GiveMoney_dispatch = MakeDispatchTable<Commands::GiveMoney, Money, CompanyID>();
 bool GiveMoney::_post(::CommandCallback *callback) {
     return _GiveMoney_dispatch[FindCallbackIndex(callback)](this->error, this->money, this->dest_company);
 }
 CommandCost GiveMoney::_do(DoCommandFlags flags) {
-    return (::Command<CMD_GIVE_MONEY>::Do(flags, money, dest_company));
+    return (::Command<Commands::GiveMoney>::Do(flags, money, dest_company));
 }
 
-Commands RenameCompany::get_command() { return CMD_RENAME_COMPANY; }
-static constexpr auto _RenameCompany_dispatch = MakeDispatchTable<CMD_RENAME_COMPANY, const std::string &>();
+Commands RenameCompany::get_command() { return Commands::RenameCompany; }
+static constexpr auto _RenameCompany_dispatch = MakeDispatchTable<Commands::RenameCompany, const std::string &>();
 bool RenameCompany::_post(::CommandCallback *callback) {
     return _RenameCompany_dispatch[FindCallbackIndex(callback)](this->error, this->text);
 }
 CommandCost RenameCompany::_do(DoCommandFlags flags) {
-    return (::Command<CMD_RENAME_COMPANY>::Do(flags, text));
+    return (::Command<Commands::RenameCompany>::Do(flags, text));
 }
 
-Commands RenamePresident::get_command() { return CMD_RENAME_PRESIDENT; }
-static constexpr auto _RenamePresident_dispatch = MakeDispatchTable<CMD_RENAME_PRESIDENT, const std::string &>();
+Commands RenamePresident::get_command() { return Commands::RenamePresident; }
+static constexpr auto _RenamePresident_dispatch = MakeDispatchTable<Commands::RenamePresident, const std::string &>();
 bool RenamePresident::_post(::CommandCallback *callback) {
     return _RenamePresident_dispatch[FindCallbackIndex(callback)](this->error, this->text);
 }
 CommandCost RenamePresident::_do(DoCommandFlags flags) {
-    return (::Command<CMD_RENAME_PRESIDENT>::Do(flags, text));
+    return (::Command<Commands::RenamePresident>::Do(flags, text));
 }
 
-Commands SetCompanyManagerFace::get_command() { return CMD_SET_COMPANY_MANAGER_FACE; }
-static constexpr auto _SetCompanyManagerFace_dispatch = MakeDispatchTable<CMD_SET_COMPANY_MANAGER_FACE, uint, uint32_t>();
+Commands SetCompanyManagerFace::get_command() { return Commands::SetCompanyManagerFace; }
+static constexpr auto _SetCompanyManagerFace_dispatch = MakeDispatchTable<Commands::SetCompanyManagerFace, uint, uint32_t>();
 bool SetCompanyManagerFace::_post(::CommandCallback *callback) {
     return _SetCompanyManagerFace_dispatch[FindCallbackIndex(callback)](this->error, this->style, this->bits);
 }
 CommandCost SetCompanyManagerFace::_do(DoCommandFlags flags) {
-    return (::Command<CMD_SET_COMPANY_MANAGER_FACE>::Do(flags, style, bits));
+    return (::Command<Commands::SetCompanyManagerFace>::Do(flags, style, bits));
 }
 
-Commands SetCompanyColour::get_command() { return CMD_SET_COMPANY_COLOUR; }
-static constexpr auto _SetCompanyColour_dispatch = MakeDispatchTable<CMD_SET_COMPANY_COLOUR, LiveryScheme, bool, Colours>();
+Commands SetCompanyColour::get_command() { return Commands::SetCompanyColour; }
+static constexpr auto _SetCompanyColour_dispatch = MakeDispatchTable<Commands::SetCompanyColour, LiveryScheme, bool, Colours>();
 bool SetCompanyColour::_post(::CommandCallback *callback) {
     return _SetCompanyColour_dispatch[FindCallbackIndex(callback)](this->error, this->scheme, this->primary, this->colour);
 }
 CommandCost SetCompanyColour::_do(DoCommandFlags flags) {
-    return (::Command<CMD_SET_COMPANY_COLOUR>::Do(flags, scheme, primary, colour));
+    return (::Command<Commands::SetCompanyColour>::Do(flags, scheme, primary, colour));
 }
 
-Commands AutoreplaceVehicle::get_command() { return CMD_AUTOREPLACE_VEHICLE; }
-static constexpr auto _AutoreplaceVehicle_dispatch = MakeDispatchTable<CMD_AUTOREPLACE_VEHICLE, VehicleID>();
+Commands AutoreplaceVehicle::get_command() { return Commands::AutoreplaceVehicle; }
+static constexpr auto _AutoreplaceVehicle_dispatch = MakeDispatchTable<Commands::AutoreplaceVehicle, VehicleID>();
 bool AutoreplaceVehicle::_post(::CommandCallback *callback) {
     return _AutoreplaceVehicle_dispatch[FindCallbackIndex(callback)](this->error, this->veh_id);
 }
 CommandCost AutoreplaceVehicle::_do(DoCommandFlags flags) {
-    return (::Command<CMD_AUTOREPLACE_VEHICLE>::Do(flags, veh_id));
+    return (::Command<Commands::AutoreplaceVehicle>::Do(flags, veh_id));
 }
 
-Commands SetAutoReplace::get_command() { return CMD_SET_AUTOREPLACE; }
-static constexpr auto _SetAutoReplace_dispatch = MakeDispatchTable<CMD_SET_AUTOREPLACE, GroupID, EngineID, EngineID, bool>();
+Commands SetAutoReplace::get_command() { return Commands::SetAutoreplace; }
+static constexpr auto _SetAutoReplace_dispatch = MakeDispatchTable<Commands::SetAutoreplace, GroupID, EngineID, EngineID, bool>();
 bool SetAutoReplace::_post(::CommandCallback *callback) {
     return _SetAutoReplace_dispatch[FindCallbackIndex(callback)](this->error, this->id_g, this->old_engine_type, this->new_engine_type, this->when_old);
 }
 CommandCost SetAutoReplace::_do(DoCommandFlags flags) {
-    return (::Command<CMD_SET_AUTOREPLACE>::Do(flags, id_g, old_engine_type, new_engine_type, when_old));
+    return (::Command<Commands::SetAutoreplace>::Do(flags, id_g, old_engine_type, new_engine_type, when_old));
 }
 
-Commands FoundTown::get_command() { return CMD_FOUND_TOWN; }
-static constexpr auto _FoundTown_dispatch = MakeDispatchTable<CMD_FOUND_TOWN, TileIndex, TownSize, bool, TownLayout, bool, uint32_t, const std::string &>();
-bool FoundTown::_post(::CommandCallback *callback) {
-    return _FoundTown_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->size, this->city, this->layout, this->random_location, this->townnameparts, this->text);
+Commands ChangeTimetable::get_command() { return Commands::ChangeTimetable; }
+static constexpr auto _ChangeTimetable_dispatch = MakeDispatchTable<Commands::ChangeTimetable, VehicleID, VehicleOrderID, ModifyTimetableFlags, uint16_t>();
+bool ChangeTimetable::_post(::CommandCallback *callback) {
+    return _ChangeTimetable_dispatch[FindCallbackIndex(callback)](this->error, this->veh, this->order_number, this->mtf, this->data);
 }
-CommandCost FoundTown::_do(DoCommandFlags flags) {
-    return std::get<0>(::Command<CMD_FOUND_TOWN>::Do(flags, tile, size, city, layout, random_location, townnameparts, text));
-}
-
-Commands RenameTown::get_command() { return CMD_RENAME_TOWN; }
-static constexpr auto _RenameTown_dispatch = MakeDispatchTable<CMD_RENAME_TOWN, TownID, const std::string &>();
-bool RenameTown::_post(::CommandCallback *callback) {
-    return _RenameTown_dispatch[FindCallbackIndex(callback)](this->error, this->town_id, this->text);
-}
-CommandCost RenameTown::_do(DoCommandFlags flags) {
-    return (::Command<CMD_RENAME_TOWN>::Do(flags, town_id, text));
+CommandCost ChangeTimetable::_do(DoCommandFlags flags) {
+    return (::Command<Commands::ChangeTimetable>::Do(flags, veh, order_number, mtf, data));
 }
 
-Commands DoTownAction::get_command() { return CMD_DO_TOWN_ACTION; }
-static constexpr auto _DoTownAction_dispatch = MakeDispatchTable<CMD_DO_TOWN_ACTION, TileIndex, TownID, TownAction>();
-bool DoTownAction::_post(::CommandCallback *callback) {
-    return _DoTownAction_dispatch[FindCallbackIndex(callback)](this->error, this->location, this->town_id, this->action);
+Commands BulkChangeTimetable::get_command() { return Commands::ChangeTimetableBulk; }
+static constexpr auto _BulkChangeTimetable_dispatch = MakeDispatchTable<Commands::ChangeTimetableBulk, VehicleID, ModifyTimetableFlags, uint16_t>();
+bool BulkChangeTimetable::_post(::CommandCallback *callback) {
+    return _BulkChangeTimetable_dispatch[FindCallbackIndex(callback)](this->error, this->veh, this->mtf, this->data);
 }
-CommandCost DoTownAction::_do(DoCommandFlags flags) {
-    return (::Command<CMD_DO_TOWN_ACTION>::Do(flags, town_id, action));
-}
-
-Commands TownGrowthRate::get_command() { return CMD_TOWN_GROWTH_RATE; }
-static constexpr auto _TownGrowthRate_dispatch = MakeDispatchTable<CMD_TOWN_GROWTH_RATE, TownID, uint16_t>();
-bool TownGrowthRate::_post(::CommandCallback *callback) {
-    return _TownGrowthRate_dispatch[FindCallbackIndex(callback)](this->error, this->town_id, this->growth_rate);
-}
-CommandCost TownGrowthRate::_do(DoCommandFlags flags) {
-    return (::Command<CMD_TOWN_GROWTH_RATE>::Do(flags, town_id, growth_rate));
+CommandCost BulkChangeTimetable::_do(DoCommandFlags flags) {
+    return (::Command<Commands::ChangeTimetableBulk>::Do(flags, veh, mtf, data));
 }
 
-Commands TownRating::get_command() { return CMD_TOWN_RATING; }
-static constexpr auto _TownRating_dispatch = MakeDispatchTable<CMD_TOWN_RATING, TownID, CompanyID, int16_t>();
-bool TownRating::_post(::CommandCallback *callback) {
-    return _TownRating_dispatch[FindCallbackIndex(callback)](this->error, this->town_id, this->company_id, this->rating);
+Commands SetVehicleOnTime::get_command() { return Commands::SetVehicleOnTime; }
+static constexpr auto _SetVehicleOnTime_dispatch = MakeDispatchTable<Commands::SetVehicleOnTime, VehicleID, bool>();
+bool SetVehicleOnTime::_post(::CommandCallback *callback) {
+    return _SetVehicleOnTime_dispatch[FindCallbackIndex(callback)](this->error, this->veh, this->apply_to_group);
 }
-CommandCost TownRating::_do(DoCommandFlags flags) {
-    return (::Command<CMD_TOWN_RATING>::Do(flags, town_id, company_id, rating));
-}
-
-Commands TownCargoGoal::get_command() { return CMD_TOWN_CARGO_GOAL; }
-static constexpr auto _TownCargoGoal_dispatch = MakeDispatchTable<CMD_TOWN_CARGO_GOAL, TownID, TownAcceptanceEffect, uint32_t>();
-bool TownCargoGoal::_post(::CommandCallback *callback) {
-    return _TownCargoGoal_dispatch[FindCallbackIndex(callback)](this->error, this->town_id, this->tae, this->goal);
-}
-CommandCost TownCargoGoal::_do(DoCommandFlags flags) {
-    return (::Command<CMD_TOWN_CARGO_GOAL>::Do(flags, town_id, tae, goal));
+CommandCost SetVehicleOnTime::_do(DoCommandFlags flags) {
+    return (::Command<Commands::SetVehicleOnTime>::Do(flags, veh, apply_to_group));
 }
 
-Commands TownSetText::get_command() { return CMD_TOWN_SET_TEXT; }
-static constexpr auto _TownSetText_dispatch = MakeDispatchTable<CMD_TOWN_SET_TEXT, TownID, const EncodedString &>();
-bool TownSetText::_post(::CommandCallback *callback) {
-    return _TownSetText_dispatch[FindCallbackIndex(callback)](this->error, this->town_id, this->text);
+Commands AutofillTimetable::get_command() { return Commands::AutofillTimetable; }
+static constexpr auto _AutofillTimetable_dispatch = MakeDispatchTable<Commands::AutofillTimetable, VehicleID, bool, bool>();
+bool AutofillTimetable::_post(::CommandCallback *callback) {
+    return _AutofillTimetable_dispatch[FindCallbackIndex(callback)](this->error, this->veh, this->autofill, this->preserve_wait_time);
 }
-CommandCost TownSetText::_do(DoCommandFlags flags) {
-    return (::Command<CMD_TOWN_SET_TEXT>::Do(flags, town_id, text));
-}
-
-Commands ExpandTown::get_command() { return CMD_EXPAND_TOWN; }
-static constexpr auto _ExpandTown_dispatch = MakeDispatchTable<CMD_EXPAND_TOWN, TownID, uint32_t, TownExpandModes>();
-bool ExpandTown::_post(::CommandCallback *callback) {
-    return _ExpandTown_dispatch[FindCallbackIndex(callback)](this->error, this->town_id, this->grow_amount, this->modes);
-}
-CommandCost ExpandTown::_do(DoCommandFlags flags) {
-    return (::Command<CMD_EXPAND_TOWN>::Do(flags, town_id, grow_amount, modes));
+CommandCost AutofillTimetable::_do(DoCommandFlags flags) {
+    return (::Command<Commands::AutofillTimetable>::Do(flags, veh, autofill, preserve_wait_time));
 }
 
-Commands DeleteTown::get_command() { return CMD_DELETE_TOWN; }
-static constexpr auto _DeleteTown_dispatch = MakeDispatchTable<CMD_DELETE_TOWN, TownID>();
-bool DeleteTown::_post(::CommandCallback *callback) {
-    return _DeleteTown_dispatch[FindCallbackIndex(callback)](this->error, this->town_id);
+Commands SetTimetableStart::get_command() { return Commands::SetTimetableStart; }
+static constexpr auto _SetTimetableStart_dispatch = MakeDispatchTable<Commands::SetTimetableStart, VehicleID, bool, TimerGameTick::TickCounter>();
+bool SetTimetableStart::_post(::CommandCallback *callback) {
+    return _SetTimetableStart_dispatch[FindCallbackIndex(callback)](this->error, this->veh_id, this->timetable_all, this->start_tick);
 }
-CommandCost DeleteTown::_do(DoCommandFlags flags) {
-    return (::Command<CMD_DELETE_TOWN>::Do(flags, town_id));
-}
-
-Commands PlaceHouse::get_command() { return CMD_PLACE_HOUSE; }
-static constexpr auto _PlaceHouse_dispatch = MakeDispatchTable<CMD_PLACE_HOUSE, TileIndex, HouseID, bool, bool>();
-bool PlaceHouse::_post(::CommandCallback *callback) {
-    return _PlaceHouse_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->house, this->house_protected, this->replace);
-}
-CommandCost PlaceHouse::_do(DoCommandFlags flags) {
-    return (::Command<CMD_PLACE_HOUSE>::Do(flags, tile, house, house_protected, replace));
+CommandCost SetTimetableStart::_do(DoCommandFlags flags) {
+    return (::Command<Commands::SetTimetableStart>::Do(flags, veh_id, timetable_all, start_tick));
 }
 
-Commands TurnRoadVeh::get_command() { return CMD_TURN_ROADVEH; }
-static constexpr auto _TurnRoadVeh_dispatch = MakeDispatchTable<CMD_TURN_ROADVEH, TileIndex, VehicleID>();
-bool TurnRoadVeh::_post(::CommandCallback *callback) {
-    return _TurnRoadVeh_dispatch[FindCallbackIndex(callback)](this->error, this->location, this->veh_id);
+Commands BuildLongRoad::get_command() { return Commands::BuildRoadLong; }
+static constexpr auto _BuildLongRoad_dispatch = MakeDispatchTable<Commands::BuildRoadLong, TileIndex, TileIndex, RoadType, Axis, DisallowedRoadDirections, bool, bool, bool>();
+bool BuildLongRoad::_post(::CommandCallback *callback) {
+    return _BuildLongRoad_dispatch[FindCallbackIndex(callback)](this->error, this->end_tile, this->start_tile, this->rt, this->axis, this->drd, this->start_half, this->end_half, this->is_ai);
 }
-CommandCost TurnRoadVeh::_do(DoCommandFlags flags) {
-    return (::Command<CMD_TURN_ROADVEH>::Do(flags, veh_id));
-}
-
-Commands BuildIndustry::get_command() { return CMD_BUILD_INDUSTRY; }
-static constexpr auto _BuildIndustry_dispatch = MakeDispatchTable<CMD_BUILD_INDUSTRY, TileIndex, IndustryType, uint32_t, bool, uint32_t>();
-bool BuildIndustry::_post(::CommandCallback *callback) {
-    return _BuildIndustry_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->it, this->first_layout, this->fund, this->seed);
-}
-CommandCost BuildIndustry::_do(DoCommandFlags flags) {
-    return (::Command<CMD_BUILD_INDUSTRY>::Do(flags, tile, it, first_layout, fund, seed));
+CommandCost BuildLongRoad::_do(DoCommandFlags flags) {
+    return (::Command<Commands::BuildRoadLong>::Do(flags, end_tile, start_tile, rt, axis, drd, start_half, end_half, is_ai));
 }
 
-Commands IndustrySetFlags::get_command() { return CMD_INDUSTRY_SET_FLAGS; }
-static constexpr auto _IndustrySetFlags_dispatch = MakeDispatchTable<CMD_INDUSTRY_SET_FLAGS, IndustryID, IndustryControlFlags>();
-bool IndustrySetFlags::_post(::CommandCallback *callback) {
-    return _IndustrySetFlags_dispatch[FindCallbackIndex(callback)](this->error, this->ind_id, this->ctlflags);
+Commands RemoveLongRoad::get_command() { return Commands::RemoveRoadLong; }
+static constexpr auto _RemoveLongRoad_dispatch = MakeDispatchTable<Commands::RemoveRoadLong, TileIndex, TileIndex, RoadType, Axis, bool, bool>();
+bool RemoveLongRoad::_post(::CommandCallback *callback) {
+    return _RemoveLongRoad_dispatch[FindCallbackIndex(callback)](this->error, this->end_tile, this->start_tile, this->rt, this->axis, this->start_half, this->end_half);
 }
-CommandCost IndustrySetFlags::_do(DoCommandFlags flags) {
-    return (::Command<CMD_INDUSTRY_SET_FLAGS>::Do(flags, ind_id, ctlflags));
-}
-
-Commands IndustrySetExclusivity::get_command() { return CMD_INDUSTRY_SET_EXCLUSIVITY; }
-static constexpr auto _IndustrySetExclusivity_dispatch = MakeDispatchTable<CMD_INDUSTRY_SET_EXCLUSIVITY, IndustryID, Owner, bool>();
-bool IndustrySetExclusivity::_post(::CommandCallback *callback) {
-    return _IndustrySetExclusivity_dispatch[FindCallbackIndex(callback)](this->error, this->ind_id, this->company_id, this->consumer);
-}
-CommandCost IndustrySetExclusivity::_do(DoCommandFlags flags) {
-    return (::Command<CMD_INDUSTRY_SET_EXCLUSIVITY>::Do(flags, ind_id, company_id, consumer));
+CommandCost RemoveLongRoad::_do(DoCommandFlags flags) {
+    return std::get<0>(::Command<Commands::RemoveRoadLong>::Do(flags, end_tile, start_tile, rt, axis, start_half, end_half));
 }
 
-Commands IndustrySetText::get_command() { return CMD_INDUSTRY_SET_TEXT; }
-static constexpr auto _IndustrySetText_dispatch = MakeDispatchTable<CMD_INDUSTRY_SET_TEXT, IndustryID, const EncodedString &>();
-bool IndustrySetText::_post(::CommandCallback *callback) {
-    return _IndustrySetText_dispatch[FindCallbackIndex(callback)](this->error, this->ind_id, this->text);
+Commands BuildRoad::get_command() { return Commands::BuildRoad; }
+static constexpr auto _BuildRoad_dispatch = MakeDispatchTable<Commands::BuildRoad, TileIndex, RoadBits, RoadType, DisallowedRoadDirections, TownID>();
+bool BuildRoad::_post(::CommandCallback *callback) {
+    return _BuildRoad_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->pieces, this->rt, this->toggle_drd, this->town_id);
 }
-CommandCost IndustrySetText::_do(DoCommandFlags flags) {
-    return (::Command<CMD_INDUSTRY_SET_TEXT>::Do(flags, ind_id, text));
-}
-
-Commands IndustrySetProduction::get_command() { return CMD_INDUSTRY_SET_PRODUCTION; }
-static constexpr auto _IndustrySetProduction_dispatch = MakeDispatchTable<CMD_INDUSTRY_SET_PRODUCTION, IndustryID, uint8_t, bool, const EncodedString &>();
-bool IndustrySetProduction::_post(::CommandCallback *callback) {
-    return _IndustrySetProduction_dispatch[FindCallbackIndex(callback)](this->error, this->ind_id, this->prod_level, this->show_news, this->text);
-}
-CommandCost IndustrySetProduction::_do(DoCommandFlags flags) {
-    return (::Command<CMD_INDUSTRY_SET_PRODUCTION>::Do(flags, ind_id, prod_level, show_news, text));
+CommandCost BuildRoad::_do(DoCommandFlags flags) {
+    return (::Command<Commands::BuildRoad>::Do(flags, tile, pieces, rt, toggle_drd, town_id));
 }
 
-Commands ModifyOrder::get_command() { return CMD_MODIFY_ORDER; }
-static constexpr auto _ModifyOrder_dispatch = MakeDispatchTable<CMD_MODIFY_ORDER, TileIndex, VehicleID, VehicleOrderID, ModifyOrderFlags, uint16_t>();
+Commands BuildRoadDepot::get_command() { return Commands::BuildRoadDepot; }
+static constexpr auto _BuildRoadDepot_dispatch = MakeDispatchTable<Commands::BuildRoadDepot, TileIndex, RoadType, DiagDirection>();
+bool BuildRoadDepot::_post(::CommandCallback *callback) {
+    return _BuildRoadDepot_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->rt, this->dir);
+}
+CommandCost BuildRoadDepot::_do(DoCommandFlags flags) {
+    return (::Command<Commands::BuildRoadDepot>::Do(flags, tile, rt, dir));
+}
+
+Commands ConvertRoad::get_command() { return Commands::ConvertRoad; }
+static constexpr auto _ConvertRoad_dispatch = MakeDispatchTable<Commands::ConvertRoad, TileIndex, TileIndex, RoadType, bool>();
+bool ConvertRoad::_post(::CommandCallback *callback) {
+    return _ConvertRoad_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->area_start, this->to_type, this->diagonal);
+}
+CommandCost ConvertRoad::_do(DoCommandFlags flags) {
+    return (::Command<Commands::ConvertRoad>::Do(flags, tile, area_start, to_type, diagonal));
+}
+
+Commands CreateLeagueTable::get_command() { return Commands::CreateLeagueTable; }
+static constexpr auto _CreateLeagueTable_dispatch = MakeDispatchTable<Commands::CreateLeagueTable, const EncodedString &, const EncodedString &, const EncodedString &>();
+bool CreateLeagueTable::_post(::CommandCallback *callback) {
+    return _CreateLeagueTable_dispatch[FindCallbackIndex(callback)](this->error, this->title, this->header, this->footer);
+}
+CommandCost CreateLeagueTable::_do(DoCommandFlags flags) {
+    return std::get<0>(::Command<Commands::CreateLeagueTable>::Do(flags, title, header, footer));
+}
+
+Commands CreateLeagueTableElement::get_command() { return Commands::CreateLeagueTableElement; }
+static constexpr auto _CreateLeagueTableElement_dispatch = MakeDispatchTable<Commands::CreateLeagueTableElement, LeagueTableID, int64_t, CompanyID, const EncodedString &, const EncodedString &, LinkType, LinkTargetID>();
+bool CreateLeagueTableElement::_post(::CommandCallback *callback) {
+    return _CreateLeagueTableElement_dispatch[FindCallbackIndex(callback)](this->error, this->table, this->rating, this->company, this->text, this->score, this->link_type, this->link_target);
+}
+CommandCost CreateLeagueTableElement::_do(DoCommandFlags flags) {
+    return std::get<0>(::Command<Commands::CreateLeagueTableElement>::Do(flags, table, rating, company, text, score, link_type, link_target));
+}
+
+Commands UpdateLeagueTableElementData::get_command() { return Commands::UpdateLeagueTableElementData; }
+static constexpr auto _UpdateLeagueTableElementData_dispatch = MakeDispatchTable<Commands::UpdateLeagueTableElementData, LeagueTableElementID, CompanyID, const EncodedString &, LinkType, LinkTargetID>();
+bool UpdateLeagueTableElementData::_post(::CommandCallback *callback) {
+    return _UpdateLeagueTableElementData_dispatch[FindCallbackIndex(callback)](this->error, this->element, this->company, this->text, this->link_type, this->link_target);
+}
+CommandCost UpdateLeagueTableElementData::_do(DoCommandFlags flags) {
+    return (::Command<Commands::UpdateLeagueTableElementData>::Do(flags, element, company, text, link_type, link_target));
+}
+
+Commands UpdateLeagueTableElementScore::get_command() { return Commands::UpdateLeagueTableElementScore; }
+static constexpr auto _UpdateLeagueTableElementScore_dispatch = MakeDispatchTable<Commands::UpdateLeagueTableElementScore, LeagueTableElementID, int64_t, const EncodedString &>();
+bool UpdateLeagueTableElementScore::_post(::CommandCallback *callback) {
+    return _UpdateLeagueTableElementScore_dispatch[FindCallbackIndex(callback)](this->error, this->element, this->rating, this->score);
+}
+CommandCost UpdateLeagueTableElementScore::_do(DoCommandFlags flags) {
+    return (::Command<Commands::UpdateLeagueTableElementScore>::Do(flags, element, rating, score));
+}
+
+Commands RemoveLeagueTableElement::get_command() { return Commands::RemoveLeagueTableElement; }
+static constexpr auto _RemoveLeagueTableElement_dispatch = MakeDispatchTable<Commands::RemoveLeagueTableElement, LeagueTableElementID>();
+bool RemoveLeagueTableElement::_post(::CommandCallback *callback) {
+    return _RemoveLeagueTableElement_dispatch[FindCallbackIndex(callback)](this->error, this->element);
+}
+CommandCost RemoveLeagueTableElement::_do(DoCommandFlags flags) {
+    return (::Command<Commands::RemoveLeagueTableElement>::Do(flags, element));
+}
+
+Commands ModifyOrder::get_command() { return Commands::ModifyOrder; }
+static constexpr auto _ModifyOrder_dispatch = MakeDispatchTable<Commands::ModifyOrder, TileIndex, VehicleID, VehicleOrderID, ModifyOrderFlags, uint16_t>();
 bool ModifyOrder::_post(::CommandCallback *callback) {
     return _ModifyOrder_dispatch[FindCallbackIndex(callback)](this->error, this->location, this->veh, this->sel_ord, this->mof, this->data);
 }
 CommandCost ModifyOrder::_do(DoCommandFlags flags) {
-    return (::Command<CMD_MODIFY_ORDER>::Do(flags, veh, sel_ord, mof, data));
+    return (::Command<Commands::ModifyOrder>::Do(flags, veh, sel_ord, mof, data));
 }
 
-Commands SkipToOrder::get_command() { return CMD_SKIP_TO_ORDER; }
-static constexpr auto _SkipToOrder_dispatch = MakeDispatchTable<CMD_SKIP_TO_ORDER, TileIndex, VehicleID, VehicleOrderID>();
+Commands SkipToOrder::get_command() { return Commands::SkipToOrder; }
+static constexpr auto _SkipToOrder_dispatch = MakeDispatchTable<Commands::SkipToOrder, TileIndex, VehicleID, VehicleOrderID>();
 bool SkipToOrder::_post(::CommandCallback *callback) {
     return _SkipToOrder_dispatch[FindCallbackIndex(callback)](this->error, this->location, this->veh_id, this->sel_ord);
 }
 CommandCost SkipToOrder::_do(DoCommandFlags flags) {
-    return (::Command<CMD_SKIP_TO_ORDER>::Do(flags, veh_id, sel_ord));
+    return (::Command<Commands::SkipToOrder>::Do(flags, veh_id, sel_ord));
 }
 
-Commands DeleteOrder::get_command() { return CMD_DELETE_ORDER; }
-static constexpr auto _DeleteOrder_dispatch = MakeDispatchTable<CMD_DELETE_ORDER, TileIndex, VehicleID, VehicleOrderID>();
+Commands DeleteOrder::get_command() { return Commands::DeleteOrder; }
+static constexpr auto _DeleteOrder_dispatch = MakeDispatchTable<Commands::DeleteOrder, TileIndex, VehicleID, VehicleOrderID>();
 bool DeleteOrder::_post(::CommandCallback *callback) {
     return _DeleteOrder_dispatch[FindCallbackIndex(callback)](this->error, this->location, this->veh_id, this->sel_ord);
 }
 CommandCost DeleteOrder::_do(DoCommandFlags flags) {
-    return (::Command<CMD_DELETE_ORDER>::Do(flags, veh_id, sel_ord));
+    return (::Command<Commands::DeleteOrder>::Do(flags, veh_id, sel_ord));
 }
 
-Commands InsertOrder::get_command() { return CMD_INSERT_ORDER; }
-static constexpr auto _InsertOrder_dispatch = MakeDispatchTable<CMD_INSERT_ORDER, TileIndex, VehicleID, VehicleOrderID, const Order &>();
+Commands InsertOrder::get_command() { return Commands::InsertOrder; }
+static constexpr auto _InsertOrder_dispatch = MakeDispatchTable<Commands::InsertOrder, TileIndex, VehicleID, VehicleOrderID, const Order &>();
 bool InsertOrder::_post(::CommandCallback *callback) {
     return _InsertOrder_dispatch[FindCallbackIndex(callback)](this->error, this->location, this->veh, this->sel_ord, this->new_order);
 }
 CommandCost InsertOrder::_do(DoCommandFlags flags) {
-    return (::Command<CMD_INSERT_ORDER>::Do(flags, veh, sel_ord, new_order));
+    return (::Command<Commands::InsertOrder>::Do(flags, veh, sel_ord, new_order));
 }
 
-Commands OrderRefit::get_command() { return CMD_ORDER_REFIT; }
-static constexpr auto _OrderRefit_dispatch = MakeDispatchTable<CMD_ORDER_REFIT, TileIndex, VehicleID, VehicleOrderID, CargoType>();
+Commands OrderRefit::get_command() { return Commands::OrderRefit; }
+static constexpr auto _OrderRefit_dispatch = MakeDispatchTable<Commands::OrderRefit, TileIndex, VehicleID, VehicleOrderID, CargoType>();
 bool OrderRefit::_post(::CommandCallback *callback) {
     return _OrderRefit_dispatch[FindCallbackIndex(callback)](this->error, this->location, this->veh, this->order_number, this->cargo);
 }
 CommandCost OrderRefit::_do(DoCommandFlags flags) {
-    return (::Command<CMD_ORDER_REFIT>::Do(flags, veh, order_number, cargo));
+    return (::Command<Commands::OrderRefit>::Do(flags, veh, order_number, cargo));
 }
 
-Commands CloneOrder::get_command() { return CMD_CLONE_ORDER; }
-static constexpr auto _CloneOrder_dispatch = MakeDispatchTable<CMD_CLONE_ORDER, TileIndex, CloneOptions, VehicleID, VehicleID>();
+Commands CloneOrder::get_command() { return Commands::CloneOrder; }
+static constexpr auto _CloneOrder_dispatch = MakeDispatchTable<Commands::CloneOrder, TileIndex, CloneOptions, VehicleID, VehicleID>();
 bool CloneOrder::_post(::CommandCallback *callback) {
     return _CloneOrder_dispatch[FindCallbackIndex(callback)](this->error, this->location, this->action, this->veh_dst, this->veh_src);
 }
 CommandCost CloneOrder::_do(DoCommandFlags flags) {
-    return (::Command<CMD_CLONE_ORDER>::Do(flags, action, veh_dst, veh_src));
+    return (::Command<Commands::CloneOrder>::Do(flags, action, veh_dst, veh_src));
 }
 
-Commands MoveOrder::get_command() { return CMD_MOVE_ORDER; }
-static constexpr auto _MoveOrder_dispatch = MakeDispatchTable<CMD_MOVE_ORDER, TileIndex, VehicleID, VehicleOrderID, VehicleOrderID>();
+Commands MoveOrder::get_command() { return Commands::MoveOrder; }
+static constexpr auto _MoveOrder_dispatch = MakeDispatchTable<Commands::MoveOrder, TileIndex, VehicleID, VehicleOrderID, VehicleOrderID>();
 bool MoveOrder::_post(::CommandCallback *callback) {
     return _MoveOrder_dispatch[FindCallbackIndex(callback)](this->error, this->location, this->veh, this->moving_order, this->target_order);
 }
 CommandCost MoveOrder::_do(DoCommandFlags flags) {
-    return (::Command<CMD_MOVE_ORDER>::Do(flags, veh, moving_order, target_order));
+    return (::Command<Commands::MoveOrder>::Do(flags, veh, moving_order, target_order));
 }
 
-Commands ClearOrderBackup::get_command() { return CMD_CLEAR_ORDER_BACKUP; }
-static constexpr auto _ClearOrderBackup_dispatch = MakeDispatchTable<CMD_CLEAR_ORDER_BACKUP, TileIndex, ClientID>();
+Commands ClearOrderBackup::get_command() { return Commands::ClearOrderBackup; }
+static constexpr auto _ClearOrderBackup_dispatch = MakeDispatchTable<Commands::ClearOrderBackup, TileIndex, ClientID>();
 bool ClearOrderBackup::_post(::CommandCallback *callback) {
     return _ClearOrderBackup_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->user_id);
 }
 CommandCost ClearOrderBackup::_do(DoCommandFlags flags) {
-    return (::Command<CMD_CLEAR_ORDER_BACKUP>::Do(flags, tile, user_id));
+    return (::Command<Commands::ClearOrderBackup>::Do(flags, tile, user_id));
 }
 
-Commands MoneyCheat::get_command() { return CMD_MONEY_CHEAT; }
-static constexpr auto _MoneyCheat_dispatch = MakeDispatchTable<CMD_MONEY_CHEAT, Money>();
-bool MoneyCheat::_post(::CommandCallback *callback) {
-    return _MoneyCheat_dispatch[FindCallbackIndex(callback)](this->error, this->amount);
+Commands BuildIndustry::get_command() { return Commands::BuildIndustry; }
+static constexpr auto _BuildIndustry_dispatch = MakeDispatchTable<Commands::BuildIndustry, TileIndex, IndustryType, uint32_t, bool, uint32_t>();
+bool BuildIndustry::_post(::CommandCallback *callback) {
+    return _BuildIndustry_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->it, this->first_layout, this->fund, this->seed);
 }
-CommandCost MoneyCheat::_do(DoCommandFlags flags) {
-    return (::Command<CMD_MONEY_CHEAT>::Do(flags, amount));
-}
-
-Commands ChangeBankBalance::get_command() { return CMD_CHANGE_BANK_BALANCE; }
-static constexpr auto _ChangeBankBalance_dispatch = MakeDispatchTable<CMD_CHANGE_BANK_BALANCE, TileIndex, Money, CompanyID, ExpensesType>();
-bool ChangeBankBalance::_post(::CommandCallback *callback) {
-    return _ChangeBankBalance_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->delta, this->company, this->expenses_type);
-}
-CommandCost ChangeBankBalance::_do(DoCommandFlags flags) {
-    return (::Command<CMD_CHANGE_BANK_BALANCE>::Do(flags, tile, delta, company, expenses_type));
+CommandCost BuildIndustry::_do(DoCommandFlags flags) {
+    return (::Command<Commands::BuildIndustry>::Do(flags, tile, it, first_layout, fund, seed));
 }
 
-Commands IncreaseLoan::get_command() { return CMD_INCREASE_LOAN; }
-static constexpr auto _IncreaseLoan_dispatch = MakeDispatchTable<CMD_INCREASE_LOAN, LoanCommand, Money>();
-bool IncreaseLoan::_post(::CommandCallback *callback) {
-    return _IncreaseLoan_dispatch[FindCallbackIndex(callback)](this->error, this->cmd, this->amount);
+Commands IndustrySetFlags::get_command() { return Commands::IndustrySetFlags; }
+static constexpr auto _IndustrySetFlags_dispatch = MakeDispatchTable<Commands::IndustrySetFlags, IndustryID, IndustryControlFlags>();
+bool IndustrySetFlags::_post(::CommandCallback *callback) {
+    return _IndustrySetFlags_dispatch[FindCallbackIndex(callback)](this->error, this->ind_id, this->ctlflags);
 }
-CommandCost IncreaseLoan::_do(DoCommandFlags flags) {
-    return (::Command<CMD_INCREASE_LOAN>::Do(flags, cmd, amount));
-}
-
-Commands DecreaseLoan::get_command() { return CMD_DECREASE_LOAN; }
-static constexpr auto _DecreaseLoan_dispatch = MakeDispatchTable<CMD_DECREASE_LOAN, LoanCommand, Money>();
-bool DecreaseLoan::_post(::CommandCallback *callback) {
-    return _DecreaseLoan_dispatch[FindCallbackIndex(callback)](this->error, this->cmd, this->amount);
-}
-CommandCost DecreaseLoan::_do(DoCommandFlags flags) {
-    return (::Command<CMD_DECREASE_LOAN>::Do(flags, cmd, amount));
+CommandCost IndustrySetFlags::_do(DoCommandFlags flags) {
+    return (::Command<Commands::IndustrySetFlags>::Do(flags, ind_id, ctlflags));
 }
 
-Commands SetCompanyMaxLoan::get_command() { return CMD_SET_COMPANY_MAX_LOAN; }
-static constexpr auto _SetCompanyMaxLoan_dispatch = MakeDispatchTable<CMD_SET_COMPANY_MAX_LOAN, CompanyID, Money>();
-bool SetCompanyMaxLoan::_post(::CommandCallback *callback) {
-    return _SetCompanyMaxLoan_dispatch[FindCallbackIndex(callback)](this->error, this->company, this->amount);
+Commands IndustrySetExclusivity::get_command() { return Commands::IndustrySetExclusivity; }
+static constexpr auto _IndustrySetExclusivity_dispatch = MakeDispatchTable<Commands::IndustrySetExclusivity, IndustryID, Owner, bool>();
+bool IndustrySetExclusivity::_post(::CommandCallback *callback) {
+    return _IndustrySetExclusivity_dispatch[FindCallbackIndex(callback)](this->error, this->ind_id, this->company_id, this->consumer);
 }
-CommandCost SetCompanyMaxLoan::_do(DoCommandFlags flags) {
-    return (::Command<CMD_SET_COMPANY_MAX_LOAN>::Do(flags, company, amount));
-}
-
-Commands Pause::get_command() { return CMD_PAUSE; }
-static constexpr auto _Pause_dispatch = MakeDispatchTable<CMD_PAUSE, PauseMode, bool>();
-bool Pause::_post(::CommandCallback *callback) {
-    return _Pause_dispatch[FindCallbackIndex(callback)](this->error, this->mode, this->pause);
-}
-CommandCost Pause::_do(DoCommandFlags flags) {
-    return (::Command<CMD_PAUSE>::Do(flags, mode, pause));
+CommandCost IndustrySetExclusivity::_do(DoCommandFlags flags) {
+    return (::Command<Commands::IndustrySetExclusivity>::Do(flags, ind_id, company_id, consumer));
 }
 
-Commands WantEnginePreview::get_command() { return CMD_WANT_ENGINE_PREVIEW; }
-static constexpr auto _WantEnginePreview_dispatch = MakeDispatchTable<CMD_WANT_ENGINE_PREVIEW, EngineID>();
-bool WantEnginePreview::_post(::CommandCallback *callback) {
-    return _WantEnginePreview_dispatch[FindCallbackIndex(callback)](this->error, this->engine_id);
+Commands IndustrySetText::get_command() { return Commands::IndustrySetText; }
+static constexpr auto _IndustrySetText_dispatch = MakeDispatchTable<Commands::IndustrySetText, IndustryID, const EncodedString &>();
+bool IndustrySetText::_post(::CommandCallback *callback) {
+    return _IndustrySetText_dispatch[FindCallbackIndex(callback)](this->error, this->ind_id, this->text);
 }
-CommandCost WantEnginePreview::_do(DoCommandFlags flags) {
-    return (::Command<CMD_WANT_ENGINE_PREVIEW>::Do(flags, engine_id));
-}
-
-Commands EngineCtrl::get_command() { return CMD_ENGINE_CTRL; }
-static constexpr auto _EngineCtrl_dispatch = MakeDispatchTable<CMD_ENGINE_CTRL, EngineID, CompanyID, bool>();
-bool EngineCtrl::_post(::CommandCallback *callback) {
-    return _EngineCtrl_dispatch[FindCallbackIndex(callback)](this->error, this->engine_id, this->company_id, this->allow);
-}
-CommandCost EngineCtrl::_do(DoCommandFlags flags) {
-    return (::Command<CMD_ENGINE_CTRL>::Do(flags, engine_id, company_id, allow));
+CommandCost IndustrySetText::_do(DoCommandFlags flags) {
+    return (::Command<Commands::IndustrySetText>::Do(flags, ind_id, text));
 }
 
-Commands RenameEngine::get_command() { return CMD_RENAME_ENGINE; }
-static constexpr auto _RenameEngine_dispatch = MakeDispatchTable<CMD_RENAME_ENGINE, EngineID, const std::string &>();
-bool RenameEngine::_post(::CommandCallback *callback) {
-    return _RenameEngine_dispatch[FindCallbackIndex(callback)](this->error, this->engine_id, this->text);
+Commands IndustrySetProduction::get_command() { return Commands::IndustrySetProduction; }
+static constexpr auto _IndustrySetProduction_dispatch = MakeDispatchTable<Commands::IndustrySetProduction, IndustryID, uint8_t, bool, const EncodedString &>();
+bool IndustrySetProduction::_post(::CommandCallback *callback) {
+    return _IndustrySetProduction_dispatch[FindCallbackIndex(callback)](this->error, this->ind_id, this->prod_level, this->show_news, this->text);
 }
-CommandCost RenameEngine::_do(DoCommandFlags flags) {
-    return (::Command<CMD_RENAME_ENGINE>::Do(flags, engine_id, text));
-}
-
-Commands SetVehicleVisibility::get_command() { return CMD_SET_VEHICLE_VISIBILITY; }
-static constexpr auto _SetVehicleVisibility_dispatch = MakeDispatchTable<CMD_SET_VEHICLE_VISIBILITY, EngineID, bool>();
-bool SetVehicleVisibility::_post(::CommandCallback *callback) {
-    return _SetVehicleVisibility_dispatch[FindCallbackIndex(callback)](this->error, this->engine_id, this->hide);
-}
-CommandCost SetVehicleVisibility::_do(DoCommandFlags flags) {
-    return (::Command<CMD_SET_VEHICLE_VISIBILITY>::Do(flags, engine_id, hide));
+CommandCost IndustrySetProduction::_do(DoCommandFlags flags) {
+    return (::Command<Commands::IndustrySetProduction>::Do(flags, ind_id, prod_level, show_news, text));
 }
 
-Commands BuildBridge::get_command() { return CMD_BUILD_BRIDGE; }
-static constexpr auto _BuildBridge_dispatch = MakeDispatchTable<CMD_BUILD_BRIDGE, TileIndex, TileIndex, TransportType, BridgeType, uint8_t>();
-bool BuildBridge::_post(::CommandCallback *callback) {
-    return _BuildBridge_dispatch[FindCallbackIndex(callback)](this->error, this->tile_end, this->tile_start, this->transport_type, this->bridge_type, this->road_rail_type);
+Commands BuildRailWaypoint::get_command() { return Commands::BuildRailWaypoint; }
+static constexpr auto _BuildRailWaypoint_dispatch = MakeDispatchTable<Commands::BuildRailWaypoint, TileIndex, Axis, uint8_t, uint8_t, StationClassID, uint16_t, StationID, bool>();
+bool BuildRailWaypoint::_post(::CommandCallback *callback) {
+    return _BuildRailWaypoint_dispatch[FindCallbackIndex(callback)](this->error, this->start_tile, this->axis, this->width, this->height, this->spec_class, this->spec_index, this->station_to_join, this->adjacent);
 }
-CommandCost BuildBridge::_do(DoCommandFlags flags) {
-    return (::Command<CMD_BUILD_BRIDGE>::Do(flags, tile_end, tile_start, transport_type, bridge_type, road_rail_type));
-}
-
-Commands BuildTunnel::get_command() { return CMD_BUILD_TUNNEL; }
-static constexpr auto _BuildTunnel_dispatch = MakeDispatchTable<CMD_BUILD_TUNNEL, TileIndex, TransportType, uint8_t>();
-bool BuildTunnel::_post(::CommandCallback *callback) {
-    return _BuildTunnel_dispatch[FindCallbackIndex(callback)](this->error, this->start_tile, this->transport_type, this->road_rail_type);
-}
-CommandCost BuildTunnel::_do(DoCommandFlags flags) {
-    return (::Command<CMD_BUILD_TUNNEL>::Do(flags, start_tile, transport_type, road_rail_type));
+CommandCost BuildRailWaypoint::_do(DoCommandFlags flags) {
+    return (::Command<Commands::BuildRailWaypoint>::Do(flags, start_tile, axis, width, height, spec_class, spec_index, station_to_join, adjacent));
 }
 
-Commands CreateGroup::get_command() { return CMD_CREATE_GROUP; }
-static constexpr auto _CreateGroup_dispatch = MakeDispatchTable<CMD_CREATE_GROUP, VehicleType, GroupID>();
+Commands RemoveFromRailWaypoint::get_command() { return Commands::RemoveFromRailWaypoint; }
+static constexpr auto _RemoveFromRailWaypoint_dispatch = MakeDispatchTable<Commands::RemoveFromRailWaypoint, TileIndex, TileIndex, bool>();
+bool RemoveFromRailWaypoint::_post(::CommandCallback *callback) {
+    return _RemoveFromRailWaypoint_dispatch[FindCallbackIndex(callback)](this->error, this->start, this->end, this->keep_rail);
+}
+CommandCost RemoveFromRailWaypoint::_do(DoCommandFlags flags) {
+    return (::Command<Commands::RemoveFromRailWaypoint>::Do(flags, start, end, keep_rail));
+}
+
+Commands BuildRoadWaypoint::get_command() { return Commands::BuildRoadWaypoint; }
+static constexpr auto _BuildRoadWaypoint_dispatch = MakeDispatchTable<Commands::BuildRoadWaypoint, TileIndex, Axis, uint8_t, uint8_t, RoadStopClassID, uint16_t, StationID, bool>();
+bool BuildRoadWaypoint::_post(::CommandCallback *callback) {
+    return _BuildRoadWaypoint_dispatch[FindCallbackIndex(callback)](this->error, this->start_tile, this->axis, this->width, this->height, this->spec_class, this->spec_index, this->station_to_join, this->adjacent);
+}
+CommandCost BuildRoadWaypoint::_do(DoCommandFlags flags) {
+    return (::Command<Commands::BuildRoadWaypoint>::Do(flags, start_tile, axis, width, height, spec_class, spec_index, station_to_join, adjacent));
+}
+
+Commands RemoveFromRoadWaypoint::get_command() { return Commands::RemoveFromRoadWaypoint; }
+static constexpr auto _RemoveFromRoadWaypoint_dispatch = MakeDispatchTable<Commands::RemoveFromRoadWaypoint, TileIndex, TileIndex>();
+bool RemoveFromRoadWaypoint::_post(::CommandCallback *callback) {
+    return _RemoveFromRoadWaypoint_dispatch[FindCallbackIndex(callback)](this->error, this->start, this->end);
+}
+CommandCost RemoveFromRoadWaypoint::_do(DoCommandFlags flags) {
+    return (::Command<Commands::RemoveFromRoadWaypoint>::Do(flags, start, end));
+}
+
+Commands BuildBuoy::get_command() { return Commands::BuildBuoy; }
+static constexpr auto _BuildBuoy_dispatch = MakeDispatchTable<Commands::BuildBuoy, TileIndex>();
+bool BuildBuoy::_post(::CommandCallback *callback) {
+    return _BuildBuoy_dispatch[FindCallbackIndex(callback)](this->error, this->tile);
+}
+CommandCost BuildBuoy::_do(DoCommandFlags flags) {
+    return (::Command<Commands::BuildBuoy>::Do(flags, tile));
+}
+
+Commands RenameWaypoint::get_command() { return Commands::RenameWaypoint; }
+static constexpr auto _RenameWaypoint_dispatch = MakeDispatchTable<Commands::RenameWaypoint, StationID, const std::string &>();
+bool RenameWaypoint::_post(::CommandCallback *callback) {
+    return _RenameWaypoint_dispatch[FindCallbackIndex(callback)](this->error, this->waypoint_id, this->text);
+}
+CommandCost RenameWaypoint::_do(DoCommandFlags flags) {
+    return (::Command<Commands::RenameWaypoint>::Do(flags, waypoint_id, text));
+}
+
+Commands MoveWaypointName::get_command() { return Commands::MoveWaypointNAme; }
+static constexpr auto _MoveWaypointName_dispatch = MakeDispatchTable<Commands::MoveWaypointNAme, StationID, TileIndex>();
+bool MoveWaypointName::_post(::CommandCallback *callback) {
+    return _MoveWaypointName_dispatch[FindCallbackIndex(callback)](this->error, this->waypoint_id, this->tile);
+}
+CommandCost MoveWaypointName::_do(DoCommandFlags flags) {
+    return std::get<0>(::Command<Commands::MoveWaypointNAme>::Do(flags, waypoint_id, tile));
+}
+
+Commands CreateGroup::get_command() { return Commands::CreateGroup; }
+static constexpr auto _CreateGroup_dispatch = MakeDispatchTable<Commands::CreateGroup, VehicleType, GroupID>();
 bool CreateGroup::_post(::CommandCallback *callback) {
     return _CreateGroup_dispatch[FindCallbackIndex(callback)](this->error, this->vt, this->parent_group);
 }
 CommandCost CreateGroup::_do(DoCommandFlags flags) {
-    return std::get<0>(::Command<CMD_CREATE_GROUP>::Do(flags, vt, parent_group));
+    return std::get<0>(::Command<Commands::CreateGroup>::Do(flags, vt, parent_group));
 }
 
-Commands AlterGroup::get_command() { return CMD_ALTER_GROUP; }
-static constexpr auto _AlterGroup_dispatch = MakeDispatchTable<CMD_ALTER_GROUP, AlterGroupMode, GroupID, GroupID, const std::string &>();
+Commands AlterGroup::get_command() { return Commands::AlterGroup; }
+static constexpr auto _AlterGroup_dispatch = MakeDispatchTable<Commands::AlterGroup, AlterGroupMode, GroupID, GroupID, const std::string &>();
 bool AlterGroup::_post(::CommandCallback *callback) {
     return _AlterGroup_dispatch[FindCallbackIndex(callback)](this->error, this->mode, this->group_id, this->parent_id, this->text);
 }
 CommandCost AlterGroup::_do(DoCommandFlags flags) {
-    return (::Command<CMD_ALTER_GROUP>::Do(flags, mode, group_id, parent_id, text));
+    return (::Command<Commands::AlterGroup>::Do(flags, mode, group_id, parent_id, text));
 }
 
-Commands DeleteGroup::get_command() { return CMD_DELETE_GROUP; }
-static constexpr auto _DeleteGroup_dispatch = MakeDispatchTable<CMD_DELETE_GROUP, GroupID>();
+Commands DeleteGroup::get_command() { return Commands::DeleteGroup; }
+static constexpr auto _DeleteGroup_dispatch = MakeDispatchTable<Commands::DeleteGroup, GroupID>();
 bool DeleteGroup::_post(::CommandCallback *callback) {
     return _DeleteGroup_dispatch[FindCallbackIndex(callback)](this->error, this->group_id);
 }
 CommandCost DeleteGroup::_do(DoCommandFlags flags) {
-    return (::Command<CMD_DELETE_GROUP>::Do(flags, group_id));
+    return (::Command<Commands::DeleteGroup>::Do(flags, group_id));
 }
 
-Commands AddVehicleGroup::get_command() { return CMD_ADD_VEHICLE_GROUP; }
-static constexpr auto _AddVehicleGroup_dispatch = MakeDispatchTable<CMD_ADD_VEHICLE_GROUP, GroupID, VehicleID, bool, const VehicleListIdentifier &>();
+Commands AddVehicleGroup::get_command() { return Commands::AddVehicleToGroup; }
+static constexpr auto _AddVehicleGroup_dispatch = MakeDispatchTable<Commands::AddVehicleToGroup, GroupID, VehicleID, bool, const VehicleListIdentifier &>();
 bool AddVehicleGroup::_post(::CommandCallback *callback) {
     return _AddVehicleGroup_dispatch[FindCallbackIndex(callback)](this->error, this->group_id, this->veh_id, this->add_shared, this->vli);
 }
 CommandCost AddVehicleGroup::_do(DoCommandFlags flags) {
-    return std::get<0>(::Command<CMD_ADD_VEHICLE_GROUP>::Do(flags, group_id, veh_id, add_shared, vli));
+    return std::get<0>(::Command<Commands::AddVehicleToGroup>::Do(flags, group_id, veh_id, add_shared, vli));
 }
 
-Commands AddSharedVehicleGroup::get_command() { return CMD_ADD_SHARED_VEHICLE_GROUP; }
-static constexpr auto _AddSharedVehicleGroup_dispatch = MakeDispatchTable<CMD_ADD_SHARED_VEHICLE_GROUP, GroupID, VehicleType>();
+Commands AddSharedVehicleGroup::get_command() { return Commands::AddSharedVehiclesToGroup; }
+static constexpr auto _AddSharedVehicleGroup_dispatch = MakeDispatchTable<Commands::AddSharedVehiclesToGroup, GroupID, VehicleType>();
 bool AddSharedVehicleGroup::_post(::CommandCallback *callback) {
     return _AddSharedVehicleGroup_dispatch[FindCallbackIndex(callback)](this->error, this->id_g, this->type);
 }
 CommandCost AddSharedVehicleGroup::_do(DoCommandFlags flags) {
-    return (::Command<CMD_ADD_SHARED_VEHICLE_GROUP>::Do(flags, id_g, type));
+    return (::Command<Commands::AddSharedVehiclesToGroup>::Do(flags, id_g, type));
 }
 
-Commands RemoveAllVehiclesGroup::get_command() { return CMD_REMOVE_ALL_VEHICLES_GROUP; }
-static constexpr auto _RemoveAllVehiclesGroup_dispatch = MakeDispatchTable<CMD_REMOVE_ALL_VEHICLES_GROUP, GroupID>();
+Commands RemoveAllVehiclesGroup::get_command() { return Commands::RemoveAllVehiclesGroup; }
+static constexpr auto _RemoveAllVehiclesGroup_dispatch = MakeDispatchTable<Commands::RemoveAllVehiclesGroup, GroupID>();
 bool RemoveAllVehiclesGroup::_post(::CommandCallback *callback) {
     return _RemoveAllVehiclesGroup_dispatch[FindCallbackIndex(callback)](this->error, this->group_id);
 }
 CommandCost RemoveAllVehiclesGroup::_do(DoCommandFlags flags) {
-    return (::Command<CMD_REMOVE_ALL_VEHICLES_GROUP>::Do(flags, group_id));
+    return (::Command<Commands::RemoveAllVehiclesGroup>::Do(flags, group_id));
 }
 
-Commands SetGroupFlag::get_command() { return CMD_SET_GROUP_FLAG; }
-static constexpr auto _SetGroupFlag_dispatch = MakeDispatchTable<CMD_SET_GROUP_FLAG, GroupID, GroupFlag, bool, bool>();
+Commands SetGroupFlag::get_command() { return Commands::SetGroupFlag; }
+static constexpr auto _SetGroupFlag_dispatch = MakeDispatchTable<Commands::SetGroupFlag, GroupID, GroupFlag, bool, bool>();
 bool SetGroupFlag::_post(::CommandCallback *callback) {
     return _SetGroupFlag_dispatch[FindCallbackIndex(callback)](this->error, this->group_id, this->flag, this->value, this->recursive);
 }
 CommandCost SetGroupFlag::_do(DoCommandFlags flags) {
-    return (::Command<CMD_SET_GROUP_FLAG>::Do(flags, group_id, flag, value, recursive));
+    return (::Command<Commands::SetGroupFlag>::Do(flags, group_id, flag, value, recursive));
 }
 
-Commands SetGroupLivery::get_command() { return CMD_SET_GROUP_LIVERY; }
-static constexpr auto _SetGroupLivery_dispatch = MakeDispatchTable<CMD_SET_GROUP_LIVERY, GroupID, bool, Colours>();
+Commands SetGroupLivery::get_command() { return Commands::SetGroupLivery; }
+static constexpr auto _SetGroupLivery_dispatch = MakeDispatchTable<Commands::SetGroupLivery, GroupID, bool, Colours>();
 bool SetGroupLivery::_post(::CommandCallback *callback) {
     return _SetGroupLivery_dispatch[FindCallbackIndex(callback)](this->error, this->group_id, this->primary, this->colour);
 }
 CommandCost SetGroupLivery::_do(DoCommandFlags flags) {
-    return (::Command<CMD_SET_GROUP_LIVERY>::Do(flags, group_id, primary, colour));
+    return (::Command<Commands::SetGroupLivery>::Do(flags, group_id, primary, colour));
+}
+
+Commands BuildAirport::get_command() { return Commands::BuildAirport; }
+static constexpr auto _BuildAirport_dispatch = MakeDispatchTable<Commands::BuildAirport, TileIndex, uint8_t, uint8_t, StationID, bool>();
+bool BuildAirport::_post(::CommandCallback *callback) {
+    return _BuildAirport_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->airport_type, this->layout, this->station_to_join, this->adjacent);
+}
+CommandCost BuildAirport::_do(DoCommandFlags flags) {
+    return (::Command<Commands::BuildAirport>::Do(flags, tile, airport_type, layout, station_to_join, adjacent));
+}
+
+Commands BuildDock::get_command() { return Commands::BuildDock; }
+static constexpr auto _BuildDock_dispatch = MakeDispatchTable<Commands::BuildDock, TileIndex, StationID, bool>();
+bool BuildDock::_post(::CommandCallback *callback) {
+    return _BuildDock_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->station_to_join, this->adjacent);
+}
+CommandCost BuildDock::_do(DoCommandFlags flags) {
+    return (::Command<Commands::BuildDock>::Do(flags, tile, station_to_join, adjacent));
+}
+
+Commands BuildRailStation::get_command() { return Commands::BuildRailStation; }
+static constexpr auto _BuildRailStation_dispatch = MakeDispatchTable<Commands::BuildRailStation, TileIndex, RailType, Axis, uint8_t, uint8_t, StationClassID, uint16_t, StationID, bool>();
+bool BuildRailStation::_post(::CommandCallback *callback) {
+    return _BuildRailStation_dispatch[FindCallbackIndex(callback)](this->error, this->tile_org, this->rt, this->axis, this->numtracks, this->plat_len, this->spec_class, this->spec_index, this->station_to_join, this->adjacent);
+}
+CommandCost BuildRailStation::_do(DoCommandFlags flags) {
+    return (::Command<Commands::BuildRailStation>::Do(flags, tile_org, rt, axis, numtracks, plat_len, spec_class, spec_index, station_to_join, adjacent));
+}
+
+Commands RemoveFromRailStation::get_command() { return Commands::RemoveFromRailStation; }
+static constexpr auto _RemoveFromRailStation_dispatch = MakeDispatchTable<Commands::RemoveFromRailStation, TileIndex, TileIndex, bool>();
+bool RemoveFromRailStation::_post(::CommandCallback *callback) {
+    return _RemoveFromRailStation_dispatch[FindCallbackIndex(callback)](this->error, this->start, this->end, this->keep_rail);
+}
+CommandCost RemoveFromRailStation::_do(DoCommandFlags flags) {
+    return (::Command<Commands::RemoveFromRailStation>::Do(flags, start, end, keep_rail));
+}
+
+Commands BuildRoadStop::get_command() { return Commands::BuildRoadStop; }
+static constexpr auto _BuildRoadStop_dispatch = MakeDispatchTable<Commands::BuildRoadStop, TileIndex, uint8_t, uint8_t, RoadStopType, bool, DiagDirection, RoadType, RoadStopClassID, uint16_t, StationID, bool>();
+bool BuildRoadStop::_post(::CommandCallback *callback) {
+    return _BuildRoadStop_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->width, this->length, this->stop_type, this->is_drive_through, this->ddir, this->rt, this->spec_class, this->spec_index, this->station_to_join, this->adjacent);
+}
+CommandCost BuildRoadStop::_do(DoCommandFlags flags) {
+    return (::Command<Commands::BuildRoadStop>::Do(flags, tile, width, length, stop_type, is_drive_through, ddir, rt, spec_class, spec_index, station_to_join, adjacent));
+}
+
+Commands RemoveRoadStop::get_command() { return Commands::RemoveRoadStop; }
+static constexpr auto _RemoveRoadStop_dispatch = MakeDispatchTable<Commands::RemoveRoadStop, TileIndex, uint8_t, uint8_t, RoadStopType, bool>();
+bool RemoveRoadStop::_post(::CommandCallback *callback) {
+    return _RemoveRoadStop_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->width, this->height, this->stop_type, this->remove_road);
+}
+CommandCost RemoveRoadStop::_do(DoCommandFlags flags) {
+    return (::Command<Commands::RemoveRoadStop>::Do(flags, tile, width, height, stop_type, remove_road));
+}
+
+Commands RenameStation::get_command() { return Commands::RenameStation; }
+static constexpr auto _RenameStation_dispatch = MakeDispatchTable<Commands::RenameStation, StationID, const std::string &>();
+bool RenameStation::_post(::CommandCallback *callback) {
+    return _RenameStation_dispatch[FindCallbackIndex(callback)](this->error, this->station_id, this->text);
+}
+CommandCost RenameStation::_do(DoCommandFlags flags) {
+    return (::Command<Commands::RenameStation>::Do(flags, station_id, text));
+}
+
+Commands MoveStationName::get_command() { return Commands::MoveStationName; }
+static constexpr auto _MoveStationName_dispatch = MakeDispatchTable<Commands::MoveStationName, StationID, TileIndex>();
+bool MoveStationName::_post(::CommandCallback *callback) {
+    return _MoveStationName_dispatch[FindCallbackIndex(callback)](this->error, this->station_id, this->tile);
+}
+CommandCost MoveStationName::_do(DoCommandFlags flags) {
+    return std::get<0>(::Command<Commands::MoveStationName>::Do(flags, station_id, tile));
+}
+
+Commands OpenCloseAirport::get_command() { return Commands::OpenCloseAirport; }
+static constexpr auto _OpenCloseAirport_dispatch = MakeDispatchTable<Commands::OpenCloseAirport, StationID>();
+bool OpenCloseAirport::_post(::CommandCallback *callback) {
+    return _OpenCloseAirport_dispatch[FindCallbackIndex(callback)](this->error, this->station_id);
+}
+CommandCost OpenCloseAirport::_do(DoCommandFlags flags) {
+    return (::Command<Commands::OpenCloseAirport>::Do(flags, station_id));
+}
+
+Commands CreateGoal::get_command() { return Commands::CreateGoal; }
+static constexpr auto _CreateGoal_dispatch = MakeDispatchTable<Commands::CreateGoal, CompanyID, ::GoalType, ::GoalTypeID, const EncodedString &>();
+bool CreateGoal::_post(::CommandCallback *callback) {
+    return _CreateGoal_dispatch[FindCallbackIndex(callback)](this->error, this->company, this->type, this->dest, this->text);
+}
+CommandCost CreateGoal::_do(DoCommandFlags flags) {
+    return std::get<0>(::Command<Commands::CreateGoal>::Do(flags, company, type, dest, text));
+}
+
+Commands RemoveGoal::get_command() { return Commands::RemoveGoal; }
+static constexpr auto _RemoveGoal_dispatch = MakeDispatchTable<Commands::RemoveGoal, ::GoalID>();
+bool RemoveGoal::_post(::CommandCallback *callback) {
+    return _RemoveGoal_dispatch[FindCallbackIndex(callback)](this->error, this->goal);
+}
+CommandCost RemoveGoal::_do(DoCommandFlags flags) {
+    return (::Command<Commands::RemoveGoal>::Do(flags, goal));
+}
+
+Commands SetGoalDestination::get_command() { return Commands::SetGoalDestination; }
+static constexpr auto _SetGoalDestination_dispatch = MakeDispatchTable<Commands::SetGoalDestination, ::GoalID, ::GoalType, ::GoalTypeID>();
+bool SetGoalDestination::_post(::CommandCallback *callback) {
+    return _SetGoalDestination_dispatch[FindCallbackIndex(callback)](this->error, this->goal, this->type, this->dest);
+}
+CommandCost SetGoalDestination::_do(DoCommandFlags flags) {
+    return (::Command<Commands::SetGoalDestination>::Do(flags, goal, type, dest));
+}
+
+Commands SetGoalText::get_command() { return Commands::SetGoalText; }
+static constexpr auto _SetGoalText_dispatch = MakeDispatchTable<Commands::SetGoalText, ::GoalID, const EncodedString &>();
+bool SetGoalText::_post(::CommandCallback *callback) {
+    return _SetGoalText_dispatch[FindCallbackIndex(callback)](this->error, this->goal, this->text);
+}
+CommandCost SetGoalText::_do(DoCommandFlags flags) {
+    return (::Command<Commands::SetGoalText>::Do(flags, goal, text));
+}
+
+Commands SetGoalProgress::get_command() { return Commands::SetGoalProgress; }
+static constexpr auto _SetGoalProgress_dispatch = MakeDispatchTable<Commands::SetGoalProgress, ::GoalID, const EncodedString &>();
+bool SetGoalProgress::_post(::CommandCallback *callback) {
+    return _SetGoalProgress_dispatch[FindCallbackIndex(callback)](this->error, this->goal, this->text);
+}
+CommandCost SetGoalProgress::_do(DoCommandFlags flags) {
+    return (::Command<Commands::SetGoalProgress>::Do(flags, goal, text));
+}
+
+Commands SetGoalCompleted::get_command() { return Commands::SetGoalCompleted; }
+static constexpr auto _SetGoalCompleted_dispatch = MakeDispatchTable<Commands::SetGoalCompleted, ::GoalID, bool>();
+bool SetGoalCompleted::_post(::CommandCallback *callback) {
+    return _SetGoalCompleted_dispatch[FindCallbackIndex(callback)](this->error, this->goal, this->completed);
+}
+CommandCost SetGoalCompleted::_do(DoCommandFlags flags) {
+    return (::Command<Commands::SetGoalCompleted>::Do(flags, goal, completed));
+}
+
+Commands GoalQuestion::get_command() { return Commands::GoalQuestion; }
+static constexpr auto _GoalQuestion_dispatch = MakeDispatchTable<Commands::GoalQuestion, uint16_t, uint32_t, bool, GoalQuestionButtons, GoalQuestionType, const EncodedString &>();
+bool GoalQuestion::_post(::CommandCallback *callback) {
+    return _GoalQuestion_dispatch[FindCallbackIndex(callback)](this->error, this->uniqueid, this->target, this->is_client, this->buttons, this->type, this->text);
+}
+CommandCost GoalQuestion::_do(DoCommandFlags flags) {
+    return (::Command<Commands::GoalQuestion>::Do(flags, uniqueid, target, is_client, buttons, type, text));
+}
+
+Commands GoalQuestionAnswer::get_command() { return Commands::GoalQuestionAnswer; }
+static constexpr auto _GoalQuestionAnswer_dispatch = MakeDispatchTable<Commands::GoalQuestionAnswer, uint16_t, GoalQuestionButton>();
+bool GoalQuestionAnswer::_post(::CommandCallback *callback) {
+    return _GoalQuestionAnswer_dispatch[FindCallbackIndex(callback)](this->error, this->uniqueid, this->button);
+}
+CommandCost GoalQuestionAnswer::_do(DoCommandFlags flags) {
+    return (::Command<Commands::GoalQuestionAnswer>::Do(flags, uniqueid, button));
+}
+
+Commands BuildShipDepot::get_command() { return Commands::BuildShipDepot; }
+static constexpr auto _BuildShipDepot_dispatch = MakeDispatchTable<Commands::BuildShipDepot, TileIndex, Axis>();
+bool BuildShipDepot::_post(::CommandCallback *callback) {
+    return _BuildShipDepot_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->axis);
+}
+CommandCost BuildShipDepot::_do(DoCommandFlags flags) {
+    return (::Command<Commands::BuildShipDepot>::Do(flags, tile, axis));
+}
+
+Commands BuildCanal::get_command() { return Commands::BuildCanal; }
+static constexpr auto _BuildCanal_dispatch = MakeDispatchTable<Commands::BuildCanal, TileIndex, TileIndex, WaterClass, bool>();
+bool BuildCanal::_post(::CommandCallback *callback) {
+    return _BuildCanal_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->start_tile, this->wc, this->diagonal);
+}
+CommandCost BuildCanal::_do(DoCommandFlags flags) {
+    return (::Command<Commands::BuildCanal>::Do(flags, tile, start_tile, wc, diagonal));
+}
+
+Commands BuildLock::get_command() { return Commands::BuildLock; }
+static constexpr auto _BuildLock_dispatch = MakeDispatchTable<Commands::BuildLock, TileIndex>();
+bool BuildLock::_post(::CommandCallback *callback) {
+    return _BuildLock_dispatch[FindCallbackIndex(callback)](this->error, this->tile);
+}
+CommandCost BuildLock::_do(DoCommandFlags flags) {
+    return (::Command<Commands::BuildLock>::Do(flags, tile));
+}
+
+Commands PlantTree::get_command() { return Commands::PlantTree; }
+static constexpr auto _PlantTree_dispatch = MakeDispatchTable<Commands::PlantTree, TileIndex, TileIndex, uint8_t, bool>();
+bool PlantTree::_post(::CommandCallback *callback) {
+    return _PlantTree_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->start_tile, this->tree_to_plant, this->diagonal);
+}
+CommandCost PlantTree::_do(DoCommandFlags flags) {
+    return (::Command<Commands::PlantTree>::Do(flags, tile, start_tile, tree_to_plant, diagonal));
+}
+
+Commands WantEnginePreview::get_command() { return Commands::WantEnginePreview; }
+static constexpr auto _WantEnginePreview_dispatch = MakeDispatchTable<Commands::WantEnginePreview, EngineID>();
+bool WantEnginePreview::_post(::CommandCallback *callback) {
+    return _WantEnginePreview_dispatch[FindCallbackIndex(callback)](this->error, this->engine_id);
+}
+CommandCost WantEnginePreview::_do(DoCommandFlags flags) {
+    return (::Command<Commands::WantEnginePreview>::Do(flags, engine_id));
+}
+
+Commands EngineCtrl::get_command() { return Commands::EngineControl; }
+static constexpr auto _EngineCtrl_dispatch = MakeDispatchTable<Commands::EngineControl, EngineID, CompanyID, bool>();
+bool EngineCtrl::_post(::CommandCallback *callback) {
+    return _EngineCtrl_dispatch[FindCallbackIndex(callback)](this->error, this->engine_id, this->company_id, this->allow);
+}
+CommandCost EngineCtrl::_do(DoCommandFlags flags) {
+    return (::Command<Commands::EngineControl>::Do(flags, engine_id, company_id, allow));
+}
+
+Commands RenameEngine::get_command() { return Commands::RenameEngine; }
+static constexpr auto _RenameEngine_dispatch = MakeDispatchTable<Commands::RenameEngine, EngineID, const std::string &>();
+bool RenameEngine::_post(::CommandCallback *callback) {
+    return _RenameEngine_dispatch[FindCallbackIndex(callback)](this->error, this->engine_id, this->text);
+}
+CommandCost RenameEngine::_do(DoCommandFlags flags) {
+    return (::Command<Commands::RenameEngine>::Do(flags, engine_id, text));
+}
+
+Commands SetVehicleVisibility::get_command() { return Commands::SetVehicleVisibility; }
+static constexpr auto _SetVehicleVisibility_dispatch = MakeDispatchTable<Commands::SetVehicleVisibility, EngineID, bool>();
+bool SetVehicleVisibility::_post(::CommandCallback *callback) {
+    return _SetVehicleVisibility_dispatch[FindCallbackIndex(callback)](this->error, this->engine_id, this->hide);
+}
+CommandCost SetVehicleVisibility::_do(DoCommandFlags flags) {
+    return (::Command<Commands::SetVehicleVisibility>::Do(flags, engine_id, hide));
+}
+
+Commands FoundTown::get_command() { return Commands::FoundTown; }
+static constexpr auto _FoundTown_dispatch = MakeDispatchTable<Commands::FoundTown, TileIndex, TownSize, bool, TownLayout, bool, uint32_t, const std::string &>();
+bool FoundTown::_post(::CommandCallback *callback) {
+    return _FoundTown_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->size, this->city, this->layout, this->random_location, this->townnameparts, this->text);
+}
+CommandCost FoundTown::_do(DoCommandFlags flags) {
+    return std::get<0>(::Command<Commands::FoundTown>::Do(flags, tile, size, city, layout, random_location, townnameparts, text));
+}
+
+Commands RenameTown::get_command() { return Commands::RenameTown; }
+static constexpr auto _RenameTown_dispatch = MakeDispatchTable<Commands::RenameTown, TownID, const std::string &>();
+bool RenameTown::_post(::CommandCallback *callback) {
+    return _RenameTown_dispatch[FindCallbackIndex(callback)](this->error, this->town_id, this->text);
+}
+CommandCost RenameTown::_do(DoCommandFlags flags) {
+    return (::Command<Commands::RenameTown>::Do(flags, town_id, text));
+}
+
+Commands DoTownAction::get_command() { return Commands::TownAction; }
+static constexpr auto _DoTownAction_dispatch = MakeDispatchTable<Commands::TownAction, TileIndex, TownID, TownAction>();
+bool DoTownAction::_post(::CommandCallback *callback) {
+    return _DoTownAction_dispatch[FindCallbackIndex(callback)](this->error, this->location, this->town_id, this->action);
+}
+CommandCost DoTownAction::_do(DoCommandFlags flags) {
+    return (::Command<Commands::TownAction>::Do(flags, town_id, action));
+}
+
+Commands TownGrowthRate::get_command() { return Commands::TownGrowthRate; }
+static constexpr auto _TownGrowthRate_dispatch = MakeDispatchTable<Commands::TownGrowthRate, TownID, uint16_t>();
+bool TownGrowthRate::_post(::CommandCallback *callback) {
+    return _TownGrowthRate_dispatch[FindCallbackIndex(callback)](this->error, this->town_id, this->growth_rate);
+}
+CommandCost TownGrowthRate::_do(DoCommandFlags flags) {
+    return (::Command<Commands::TownGrowthRate>::Do(flags, town_id, growth_rate));
+}
+
+Commands TownRating::get_command() { return Commands::TownRating; }
+static constexpr auto _TownRating_dispatch = MakeDispatchTable<Commands::TownRating, TownID, CompanyID, int16_t>();
+bool TownRating::_post(::CommandCallback *callback) {
+    return _TownRating_dispatch[FindCallbackIndex(callback)](this->error, this->town_id, this->company_id, this->rating);
+}
+CommandCost TownRating::_do(DoCommandFlags flags) {
+    return (::Command<Commands::TownRating>::Do(flags, town_id, company_id, rating));
+}
+
+Commands TownCargoGoal::get_command() { return Commands::TownCargoGoal; }
+static constexpr auto _TownCargoGoal_dispatch = MakeDispatchTable<Commands::TownCargoGoal, TownID, TownAcceptanceEffect, uint32_t>();
+bool TownCargoGoal::_post(::CommandCallback *callback) {
+    return _TownCargoGoal_dispatch[FindCallbackIndex(callback)](this->error, this->town_id, this->tae, this->goal);
+}
+CommandCost TownCargoGoal::_do(DoCommandFlags flags) {
+    return (::Command<Commands::TownCargoGoal>::Do(flags, town_id, tae, goal));
+}
+
+Commands TownSetText::get_command() { return Commands::TownSetText; }
+static constexpr auto _TownSetText_dispatch = MakeDispatchTable<Commands::TownSetText, TownID, const EncodedString &>();
+bool TownSetText::_post(::CommandCallback *callback) {
+    return _TownSetText_dispatch[FindCallbackIndex(callback)](this->error, this->town_id, this->text);
+}
+CommandCost TownSetText::_do(DoCommandFlags flags) {
+    return (::Command<Commands::TownSetText>::Do(flags, town_id, text));
+}
+
+Commands ExpandTown::get_command() { return Commands::ExpandTown; }
+static constexpr auto _ExpandTown_dispatch = MakeDispatchTable<Commands::ExpandTown, TownID, uint32_t, TownExpandModes>();
+bool ExpandTown::_post(::CommandCallback *callback) {
+    return _ExpandTown_dispatch[FindCallbackIndex(callback)](this->error, this->town_id, this->grow_amount, this->modes);
+}
+CommandCost ExpandTown::_do(DoCommandFlags flags) {
+    return (::Command<Commands::ExpandTown>::Do(flags, town_id, grow_amount, modes));
+}
+
+Commands DeleteTown::get_command() { return Commands::DeleteTown; }
+static constexpr auto _DeleteTown_dispatch = MakeDispatchTable<Commands::DeleteTown, TownID>();
+bool DeleteTown::_post(::CommandCallback *callback) {
+    return _DeleteTown_dispatch[FindCallbackIndex(callback)](this->error, this->town_id);
+}
+CommandCost DeleteTown::_do(DoCommandFlags flags) {
+    return (::Command<Commands::DeleteTown>::Do(flags, town_id));
+}
+
+Commands PlaceHouse::get_command() { return Commands::PlaceHouse; }
+static constexpr auto _PlaceHouse_dispatch = MakeDispatchTable<Commands::PlaceHouse, TileIndex, HouseID, bool, bool>();
+bool PlaceHouse::_post(::CommandCallback *callback) {
+    return _PlaceHouse_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->house, this->house_protected, this->replace);
+}
+CommandCost PlaceHouse::_do(DoCommandFlags flags) {
+    return (::Command<Commands::PlaceHouse>::Do(flags, tile, house, house_protected, replace));
+}
+
+Commands PlaceHouseArea::get_command() { return Commands::PlaceHouseArea; }
+static constexpr auto _PlaceHouseArea_dispatch = MakeDispatchTable<Commands::PlaceHouseArea, TileIndex, TileIndex, HouseID, bool, bool, bool>();
+bool PlaceHouseArea::_post(::CommandCallback *callback) {
+    return _PlaceHouseArea_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->start_tile, this->house, this->is_protected, this->replace, this->diagonal);
+}
+CommandCost PlaceHouseArea::_do(DoCommandFlags flags) {
+    return (::Command<Commands::PlaceHouseArea>::Do(flags, tile, start_tile, house, is_protected, replace, diagonal));
+}
+
+Commands TerraformLand::get_command() { return Commands::TerraformLand; }
+static constexpr auto _TerraformLand_dispatch = MakeDispatchTable<Commands::TerraformLand, TileIndex, Slope, bool>();
+bool TerraformLand::_post(::CommandCallback *callback) {
+    return _TerraformLand_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->slope, this->dir_up);
+}
+CommandCost TerraformLand::_do(DoCommandFlags flags) {
+    return std::get<0>(::Command<Commands::TerraformLand>::Do(flags, tile, slope, dir_up));
+}
+
+Commands LevelLand::get_command() { return Commands::LevelLand; }
+static constexpr auto _LevelLand_dispatch = MakeDispatchTable<Commands::LevelLand, TileIndex, TileIndex, bool, LevelMode>();
+bool LevelLand::_post(::CommandCallback *callback) {
+    return _LevelLand_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->start_tile, this->diagonal, this->lm);
+}
+CommandCost LevelLand::_do(DoCommandFlags flags) {
+    return std::get<0>(::Command<Commands::LevelLand>::Do(flags, tile, start_tile, diagonal, lm));
+}
+
+Commands BuyCompany::get_command() { return Commands::BuyCompany; }
+static constexpr auto _BuyCompany_dispatch = MakeDispatchTable<Commands::BuyCompany, CompanyID, bool>();
+bool BuyCompany::_post(::CommandCallback *callback) {
+    return _BuyCompany_dispatch[FindCallbackIndex(callback)](this->error, this->target_company, this->hostile_takeover);
+}
+CommandCost BuyCompany::_do(DoCommandFlags flags) {
+    return (::Command<Commands::BuyCompany>::Do(flags, target_company, hostile_takeover));
+}
+
+Commands RenameDepot::get_command() { return Commands::RenameDepot; }
+static constexpr auto _RenameDepot_dispatch = MakeDispatchTable<Commands::RenameDepot, DepotID, const std::string &>();
+bool RenameDepot::_post(::CommandCallback *callback) {
+    return _RenameDepot_dispatch[FindCallbackIndex(callback)](this->error, this->depot_id, this->text);
+}
+CommandCost RenameDepot::_do(DoCommandFlags flags) {
+    return (::Command<Commands::RenameDepot>::Do(flags, depot_id, text));
+}
+
+Commands ScrollViewport::get_command() { return Commands::ScrollViewport; }
+static constexpr auto _ScrollViewport_dispatch = MakeDispatchTable<Commands::ScrollViewport, TileIndex, ViewportScrollTarget, uint32_t>();
+bool ScrollViewport::_post(::CommandCallback *callback) {
+    return _ScrollViewport_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->target, this->ref);
+}
+CommandCost ScrollViewport::_do(DoCommandFlags flags) {
+    return (::Command<Commands::ScrollViewport>::Do(flags, tile, target, ref));
+}
+
+Commands TurnRoadVeh::get_command() { return Commands::TurnRoadVehicle; }
+static constexpr auto _TurnRoadVeh_dispatch = MakeDispatchTable<Commands::TurnRoadVehicle, TileIndex, VehicleID>();
+bool TurnRoadVeh::_post(::CommandCallback *callback) {
+    return _TurnRoadVeh_dispatch[FindCallbackIndex(callback)](this->error, this->location, this->veh_id);
+}
+CommandCost TurnRoadVeh::_do(DoCommandFlags flags) {
+    return (::Command<Commands::TurnRoadVehicle>::Do(flags, veh_id));
+}
+
+Commands PlaceSign::get_command() { return Commands::PlaceSign; }
+static constexpr auto _PlaceSign_dispatch = MakeDispatchTable<Commands::PlaceSign, TileIndex, const std::string &>();
+bool PlaceSign::_post(::CommandCallback *callback) {
+    return _PlaceSign_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->text);
+}
+CommandCost PlaceSign::_do(DoCommandFlags flags) {
+    return std::get<0>(::Command<Commands::PlaceSign>::Do(flags, tile, text));
+}
+
+Commands RenameSign::get_command() { return Commands::RenameSign; }
+static constexpr auto _RenameSign_dispatch = MakeDispatchTable<Commands::RenameSign, SignID, const std::string &, Colours>();
+bool RenameSign::_post(::CommandCallback *callback) {
+    return _RenameSign_dispatch[FindCallbackIndex(callback)](this->error, this->sign_id, this->text, this->text_colour);
+}
+CommandCost RenameSign::_do(DoCommandFlags flags) {
+    return (::Command<Commands::RenameSign>::Do(flags, sign_id, text, text_colour));
+}
+
+Commands MoveSign::get_command() { return Commands::MoveSign; }
+static constexpr auto _MoveSign_dispatch = MakeDispatchTable<Commands::MoveSign, SignID, TileIndex>();
+bool MoveSign::_post(::CommandCallback *callback) {
+    return _MoveSign_dispatch[FindCallbackIndex(callback)](this->error, this->sign_id, this->tile);
+}
+CommandCost MoveSign::_do(DoCommandFlags flags) {
+    return (::Command<Commands::MoveSign>::Do(flags, sign_id, tile));
+}
+
+Commands CustomNewsItem::get_command() { return Commands::CreateCustomNewsItem; }
+static constexpr auto _CustomNewsItem_dispatch = MakeDispatchTable<Commands::CreateCustomNewsItem, NewsType, CompanyID, NewsReference, const EncodedString &>();
+bool CustomNewsItem::_post(::CommandCallback *callback) {
+    return _CustomNewsItem_dispatch[FindCallbackIndex(callback)](this->error, this->type, this->company, this->reference, this->text);
+}
+CommandCost CustomNewsItem::_do(DoCommandFlags flags) {
+    return (::Command<Commands::CreateCustomNewsItem>::Do(flags, type, company, reference, text));
+}
+
+Commands LandscapeClear::get_command() { return Commands::LandscapeClear; }
+static constexpr auto _LandscapeClear_dispatch = MakeDispatchTable<Commands::LandscapeClear, TileIndex>();
+bool LandscapeClear::_post(::CommandCallback *callback) {
+    return _LandscapeClear_dispatch[FindCallbackIndex(callback)](this->error, this->tile);
+}
+CommandCost LandscapeClear::_do(DoCommandFlags flags) {
+    return (::Command<Commands::LandscapeClear>::Do(flags, tile));
+}
+
+Commands ClearArea::get_command() { return Commands::ClearArea; }
+static constexpr auto _ClearArea_dispatch = MakeDispatchTable<Commands::ClearArea, TileIndex, TileIndex, bool>();
+bool ClearArea::_post(::CommandCallback *callback) {
+    return _ClearArea_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->start_tile, this->diagonal);
+}
+CommandCost ClearArea::_do(DoCommandFlags flags) {
+    return std::get<0>(::Command<Commands::ClearArea>::Do(flags, tile, start_tile, diagonal));
+}
+
+Commands BuildRailroadTrack::get_command() { return Commands::BuildRailLong; }
+static constexpr auto _BuildRailroadTrack_dispatch = MakeDispatchTable<Commands::BuildRailLong, TileIndex, TileIndex, RailType, Track, bool, bool>();
+bool BuildRailroadTrack::_post(::CommandCallback *callback) {
+    return _BuildRailroadTrack_dispatch[FindCallbackIndex(callback)](this->error, this->end_tile, this->start_tile, this->railtype, this->track, this->auto_remove_signals, this->fail_on_obstacle);
+}
+CommandCost BuildRailroadTrack::_do(DoCommandFlags flags) {
+    return (::Command<Commands::BuildRailLong>::Do(flags, end_tile, start_tile, railtype, track, auto_remove_signals, fail_on_obstacle));
+}
+
+Commands RemoveRailroadTrack::get_command() { return Commands::RemoveRailLong; }
+static constexpr auto _RemoveRailroadTrack_dispatch = MakeDispatchTable<Commands::RemoveRailLong, TileIndex, TileIndex, Track>();
+bool RemoveRailroadTrack::_post(::CommandCallback *callback) {
+    return _RemoveRailroadTrack_dispatch[FindCallbackIndex(callback)](this->error, this->end_tile, this->start_tile, this->track);
+}
+CommandCost RemoveRailroadTrack::_do(DoCommandFlags flags) {
+    return (::Command<Commands::RemoveRailLong>::Do(flags, end_tile, start_tile, track));
+}
+
+Commands BuildSingleRail::get_command() { return Commands::BuildRail; }
+static constexpr auto _BuildSingleRail_dispatch = MakeDispatchTable<Commands::BuildRail, TileIndex, RailType, Track, bool>();
+bool BuildSingleRail::_post(::CommandCallback *callback) {
+    return _BuildSingleRail_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->railtype, this->track, this->auto_remove_signals);
+}
+CommandCost BuildSingleRail::_do(DoCommandFlags flags) {
+    return (::Command<Commands::BuildRail>::Do(flags, tile, railtype, track, auto_remove_signals));
+}
+
+Commands RemoveSingleRail::get_command() { return Commands::RemoveRail; }
+static constexpr auto _RemoveSingleRail_dispatch = MakeDispatchTable<Commands::RemoveRail, TileIndex, Track>();
+bool RemoveSingleRail::_post(::CommandCallback *callback) {
+    return _RemoveSingleRail_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->track);
+}
+CommandCost RemoveSingleRail::_do(DoCommandFlags flags) {
+    return (::Command<Commands::RemoveRail>::Do(flags, tile, track));
+}
+
+Commands BuildTrainDepot::get_command() { return Commands::BuildRailDepot; }
+static constexpr auto _BuildTrainDepot_dispatch = MakeDispatchTable<Commands::BuildRailDepot, TileIndex, RailType, DiagDirection>();
+bool BuildTrainDepot::_post(::CommandCallback *callback) {
+    return _BuildTrainDepot_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->railtype, this->dir);
+}
+CommandCost BuildTrainDepot::_do(DoCommandFlags flags) {
+    return (::Command<Commands::BuildRailDepot>::Do(flags, tile, railtype, dir));
+}
+
+Commands BuildSingleSignal::get_command() { return Commands::BuildSignal; }
+static constexpr auto _BuildSingleSignal_dispatch = MakeDispatchTable<Commands::BuildSignal, TileIndex, Track, SignalType, SignalVariant, bool, bool, bool, SignalType, SignalType, uint8_t, uint8_t>();
+bool BuildSingleSignal::_post(::CommandCallback *callback) {
+    return _BuildSingleSignal_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->track, this->sigtype, this->sigvar, this->convert_signal, this->skip_existing_signals, this->ctrl_pressed, this->cycle_start, this->cycle_stop, this->num_dir_cycle, this->signals_copy);
+}
+CommandCost BuildSingleSignal::_do(DoCommandFlags flags) {
+    return (::Command<Commands::BuildSignal>::Do(flags, tile, track, sigtype, sigvar, convert_signal, skip_existing_signals, ctrl_pressed, cycle_start, cycle_stop, num_dir_cycle, signals_copy));
+}
+
+Commands RemoveSingleSignal::get_command() { return Commands::RemoveSignal; }
+static constexpr auto _RemoveSingleSignal_dispatch = MakeDispatchTable<Commands::RemoveSignal, TileIndex, Track>();
+bool RemoveSingleSignal::_post(::CommandCallback *callback) {
+    return _RemoveSingleSignal_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->track);
+}
+CommandCost RemoveSingleSignal::_do(DoCommandFlags flags) {
+    return (::Command<Commands::RemoveSignal>::Do(flags, tile, track));
+}
+
+Commands ConvertRail::get_command() { return Commands::ConvertRail; }
+static constexpr auto _ConvertRail_dispatch = MakeDispatchTable<Commands::ConvertRail, TileIndex, TileIndex, RailType, bool>();
+bool ConvertRail::_post(::CommandCallback *callback) {
+    return _ConvertRail_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->area_start, this->totype, this->diagonal);
+}
+CommandCost ConvertRail::_do(DoCommandFlags flags) {
+    return (::Command<Commands::ConvertRail>::Do(flags, tile, area_start, totype, diagonal));
+}
+
+Commands BuildSignalTrack::get_command() { return Commands::BuildSignalLong; }
+static constexpr auto _BuildSignalTrack_dispatch = MakeDispatchTable<Commands::BuildSignalLong, TileIndex, TileIndex, Track, SignalType, SignalVariant, bool, bool, bool, uint8_t>();
+bool BuildSignalTrack::_post(::CommandCallback *callback) {
+    return _BuildSignalTrack_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->end_tile, this->track, this->sigtype, this->sigvar, this->mode, this->autofill, this->minimise_gaps, this->signal_density);
+}
+CommandCost BuildSignalTrack::_do(DoCommandFlags flags) {
+    return (::Command<Commands::BuildSignalLong>::Do(flags, tile, end_tile, track, sigtype, sigvar, mode, autofill, minimise_gaps, signal_density));
+}
+
+Commands RemoveSignalTrack::get_command() { return Commands::RemoveSignalLong; }
+static constexpr auto _RemoveSignalTrack_dispatch = MakeDispatchTable<Commands::RemoveSignalLong, TileIndex, TileIndex, Track, bool>();
+bool RemoveSignalTrack::_post(::CommandCallback *callback) {
+    return _RemoveSignalTrack_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->end_tile, this->track, this->autofill);
+}
+CommandCost RemoveSignalTrack::_do(DoCommandFlags flags) {
+    return (::Command<Commands::RemoveSignalLong>::Do(flags, tile, end_tile, track, autofill));
+}
+
+Commands MoveRailVehicle::get_command() { return Commands::MoveRailVehicle; }
+static constexpr auto _MoveRailVehicle_dispatch = MakeDispatchTable<Commands::MoveRailVehicle, TileIndex, VehicleID, VehicleID, bool>();
+bool MoveRailVehicle::_post(::CommandCallback *callback) {
+    return _MoveRailVehicle_dispatch[FindCallbackIndex(callback)](this->error, this->location, this->src_veh, this->dest_veh, this->move_chain);
+}
+CommandCost MoveRailVehicle::_do(DoCommandFlags flags) {
+    return (::Command<Commands::MoveRailVehicle>::Do(flags, src_veh, dest_veh, move_chain));
+}
+
+Commands ForceTrainProceed::get_command() { return Commands::ForceTrainProceed; }
+static constexpr auto _ForceTrainProceed_dispatch = MakeDispatchTable<Commands::ForceTrainProceed, TileIndex, VehicleID>();
+bool ForceTrainProceed::_post(::CommandCallback *callback) {
+    return _ForceTrainProceed_dispatch[FindCallbackIndex(callback)](this->error, this->location, this->veh_id);
+}
+CommandCost ForceTrainProceed::_do(DoCommandFlags flags) {
+    return (::Command<Commands::ForceTrainProceed>::Do(flags, veh_id));
+}
+
+Commands ReverseTrainDirection::get_command() { return Commands::ReverseTrainDirection; }
+static constexpr auto _ReverseTrainDirection_dispatch = MakeDispatchTable<Commands::ReverseTrainDirection, TileIndex, VehicleID, bool>();
+bool ReverseTrainDirection::_post(::CommandCallback *callback) {
+    return _ReverseTrainDirection_dispatch[FindCallbackIndex(callback)](this->error, this->location, this->veh_id, this->reverse_single_veh);
+}
+CommandCost ReverseTrainDirection::_do(DoCommandFlags flags) {
+    return (::Command<Commands::ReverseTrainDirection>::Do(flags, veh_id, reverse_single_veh));
+}
+
+Commands ChangeSetting::get_command() { return Commands::ChangeSetting; }
+static constexpr auto _ChangeSetting_dispatch = MakeDispatchTable<Commands::ChangeSetting, const std::string &, int32_t>();
+bool ChangeSetting::_post(::CommandCallback *callback) {
+    return _ChangeSetting_dispatch[FindCallbackIndex(callback)](this->error, this->name, this->value);
+}
+CommandCost ChangeSetting::_do(DoCommandFlags flags) {
+    return (::Command<Commands::ChangeSetting>::Do(flags, name, value));
+}
+
+Commands ChangeCompanySetting::get_command() { return Commands::ChangeCompanySetting; }
+static constexpr auto _ChangeCompanySetting_dispatch = MakeDispatchTable<Commands::ChangeCompanySetting, const std::string &, int32_t>();
+bool ChangeCompanySetting::_post(::CommandCallback *callback) {
+    return _ChangeCompanySetting_dispatch[FindCallbackIndex(callback)](this->error, this->name, this->value);
+}
+CommandCost ChangeCompanySetting::_do(DoCommandFlags flags) {
+    return (::Command<Commands::ChangeCompanySetting>::Do(flags, name, value));
+}
+
+Commands BuildVehicle::get_command() { return Commands::BuildVehicle; }
+static constexpr auto _BuildVehicle_dispatch = MakeDispatchTable<Commands::BuildVehicle, TileIndex, EngineID, bool, CargoType, ClientID>();
+bool BuildVehicle::_post(::CommandCallback *callback) {
+    return _BuildVehicle_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->eid, this->use_free_vehicles, this->cargo, this->client_id);
+}
+CommandCost BuildVehicle::_do(DoCommandFlags flags) {
+    return std::get<0>(::Command<Commands::BuildVehicle>::Do(flags, tile, eid, use_free_vehicles, cargo, client_id));
+}
+
+Commands SellVehicle::get_command() { return Commands::SellVehicle; }
+static constexpr auto _SellVehicle_dispatch = MakeDispatchTable<Commands::SellVehicle, TileIndex, VehicleID, bool, bool, ClientID>();
+bool SellVehicle::_post(::CommandCallback *callback) {
+    return _SellVehicle_dispatch[FindCallbackIndex(callback)](this->error, this->location, this->v_id, this->sell_chain, this->backup_order, this->client_id);
+}
+CommandCost SellVehicle::_do(DoCommandFlags flags) {
+    return (::Command<Commands::SellVehicle>::Do(flags, v_id, sell_chain, backup_order, client_id));
+}
+
+Commands RefitVehicle::get_command() { return Commands::RefitVehicle; }
+static constexpr auto _RefitVehicle_dispatch = MakeDispatchTable<Commands::RefitVehicle, TileIndex, VehicleID, CargoType, uint8_t, bool, bool, uint8_t>();
+bool RefitVehicle::_post(::CommandCallback *callback) {
+    return _RefitVehicle_dispatch[FindCallbackIndex(callback)](this->error, this->location, this->veh_id, this->new_cargo_type, this->new_subtype, this->auto_refit, this->only_this, this->num_vehicles);
+}
+CommandCost RefitVehicle::_do(DoCommandFlags flags) {
+    return std::get<0>(::Command<Commands::RefitVehicle>::Do(flags, veh_id, new_cargo_type, new_subtype, auto_refit, only_this, num_vehicles));
+}
+
+Commands SendVehicleToDepot::get_command() { return Commands::SendVehicleToDepot; }
+static constexpr auto _SendVehicleToDepot_dispatch = MakeDispatchTable<Commands::SendVehicleToDepot, VehicleID, DepotCommandFlags, const VehicleListIdentifier &>();
+bool SendVehicleToDepot::_post(::CommandCallback *callback) {
+    return _SendVehicleToDepot_dispatch[FindCallbackIndex(callback)](this->error, this->veh_id, this->depot_cmd, this->vli);
+}
+CommandCost SendVehicleToDepot::_do(DoCommandFlags flags) {
+    return (::Command<Commands::SendVehicleToDepot>::Do(flags, veh_id, depot_cmd, vli));
+}
+
+Commands ChangeServiceInt::get_command() { return Commands::ChangeServiceInterval; }
+static constexpr auto _ChangeServiceInt_dispatch = MakeDispatchTable<Commands::ChangeServiceInterval, VehicleID, uint16_t, bool, bool>();
+bool ChangeServiceInt::_post(::CommandCallback *callback) {
+    return _ChangeServiceInt_dispatch[FindCallbackIndex(callback)](this->error, this->veh_id, this->serv_int, this->is_custom, this->is_percent);
+}
+CommandCost ChangeServiceInt::_do(DoCommandFlags flags) {
+    return (::Command<Commands::ChangeServiceInterval>::Do(flags, veh_id, serv_int, is_custom, is_percent));
+}
+
+Commands RenameVehicle::get_command() { return Commands::RenameVehicle; }
+static constexpr auto _RenameVehicle_dispatch = MakeDispatchTable<Commands::RenameVehicle, VehicleID, const std::string &>();
+bool RenameVehicle::_post(::CommandCallback *callback) {
+    return _RenameVehicle_dispatch[FindCallbackIndex(callback)](this->error, this->veh_id, this->text);
+}
+CommandCost RenameVehicle::_do(DoCommandFlags flags) {
+    return (::Command<Commands::RenameVehicle>::Do(flags, veh_id, text));
+}
+
+Commands CloneVehicle::get_command() { return Commands::CloneVehicle; }
+static constexpr auto _CloneVehicle_dispatch = MakeDispatchTable<Commands::CloneVehicle, TileIndex, VehicleID, bool>();
+bool CloneVehicle::_post(::CommandCallback *callback) {
+    return _CloneVehicle_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->veh_id, this->share_orders);
+}
+CommandCost CloneVehicle::_do(DoCommandFlags flags) {
+    return std::get<0>(::Command<Commands::CloneVehicle>::Do(flags, tile, veh_id, share_orders));
+}
+
+Commands StartStopVehicle::get_command() { return Commands::StartStopVehicle; }
+static constexpr auto _StartStopVehicle_dispatch = MakeDispatchTable<Commands::StartStopVehicle, TileIndex, VehicleID, bool>();
+bool StartStopVehicle::_post(::CommandCallback *callback) {
+    return _StartStopVehicle_dispatch[FindCallbackIndex(callback)](this->error, this->location, this->veh_id, this->evaluate_startstop_cb);
+}
+CommandCost StartStopVehicle::_do(DoCommandFlags flags) {
+    return (::Command<Commands::StartStopVehicle>::Do(flags, veh_id, evaluate_startstop_cb));
+}
+
+Commands MassStartStopVehicle::get_command() { return Commands::MassStartStop; }
+static constexpr auto _MassStartStopVehicle_dispatch = MakeDispatchTable<Commands::MassStartStop, TileIndex, bool, bool, const VehicleListIdentifier &>();
+bool MassStartStopVehicle::_post(::CommandCallback *callback) {
+    return _MassStartStopVehicle_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->do_start, this->vehicle_list_window, this->vli);
+}
+CommandCost MassStartStopVehicle::_do(DoCommandFlags flags) {
+    return (::Command<Commands::MassStartStop>::Do(flags, tile, do_start, vehicle_list_window, vli));
+}
+
+Commands DepotSellAllVehicles::get_command() { return Commands::DepotMassSell; }
+static constexpr auto _DepotSellAllVehicles_dispatch = MakeDispatchTable<Commands::DepotMassSell, TileIndex, VehicleType>();
+bool DepotSellAllVehicles::_post(::CommandCallback *callback) {
+    return _DepotSellAllVehicles_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->vehicle_type);
+}
+CommandCost DepotSellAllVehicles::_do(DoCommandFlags flags) {
+    return (::Command<Commands::DepotMassSell>::Do(flags, tile, vehicle_type));
+}
+
+Commands DepotMassAutoReplace::get_command() { return Commands::DepotMassAutoreplace; }
+static constexpr auto _DepotMassAutoReplace_dispatch = MakeDispatchTable<Commands::DepotMassAutoreplace, TileIndex, VehicleType>();
+bool DepotMassAutoReplace::_post(::CommandCallback *callback) {
+    return _DepotMassAutoReplace_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->vehicle_type);
+}
+CommandCost DepotMassAutoReplace::_do(DoCommandFlags flags) {
+    return (::Command<Commands::DepotMassAutoreplace>::Do(flags, tile, vehicle_type));
+}
+
+Commands MoneyCheat::get_command() { return Commands::MoneyCheat; }
+static constexpr auto _MoneyCheat_dispatch = MakeDispatchTable<Commands::MoneyCheat, Money>();
+bool MoneyCheat::_post(::CommandCallback *callback) {
+    return _MoneyCheat_dispatch[FindCallbackIndex(callback)](this->error, this->amount);
+}
+CommandCost MoneyCheat::_do(DoCommandFlags flags) {
+    return (::Command<Commands::MoneyCheat>::Do(flags, amount));
+}
+
+Commands ChangeBankBalance::get_command() { return Commands::ChangeBankBalance; }
+static constexpr auto _ChangeBankBalance_dispatch = MakeDispatchTable<Commands::ChangeBankBalance, TileIndex, Money, CompanyID, ExpensesType>();
+bool ChangeBankBalance::_post(::CommandCallback *callback) {
+    return _ChangeBankBalance_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->delta, this->company, this->expenses_type);
+}
+CommandCost ChangeBankBalance::_do(DoCommandFlags flags) {
+    return (::Command<Commands::ChangeBankBalance>::Do(flags, tile, delta, company, expenses_type));
+}
+
+Commands IncreaseLoan::get_command() { return Commands::IncreaseLoan; }
+static constexpr auto _IncreaseLoan_dispatch = MakeDispatchTable<Commands::IncreaseLoan, LoanCommand, Money>();
+bool IncreaseLoan::_post(::CommandCallback *callback) {
+    return _IncreaseLoan_dispatch[FindCallbackIndex(callback)](this->error, this->cmd, this->amount);
+}
+CommandCost IncreaseLoan::_do(DoCommandFlags flags) {
+    return (::Command<Commands::IncreaseLoan>::Do(flags, cmd, amount));
+}
+
+Commands DecreaseLoan::get_command() { return Commands::DecreaseLoan; }
+static constexpr auto _DecreaseLoan_dispatch = MakeDispatchTable<Commands::DecreaseLoan, LoanCommand, Money>();
+bool DecreaseLoan::_post(::CommandCallback *callback) {
+    return _DecreaseLoan_dispatch[FindCallbackIndex(callback)](this->error, this->cmd, this->amount);
+}
+CommandCost DecreaseLoan::_do(DoCommandFlags flags) {
+    return (::Command<Commands::DecreaseLoan>::Do(flags, cmd, amount));
+}
+
+Commands SetCompanyMaxLoan::get_command() { return Commands::SetCompanyMaxLoan; }
+static constexpr auto _SetCompanyMaxLoan_dispatch = MakeDispatchTable<Commands::SetCompanyMaxLoan, CompanyID, Money>();
+bool SetCompanyMaxLoan::_post(::CommandCallback *callback) {
+    return _SetCompanyMaxLoan_dispatch[FindCallbackIndex(callback)](this->error, this->company, this->amount);
+}
+CommandCost SetCompanyMaxLoan::_do(DoCommandFlags flags) {
+    return (::Command<Commands::SetCompanyMaxLoan>::Do(flags, company, amount));
+}
+
+Commands Pause::get_command() { return Commands::Pause; }
+static constexpr auto _Pause_dispatch = MakeDispatchTable<Commands::Pause, PauseMode, bool>();
+bool Pause::_post(::CommandCallback *callback) {
+    return _Pause_dispatch[FindCallbackIndex(callback)](this->error, this->mode, this->pause);
+}
+CommandCost Pause::_do(DoCommandFlags flags) {
+    return (::Command<Commands::Pause>::Do(flags, mode, pause));
+}
+
+Commands BuildObject::get_command() { return Commands::BuildObject; }
+static constexpr auto _BuildObject_dispatch = MakeDispatchTable<Commands::BuildObject, TileIndex, ObjectType, uint8_t>();
+bool BuildObject::_post(::CommandCallback *callback) {
+    return _BuildObject_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->type, this->view);
+}
+CommandCost BuildObject::_do(DoCommandFlags flags) {
+    return (::Command<Commands::BuildObject>::Do(flags, tile, type, view));
+}
+
+Commands BuildObjectArea::get_command() { return Commands::BuildObjectArea; }
+static constexpr auto _BuildObjectArea_dispatch = MakeDispatchTable<Commands::BuildObjectArea, TileIndex, TileIndex, ObjectType, uint8_t, bool>();
+bool BuildObjectArea::_post(::CommandCallback *callback) {
+    return _BuildObjectArea_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->start_tile, this->type, this->view, this->diagonal);
+}
+CommandCost BuildObjectArea::_do(DoCommandFlags flags) {
+    return (::Command<Commands::BuildObjectArea>::Do(flags, tile, start_tile, type, view, diagonal));
+}
+
+Commands CreateSubsidy::get_command() { return Commands::CreateSubsidy; }
+static constexpr auto _CreateSubsidy_dispatch = MakeDispatchTable<Commands::CreateSubsidy, CargoType, Source, Source>();
+bool CreateSubsidy::_post(::CommandCallback *callback) {
+    return _CreateSubsidy_dispatch[FindCallbackIndex(callback)](this->error, this->cargo_type, this->src, this->dst);
+}
+CommandCost CreateSubsidy::_do(DoCommandFlags flags) {
+    return (::Command<Commands::CreateSubsidy>::Do(flags, cargo_type, src, dst));
+}
+
+Commands BuildBridge::get_command() { return Commands::BuildBridge; }
+static constexpr auto _BuildBridge_dispatch = MakeDispatchTable<Commands::BuildBridge, TileIndex, TileIndex, TransportType, BridgeType, RailType, RoadType>();
+bool BuildBridge::_post(::CommandCallback *callback) {
+    return _BuildBridge_dispatch[FindCallbackIndex(callback)](this->error, this->tile_end, this->tile_start, this->transport_type, this->bridge_type, this->railtype, this->roadtype);
+}
+CommandCost BuildBridge::_do(DoCommandFlags flags) {
+    return (::Command<Commands::BuildBridge>::Do(flags, tile_end, tile_start, transport_type, bridge_type, railtype, roadtype));
+}
+
+Commands BuildTunnel::get_command() { return Commands::BuildTunnel; }
+static constexpr auto _BuildTunnel_dispatch = MakeDispatchTable<Commands::BuildTunnel, TileIndex, TransportType, RailType, RoadType>();
+bool BuildTunnel::_post(::CommandCallback *callback) {
+    return _BuildTunnel_dispatch[FindCallbackIndex(callback)](this->error, this->start_tile, this->transport_type, this->railtype, this->roadtype);
+}
+CommandCost BuildTunnel::_do(DoCommandFlags flags) {
+    return (::Command<Commands::BuildTunnel>::Do(flags, start_tile, transport_type, railtype, roadtype));
+}
+
+Commands CreateStoryPage::get_command() { return Commands::CreateStoryPage; }
+static constexpr auto _CreateStoryPage_dispatch = MakeDispatchTable<Commands::CreateStoryPage, CompanyID, const EncodedString &>();
+bool CreateStoryPage::_post(::CommandCallback *callback) {
+    return _CreateStoryPage_dispatch[FindCallbackIndex(callback)](this->error, this->company, this->text);
+}
+CommandCost CreateStoryPage::_do(DoCommandFlags flags) {
+    return std::get<0>(::Command<Commands::CreateStoryPage>::Do(flags, company, text));
+}
+
+Commands CreateStoryPageElement::get_command() { return Commands::CreateStoryPageElement; }
+static constexpr auto _CreateStoryPageElement_dispatch = MakeDispatchTable<Commands::CreateStoryPageElement, TileIndex, StoryPageID, StoryPageElementType, uint32_t, const EncodedString &>();
+bool CreateStoryPageElement::_post(::CommandCallback *callback) {
+    return _CreateStoryPageElement_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->page_id, this->type, this->reference, this->text);
+}
+CommandCost CreateStoryPageElement::_do(DoCommandFlags flags) {
+    return std::get<0>(::Command<Commands::CreateStoryPageElement>::Do(flags, tile, page_id, type, reference, text));
+}
+
+Commands UpdateStoryPageElement::get_command() { return Commands::UpdateStoryPageElement; }
+static constexpr auto _UpdateStoryPageElement_dispatch = MakeDispatchTable<Commands::UpdateStoryPageElement, TileIndex, StoryPageElementID, uint32_t, const EncodedString &>();
+bool UpdateStoryPageElement::_post(::CommandCallback *callback) {
+    return _UpdateStoryPageElement_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->page_element_id, this->reference, this->text);
+}
+CommandCost UpdateStoryPageElement::_do(DoCommandFlags flags) {
+    return (::Command<Commands::UpdateStoryPageElement>::Do(flags, tile, page_element_id, reference, text));
+}
+
+Commands SetStoryPageTitle::get_command() { return Commands::SetStoryPageTitle; }
+static constexpr auto _SetStoryPageTitle_dispatch = MakeDispatchTable<Commands::SetStoryPageTitle, StoryPageID, const EncodedString &>();
+bool SetStoryPageTitle::_post(::CommandCallback *callback) {
+    return _SetStoryPageTitle_dispatch[FindCallbackIndex(callback)](this->error, this->page_id, this->text);
+}
+CommandCost SetStoryPageTitle::_do(DoCommandFlags flags) {
+    return (::Command<Commands::SetStoryPageTitle>::Do(flags, page_id, text));
+}
+
+Commands SetStoryPageDate::get_command() { return Commands::SetStoryPageDate; }
+static constexpr auto _SetStoryPageDate_dispatch = MakeDispatchTable<Commands::SetStoryPageDate, StoryPageID, TimerGameCalendar::Date>();
+bool SetStoryPageDate::_post(::CommandCallback *callback) {
+    return _SetStoryPageDate_dispatch[FindCallbackIndex(callback)](this->error, this->page_id, this->date);
+}
+CommandCost SetStoryPageDate::_do(DoCommandFlags flags) {
+    return (::Command<Commands::SetStoryPageDate>::Do(flags, page_id, date));
+}
+
+Commands ShowStoryPage::get_command() { return Commands::ShowStoryPage; }
+static constexpr auto _ShowStoryPage_dispatch = MakeDispatchTable<Commands::ShowStoryPage, StoryPageID>();
+bool ShowStoryPage::_post(::CommandCallback *callback) {
+    return _ShowStoryPage_dispatch[FindCallbackIndex(callback)](this->error, this->page_id);
+}
+CommandCost ShowStoryPage::_do(DoCommandFlags flags) {
+    return (::Command<Commands::ShowStoryPage>::Do(flags, page_id));
+}
+
+Commands RemoveStoryPage::get_command() { return Commands::RemoveStoryPage; }
+static constexpr auto _RemoveStoryPage_dispatch = MakeDispatchTable<Commands::RemoveStoryPage, StoryPageID>();
+bool RemoveStoryPage::_post(::CommandCallback *callback) {
+    return _RemoveStoryPage_dispatch[FindCallbackIndex(callback)](this->error, this->page_id);
+}
+CommandCost RemoveStoryPage::_do(DoCommandFlags flags) {
+    return (::Command<Commands::RemoveStoryPage>::Do(flags, page_id));
+}
+
+Commands RemoveStoryPageElement::get_command() { return Commands::RemoveStoryPageElement; }
+static constexpr auto _RemoveStoryPageElement_dispatch = MakeDispatchTable<Commands::RemoveStoryPageElement, StoryPageElementID>();
+bool RemoveStoryPageElement::_post(::CommandCallback *callback) {
+    return _RemoveStoryPageElement_dispatch[FindCallbackIndex(callback)](this->error, this->page_element_id);
+}
+CommandCost RemoveStoryPageElement::_do(DoCommandFlags flags) {
+    return (::Command<Commands::RemoveStoryPageElement>::Do(flags, page_element_id));
+}
+
+Commands StoryPageButton::get_command() { return Commands::StoryPageButton; }
+static constexpr auto _StoryPageButton_dispatch = MakeDispatchTable<Commands::StoryPageButton, TileIndex, StoryPageElementID, VehicleID>();
+bool StoryPageButton::_post(::CommandCallback *callback) {
+    return _StoryPageButton_dispatch[FindCallbackIndex(callback)](this->error, this->tile, this->page_element_id, this->reference);
+}
+CommandCost StoryPageButton::_do(DoCommandFlags flags) {
+    return (::Command<Commands::StoryPageButton>::Do(flags, tile, page_element_id, reference));
 }
 
 }  // namespace cmd
