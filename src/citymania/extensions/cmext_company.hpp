@@ -16,8 +16,8 @@ public:
 
 class Company {
 public:
-    bool is_server;  ///< whether company is controlled by the server
-    bool is_scored;  ///< whether company is eligible for scoring
+    bool is_server = false;  ///< whether company is controlled by the server
+    bool is_scored = false;  ///< whether company is eligible for scoring
 };
 
 } // namespace citymania

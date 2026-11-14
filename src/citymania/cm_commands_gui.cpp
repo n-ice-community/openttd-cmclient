@@ -938,7 +938,7 @@ void AccountLogin(CommunityName community){
 			NetworkClientSendChatToServer(fmt::format("!login {} {}", _inilogindata[CITYMANIAUSER], _inilogindata[CITYMANIAPW]));
 			return;
 		case NICE:
-			uri = fmt::format(NICE_HTTP_LOGIN, GetLoginItem(NICE_LOGIN), GetLoginItem(NICE_PW));
+			uri = fmt::format(NICE_HTTP_LOGIN, urlencode(GetLoginItem(NICE_LOGIN)), urlencode(GetLoginItem(NICE_PW)));
 			break;
 		case BTPRO: {
 			uri = fmt::format(BTPRO_HTTP_LOGIN, btpro_encode(GetLoginItem(BTPRO_LOGIN).c_str()), btpro_encode(GetLoginItem(BTPRO_PW).c_str()));

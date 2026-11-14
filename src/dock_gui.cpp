@@ -303,8 +303,6 @@ struct BuildDocksToolbarWindow : Window {
 		CloseWindowById(WindowClass::BuildDepot, TransportType::Water);
 		CloseWindowById(WindowClass::JoinStation, 0);
 		CloseWindowByClass(WindowClass::BuildBridge);
-
-		citymania::AbortStationPlacement();
 	}
 
 	void OnPlacePresize([[maybe_unused]] Point pt, TileIndex tile_from) override

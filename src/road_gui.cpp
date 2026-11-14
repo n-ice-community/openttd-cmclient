@@ -771,8 +771,6 @@ struct BuildRoadToolbarWindow : Window {
 		CloseWindowById(WindowClass::BuildWaypoint, TransportType::Road);
 		CloseWindowById(WindowClass::JoinStation, 0);
 		CloseWindowByClass(WindowClass::BuildBridge);
-
-		citymania::AbortStationPlacement();
 	}
 
 	void OnPlaceDrag(ViewportPlaceMethod select_method, [[maybe_unused]] ViewportDragDropSelectionProcess select_proc, [[maybe_unused]] Point pt) override

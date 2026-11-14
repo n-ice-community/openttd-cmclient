@@ -108,6 +108,7 @@
 #include "core/math_func.hpp"
 #include "citymania/cm_highlight.hpp"
 #include "citymania/cm_hotkeys.hpp"
+#include "citymania/cm_station_gui.hpp"
 #include "citymania/cm_town_gui.hpp"
 #include "citymania/cm_zoning.hpp"
 /* CityMania code end */
@@ -1509,6 +1510,7 @@ static void ViewportAddStationStrings(DrawPixelInfo *dpi, const std::vector<cons
 	if (small) flags.Set(ViewportStringFlag::Small);
 
 	for (const BaseStation *st : stations) {
+		flags.Set(ViewportStringFlag::CMHighlighted, citymania::IsSelectedToJoin(st->index));
 		std::string *str = ViewportAddString(dpi, &st->sign, flags, (st->owner == OWNER_NONE || !st->IsInUse()) ? Colours::Grey : _company_colours[st->owner]);
 		if (str == nullptr) continue;
 
@@ -1860,7 +1862,12 @@ static void ViewportDrawStrings(ZoomLevel zoom, const StringSpriteToDrawVector *
 
 		ExtendedTextColour colour{TextColour::White};
 		if (ss.flags.Test(ViewportStringFlag::ColourRect)) {
-			if (ss.colour != Colours::Invalid) DrawFrameRect(x, y, x + w - 1, y + h - 1, ss.colour, {});
+			if (ss.colour != Colours::Invalid)  {
+				if (ss.flags.Test(ViewportStringFlag::CMHighlighted))
+					DrawFrameRect(x, y, x + w - 1, y + h - 1, ss.colour, {FrameFlag::Lowered});
+				else
+					DrawFrameRect(x, y, x + w - 1, y + h - 1, ss.colour, {});
+			}
 			colour = TextColour::Black;
 		} else if (ss.flags.Test(ViewportStringFlag::TransparentRect)) {
 			DrawFrameRect(x, y, x + w - 1, y + h - 1, ss.colour, FrameFlag::Transparent);
