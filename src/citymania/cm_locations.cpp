@@ -25,7 +25,7 @@ void SaveLocation(uint slot) {
     assert(slot < NUM_LOCATIONS);
     auto &loc = _locations[slot];
 
-    Window *w = FindWindowById(WC_MAIN_WINDOW, 0);
+    Window *w = FindWindowById(WindowClass::MainWindow, 0);
     auto &vp = w->viewport;
 
     loc.zoom = vp->zoom;
@@ -38,7 +38,7 @@ void LoadLocation(uint slot) {
     auto &loc = _locations[slot];
     if (!loc.scrollpos_y && !loc.scrollpos_x) return;
 
-    Window *w = FindWindowById(WC_MAIN_WINDOW, 0);
+    Window *w = FindWindowById(WindowClass::MainWindow, 0);
     auto &vp = w->viewport;
 
     vp->zoom = loc.zoom;
@@ -53,13 +53,13 @@ void LoadLocation(uint slot) {
 EventState HandleToolbarHotkey(int hotkey) {
     if (hotkey >= CM_MTHK_LOCATIONS_GOTO_START && hotkey < CM_MTHK_LOCATIONS_GOTO_END) {
         LoadLocation(hotkey - CM_MTHK_LOCATIONS_GOTO_START);
-        return ES_HANDLED;
+        return EventState::Handled;
     }
     if (hotkey >= CM_MTHK_LOCATIONS_SET_START && hotkey < CM_MTHK_LOCATIONS_SET_END) {
         SaveLocation(hotkey - CM_MTHK_LOCATIONS_SET_START);
-        return ES_HANDLED;
+        return EventState::Handled;
     }
-    return ES_NOT_HANDLED;
+    return EventState::NotHandled;
 }
 
 

@@ -721,7 +721,7 @@ EventState PickerWindow::OnHotkey(int hotkey)
 				this->SetFocusedWidget(WID_PW_CLASS_FILTER);
 			}
 			SetFocusedWindow(this);
-			return ES_HANDLED;
+			return EventState::Handled;
 
 		case CM_PCWHK_ROTATE:
 			this->CMRotate();

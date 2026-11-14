@@ -242,7 +242,7 @@ static ConsoleHookResult ConHookNewGRFDeveloperTool(bool echo)
 			if (echo) IConsolePrint(CC_ERROR, "This command is only available in-game and in the editor.");
 			return ConsoleHookResult::Disallow;
 		}
-		return CHR_ALLOW;
+		return ConsoleHookResult::Allow;
 		// CM return ConHookNoNetwork(echo);
 	}
 	return ConsoleHookResult::Hide;

@@ -598,7 +598,7 @@ struct BuildRoadToolbarWindow : Window {
 		_one_way_button_clicked = false;
 
 		if (widget != WID_ROT_ONE_WAY && widget != WID_ROT_REMOVE) {
-			started = HandlePlacePushButton(this, widget, this->GetCursorForWidget(widget), this->GetHighLightStyleForWidget(widget));
+			started = HandlePlacePushButton(this, widget, this->GetCursorForWidget(widget), this->GetHighLightStyleForWidget(widget), CM_DDSP_NONE);
 			this->last_started_action = widget;
 		}
 
@@ -1298,9 +1298,9 @@ public:
 			/* Indicate to the OnClick that the action comes from a hotkey rather
 			 * then from a click and that the CTRL state should be ignored. */
 			case BRDHK_ROTATE:
-				if (_road_depot_orientation < DIAGDIR_END) {
+				if (_road_depot_orientation < DiagDirection::End) {
 					this->RaiseWidget(WID_BROD_DEPOT_NE + _road_depot_orientation);
-					_road_depot_orientation = ChangeDiagDir(_road_depot_orientation, DIAGDIRDIFF_90RIGHT);
+					_road_depot_orientation = ChangeDiagDir(_road_depot_orientation, DiagDirDiff::Right90);
 					this->LowerWidget(WID_BROD_DEPOT_NE + _road_depot_orientation);
 				} else {
 					citymania::RotateAutodetection();
@@ -1327,7 +1327,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_build_road_depot_wid
 		NWidget(WWT_CLOSEBOX, Colours::DarkGreen),
 		NWidget(WWT_CAPTION, Colours::DarkGreen, WID_BROD_CAPTION), SetStringTip(STR_BUILD_DEPOT_ROAD_ORIENTATION_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
 	EndContainer(),
-	NWidget(WWT_PANEL, COLOUR_DARK_GREEN),
+	NWidget(WWT_PANEL, Colours::DarkGreen),
 		NWidget(NWID_VERTICAL), SetPIP(0, WidgetDimensions::unscaled.vsep_normal, 0), SetPadding(WidgetDimensions::unscaled.picker),
 			NWidget(NWID_HORIZONTAL_LTR), SetPIP(0, WidgetDimensions::unscaled.hsep_normal, 0), SetPIPRatio(1, 0, 1),
 				NWidget(NWID_VERTICAL), SetPIP(0, WidgetDimensions::unscaled.vsep_normal, 0),
@@ -1520,12 +1520,12 @@ public:
 		this->GetWidget<NWidgetCore>(WID_BROS_CAPTION)->SetString(rti->strings.picker_title[rs]);
 
 		if (RoadTypeIsTram(_cur_roadtype)) {
-			this->GetWidget<NWidgetCore>(WID_BROS_STATION_X)->SetToolTip(rti->strings.picker_tooltip[to_underlying(rs)]);
-			this->GetWidget<NWidgetCore>(WID_BROS_STATION_Y)->SetToolTip(rti->strings.picker_tooltip[to_underlying(rs)]);
-			this->GetWidget<NWidgetCore>(CM_WID_BROS_STATION_XY_AUTO)->SetToolTip(rti->strings.picker_tooltip[to_underlying(rs)]);
+			this->GetWidget<NWidgetCore>(WID_BROS_STATION_X)->SetToolTip(rti->strings.picker_tooltip[rs]);
+			this->GetWidget<NWidgetCore>(WID_BROS_STATION_Y)->SetToolTip(rti->strings.picker_tooltip[rs]);
+			this->GetWidget<NWidgetCore>(CM_WID_BROS_STATION_XY_AUTO)->SetToolTip(rti->strings.picker_tooltip[rs]);
 		} else {
 			for (WidgetID i = WID_BROS_STATION_NE; i < WID_BROS_LT_OFF; i++) {
-				this->GetWidget<NWidgetCore>(i)->SetToolTip(rti->strings.picker_tooltip[to_underlying(rs)]);
+				this->GetWidget<NWidgetCore>(i)->SetToolTip(rti->strings.picker_tooltip[rs]);
 			}
 		}
 
@@ -1554,8 +1554,8 @@ public:
 	{
 		if (_roadstop_gui.orientation < citymania::STATIONDIR_AUTO) {
 			this->RaiseWidget(WID_BROS_STATION_NE + _roadstop_gui.orientation);
-			if (_roadstop_gui.orientation < DIAGDIR_END) {
-				_roadstop_gui.orientation = ChangeDiagDir(_roadstop_gui.orientation, DIAGDIRDIFF_90RIGHT);
+			if (_roadstop_gui.orientation < DiagDirection::End) {
+				_roadstop_gui.orientation = ChangeDiagDir(_roadstop_gui.orientation, DiagDirDiff::Right90);
 			} else if (_roadstop_gui.orientation == citymania::STATIONDIR_X) {
 				_roadstop_gui.orientation = citymania::STATIONDIR_Y;
 			} else if (_roadstop_gui.orientation == citymania::STATIONDIR_Y) {
@@ -1755,8 +1755,8 @@ static constexpr std::initializer_list<NWidgetPart> _nested_road_station_picker_
 								NWidget(WWT_PANEL, Colours::Grey, WID_BROS_STATION_Y), SetFill(0, 0), EndContainer(),
 							EndContainer(),
 							NWidget(NWID_HORIZONTAL), SetPIP(0, WidgetDimensions::unscaled.hsep_normal, 0), SetPIPRatio(1, 0, 1),
-								NWidget(WWT_TEXTBTN, COLOUR_GREY, CM_WID_BROS_STATION_AUTO), SetMinimalSize(2 * 66 + WidgetDimensions::unscaled.hsep_normal, 12), SetStringTip(CM_STR_STATION_BUILD_ORIENTATION_AUTO, CM_STR_STATION_BUILD_ORIENTATION_AUTO_TOOLTIP),
-								NWidget(WWT_TEXTBTN, COLOUR_GREY, CM_WID_BROS_STATION_XY_AUTO), SetMinimalSize(66, 12), SetStringTip(CM_STR_STATION_BUILD_ORIENTATION_AUTO, CM_STR_STATION_BUILD_ORIENTATION_AUTO_TOOLTIP),
+								NWidget(WWT_TEXTBTN, Colours::Grey, CM_WID_BROS_STATION_AUTO), SetMinimalSize(2 * 66 + WidgetDimensions::unscaled.hsep_normal, 12), SetStringTip(CM_STR_STATION_BUILD_ORIENTATION_AUTO, CM_STR_STATION_BUILD_ORIENTATION_AUTO_TOOLTIP),
+								NWidget(WWT_TEXTBTN, Colours::Grey, CM_WID_BROS_STATION_XY_AUTO), SetMinimalSize(66, 12), SetStringTip(CM_STR_STATION_BUILD_ORIENTATION_AUTO, CM_STR_STATION_BUILD_ORIENTATION_AUTO_TOOLTIP),
 							EndContainer(),
 						EndContainer(),
 						/* 2-orientation plane. */
@@ -1766,7 +1766,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_road_station_picker_
 								NWidget(WWT_PANEL, Colours::Grey, WID_BROS_STATION_Y), SetFill(0, 0), EndContainer(),
 							EndContainer(),
 							NWidget(NWID_HORIZONTAL), SetPIP(0, WidgetDimensions::unscaled.hsep_normal, 0), SetPIPRatio(1, 0, 1),
-								NWidget(WWT_TEXTBTN, COLOUR_GREY, CM_WID_BROS_STATION_XY_AUTO), SetMinimalSize(2 * 66 + WidgetDimensions::unscaled.hsep_normal, 12), SetFill(0, 0), SetStringTip(CM_STR_STATION_BUILD_ORIENTATION_AUTO, CM_STR_STATION_BUILD_ORIENTATION_AUTO_TOOLTIP),
+								NWidget(WWT_TEXTBTN, Colours::Grey, CM_WID_BROS_STATION_XY_AUTO), SetMinimalSize(2 * 66 + WidgetDimensions::unscaled.hsep_normal, 12), SetFill(0, 0), SetStringTip(CM_STR_STATION_BUILD_ORIENTATION_AUTO, CM_STR_STATION_BUILD_ORIENTATION_AUTO_TOOLTIP),
 							EndContainer(),
 						EndContainer(),
 					EndContainer(),
@@ -1812,7 +1812,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_tram_station_picker_
 						NWidget(WWT_PANEL, Colours::Grey, WID_BROS_STATION_Y), SetFill(0, 0), EndContainer(),
 					EndContainer(),
 					NWidget(NWID_HORIZONTAL), SetPIP(0, WidgetDimensions::unscaled.hsep_normal, 0), SetPIPRatio(1, 0, 1),
-						NWidget(WWT_TEXTBTN, COLOUR_GREY, CM_WID_BROS_STATION_XY_AUTO), SetMinimalSize(2 * 66 + WidgetDimensions::unscaled.hsep_normal, 12), SetFill(0, 0), SetStringTip(CM_STR_STATION_BUILD_ORIENTATION_AUTO, CM_STR_STATION_BUILD_ORIENTATION_AUTO_TOOLTIP),
+						NWidget(WWT_TEXTBTN, Colours::Grey, CM_WID_BROS_STATION_XY_AUTO), SetMinimalSize(2 * 66 + WidgetDimensions::unscaled.hsep_normal, 12), SetFill(0, 0), SetStringTip(CM_STR_STATION_BUILD_ORIENTATION_AUTO, CM_STR_STATION_BUILD_ORIENTATION_AUTO_TOOLTIP),
 					EndContainer(),
 					NWidget(WWT_LABEL, Colours::Invalid), SetStringTip(STR_STATION_BUILD_COVERAGE_AREA_TITLE), SetFill(1, 0),
 					NWidget(NWID_HORIZONTAL), SetPIPRatio(1, 0, 1),

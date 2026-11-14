@@ -48,10 +48,10 @@ enum HighLightStyle : uint16_t {
 DECLARE_ENUM_AS_BIT_SET(HighLightStyle)
 
 /** Methods of rail track snapping. */
-enum RailSnapMode {
-	RSM_NO_SNAP,      ///< Not snapping.
-	RSM_SNAP_TO_TILE, ///< Snap to a tile.
-	RSM_SNAP_TO_RAIL, ///< Snap to other rail tracks.
+enum class RailSnapMode {
+	NoSnap,      ///< Not snapping.
+	SnapToTile, ///< Snap to a tile.
+	SnapToRail, ///< Snap to other rail tracks.
 };
 
 /** Metadata about the current highlighting. */

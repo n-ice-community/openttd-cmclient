@@ -20,7 +20,7 @@ enum class BlitterMode : uint8_t {
 	TransparentRemap, ///< Perform transparency colour remapping.
 	CrashRemap, ///< Perform a crash remapping.
 	BlackRemap, ///< Perform remapping to a completely blackened sprite
-	CMTintRemap, ///< Perform tinting.
+	CmTintRemap, ///< Perform tinting.
 };
 
 /**

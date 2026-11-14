@@ -364,7 +364,7 @@ void DrawOrderString(const Vehicle *v, const Order *order, VehicleOrderID order_
 
 	auto dists = citymania::GetOrderDistances(order_index, v->orders->GetNext(order_index), v);
 	// FIXME rtl
-	DrawString(middle, right, y, GetString(CM_STR_ORDER_DIST, IntSqrt(dists.first), dists.second), TC_WHITE, SA_RIGHT);
+	DrawString(middle, right, y, GetString(CM_STR_ORDER_DIST, IntSqrt(dists.first), dists.second), TextColour::White, AlignmentH::End);
 }
 
 /**
@@ -398,7 +398,7 @@ static std::pair<Order, citymania::FeederOrderMod> GetOrderCmdFromTile(const Veh
 			v->type == VehicleType::Train &&
 			IsTileOwner(tile, _local_company)) {
 		order.MakeGoToWaypoint(GetStationIndex(tile));
-		if (_settings_client.gui.new_nonstop != citymania::_fn_mod) order.SetNonStopType({OrderNonStopFlag::NoIntermediate, OrderNonStopFlag::NoDestination});
+		if (_settings_client.gui.new_nonstop != citymania::_fn_mod) order.SetNonStopType({OrderNonStopFlag::NonStop, OrderNonStopFlag::GoVia});
 		return {order, citymania::FeederOrderMod::None};
 	}
 
@@ -407,7 +407,7 @@ static std::pair<Order, citymania::FeederOrderMod> GetOrderCmdFromTile(const Veh
 			v->type == VehicleType::Road &&
 			IsTileOwner(tile, _local_company)) {
 		order.MakeGoToWaypoint(GetStationIndex(tile));
-		if (_settings_client.gui.new_nonstop != citymania::_fn_mod) order.SetNonStopType({OrderNonStopFlag::NoIntermediate, OrderNonStopFlag::NoDestination});
+		if (_settings_client.gui.new_nonstop != citymania::_fn_mod) order.SetNonStopType({OrderNonStopFlag::NonStop, OrderNonStopFlag::GoVia});
 		return std::make_pair(order, citymania::FeederOrderMod::None);
 	}
 

@@ -27,11 +27,11 @@ struct RoadStopPickerSelection {
 
 namespace citymania {
 
-const DiagDirection DEPOTDIR_AUTO = DIAGDIR_END;
-const DiagDirection STATIONDIR_X = DIAGDIR_END;
-const DiagDirection STATIONDIR_Y = (DiagDirection)((uint)DIAGDIR_END + 1);
-const DiagDirection STATIONDIR_AUTO = (DiagDirection)((uint)DIAGDIR_END + 2);
-const DiagDirection STATIONDIR_AUTO_XY = (DiagDirection)((uint)DIAGDIR_END + 3);
+const DiagDirection DEPOTDIR_AUTO = DiagDirection::End;
+const DiagDirection STATIONDIR_X = DiagDirection::End;
+const DiagDirection STATIONDIR_Y = (DiagDirection)((uint)DiagDirection::End + 1);
+const DiagDirection STATIONDIR_AUTO = (DiagDirection)((uint)DiagDirection::End + 2);
+const DiagDirection STATIONDIR_AUTO_XY = (DiagDirection)((uint)DiagDirection::End + 3);
 
 void ShowCatchmentByClick(StationID station);
 
@@ -240,7 +240,7 @@ private:
     public:
         RoadType road_type;
         RoadStopType stop_type;
-        DiagDirection ddir = DIAGDIR_NE;
+        DiagDirection ddir = DiagDirection::NE;
         // RoadStopClassID spec_class;
         // uint16_t spec_index;
 

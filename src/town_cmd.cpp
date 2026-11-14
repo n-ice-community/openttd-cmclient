@@ -253,7 +253,7 @@ void Town::InitializeLayout(TownLayout layout)
  */
 void Town::UpdateLabel()
 {
-	if (!(_game_mode == GM_EDITOR) && (_local_company < MAX_COMPANIES)) {
+	if (!(_game_mode == GameMode::Editor) && (_local_company < MAX_COMPANIES)) {
 		int r = this->ratings[_local_company];
 		if     (r < RATING_VERYPOOR) this->cm.town_label = 0; // Appalling and Very Poor, RED
 		else if(r < RATING_MEDIOCRE) this->cm.town_label = 1; // Poor and Mediocre, ORANGE
@@ -438,7 +438,7 @@ void Town::UpdateVirtCoord()
 	_viewport_sign_kdtree.Insert(ViewportSignKdtreeItem::MakeTown(this->index));
 
 	SetWindowDirty(WindowClass::TownView, this->index);
-	SetWindowDirty(CM_WC_CB_TOWN, this->index);
+	SetWindowDirty(WindowClass::CmCbTown, this->index);
 }
 
 /** Update the virtual coords needed to draw the town sign for all towns. */
@@ -1003,7 +1003,7 @@ static void DoRegularAdvertising(Town *t) {
 		uint8_t rating = 0;
 		for (Station *st : Station::Iterate()) {
 			if (st->owner == _local_company && DistanceManhattan(t->xy, st->xy) <= 20) {
-				for (CargoType i = 0; i < NUM_CARGO; i++)
+				for (CargoType i{0}; i < NUM_CARGO; i++)
 					if (st->goods[i].HasRating() && (t->cm.ad_ref_goods_entry == std::nullopt ||
 					    	rating < st->goods[i].rating)) {
 						t->cm.ad_ref_goods_entry = {st->index, i};
@@ -2202,7 +2202,7 @@ void CB_SetRequirements(CargoType cargo_type, uint req, uint from, uint decay){
 	CBDECAY[cargo_type] = decay;
 }
 void CB_ResetRequirements() {
-	for(CargoType cargo = 0; cargo < NUM_CARGO; cargo++){
+	for(CargoType cargo{0}; cargo < NUM_CARGO; cargo++){
 		CB_SetRequirements(cargo, 0, 0, 0);
 	}
 }
@@ -2272,12 +2272,12 @@ void CB_UpdateTownStorage([[maybe_unused]] Town *t)
 	// 	t->new_act_cargo[i] = 0;
 	// }
 
-	// if (_settings_game.game_creation.landscape == LT_TROPIC) {
-	// 	if (GetTropicZone(t->xy) == TROPICZONE_DESERT && (t->received[TE_FOOD].old_act <= 0 || t->received[TE_WATER].old_act <= 0) && t->cache.population > 60) {
+	// if (_settings_game.game_creation.landscape == LandscapeType::Tropic) {
+	// 	if (GetTropicZone(t->xy) == TropicZone::Desert && (t->received[TE_FOOD].old_act <= 0 || t->received[TE_WATER].old_act <= 0) && t->cache.population > 60) {
 	// 		t->growing = false;
 	// 	}
 	// }
-	// else if (_settings_game.game_creation.landscape == LT_ARCTIC) {
+	// else if (_settings_game.game_creation.landscape == LandscapeType::Arctic) {
 	// 	if (TilePixelHeight(t->xy) >= GetSnowLine() && t->received[TE_FOOD].old_act <= 0 && t->cache.population > 90) {
 	// 		t->growing = false;
 	// 	}
@@ -3599,7 +3599,7 @@ CommandCost CmdTownGrowthRate(DoCommandFlags flags, TownID town_id, uint16_t gro
 		}
 		UpdateTownGrowth(t);
 		InvalidateWindowData(WindowClass::TownView, town_id);
-		InvalidateWindowData(CM_WC_CB_TOWN, town_id);
+		InvalidateWindowData(WindowClass::CmCbTown, town_id);
 	}
 
 	return CommandCost();
@@ -3955,7 +3955,7 @@ static CommandCost TownActionFundBuildings(Town *t, DoCommandFlags flags)
 		t->grow_counter = std::min<uint16_t>(t->grow_counter, 2 * Ticks::TOWN_GROWTH_TICKS - (t->growth_rate - t->grow_counter) % Ticks::TOWN_GROWTH_TICKS);
 
 		SetWindowDirty(WindowClass::TownView, t->index);
-		SetWindowDirty(CM_WC_CB_TOWN, t->index);
+		SetWindowDirty(WindowClass::CmCbTown, t->index);
 	}
 	return CommandCost();
 }
@@ -4265,7 +4265,7 @@ static void UpdateTownGrowth(Town *t)
 
 	t->flags.Reset(TownFlag::IsGrowing);
 	SetWindowDirty(WindowClass::TownView, t->index);
-	SetWindowDirty(CM_WC_CB_TOWN, t->index);
+	SetWindowDirty(WindowClass::CmCbTown, t->index);
 	t->cm.growing_by_chance = false;
 
 	if (_settings_game.economy.town_growth_rate == 0 && t->fund_buildings_months == 0) return;
@@ -4290,7 +4290,7 @@ static void UpdateTownGrowth(Town *t)
 	if (t->flags.Test(TownFlag::CustomGrowth)) {
 		if (t->growth_rate != TOWN_GROWTH_RATE_NONE) t->flags.Set(TownFlag::IsGrowing);
 		SetWindowDirty(WindowClass::TownView, t->index);
-		SetWindowDirty(CM_WC_CB_TOWN, t->index);
+		SetWindowDirty(WindowClass::CmCbTown, t->index);
 		return;
 	}
 
@@ -4301,7 +4301,7 @@ static void UpdateTownGrowth(Town *t)
 
 	t->flags.Set(TownFlag::IsGrowing);
 	SetWindowDirty(WindowClass::TownView, t->index);
-	SetWindowDirty(CM_WC_CB_TOWN, t->index);
+	SetWindowDirty(WindowClass::CmCbTown, t->index);
 }
 
 /**
@@ -4558,7 +4558,7 @@ static const IntervalTimer<TimerGameEconomy> _economy_towns_monthly({TimerGameEc
 		/* CityMania code end */
 
 		SetWindowDirty(WindowClass::TownView, t->index);
-		SetWindowDirty(CM_WC_CB_TOWN, t->index);
+		SetWindowDirty(WindowClass::CmCbTown, t->index);
 	}
 });
 

@@ -1305,7 +1305,7 @@ void StateGameLoop()
 
 	if (citymania::_pause_countdown > 0 && --citymania::_pause_countdown == 0) {
 		_pause_mode = PauseMode::Normal;
-		SetWindowDirty(WC_MAIN_TOOLBAR, 0);
+		SetWindowDirty(WindowClass::MainToolbar, 0);
 	}
 
 	assert(IsLocalCompany());

@@ -39,7 +39,7 @@ void Blitter_32bppSimple::Draw(Blitter::BlitterParams *bp, BlitterMode mode, Zoo
 
 		for (int x = 0; x < bp->width; x++) {
 			switch (mode) {
-				case BlitterMode::CMTintRemap:
+				case BlitterMode::CmTintRemap:
 					/* In case the m-channel is zero, do not remap this pixel in any way */
 					if (src->m == 0) {
 						if (src->a != 0) *dst = citymania::Remap32RGBA(src->r, src->g, src->b, src->a, *dst, bp->remap);

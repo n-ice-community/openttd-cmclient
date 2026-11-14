@@ -11,6 +11,7 @@
 #include "../console_func.h"
 #include "../console_type.h"
 #include "../fileio_type.h"
+#include "../gfx_func.h"
 #include "../map_type.h"
 #include "../map_func.h"
 #include "../roadveh.h"
@@ -29,7 +30,6 @@
 #include "../safeguards.h"
 
 bool ReadHeightMap(DetailedFileType dft, std::string_view filename, uint *x, uint *y, std::vector<uint8_t> *map);
-extern uint32 _gfx_debug_flags;
 
 namespace citymania {
 
@@ -277,10 +277,10 @@ bool ConGfxDebug(std::span<std::string_view> argv) {
     if (argv.size() > 2) return false;
 
     if (argv.size() == 1) {
-        IConsolePrint(CC_DEFAULT, "Gfx debug flags: {:X}", _gfx_debug_flags);
+        IConsolePrint(CC_DEFAULT, "Gfx debug flags: {:X}", _gfx_debug_flags.base());
     } else {
         auto t = ParseInteger(argv[1], 16);
-        if (t.has_value()) _gfx_debug_flags = t.value();
+        if (t.has_value()) _gfx_debug_flags = GfxDebugFlags(t.value());
         else IConsolePrint(CC_ERROR, "Invalid hex: '{}'", argv[1]);
     }
 

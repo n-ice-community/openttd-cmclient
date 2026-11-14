@@ -1127,7 +1127,7 @@ static Money DeliverGoods(int num_pieces, CargoType cargo_type, StationID dest, 
 	if(CB_Enabled()){
 		if (_settings_game.citymania.cb.acceptance_range == 0 || (DistanceManhattan(st->town->xy, st->xy) <= _settings_game.citymania.cb.acceptance_range)) {
 			st->town->cm.cb.delivered[cargo_type] += accepted_total;
-			InvalidateWindowData(CM_WC_CB_TOWN, st->town->index);
+			InvalidateWindowData(WindowClass::CmCbTown, st->town->index);
 		}
 	}
 
@@ -2028,7 +2028,7 @@ static void DoAcquireCompany(Company *c, bool hostile_takeover)
 	InvalidateWindowClassesData(WindowClass::RoadVehicleList, 0);
 	InvalidateWindowClassesData(WindowClass::AircraftList, 0);
 	InvalidateWindowData(WindowClass::NetworkClientList, 0);
-	InvalidateWindowData(WC_CLIENT_LIST, 0);
+	InvalidateWindowData(WindowClass::NetworkClientList, 0);
 
 	delete c;
 }

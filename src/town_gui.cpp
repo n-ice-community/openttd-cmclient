@@ -347,7 +347,7 @@ public:
 			case citymania::CM_THK_FUND_BUILDNGS: citymania::TownExecuteAction(this->town, TownAction::FundBuildings); break;
 			default: NOT_REACHED();
 		}
-		return ES_HANDLED;
+		return EventState::Handled;
 	}
 
 	static inline HotkeyList hotkeys{"cm_town_authority", {
@@ -400,7 +400,7 @@ public:
 
 		/* disable renaming town in network games if you are not the server */
 		this->SetWidgetDisabledState(WID_TV_CHANGE_NAME, _networking && !_network_server);
-		this->SetWidgetDisabledState(CM_WID_TV_CB, _game_mode == GM_EDITOR);
+		this->SetWidgetDisabledState(CM_WID_TV_CB, _game_mode == GameMode::Editor);
 	}
 
 	void Close([[maybe_unused]] int data = 0) override
@@ -449,7 +449,7 @@ public:
 			}
 		}
 
-		citymania::DrawExtraTownInfo(tr, this->town, GetCharacterHeight(FS_NORMAL), true);  // CM (CB)
+		citymania::DrawExtraTownInfo(tr, this->town, GetCharacterHeight(FontSize::Normal), true);  // CM (CB)
 
 		bool first = true;
 		for (TownAcceptanceEffect i : EnumRange(TownAcceptanceEffect::End)) {
@@ -579,7 +579,7 @@ public:
 	uint GetDesiredInfoHeight(int width) const
 	{
 		uint aimed_height = static_cast<uint>(1 + CargoSpec::town_production_cargoes[TownProductionEffect::Passengers].size() + CargoSpec::town_production_cargoes[TownProductionEffect::Mail].size()) * GetCharacterHeight(FontSize::Normal);
-		aimed_height += 4 * GetCharacterHeight(FS_NORMAL);  // CM (extra town info)
+		aimed_height += 4 * GetCharacterHeight(FontSize::Normal);  // CM (extra town info)
 
 		bool first = true;
 		for (TownAcceptanceEffect i : EnumRange(TownAcceptanceEffect::End)) {
@@ -655,7 +655,7 @@ public:
 		if(hotkey == CM_WID_TV_CB) citymania::ShowCBTownWindow(this->window_number);
 		else if (hotkey == citymania::CM_THK_BUILD_STATUE) {
 			citymania::TownExecuteAction(this->town, TownAction::BuildStatue);
-			return ES_NOT_HANDLED;
+			return EventState::NotHandled;
 		}
 		return Window::OnHotkey(hotkey);
 	}
@@ -693,7 +693,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_town_game_view_widge
 		NWidget(WWT_PUSHTXTBTN, Colours::Brown, WID_TV_SHOW_AUTHORITY), SetMinimalSize(80, 12), SetFill(1, 1), SetResize(1, 0), SetStringTip(STR_TOWN_VIEW_LOCAL_AUTHORITY_BUTTON, STR_TOWN_VIEW_LOCAL_AUTHORITY_TOOLTIP),
 		NWidget(WWT_TEXTBTN, Colours::Brown, WID_TV_CATCHMENT), SetMinimalSize(40, 12), SetFill(1, 1), SetResize(1, 0), SetStringTip(STR_BUTTON_CATCHMENT, STR_TOOLTIP_CATCHMENT),
 		NWidget(WWT_PUSHTXTBTN, Colours::Brown, WID_TV_GRAPH), SetFill(1, 0), SetResize(1, 0), SetStringTip(STR_TOWN_VIEW_CARGO_GRAPH, STR_TOWN_VIEW_CARGO_GRAPH_TOOLTIP),
-		NWidget(WWT_PUSHTXTBTN, Colours::Brown, CM_WID_TV_CB), SetMinimalSize(20, 12), SetFill(1, 1), SetResize(1, 0), SetStringTip(CM_STR_BUTTON_CB, 0),
+		NWidget(WWT_PUSHTXTBTN, Colours::Brown, CM_WID_TV_CB), SetMinimalSize(20, 12), SetFill(1, 1), SetResize(1, 0), SetStringTip(CM_STR_BUTTON_CB, INVALID_STRING_ID),
 		NWidget(WWT_RESIZEBOX, Colours::Brown),
 	EndContainer(),
 };
@@ -731,7 +731,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_town_editor_view_wid
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_PUSHTXTBTN, Colours::Brown, WID_TV_DELETE), SetFill(1, 1), SetResize(1, 0), SetStringTip(STR_TOWN_VIEW_DELETE_BUTTON, STR_TOWN_VIEW_DELETE_TOOLTIP),
 		NWidget(WWT_TEXTBTN, Colours::Brown, WID_TV_CATCHMENT), SetFill(1, 1), SetResize(1, 0), SetStringTip(STR_BUTTON_CATCHMENT, STR_TOOLTIP_CATCHMENT),
-		NWidget(WWT_PUSHTXTBTN, Colours::Brown, CM_WID_TV_CB), SetMinimalSize(20, 12), SetFill(1, 1), SetResize(1, 0), SetStringTip(CM_STR_BUTTON_CB, 0),
+		NWidget(WWT_PUSHTXTBTN, Colours::Brown, CM_WID_TV_CB), SetMinimalSize(20, 12), SetFill(1, 1), SetResize(1, 0), SetStringTip(CM_STR_BUTTON_CB, INVALID_STRING_ID),
 		NWidget(WWT_RESIZEBOX, Colours::Brown),
 	EndContainer(),
 };

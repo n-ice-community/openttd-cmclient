@@ -377,7 +377,7 @@ class BuildIndustryWindow : public Window {
 
 		this->vscroll->SetCount(this->list.size());
 
-		this->cm_funding_enabled = (_game_mode == GM_EDITOR || Company::IsValidID(_local_company));  // CM
+		this->cm_funding_enabled = (_game_mode == GameMode::Editor || Company::IsValidID(_local_company));  // CM
 	}
 
 	/** Update status of the fund and display-chain widgets. */
@@ -419,23 +419,7 @@ class BuildIndustryWindow : public Window {
 	}
 
 public:
-	BuildIndustryWindow() : Window(_build_industry_desc)
-	{
-		_cm_funding_type = IT_INVALID;
-		_cm_funding_layout = 0;
-
-		this->cm_funding_enabled = false;
-
-		this->CreateNestedTree();
-		this->vscroll = this->GetScrollbar(WID_DPI_SCROLLBAR);
-		/* Show scenario editor tools in editor. */
-		if (_game_mode != GameMode::Editor) {
-			this->GetWidget<NWidgetStacked>(WID_DPI_SCENARIO_EDITOR_PANE)->SetDisplayedPlane(SZSP_HORIZONTAL);
-		}
-		this->FinishInitNested(0);
-
-		this->SetButtons();
-	}
+	BuildIndustryWindow();
 
 	~BuildIndustryWindow()
 	{
@@ -849,13 +833,30 @@ public:
 
 /** Window definition of the dynamic place industries gui */
 static WindowDesc _build_industry_desc(
-	WDP_AUTO, "build_industry", 170, 212,
-	WC_BUILD_INDUSTRY, WC_NONE,
+	WindowPosition::Automatic, "build_industry", 170, 212,
+	WindowClass::BuildIndustry, WindowClass::None,
 	WindowDefaultFlag::Construction,
 	_nested_build_industry_widgets,
 	&BuildIndustryWindow::hotkeys  // CM
 );
 
+BuildIndustryWindow::BuildIndustryWindow() : Window(_build_industry_desc)
+{
+	_cm_funding_type = IT_INVALID;
+	_cm_funding_layout = 0;
+
+	this->cm_funding_enabled = false;
+
+	this->CreateNestedTree();
+	this->vscroll = this->GetScrollbar(WID_DPI_SCROLLBAR);
+	/* Show scenario editor tools in editor. */
+	if (_game_mode != GameMode::Editor) {
+		this->GetWidget<NWidgetStacked>(WID_DPI_SCENARIO_EDITOR_PANE)->SetDisplayedPlane(SZSP_HORIZONTAL);
+	}
+	this->FinishInitNested(0);
+
+	this->SetButtons();
+}
 
 void ShowBuildIndustryWindow()
 {

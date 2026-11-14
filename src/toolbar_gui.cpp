@@ -109,7 +109,7 @@ enum class CallBackFunction : uint8_t {
 	None, ///< No action will happen when tile is selected afterwards.
 	PlaceSign, ///< A new sign will be placed when tile is selected afterwards.
 	PlaceLandInfo, ///< Land info window will appear when tile is selected afterwards.
-	CM_CBF_BUILD_HQ,
+	CmBuildHq,
 };
 
 static CallBackFunction _last_started_action = CallBackFunction::None; ///< Last started user action.
@@ -173,6 +173,7 @@ static void PopupMainToolbarMenu(Window *w, WidgetID widget, const std::initiali
 static const int CTMN_CLIENT_LIST = MAX_COMPANIES; ///< Indicates the "all connected players" entry.
 static const int CTMN_SPECTATE = COMPANY_SPECTATOR.base(); ///< Indicates the "become spectator" entry.
 static const int CTMN_SPECTATOR = CompanyID::Invalid().base(); ///< Indicates that a window is being opened for the spectator.
+static const int CTMN_NEW_COMPANY = -3; ///< Create a new company
 
 /**
  * Pop up a generic company list menu.
@@ -191,8 +192,10 @@ static void PopupMainCompanyToolbMenu(Window *w, WidgetID widget, CompanyMask gr
 			/* Add the client list button for the companies menu */
 			list.push_back(MakeDropDownListStringItem(STR_NETWORK_COMPANY_LIST_CLIENT_LIST, CTMN_CLIENT_LIST));
 
-			if (_local_company != COMPANY_SPECTATOR) {
-				list.push_back(MakeDropDownListStringItem(STR_NETWORK_COMPANY_LIST_SPECTATE, CTMN_SPECTATE));
+			if (_local_company == COMPANY_SPECTATOR) {
+				list.push_back(MakeDropDownListStringItem(CM_STR_NETWORK_COMPANY_LIST_NEW_COMPANY, CTMN_NEW_COMPANY, NetworkMaxCompaniesReached()));
+			} else {
+				list.push_back(MakeDropDownListStringItem(STR_NETWORK_COMPANY_LIST_SPECTATE, CTMN_SPECTATE, false));
 			}
 			break;
 		case WID_TN_STORY:
@@ -220,20 +223,20 @@ static CallBackFunction SelectSignTool()
 		ResetObjectToPlace();
 		return CallBackFunction::None;
 	} else {
-		SetObjectToPlace(SPR_CURSOR_SIGN, PAL_NONE, HT_RECT, WindowClass::MainToolbar, 0);
+		SetObjectToPlace(SPR_CURSOR_SIGN, PAL_NONE, HT_RECT, WindowClass::MainToolbar, 0, CM_DDSP_PLACE_SIGN);
 		return CallBackFunction::PlaceSign;
 	}
 }
 
 /* hq hotkey */
 static CallBackFunction BuildCompanyHQ(){
-	if (_last_started_action == CM_CBF_BUILD_HQ) {
+	if (_last_started_action == CallBackFunction::CmBuildHq) {
 		ResetObjectToPlace();
-		return CBF_NONE;
+		return CallBackFunction::None;
 	} else {
-		SetObjectToPlace(SPR_CURSOR_HQ, PAL_NONE, HT_RECT, WC_MAIN_TOOLBAR, 0, CM_DDSP_BUILD_HQ);
+		SetObjectToPlace(SPR_CURSOR_HQ, PAL_NONE, HT_RECT, WindowClass::MainToolbar, 0, CM_DDSP_BUILD_HQ);
 		SetTileSelectSize(2, 2);
-		return CM_CBF_BUILD_HQ;
+		return CallBackFunction::CmBuildHq;
 	}
 }
 
@@ -273,7 +276,7 @@ enum class OptionMenuEntries : uint8_t {
 	GameScriptSettings, ///< Open GS settings window.
 	NewGRFSettings, ///< Open NewGRF settings window.
 	SandboxOptions, ///< Open sandbox options window.
-	CM_OME_ZONING,	
+	CmZoning,	
 	Transparencies, ///< Open transparency options window.
 	ShowTownNames, ///< Toggle visibility of town names.
 	ShowStationNames, ///< Toggle visibility of station names.
@@ -313,7 +316,7 @@ static CallBackFunction ToolbarOptionsClick(Window *w)
 	if (_game_mode != GameMode::Editor && !_networking) {
 		list.push_back(MakeDropDownListStringItem(STR_SETTINGS_MENU_SANDBOX_OPTIONS, OptionMenuEntries::SandboxOptions));
 	}
-	list.push_back(MakeDropDownListStringItem(CM_STR_SETTINGS_MENU_ZONING,     CM_OME_ZONING, false));	
+	list.push_back(MakeDropDownListStringItem(CM_STR_SETTINGS_MENU_ZONING,     OptionMenuEntries::CmZoning, false));	
 	list.push_back(MakeDropDownListStringItem(STR_SETTINGS_MENU_TRANSPARENCY_OPTIONS, OptionMenuEntries::Transparencies));
 	list.push_back(MakeDropDownListDividerItem());
 	list.push_back(MakeDropDownListCheckedItem(_display_opt.Test(DisplayOption::ShowTownNames), STR_SETTINGS_MENU_TOWN_NAMES_DISPLAYED, OptionMenuEntries::ShowTownNames));
@@ -350,7 +353,7 @@ static CallBackFunction MenuClickSettings(int index)
 		case OptionMenuEntries::GameScriptSettings: ShowGSConfigWindow(); return CallBackFunction::None;
 		case OptionMenuEntries::NewGRFSettings: ShowNewGRFSettings(!_networking && _settings_client.gui.UserIsAllowedToChangeNewGRFs(), true, true, _grfconfig); return CallBackFunction::None;
 		case OptionMenuEntries::SandboxOptions: ShowCheatWindow(); break;
-		case CM_OME_ZONING:            citymania::ShowZoningToolbar();                  break;
+		case OptionMenuEntries::CmZoning:            citymania::ShowZoningToolbar();                  break;
 		case OptionMenuEntries::Transparencies: ShowTransparencyToolbar(); break;
 
 		case OptionMenuEntries::ShowTownNames: _display_opt.Flip(DisplayOption::ShowTownNames); break;
@@ -612,13 +615,13 @@ static CallBackFunction MenuClickFinances(int index)
 static CallBackFunction ToolbarCargosClick(Window *w)
 {
 	PopupMainCompanyToolbMenu(w, WID_TN_CARGOS);
-	return CBF_NONE;
+	return CallBackFunction::None;
 }
 
 static CallBackFunction MenuClickCargos(int index)
 {
 	citymania::ShowCompanyCargos((CompanyID)index);
-	return CBF_NONE;
+	return CallBackFunction::None;
 }
 
 /* --- WATCH button menu --- */
@@ -626,14 +629,14 @@ static CallBackFunction MenuClickCargos(int index)
 static CallBackFunction ToolbarWatchClick(Window *w)
 {
 	PopupMainCompanyToolbMenu(w, WID_TN_WATCH);
-	return CBF_NONE;
+	return CallBackFunction::None;
 }
 
 static CallBackFunction MenuClickWatch(int index)
 {
-	if (Company::IsValidID((CompanyID)index)) citymania::ShowWatchWindow((CompanyID)index, 0);
-	else citymania::ShowWatchWindow(CompanyID::Invalid(), 0);
-	return CBF_NONE;
+	if (Company::IsValidID((CompanyID)index)) citymania::ShowWatchWindow((CompanyID)index, citymania::WatchCompanyType::Company);
+	else citymania::ShowWatchWindow(CompanyID::Invalid(), citymania::WatchCompanyType::Company);
+	return CallBackFunction::None;
 }
 
 /* --- Company's button menu --- */
@@ -660,11 +663,11 @@ static CallBackFunction MenuClickCompany(int index)
 
 			case CTMN_NEW_COMPANY:
 				if (_network_server) {
-					Command<CMD_COMPANY_CTRL>::Post(CCA_NEW, CompanyID::Invalid(), CRR_NONE, _network_own_client_id);
+					Command<Commands::CompanyControl>::Post(CompanyCtrlAction::New, CompanyID::Invalid(), CompanyRemoveReason::None, _network_own_client_id);
 				} else {
-					Command<CMD_COMPANY_CTRL>::SendNet(STR_NULL, _local_company, CCA_NEW, CompanyID::Invalid(), CRR_NONE, INVALID_CLIENT_ID);
+					Command<Commands::CompanyControl>::SendNet(STR_NULL, _local_company, CompanyCtrlAction::New, CompanyID::Invalid(), CompanyRemoveReason::None, ClientID::Invalid);
 				}
-				return CBF_NONE;
+				return CallBackFunction::None;
 
 			case CTMN_SPECTATE:
 				if (_network_server) {
@@ -2123,7 +2126,7 @@ struct MainToolbarWindow : Window {
 	void OnClick([[maybe_unused]] Point pt, WidgetID widget, [[maybe_unused]] int click_count) override
 	{
 		bool lowered = this->IsWidgetLowered(widget);
-		this->CloseChildWindows(WC_DROPDOWN_MENU);
+		this->CloseChildWindows(WindowClass::DropdownMenu);
 		if (lowered != this->IsWidgetLowered(widget)) return;
 
 		if (_game_mode != GameMode::Menu && !this->IsWidgetDisabled(widget)) _toolbar_button_procs[widget](this);
@@ -2203,7 +2206,7 @@ struct MainToolbarWindow : Window {
 				VpStartPlaceSizing(tile, VPM_X_AND_Y, CM_DDSP_MEASURE);
 				break;
 
-			case CM_CBF_BUILD_HQ:
+			case CallBackFunction::CmBuildHq:
 				if(citymania::cmd::BuildObject(tile, OBJECT_HQ, 0)
 					   	.with_error(STR_ERROR_CAN_T_BUILD_COMPANY_HEADQUARTERS)
 					   	.post()) {
@@ -2476,7 +2479,7 @@ enum class MainToolbarEditorHotkeys : int32_t {
 	GenerateTown, ///< Open town generation window.
 	BuildRoad, ///< Open toolbar window with tools for building roads.
 	BuildTram, ///< Open toolbar window with tools for building tramways.
-	CM_MTEHK_SMALLMAP_TOGGLE,
+	CmSmallmapToggle,
 };
 
 struct ScenarioEditorToolbarWindow : Window {
@@ -2578,7 +2581,7 @@ struct ScenarioEditorToolbarWindow : Window {
 				case MainToolbarEditorHotkeys::GenerateTown: ShowFoundTownWindow(); break;
 				case MainToolbarEditorHotkeys::BuildRoad: ShowBuildRoadScenToolbar(_last_built_roadtype); break;
 				case MainToolbarEditorHotkeys::BuildTram: ShowBuildRoadScenToolbar(_last_built_tramtype); break;
-				// case CM_MTEHK_SMALLMAP_TOGGLE:     citymania::ToggleSmallMap(); break;
+				// case MainToolbarEditorHotkeys::CmSmallmapToggle:     citymania::ToggleSmallMap(); break;
 				default: return EventState::NotHandled;
 			}
 			if (cbf != CallBackFunction::None) _last_started_action = cbf;
@@ -2682,7 +2685,7 @@ struct ScenarioEditorToolbarWindow : Window {
 		Hotkey('L', "terraform", MainToolbarEditorHotkeys::Terraform),
 		Hotkey('M', "smallmap", MainToolbarEditorHotkeys::SmallMap),
 		Hotkey('V', "extra_viewport", MainToolbarEditorHotkeys::ExtraViewport),
-		Hotkey((uint16)0, "cm_smallmap_toggle", CM_MTEHK_SMALLMAP_TOGGLE),		
+		Hotkey((uint16)0, "cm_smallmap_toggle", MainToolbarEditorHotkeys::CmSmallmapToggle),		
 	}};
 };
 

@@ -2,6 +2,7 @@
 #define CM_MINIMAP_HPP
 
 #include "../smallmap_gui.h"
+#include "../company_base.h"
 #include "../core/endian_func.hpp"
 #include "../timer/timer.h"
 #include "../timer/timer_window.h"
@@ -65,18 +66,19 @@ struct LegendAndColour {
     bool show_on_map;          ///< For filtering industries, if \c true, industry is shown on the map in colour.
     bool end;                  ///< This is the end of the list.
     bool col_break;            ///< Perform a column break and go further at the next column.
+    CargoType cargo_type{INVALID_CARGO};  ///< Type of cargo. Only valid for link stats entries.
 };
 
 /** Types of legends in the #WID_SM_LEGEND widget. */
-enum SmallMapType : uint8_t {
-    SMT_CONTOUR,
-    SMT_VEHICLES,
-    SMT_INDUSTRY,
-    SMT_LINKSTATS,
-    SMT_ROUTES,
-    SMT_VEGETATION,
-    SMT_OWNER,
-    CM_SMT_IMBA,
+enum class SmallMapType : uint8_t {
+    Contour,
+    Vehicles,
+    Industries,
+    LinkStats,
+    Routes,
+    Vegetation,
+    Owners,
+    CmImba,
 };
 DECLARE_ENUM_AS_ADDABLE(SmallMapType)
 
@@ -85,10 +87,10 @@ class SmallMapWindow : public Window {
 protected:
 
     /** Available kinds of zoomlevel changes. */
-    enum ZoomLevelChange {
-        ZLC_INITIALIZE, ///< Initialize zoom level.
-        ZLC_ZOOM_OUT,   ///< Zoom out.
-        ZLC_ZOOM_IN,    ///< Zoom in.
+    enum class ZoomLevelChange : uint8_t {
+        Init, ///< Initialize zoom level.
+        ZoomOut, ///< Zoom out.
+        ZoomIn, ///< Zoom in.
     };
 
     static SmallMapType map_type; ///< Currently displayed legends.
@@ -97,12 +99,12 @@ protected:
     static int map_height_limit;   ///< Currently used/cached maximum heightlevel.
 
     static const uint LEGEND_BLOB_WIDTH = 8;              ///< Width of the coloured blob in front of a line text in the #WID_SM_LEGEND widget.
-    static const uint INDUSTRY_MIN_NUMBER_OF_COLUMNS = 2; ///< Minimal number of columns in the #WID_SM_LEGEND widget for the #SMT_INDUSTRY legend.
+    static const uint INDUSTRY_MIN_NUMBER_OF_COLUMNS = 2; ///< Minimal number of columns in the #WID_SM_LEGEND widget for the #SmallMapType::Industries legend.
     static const uint FORCE_REFRESH_PERIOD = 930; ///< map is redrawn after that many milliseconds.
     static const uint BLINK_PERIOD         = 450; ///< highlight blinking interval in milliseconds.
 
     uint min_number_of_columns;    ///< Minimal number of columns in legends.
-    uint min_number_of_fixed_rows; ///< Minimal number of rows in the legends for the fixed layouts only (all except #SMT_INDUSTRY).
+    uint min_number_of_fixed_rows; ///< Minimal number of rows in the legends for the fixed layouts only (all except #SmallMapType::Industries).
     uint column_width;             ///< Width of a column in the #WID_SM_LEGEND widget.
     uint legend_width;             ///< Width of legend 'blob'.
 
@@ -179,7 +181,7 @@ protected:
     inline uint GetLegendHeight(uint num_columns) const
     {
         return WidgetDimensions::scaled.framerect.Vertical() +
-                this->GetNumberRowsLegend(num_columns) * GetCharacterHeight(FS_SMALL);
+                this->GetNumberRowsLegend(num_columns) * GetCharacterHeight(FontSize::Small);
     }
 
     /**

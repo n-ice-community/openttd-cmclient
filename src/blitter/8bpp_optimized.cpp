@@ -83,7 +83,7 @@ void Blitter_8bppOptimized::Draw(Blitter::BlitterParams *bp, BlitterMode mode, Z
 
 			switch (mode) {
 				case BlitterMode::ColourRemap:
-				case BlitterMode::CMTintRemap:
+				case BlitterMode::CmTintRemap:
 				case BlitterMode::CrashRemap: {
 					const uint8_t *remap = bp->remap;
 					do {

@@ -721,13 +721,13 @@ static void cm_v_RedrawStatusBar([[maybe_unused]] int32 new_value) {
 }
 
 static void cm_v_RedrawGraphs([[maybe_unused]] int32 new_value) {
-	InvalidateWindowData(WC_INCOME_GRAPH, 0);
-	InvalidateWindowData(WC_OPERATING_PROFIT, 0);
-	InvalidateWindowData(WC_DELIVERED_CARGO, 0);
-	InvalidateWindowData(WC_PERFORMANCE_HISTORY, 0);
-	InvalidateWindowData(WC_COMPANY_VALUE, 0);
-	InvalidateWindowData(WC_PAYMENT_RATES, 0);
-	InvalidateWindowData(WC_PERFORMANCE_DETAIL, 0);
+	InvalidateWindowData(WindowClass::IncomeGraph, 0);
+	InvalidateWindowData(WindowClass::OperatingProfitGraph, 0);
+	InvalidateWindowData(WindowClass::DeliveredCargoGraph, 0);
+	InvalidateWindowData(WindowClass::PerformanceGraph, 0);
+	InvalidateWindowData(WindowClass::CompanyValueGraph, 0);
+	InvalidateWindowData(WindowClass::CargoPaymentRatesGraph, 0);
+	InvalidateWindowData(WindowClass::PerformanceDetail, 0);
 }
 
 

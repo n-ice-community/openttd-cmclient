@@ -197,7 +197,7 @@ public:
 		/* Execute the command here. All cost-relevant functions set the expenses type
 		 * themselves to the cost object at some point. */
 		InternalDoBefore(counter.IsTopLevel(), false);
-		// Debug(misc, 0, "DO {}/{} {} {}({}) seed={} company={}", TimerGameCalendar::date, TimerGameCalendar::date_fract, _frame_counter, GetCommandName(Tcmd), Tcmd, _random.state[0] & 0xFF, _current_company);
+		// Debug(Facility::Misc, Severity::Critical, "DO {}/{} {} {}({}) seed={} company={}", TimerGameCalendar::date, TimerGameCalendar::date_fract, _frame_counter, GetCommandName(Tcmd), Tcmd, _random.state[0] & 0xFF, _current_company);
 		Tret res = CommandTraits<Tcmd>::proc(flags, args...);
 		InternalDoAfter(ExtractCommandCost(res), flags, counter.IsTopLevel(), false);
 
@@ -461,7 +461,7 @@ protected:
 
 		if (desync_log) LogCommandExecution(Tcmd, err_message, EndianBufferWriter<CommandDataBuffer>::FromValue(args), false);
 
-		// Debug(misc, 0, "EXEC {}/{} {} {}({}) seed={} company={} tile={}", TimerGameCalendar::date, TimerGameCalendar::date_fract, _frame_counter, GetCommandName(Tcmd), Tcmd, _random.state[0] & 0xFF, _current_company, tile);
+		// Debug(Facility::Misc, Severity::Critical, "EXEC {}/{} {} {}({}) seed={} company={} tile={}", TimerGameCalendar::date, TimerGameCalendar::date_fract, _frame_counter, GetCommandName(Tcmd), Tcmd, _random.state[0] & 0xFF, _current_company, tile);
 		/* Actually try and execute the command. */
 		Tret res2 = std::apply(CommandTraits<Tcmd>::proc, std::tuple_cat(std::make_tuple(flags | DoCommandFlag::Execute), args));
 

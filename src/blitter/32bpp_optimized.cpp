@@ -113,7 +113,7 @@ inline void Blitter_32bppOptimized::Draw(const Blitter::BlitterParams *bp, ZoomL
 			draw:;
 
 			switch (mode) {
-				case BlitterMode::CMTintRemap:
+				case BlitterMode::CmTintRemap:
 					if (src_px->a == 255) {
 						do {
 							uint m = *src_n;
@@ -296,7 +296,7 @@ void Blitter_32bppOptimized::Draw(Blitter::BlitterParams *bp, BlitterMode mode, 
 		default: NOT_REACHED();
 		case BlitterMode::Normal: Draw<BlitterMode::Normal, Tpal_to_rgb>(bp, zoom); return;
 		case BlitterMode::ColourRemap: Draw<BlitterMode::ColourRemap, Tpal_to_rgb>(bp, zoom); return;
-		case BlitterMode::CMTintRemap: Draw<BlitterMode::CMTintRemap, Tpal_to_rgb>(bp, zoom); return;
+		case BlitterMode::CmTintRemap: Draw<BlitterMode::CmTintRemap, Tpal_to_rgb>(bp, zoom); return;
 		case BlitterMode::Transparent: Draw<BlitterMode::Transparent, Tpal_to_rgb>(bp, zoom); return;
 		case BlitterMode::TransparentRemap: Draw<BlitterMode::TransparentRemap, Tpal_to_rgb>(bp, zoom); return;
 		case BlitterMode::CrashRemap: Draw<BlitterMode::CrashRemap, Tpal_to_rgb>(bp, zoom); return;

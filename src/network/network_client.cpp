@@ -8,6 +8,7 @@
 /** @file network_client.cpp Client part of the network protocol. */
 
 #include "../stdafx.h"
+#include "../saveload/saveload.h"
 #include "network_gui.h"
 #include "../saveload/saveload_func.h"
 #include "../saveload/saveload_filter.h"
@@ -623,10 +624,10 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::ReceiveServerClientInfo(Packet
 
 		citymania::SetClientListDirty();
 		InvalidateWindowData(WindowClass::NetworkClientList, 0);
-		InvalidateWindowClassesData(WC_WATCH_COMPANY, 0);
-		SetWindowClassesDirty(WC_WATCH_COMPANY);
-		InvalidateWindowData(WC_WATCH_COMPANYA, ci->client_id, 1);
-		SetWindowClassesDirty(WC_WATCH_COMPANYA);
+		InvalidateWindowClassesData(WindowClass::WatchCompany, 0);
+		SetWindowClassesDirty(WindowClass::WatchCompany);
+		InvalidateWindowData(WindowClass::WatchCompanyAdmin, ci->client_id, 1);
+		SetWindowClassesDirty(WindowClass::WatchCompanyAdmin);
 
 		return NetworkRecvStatus::Okay;
 	}
@@ -648,10 +649,10 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::ReceiveServerClientInfo(Packet
 
 	citymania::SetClientListDirty();
 	InvalidateWindowData(WindowClass::NetworkClientList, 0);
-	InvalidateWindowClassesData(WC_WATCH_COMPANY, 0);
-	SetWindowClassesDirty(WC_WATCH_COMPANY);
-	InvalidateWindowData(WC_WATCH_COMPANYA, ci->client_id, 1);
-	SetWindowClassesDirty(WC_WATCH_COMPANYA);
+	InvalidateWindowClassesData(WindowClass::WatchCompany, 0);
+	SetWindowClassesDirty(WindowClass::WatchCompany);
+	InvalidateWindowData(WindowClass::WatchCompanyAdmin, ci->client_id, 1);
+	SetWindowClassesDirty(WindowClass::WatchCompanyAdmin);
 
 	return NetworkRecvStatus::Okay;
 }
@@ -923,7 +924,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::ReceiveServerMapDone(Packet &)
 	/* If the savegame has successfully loaded, ALL windows have been removed,
 	 * only toolbar/statusbar and gamefield are visible */
 
-	Debug(misc, 0, "Loaded save date {} / {}, frame {}, state {}", TimerGameCalendar::date, TimerGameCalendar::date_fract, _frame_counter, _random.state[0]);
+	Debug(Facility::Misc, Severity::Critical, "Loaded save date {} / {}, frame {}, state {}", TimerGameCalendar::date, TimerGameCalendar::date_fract, _frame_counter, _random.state[0]);
 
 	/* Say we received the map and loaded it correctly! */
 	SendMapOk();
@@ -1135,8 +1136,8 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::ReceiveServerQuit(Packet &p)
 
 	citymania::SetClientListDirty();
 	InvalidateWindowData(WindowClass::NetworkClientList, 0);
-	InvalidateWindowClassesData( WC_WATCH_COMPANYA, 0 );
-	SetWindowClassesDirty( WC_WATCH_COMPANYA );
+	InvalidateWindowClassesData( WindowClass::WatchCompanyAdmin, 0 );
+	SetWindowClassesDirty( WindowClass::WatchCompanyAdmin );
 
 	/* If we come here it means we could not locate the client.. strange :s */
 	return NetworkRecvStatus::Okay;
@@ -1237,8 +1238,8 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::ReceiveServerMove(Packet &p)
 	if (client_id == _network_own_client_id) {
 		SetLocalCompany(company_id);
 	}
-	InvalidateWindowClassesData( WC_WATCH_COMPANYA, 0 );
-	SetWindowClassesDirty( WC_WATCH_COMPANYA );
+	InvalidateWindowClassesData( WindowClass::WatchCompanyAdmin, 0 );
+	SetWindowClassesDirty( WindowClass::WatchCompanyAdmin );
 
 	return NetworkRecvStatus::Okay;
 }
@@ -1343,7 +1344,6 @@ void NetworkClientsToSpectators(CompanyID cid)
 	}
 	/* Admin company buttons: delete window */
 	citymania::ShowAdminCompanyButtons(0, 0, 0, cid+1, false, false);
-	cur_company.Restore();
 }
 
 /**

@@ -333,7 +333,7 @@ bmcr_alpha_blend_single:
 				}
 				break;
 
-			case BlitterMode::CMTintRemap:
+			case BlitterMode::CmTintRemap:
 				for (uint x = (uint) bp->width; x > 0; x--) {
 					if (src_mv->m == 0) {
 						if (src->a != 0) {
@@ -458,13 +458,13 @@ bm_normal:
 				Draw<BlitterMode::ColourRemap, ReadMode::WithMargin, BlockType::None, true>(bp, zoom, !sprite_flags.Test(SpriteFlag::NoAnim));
 			}
 			break;
-		case BlitterMode::CMTintRemap:
+		case BlitterMode::CmTintRemap:
 			if (bp->skip_left != 0 || bp->width <= MARGIN_REMAP_THRESHOLD) {
-				if (sprite_flags.Test(SpriteFlag::NoAnim)) Draw<BlitterMode::CMTintRemap, ReadMode::WithSkip, BlockType::None, true, false>(bp, zoom);
-				else                                       Draw<BlitterMode::CMTintRemap, ReadMode::WithSkip, BlockType::None, true, true>(bp, zoom);
+				if (sprite_flags.Test(SpriteFlag::NoAnim)) Draw<BlitterMode::CmTintRemap, ReadMode::WithSkip, BlockType::None, true, false>(bp, zoom);
+				else                                       Draw<BlitterMode::CmTintRemap, ReadMode::WithSkip, BlockType::None, true, true>(bp, zoom);
 			} else {
-				if (sprite_flags.Test(SpriteFlag::NoAnim)) Draw<BlitterMode::CMTintRemap, ReadMode::WithMargin, BlockType::None, true, false>(bp, zoom);
-				else                                       Draw<BlitterMode::CMTintRemap, ReadMode::WithMargin, BlockType::None, true, true>(bp, zoom);
+				if (sprite_flags.Test(SpriteFlag::NoAnim)) Draw<BlitterMode::CmTintRemap, ReadMode::WithMargin, BlockType::None, true, false>(bp, zoom);
+				else                                       Draw<BlitterMode::CmTintRemap, ReadMode::WithMargin, BlockType::None, true, true>(bp, zoom);
 			}
 			break;
 		case BlitterMode::Transparent: Draw<BlitterMode::Transparent, ReadMode::None, BlockType::None, true, true>(bp, zoom); return;

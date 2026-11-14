@@ -108,8 +108,8 @@ NetworkClientInfo::~NetworkClientInfo()
 {
 	/* Delete the chat window, if you were chatting with this client. */
 	InvalidateWindowData(WindowClass::NetworkChat, NetworkChatDestinationType::Client, this->client_id);
-#warn What does the 2 mean??
-	InvalidateWindowData(WC_WATCH_COMPANYA, this->client_id, 2);
+	/* Data 2 tells the watch window that the client is gone, so it closes itself. */
+	InvalidateWindowData(WindowClass::WatchCompanyAdmin, this->client_id, 2);
 }
 
 /**

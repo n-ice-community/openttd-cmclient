@@ -234,7 +234,7 @@ bool _draw_dirty_blocks = false;
 uint _dirty_block_colour = 0;
 /* CM static */ VpSpriteSorter _vp_sprite_sorter = nullptr;
 
-static RailSnapMode _rail_snap_mode = RSM_NO_SNAP; ///< Type of rail track snapping (polyline tool).
+static RailSnapMode _rail_snap_mode = RailSnapMode::NoSnap; ///< Type of rail track snapping (polyline tool).
 static LineSnapPoints _tile_snap_points; ///< Tile to which a rail track will be snapped to (polyline tool).
 static LineSnapPoints _rail_snap_points; ///< Set of points where a rail track will be snapped to (polyline tool).
 static LineSnapPoint _current_snap_lock; ///< Start point and direction at which selected track is locked on currently (while dragging in polyline mode).
@@ -1039,10 +1039,9 @@ static HighLightStyle GetPartOfAutoLine(int px, int py, const Point &selstart, c
  * @param *ti TileInfo Tile that is being drawn
  * @param highlight_style Highlight to draw
  */
-static void DrawAutorailSelection(const TileInfo *ti, HighLightStyle highlight_style)
+static void DrawAutorailSelection(const TileInfo *ti, HighLightStyle highlight_style, PaletteID pal = -1)
 {
 	SpriteID image;
-	PaletteID pal;
 
 	FoundationPart foundation_part = FoundationPart::Normal;
 	Slope slope = RemoveHalftileSlope(ti->tileh);
@@ -1059,24 +1058,15 @@ static void DrawAutorailSelection(const TileInfo *ti, HighLightStyle highlight_s
 	int offset = _autorail_slope_sprite_offsets[slope][highlight_style & HT_DIR_MASK];
 	if (offset >= 0) {
 		image = SPR_AUTORAIL_BASE + offset;
-		pal = PAL_NONE;
+		if (pal == (PaletteID)-1) pal = PAL_NONE;
 	} else {
 		image = SPR_AUTORAIL_BASE - offset;
-		pal = PALETTE_SEL_TILE_RED;
+		if (pal == (PaletteID)-1) pal = PALETTE_SEL_TILE_RED;
 	}
 
 	DrawSelectionSprite(image, _thd.make_square_red ? PALETTE_SEL_TILE_RED : pal, ti, 7, foundation_part);
 }
 
-/* CM moved to cm_highlight.hpp
-/** Types of tile highlight. */
-enum class TileHighlightType : uint8_t {
-	None, ///< No tile highlight.
-	White, ///< Indicates a tile which is part of the highlighted station, or a station tile within the highlighted town.
-	Blue, ///< Indicates a tile which is in the catchment area of the highlighted station.
-	Red, ///< Indicates a house tile which is not in any station catchment area of the highlighted town.
-};
-*/
 
 const Station *_viewport_highlight_station; ///< Currently selected station for coverage area highlight
 const Station *_viewport_highlight_station_rect; ///< Currently selected station for rectangle highlight
@@ -1222,16 +1212,16 @@ static void DrawTileSelection(const TileInfo *ti)
 			if (IsInsideSelectedRectangle(ti->x, ti->y)) {
 				/* Figure out the Z coordinate for the single dot. */
 				int z = 0;
-				FoundationPart foundation_part = FOUNDATION_PART_NORMAL;
+				FoundationPart foundation_part = FoundationPart::Normal;
 				if (ti->tileh & SLOPE_N) {
 					z += TILE_HEIGHT;
 					if (RemoveHalftileSlope(ti->tileh) == SLOPE_STEEP_N) z += TILE_HEIGHT;
 				}
 				if (IsHalftileSlope(ti->tileh)) {
 					Corner halftile_corner = GetHalftileSlopeCorner(ti->tileh);
-					if ((halftile_corner == CORNER_W) || (halftile_corner == CORNER_E)) z += TILE_HEIGHT;
-					if (halftile_corner != CORNER_S) {
-						foundation_part = FOUNDATION_PART_HALFTILE;
+					if ((halftile_corner == Corner::W) || (halftile_corner == Corner::E)) z += TILE_HEIGHT;
+					if (halftile_corner != Corner::S) {
+						foundation_part = FoundationPart::Halftile;
 						if (IsSteepSlope(ti->tileh)) z -= TILE_HEIGHT;
 					}
 				}
@@ -2666,7 +2656,7 @@ bool HandleViewportClicked(const Viewport &vp, int x, int y, bool double_click)
 			 * both lines (white and blue) will be constructed consecutively. */
 			static bool stop_snap_on_double_click = false;
 			if (double_click && stop_snap_on_double_click) {
-				SetRailSnapMode(RSM_NO_SNAP);
+				SetRailSnapMode(RailSnapMode::NoSnap);
 				return true;
 			}
 			stop_snap_on_double_click = !(_thd.drawstyle & HT_LINE) || (_thd.dir2 == HT_DIR_END);
@@ -2935,8 +2925,8 @@ void UpdateTileSelection()
 					/* HT_POLY */
 					if (_thd.place_mode & HT_POLY) {
 						RailSnapMode snap_mode = GetRailSnapMode();
-						if (snap_mode == RSM_NO_SNAP ||
-								(snap_mode == RSM_SNAP_TO_TILE && GetRailSnapTile() == TileVirtXY(pt.x, pt.y))) {
+						if (snap_mode == RailSnapMode::NoSnap ||
+								(snap_mode == RailSnapMode::SnapToTile && GetRailSnapTile() == TileVirtXY(pt.x, pt.y))) {
 							new_drawstyle = GetAutorailHT(pt.x, pt.y);
 							_thd.new_offs.x = 0;
 							_thd.new_offs.y = 0;
@@ -3033,7 +3023,7 @@ void UpdateTileSelection()
  * Displays the measurement tooltips when selecting multiple tiles
  * @param text String to be displayed
  */
-static inline void ShowMeasurementTooltips(EncodedString &&text, TooltipCloseCondition close_cond = TCC_EXIT_VIEWPORT)
+static inline void ShowMeasurementTooltips(EncodedString &&text, TooltipCloseCondition close_cond = TooltipCloseCondition::ExitViewport)
 {
 	if (!_settings_client.gui.measure_tooltip) return;
 	GuiShowTooltips(_thd.GetCallbackWnd(), std::move(text), close_cond);
@@ -3077,8 +3067,8 @@ void VpStartPlaceSizing(TileIndex tile, ViewportPlaceMethod method, ViewportDrag
 		_thd.place_mode = HT_SPECIAL | others;
 		_thd.next_drawstyle = _thd.drawstyle | others;
 		_current_snap_lock.x = -1;
-		if ((_thd.place_mode & HT_POLY) != 0 && GetRailSnapMode() == RSM_NO_SNAP) {
-			SetRailSnapMode(RSM_SNAP_TO_TILE);
+		if ((_thd.place_mode & HT_POLY) != 0 && GetRailSnapMode() == RailSnapMode::NoSnap) {
+			SetRailSnapMode(RailSnapMode::SnapToTile);
 			SetRailSnapTile(tile);
 		}
 	} else {
@@ -3311,7 +3301,7 @@ static int CalcHeightdiff(HighLightStyle style, uint distance, TileIndex start_t
  * @param close_cond              Close condition of the tooltip.
  * @param show_single_tile_length Show a tooltip also when the length is 1 tile.
  */
-static void ShowLengthMeasurement(HighLightStyle style, TileIndex start_tile, TileIndex end_tile, TooltipCloseCondition close_cond = TCC_NONE, bool show_single_tile_length = false)
+static void ShowLengthMeasurement(HighLightStyle style, TileIndex start_tile, TileIndex end_tile, TooltipCloseCondition close_cond = TooltipCloseCondition::None, bool show_single_tile_length = false)
 {
 	EncodedString str;
 	if (_settings_client.gui.measure_tooltip) {
@@ -3362,16 +3352,16 @@ static void CheckOverflow(int &test, int &other, int max, int mult)
 	test = max;
 }
 
-static const uint X_DIRS = (1 << DIR_NE) | (1 << DIR_SW);
-static const uint Y_DIRS = (1 << DIR_SE) | (1 << DIR_NW);
-static const uint HORZ_DIRS = (1 << DIR_W) | (1 << DIR_E);
-// static const uint VERT_DIRS = (1 << DIR_N) | (1 << DIR_S);
+static const uint X_DIRS = (1 << to_underlying(Direction::NE)) | (1 << to_underlying(Direction::SW));
+static const uint Y_DIRS = (1 << to_underlying(Direction::SE)) | (1 << to_underlying(Direction::NW));
+static const uint HORZ_DIRS = (1 << to_underlying(Direction::W)) | (1 << to_underlying(Direction::E));
+// static const uint VERT_DIRS = (1 << Direction::N) | (1 << Direction::S);
 
 /**
  * Convert a given point and a given #Direction to best matching #Trackdir.
  *
- * For example, #DIR_N will be converted to #TRACKDIR_LEFT_N if the point
- * is on left tile half or #TRACKDIR_RIGHT_N if the point is on right half.
+ * For example, #Direction::N will be converted to #Trackdir::Left_N if the point
+ * is on left tile half or #Trackdir::Right_N if the point is on right half.
  *
  * @param pt  The point expressed in inner-tile world "units".
  * @param dir The direction.
@@ -3388,10 +3378,10 @@ Trackdir PointDirToTrackdir(const Point &pt, Direction dir)
 		int y = pt.y & TILE_UNIT_MASK;
 		int ns = x + y;
 		int we = y - x;
-		if (HasBit(HORZ_DIRS, dir)) {
-			ret = TrackDirectionToTrackdir(ns < (int)TILE_SIZE ? TRACK_UPPER : TRACK_LOWER, dir);
+		if (HasBit(HORZ_DIRS, to_underlying(dir))) {
+			ret = TrackDirectionToTrackdir(ns < (int)TILE_SIZE ? Track::Upper : Track::Lower, dir);
 		} else {
-			ret = TrackDirectionToTrackdir(we < 0 ? TRACK_LEFT : TRACK_RIGHT, dir);
+			ret = TrackDirectionToTrackdir(we < 0 ? Track::Left : Track::Right, dir);
 		}
 	}
 
@@ -3438,13 +3428,13 @@ static bool FindPolyline(const Point &pt, const LineSnapPoint &start, RailPolyli
 	uint diag_quadrant = 2 * (ns < 0) + ((ns < 0) != (we < 0));
 
 	/* direction from the snap point to the mouse point */
-	Direction ortho_line_dir = ChangeDir(DIR_S, (DirDiff)(2 * ortho_quadrant)); // DIR_S is the middle of the ortho quadrant no. 0
-	Direction diag_line_dir = ChangeDir(DIR_SE, (DirDiff)(2 * diag_quadrant));  // DIR_SE is the middle of the diag quadrant no. 0
-	if (!HasBit(start.dirs, ortho_line_dir) && !HasBit(start.dirs, diag_line_dir)) return false;
+	Direction ortho_line_dir = ChangeDir(Direction::S, (DirDiff)(2 * ortho_quadrant)); // Direction::S is the middle of the ortho quadrant no. 0
+	Direction diag_line_dir = ChangeDir(Direction::SE, (DirDiff)(2 * diag_quadrant));  // Direction::SE is the middle of the diag quadrant no. 0
+	if (!HasBit(start.dirs, to_underlying(ortho_line_dir)) && !HasBit(start.dirs, to_underlying(diag_line_dir))) return false;
 
 	/* length of booth segments of auto line (choosing orthogonal direction first) */
 	uint ortho_len = 0, ortho_len2 = 0;
-	if (HasBit(start.dirs, ortho_line_dir)) {
+	if (HasBit(start.dirs, to_underlying(ortho_line_dir))) {
 		bool is_len_even = (align_x != 0) ? d_x >= d_y : d_x <= d_y;
 		ortho_len = 2 * std::min(d_x, d_y) - (int)is_len_even;
 		assert((int)ortho_len >= 0);
@@ -3457,7 +3447,7 @@ static bool FindPolyline(const Point &pt, const LineSnapPoint &start, RailPolyli
 
 	/* length of booth segments of auto line (choosing diagonal direction first) */
 	uint diag_len = 0, diag_len2 = 0;
-	if (HasBit(start.dirs, diag_line_dir)) {
+	if (HasBit(start.dirs, to_underlying(diag_line_dir))) {
 		if (d_x == 0 || d_y == 0) { // just single segment?
 			diag_len = d_x + d_y;
 		} else {
@@ -3487,12 +3477,12 @@ static bool FindPolyline(const Point &pt, const LineSnapPoint &start, RailPolyli
 	if (ortho_len != 0) {
 		ret->first_dir = ortho_line_dir;
 		ret->first_len = ortho_len;
-		ret->second_dir = (ortho_len2 != 0) ? diag_line_dir : INVALID_DIR;
+		ret->second_dir = (ortho_len2 != 0) ? diag_line_dir : Direction::Invalid;
 		ret->second_len = ortho_len2;
 	} else if (diag_len != 0) {
 		ret->first_dir = diag_line_dir;
 		ret->first_len = diag_len;
-		ret->second_dir = (diag_len2 != 0) ? ortho_line_dir : INVALID_DIR;
+		ret->second_dir = (diag_len2 != 0) ? ortho_line_dir : Direction::Invalid;
 		ret->second_len = diag_len2;
 	} else {
 		return false;
@@ -3793,7 +3783,7 @@ static HighLightStyle CalcPolyrailDrawstyle(Point pt, bool dragging)
 	RailSnapMode snap_mode = GetRailSnapMode();
 
 	/* are we only within one tile? */
-	if (snap_mode == RSM_SNAP_TO_TILE && GetRailSnapTile() == TileVirtXY(pt.x, pt.y)) {
+	if (snap_mode == RailSnapMode::SnapToTile && GetRailSnapTile() == TileVirtXY(pt.x, pt.y)) {
 		_thd.selend.x = pt.x;
 		_thd.selend.y = pt.y;
 		return GetAutorailHT(pt.x, pt.y);
@@ -3802,16 +3792,16 @@ static HighLightStyle CalcPolyrailDrawstyle(Point pt, bool dragging)
 	/* find the best track */
 	RailPolyline line;
 
-	bool lock_snapping = dragging && snap_mode == RSM_SNAP_TO_RAIL;
+	bool lock_snapping = dragging && snap_mode == RailSnapMode::SnapToRail;
 	if (!lock_snapping) _current_snap_lock.x = -1;
 
 	const LineSnapPoint *snap_point;
 	if (_current_snap_lock.x != -1) {
 		snap_point = FindBestPolyline(pt, &_current_snap_lock, 1, &line);
-	} else if (snap_mode == RSM_SNAP_TO_TILE) {
+	} else if (snap_mode == RailSnapMode::SnapToTile) {
 		snap_point = FindBestPolyline(pt, _tile_snap_points.data(), _tile_snap_points.size(), &line);
 	} else {
-		assert(snap_mode == RSM_SNAP_TO_RAIL);
+		assert(snap_mode == RailSnapMode::SnapToRail);
 		snap_point = FindBestPolyline(pt, _rail_snap_points.data(), _rail_snap_points.size(), &line);
 	}
 
@@ -3820,7 +3810,7 @@ static HighLightStyle CalcPolyrailDrawstyle(Point pt, bool dragging)
 	if (lock_snapping && _current_snap_lock.x == -1) {
 		/* lock down the snap point */
 		_current_snap_lock = *snap_point;
-		_current_snap_lock.dirs &= (1 << line.first_dir) | (1 << ReverseDir(line.first_dir));
+		_current_snap_lock.dirs &= (1 << to_underlying(line.first_dir)) | (1 << to_underlying(ReverseDir(line.first_dir)));
 	}
 
 	TileIndexDiffC first_dir = TileIndexDiffCByDir(line.first_dir);
@@ -3854,11 +3844,11 @@ static HighLightStyle CalcPolyrailDrawstyle(Point pt, bool dragging)
 		_thd.cm_poly_dir2 = seldir2;
 	} else {
 		_thd.dir2 = HT_DIR_END;
-		_thd.cm_poly_dir2 = INVALID_TRACKDIR;
+		_thd.cm_poly_dir2 = Trackdir::Invalid;
 	}
 
 	HighLightStyle ret = HT_LINE | (HighLightStyle)TrackdirToTrack(seldir);
-	ShowLengthMeasurement(ret, TileVirtXY(_thd.selstart.x, _thd.selstart.y), TileVirtXY(_thd.selend.x, _thd.selend.y), TCC_HOVER, true);
+	ShowLengthMeasurement(ret, TileVirtXY(_thd.selstart.x, _thd.selstart.y), TileVirtXY(_thd.selend.x, _thd.selend.y), TooltipCloseCondition::Hover, true);
 	return ret;
 }
 
@@ -3879,7 +3869,7 @@ void VpSelectTilesWithMethod(int x, int y, ViewportPlaceMethod method)
 		return;
 	}
 
-	if ((_thd.place_mode & HT_POLY) && GetRailSnapMode() != RSM_NO_SNAP) {
+	if ((_thd.place_mode & HT_POLY) && GetRailSnapMode() != RailSnapMode::NoSnap) {
 		Point pt = { x, y };
 		_thd.next_drawstyle = CalcPolyrailDrawstyle(pt, true);
 		return;
@@ -4466,25 +4456,25 @@ static LineSnapPoint LineSnapPointAtRailTrackEndpoint(TileIndex tile, DiagDirect
 
 	/* Check whether to extend the snap point over a tunnel/bridge/station etc. */
 	tile = TileAddByDiagDir(tile, exit_dir);
-	if (extended != NULL && !IsTileType(tile, MP_RAILWAY) && !IsTileType(tile, MP_ROAD) &&
-			TrackStatusToTrackBits(GetTileTrackStatus(tile, TRANSPORT_RAIL, INVALID_DIAGDIR)) == AxisToTrackBits(DiagDirToAxis(exit_dir)) &&
+	if (extended != NULL && !IsTileType(tile, TileType::Railway) && !IsTileType(tile, TileType::Road) &&
+			TrackdirBitsToTrackBits(GetTileTrackStatus(tile, TransportType::Rail, RoadTramType::Invalid).trackdirs) == TrackBits{AxisToTrack(DiagDirToAxis(exit_dir))} &&
 			IsTileOwner(tile, _local_company)) {
 		/* Check if this is a tunnel/bridge and move the tile to the other end if so. */
-		if (IsTileType(tile, MP_TUNNELBRIDGE) && GetTunnelBridgeDirection(tile) == exit_dir) tile = GetOtherTunnelBridgeEnd(tile);
+		if (IsTileType(tile, TileType::TunnelBridge) && GetTunnelBridgeDirection(tile) == exit_dir) tile = GetOtherTunnelBridgeEnd(tile);
 		LineSnapPoint ex = LineSnapPointAtRailTrackEndpoint(tile, exit_dir, false, extended);
 		if (!bidirectional) return ex; // if we are interested in forward direction only then return just the extended point
 		*extended = ex; // otherwise return two points, extended with forward direction and base with reverse direction
 	} else {
 		/* Add forward direction. */
-		SetBit(ret.dirs, DiagDirToDir(exit_dir));
+		SetBit(ret.dirs, to_underlying(DiagDirToDir(exit_dir)));
 	}
 
 	/* Add reverse direction. */
-	if (bidirectional) SetBit(ret.dirs, ReverseDir(DiagDirToDir(exit_dir)));
+	if (bidirectional) SetBit(ret.dirs, to_underlying(ReverseDir(DiagDirToDir(exit_dir))));
 
 	/* Add 45 degree rotated directions. */
-	ret.dirs |= std::rotr<uint8>(ret.dirs, DIRDIFF_45LEFT);
-	ret.dirs |= std::rotr<uint8>(ret.dirs, DIRDIFF_45RIGHT);
+	ret.dirs |= std::rotr<uint8>(ret.dirs, to_underlying(DirDiff::Left45));
+	ret.dirs |= std::rotr<uint8>(ret.dirs, to_underlying(DirDiff::Right45));
 	return ret;
 }
 
@@ -4528,7 +4518,7 @@ void StoreRailPlacementEndpoints(TileIndex start_tile, TileIndex end_tile, Track
 		/* Create new snap point set. */
 		if (had_start && had_end) {
 			/* just stop snapping, don't forget snap points */
-			SetRailSnapMode(RSM_NO_SNAP);
+			SetRailSnapMode(RailSnapMode::NoSnap);
 		} else {
 			/* include only new points */
 			_rail_snap_points.clear();
@@ -4540,7 +4530,7 @@ void StoreRailPlacementEndpoints(TileIndex start_tile, TileIndex end_tile, Track
 				_rail_snap_points.push_back(snap_end);
 				if (snap_end_ex.dirs != 0) _rail_snap_points.push_back(snap_end_ex);
 			}
-			SetRailSnapMode(RSM_SNAP_TO_RAIL);
+			SetRailSnapMode(RailSnapMode::SnapToRail);
 		}
 	}
 }
@@ -4561,15 +4551,15 @@ void StoreRailStationPlacementEndpoints(const TileArea &ta, Axis station_axis)
 	uint end_y = start_y + ta.h - 1;
 
 	_rail_snap_points.clear();
-	if (station_axis == AXIS_X) {
+	if (station_axis == Axis::X) {
 		for (uint y = start_y; y <= end_y; y++) {
-			_rail_snap_points.push_back(LineSnapPointAtRailTrackEndpoint(TileXY(start_x, y), DIAGDIR_NE, false, NULL));
-			_rail_snap_points.push_back(LineSnapPointAtRailTrackEndpoint(TileXY(end_x, y), DIAGDIR_SW, false, NULL));
+			_rail_snap_points.push_back(LineSnapPointAtRailTrackEndpoint(TileXY(start_x, y), DiagDirection::NE, false, NULL));
+			_rail_snap_points.push_back(LineSnapPointAtRailTrackEndpoint(TileXY(end_x, y), DiagDirection::SW, false, NULL));
 		}
 	} else {
 		for (uint x = start_x; x <= end_x; x++) {
-			_rail_snap_points.push_back(LineSnapPointAtRailTrackEndpoint(TileXY(x, start_y), DIAGDIR_NW, false, NULL));
-			_rail_snap_points.push_back(LineSnapPointAtRailTrackEndpoint(TileXY(x, end_y), DIAGDIR_SE, false, NULL));
+			_rail_snap_points.push_back(LineSnapPointAtRailTrackEndpoint(TileXY(x, start_y), DiagDirection::NW, false, NULL));
+			_rail_snap_points.push_back(LineSnapPointAtRailTrackEndpoint(TileXY(x, end_y), DiagDirection::SE, false, NULL));
 		}
 	}
 }
@@ -4578,13 +4568,13 @@ void StoreRailStationPlacementEndpoints(const TileArea &ta, Axis station_axis)
  * Get current rail track snapping mode.
  * @return Current snapping mode.
  *
- * @note This function will return #RSM_NO_SNAP if there are no snapping points
+ * @note This function will return #RailSnapMode::NoSnap if there are no snapping points
  *       set (yet), even thought the snapping was set to some different mode.
  */
 RailSnapMode GetRailSnapMode()
 {
-	if (_rail_snap_mode == RSM_SNAP_TO_TILE && _tile_snap_points.empty()) return RSM_NO_SNAP;
-	if (_rail_snap_mode == RSM_SNAP_TO_RAIL && _rail_snap_points.empty()) return RSM_NO_SNAP;
+	if (_rail_snap_mode == RailSnapMode::SnapToTile && _tile_snap_points.empty()) return RailSnapMode::NoSnap;
+	if (_rail_snap_mode == RailSnapMode::SnapToRail && _rail_snap_points.empty()) return RailSnapMode::NoSnap;
 	return _rail_snap_mode;
 }
 
@@ -4596,26 +4586,26 @@ void SetRailSnapMode(RailSnapMode mode)
 {
 	_rail_snap_mode = mode;
 
-	if ((_thd.place_mode & HT_POLY) && (GetRailSnapMode() == RSM_NO_SNAP)) {
+	if ((_thd.place_mode & HT_POLY) && (GetRailSnapMode() == RailSnapMode::NoSnap)) {
 		SetTileSelectSize(1, 1);
 	}
 }
 
 /**
  * Get the tile that is set to be a snapping point for rail tracks (used when
- * #RSM_SNAP_TO_TILE mode is active).
+ * #RailSnapMode::SnapToTile mode is active).
  *
  * @return The tile.
  */
 static TileIndex GetRailSnapTile()
 {
 	if (_tile_snap_points.empty()) return INVALID_TILE;
-	return TileVirtXY(_tile_snap_points[DIAGDIR_NE].x, _tile_snap_points[DIAGDIR_NE].y);
+	return TileVirtXY(_tile_snap_points[to_underlying(DiagDirection::NE)].x, _tile_snap_points[to_underlying(DiagDirection::NE)].y);
 }
 
 /**
  * Set the tile that is meant to be a snapping point for rail tracks (used when
- * #RSM_SNAP_TO_TILE mode is active).
+ * #RailSnapMode::SnapToTile mode is active).
  *
  * @param tile The tile.
  */
@@ -4624,9 +4614,9 @@ static void SetRailSnapTile(TileIndex tile)
 	_tile_snap_points.clear();
 	if (tile == INVALID_TILE) return;
 
-	for (DiagDirection dir = DIAGDIR_BEGIN; dir < DIAGDIR_END; dir++) {
+	for (DiagDirection dir : EnumRange(DiagDirection::End)) {
 		auto point = LineSnapPointAtRailTrackEndpoint(tile, dir, false, NULL);
-		point.dirs = std::rotr<uint8>(point.dirs, DIRDIFF_REVERSE);
+		point.dirs = std::rotr<uint8>(point.dirs, to_underlying(DirDiff::Reverse));
 		_tile_snap_points.push_back(point);
 	}
 }
@@ -4634,7 +4624,7 @@ static void SetRailSnapTile(TileIndex tile)
 /** Clear all stored rail snapping points and reset the snapping mode. */
 void ResetRailPlacementEndpoints()
 {
-	_rail_snap_mode = RSM_NO_SNAP;
+	_rail_snap_mode = RailSnapMode::NoSnap;
 	_tile_snap_points.clear();
 	_rail_snap_points.clear();
 	_current_snap_lock.x = -1;
@@ -4658,7 +4648,7 @@ namespace citymania {
 	    _vd.dpi.zoom = vp.zoom;
 	    int mask = ScaleByZoom(-1, vp.zoom);
 
-	    _vd.combine_sprites = SPRITE_COMBINE_NONE;
+	    _vd.combine_sprites = SpriteCombineMode::None;
 
 	    _vd.dpi.width = (right - left) & mask;
 	    _vd.dpi.height = (bottom - top) & mask;

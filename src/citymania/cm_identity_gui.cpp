@@ -14,42 +14,42 @@ size_t _selected_identity = 0;
 
 void LoadIdentitiesConfig() {
 	IniFile ini;
-	ini.LoadFromDisk(CFG_IDENTITY_FILE, BASE_DIR);
+	ini.LoadFromDisk(CFG_IDENTITY_FILE, Subdirectory::Base);
 	_identities.clear();
 	_selected_identity = 0;
 	for (const IniGroup &group : ini.groups) {
-		Debug(net, 0, "IDENTITY Group found: {}", group.name);
+		Debug(Facility::Net, Severity::Critical, "IDENTITY Group found: {}", group.name);
 
 		auto name_item = group.GetItem("name");
 		if (name_item == nullptr) {
-			Debug(net, 0, "Invalid identity '{}' in {}: missing 'name'", group.name, CFG_IDENTITY_FILE);
+			Debug(Facility::Net, Severity::Critical, "Invalid identity '{}' in {}: missing 'name'", group.name, CFG_IDENTITY_FILE);
 			continue;
 		}
 		auto name = name_item->value.value_or("");
 		if (name.empty()) {
-			Debug(net, 0, "Invalid identity '{}' in {}: 'name' is empty", group.name, CFG_IDENTITY_FILE);
+			Debug(Facility::Net, Severity::Critical, "Invalid identity '{}' in {}: 'name' is empty", group.name, CFG_IDENTITY_FILE);
 			continue;
 		}
 
 		auto pkey_item = group.GetItem("client_public_key");
 		if (pkey_item == nullptr) {
-			Debug(net, 0, "Invalid identity '{}' in {}: missing 'client_public_key'", group.name, CFG_IDENTITY_FILE);
+			Debug(Facility::Net, Severity::Critical, "Invalid identity '{}' in {}: missing 'client_public_key'", group.name, CFG_IDENTITY_FILE);
 			continue;
 		}
 		auto pkey = pkey_item->value.value_or("");
 		if (pkey.empty()) {
-			Debug(net, 0, "Invalid identity '{}' in {}: 'client_public_key' is empty", group.name, CFG_IDENTITY_FILE);
+			Debug(Facility::Net, Severity::Critical, "Invalid identity '{}' in {}: 'client_public_key' is empty", group.name, CFG_IDENTITY_FILE);
 			continue;
 		}
 
 		auto skey_item = group.GetItem("client_secret_key");
 		if (skey_item == nullptr) {
-			Debug(net, 0, "Invalid identity '{}' in {}: missing 'client_secret_key'", group.name, CFG_IDENTITY_FILE);
+			Debug(Facility::Net, Severity::Critical, "Invalid identity '{}' in {}: missing 'client_secret_key'", group.name, CFG_IDENTITY_FILE);
 			continue;
 		}
 		auto skey = skey_item->value.value_or("");
 		if (skey.empty()) {
-			Debug(net, 0, "Invalid identity '{}' in {}: 'client_secret_key' is empty", group.name, CFG_IDENTITY_FILE);
+			Debug(Facility::Net, Severity::Critical, "Invalid identity '{}' in {}: 'client_secret_key' is empty", group.name, CFG_IDENTITY_FILE);
 			continue;
 		}
 

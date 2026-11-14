@@ -481,7 +481,7 @@ struct MainWindow : Window
 	void OnMouseOver(Point pt, [[maybe_unused]] int widget) override
 	{
 		extern void GuiPrepareTooltipsExtra(Window *parent);
-		if (_game_mode != GM_MENU && pt.x != -1) GuiPrepareTooltipsExtra(this);
+		if (_game_mode != GameMode::Menu && pt.x != -1) GuiPrepareTooltipsExtra(this);
 	}
 
 

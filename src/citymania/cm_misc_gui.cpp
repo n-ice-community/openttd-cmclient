@@ -104,21 +104,21 @@ public:
         this->flags.Reset(WindowFlag::WhiteBorder);
 
 #if defined(_DEBUG)
-#   define LANDINFOD_LEVEL 0
+#   define LANDINFOD_LEVEL Severity::Critical
 #else
-#   define LANDINFOD_LEVEL 1
+#   define LANDINFOD_LEVEL Severity::Error
 #endif
-        Debug(misc, LANDINFOD_LEVEL, "TILE: 0x{:x} ({},{})", (TileIndex)tile, TileX(tile), TileY(tile));
-        Debug(misc, LANDINFOD_LEVEL, "type   = 0x{:x}", tile.type());
-        Debug(misc, LANDINFOD_LEVEL, "height = 0x{:x}", tile.height());
-        Debug(misc, LANDINFOD_LEVEL, "m1     = 0x{:x}", tile.m1());
-        Debug(misc, LANDINFOD_LEVEL, "m2     = 0x{:x}", tile.m2());
-        Debug(misc, LANDINFOD_LEVEL, "m3     = 0x{:x}", tile.m3());
-        Debug(misc, LANDINFOD_LEVEL, "m4     = 0x{:x}", tile.m4());
-        Debug(misc, LANDINFOD_LEVEL, "m5     = 0x{:x}", tile.m5());
-        Debug(misc, LANDINFOD_LEVEL, "m6     = 0x{:x}", tile.m6());
-        Debug(misc, LANDINFOD_LEVEL, "m7     = 0x{:x}", tile.m7());
-        Debug(misc, LANDINFOD_LEVEL, "m8     = 0x{:x}", tile.m8());
+        Debug(Facility::Misc, LANDINFOD_LEVEL, "TILE: 0x{:x} ({},{})", (TileIndex)tile, TileX(tile), TileY(tile));
+        Debug(Facility::Misc, LANDINFOD_LEVEL, "type   = 0x{:x}", tile.type());
+        Debug(Facility::Misc, LANDINFOD_LEVEL, "height = 0x{:x}", tile.height());
+        Debug(Facility::Misc, LANDINFOD_LEVEL, "m1     = 0x{:x}", tile.m1());
+        Debug(Facility::Misc, LANDINFOD_LEVEL, "m2     = 0x{:x}", tile.m2());
+        Debug(Facility::Misc, LANDINFOD_LEVEL, "m3     = 0x{:x}", tile.m3());
+        Debug(Facility::Misc, LANDINFOD_LEVEL, "m4     = 0x{:x}", tile.m4());
+        Debug(Facility::Misc, LANDINFOD_LEVEL, "m5     = 0x{:x}", tile.m5());
+        Debug(Facility::Misc, LANDINFOD_LEVEL, "m6     = 0x{:x}", tile.m6());
+        Debug(Facility::Misc, LANDINFOD_LEVEL, "m7     = 0x{:x}", tile.m7());
+        Debug(Facility::Misc, LANDINFOD_LEVEL, "m8     = 0x{:x}", tile.m8());
 #undef LANDINFOD_LEVEL
     }
 
@@ -133,7 +133,8 @@ public:
         td.owner_type[0] = STR_LAND_AREA_INFORMATION_OWNER; // At least one owner is displayed, though it might be "N/A".
 
         CargoArray acceptance{};
-        AddAcceptedCargo(tile, acceptance, nullptr);
+        CargoTypes always_accepted{};
+        AddAcceptedCargo(tile, acceptance, always_accepted);
         GetTileDesc(tile, td);
 
         this->landinfo_data.clear();
@@ -157,7 +158,7 @@ public:
         Company *c = Company::GetIfValid(_local_company);
         if (c != nullptr) {
             assert(_current_company == _local_company);
-            CommandCost costclear = Command<CMD_LANDSCAPE_CLEAR>::Do(DoCommandFlag::QueryCost, tile);
+            CommandCost costclear = Command<Commands::LandscapeClear>::Do(DoCommandFlag::QueryCost, tile);
             if (costclear.Succeeded()) {
                 Money cost = costclear.GetCost();
                 StringID str;
@@ -225,7 +226,7 @@ public:
 
         /* Rail speed limit */
         if (td.rail_speed != 0) {
-            this->landinfo_data.push_back(GetString(STR_LANG_AREA_INFORMATION_RAIL_SPEED_LIMIT, PackVelocity(td.rail_speed, VEH_TRAIN)));
+            this->landinfo_data.push_back(GetString(STR_LANG_AREA_INFORMATION_RAIL_SPEED_LIMIT, PackVelocity(td.rail_speed, VehicleType::Train)));
         }
 
         /* Road type name */
@@ -235,7 +236,7 @@ public:
 
         /* Road speed limit */
         if (td.road_speed != 0) {
-            this->landinfo_data.push_back(GetString(STR_LANG_AREA_INFORMATION_ROAD_SPEED_LIMIT, PackVelocity(td.road_speed, VEH_ROAD)));
+            this->landinfo_data.push_back(GetString(STR_LANG_AREA_INFORMATION_ROAD_SPEED_LIMIT, PackVelocity(td.road_speed, VehicleType::Road)));
         }
 
         /* Tram type name */
@@ -245,7 +246,7 @@ public:
 
         /* Tram speed limit */
         if (td.tram_speed != 0) {
-            this->landinfo_data.push_back(GetString(STR_LANG_AREA_INFORMATION_TRAM_SPEED_LIMIT, PackVelocity(td.tram_speed, VEH_ROAD)));
+            this->landinfo_data.push_back(GetString(STR_LANG_AREA_INFORMATION_TRAM_SPEED_LIMIT, PackVelocity(td.tram_speed, VehicleType::Road)));
         }
 
         /* Tile protection status */
@@ -307,7 +308,7 @@ void ShowLandInfo(TileIndex tile, TileIndex end_tile)
     if (tile == last_tooltip_tile) return;
     last_tooltip_tile = tile;
 
-    CloseWindowById(WC_LAND_INFO, 0);
+    CloseWindowById(WindowClass::LandInfo, 0);
     if (tile == INVALID_TILE) return;
     new LandInfoWindow(tile, end_tile);
 }

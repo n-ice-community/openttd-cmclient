@@ -26,12 +26,12 @@
 namespace citymania {
 
 static const NWidgetPart _nested_land_tooltips_widgets[] = {
-    NWidget(WWT_PANEL, COLOUR_GREY, WID_LI_BACKGROUND), SetMinimalSize(64, 32), EndContainer(),
+    NWidget(WWT_PANEL, Colours::Grey, WID_LI_BACKGROUND), SetMinimalSize(64, 32), EndContainer(),
 };
 
 static WindowDesc _land_tooltips_desc(
-    WDP_MANUAL, {}, 0, 0,
-    CM_WC_LAND_TOOLTIPS, WC_NONE,
+    WindowPosition::Manual, {}, 0, 0,
+    WindowClass::CmLandTooltips, WindowClass::None,
     {},
     _nested_land_tooltips_widgets
 );
@@ -70,13 +70,13 @@ struct LandTooltipsWindow : public Window
         if (widget != WID_LI_BACKGROUND) return;
 
         uint icon_size = ScaleGUITrad(10);
-        uint line_height = std::max((uint)GetCharacterHeight(FS_NORMAL), icon_size) + WidgetDimensions::scaled.hsep_normal;
-        uint text_height = GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.hsep_normal;
+        uint line_height = std::max((uint)GetCharacterHeight(FontSize::Normal), icon_size) + WidgetDimensions::scaled.hsep_normal;
+        uint text_height = GetCharacterHeight(FontSize::Normal) + WidgetDimensions::scaled.hsep_normal;
         uint icons_width = icon_size * 3 + WidgetDimensions::scaled.vsep_normal;
         size.width = ScaleGUITrad(194);
-        size.height = GetCharacterHeight(FS_NORMAL);
+        size.height = GetCharacterHeight(FontSize::Normal);
         switch(this->tiletype) {
-            case MP_HOUSE: {
+            case TileType::House: {
                 const HouseSpec *hs = HouseSpec::Get((HouseID)this->objIndex);
                 if(hs == NULL) break;
                 size.width = std::max(GetStringBoundingBox(GetString(CM_STR_LAND_TOOLTIPS_HOUSE_NAME, hs->building_name)).width, size.width);
@@ -84,7 +84,7 @@ struct LandTooltipsWindow : public Window
                 size.width = std::max(size.width, GetStringBoundingBox(GetString(CM_STR_LAND_TOOLTIPS_HOUSE_POPULATION, hs->population)).width);
                 break;
             }
-            case MP_INDUSTRY: {
+            case TileType::Industry: {
                 const Industry *ind = Industry::GetIfValid((IndustryID)this->objIndex);
                 if(ind == NULL) break;
 
@@ -105,7 +105,7 @@ struct LandTooltipsWindow : public Window
                 }
                 break;
             }
-            case MP_STATION: {
+            case TileType::Station: {
                 const Station *st = Station::GetIfValid((StationID)this->objIndex);
                 if(st == NULL) break;
 
@@ -138,10 +138,10 @@ struct LandTooltipsWindow : public Window
     void DrawWidget(const Rect &r, int /* widget */) const override
     {
         uint icon_size = ScaleGUITrad(10);
-        uint line_height = std::max((uint)GetCharacterHeight(FS_NORMAL), icon_size) + WidgetDimensions::scaled.hsep_normal;
-        uint text_height = GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.hsep_normal;
+        uint line_height = std::max((uint)GetCharacterHeight(FontSize::Normal), icon_size) + WidgetDimensions::scaled.hsep_normal;
+        uint text_height = GetCharacterHeight(FontSize::Normal) + WidgetDimensions::scaled.hsep_normal;
         uint icons_width = icon_size * 3 + WidgetDimensions::scaled.vsep_normal;
-        uint text_ofs = (line_height - GetCharacterHeight(FS_NORMAL)) >> 1;
+        uint text_ofs = (line_height - GetCharacterHeight(FontSize::Normal)) >> 1;
         uint icon_ofs = (line_height - icon_size) >> 1;
 
         GfxFillRect(r.left, r.top, r.right, r.top + WidgetDimensions::scaled.bevel.top - 1, PC_BLACK);
@@ -151,20 +151,20 @@ struct LandTooltipsWindow : public Window
 
         auto ir = r.Shrink(WidgetDimensions::scaled.framerect).Shrink(WidgetDimensions::scaled.fullbevel);
         switch(this->tiletype) {
-            case MP_HOUSE: {
+            case TileType::House: {
                 const HouseSpec *hs = HouseSpec::Get((HouseID)this->objIndex);
                 if(hs == nullptr) break;
 
-                DrawString(ir, GetString(CM_STR_LAND_TOOLTIPS_HOUSE_NAME, hs->building_name), TC_BLACK, SA_CENTER);
+                DrawString(ir, GetString(CM_STR_LAND_TOOLTIPS_HOUSE_NAME, hs->building_name), TextColour::Black, {AlignmentH::Centre, AlignmentV::Middle});
                 ir.top += text_height;
-                DrawString(ir, GetString(CM_STR_LAND_TOOLTIPS_HOUSE_POPULATION, hs->population), TC_BLACK, SA_CENTER);
+                DrawString(ir, GetString(CM_STR_LAND_TOOLTIPS_HOUSE_POPULATION, hs->population), TextColour::Black, {AlignmentH::Centre, AlignmentV::Middle});
                 break;
             }
-            case MP_INDUSTRY: {
+            case TileType::Industry: {
                 const Industry *ind = Industry::GetIfValid((IndustryID)this->objIndex);
                 if(ind == nullptr) break;
 
-                DrawString(ir, GetString(CM_STR_LAND_TOOLTIPS_INDUSTRY_NAME, ind->index), TC_BLACK, SA_CENTER);
+                DrawString(ir, GetString(CM_STR_LAND_TOOLTIPS_INDUSTRY_NAME, ind->index), TextColour::Black, {AlignmentH::Centre, AlignmentV::Middle});
                 ir.top += text_height;
 
                 for (auto &p : ind->produced) {
@@ -183,11 +183,11 @@ struct LandTooltipsWindow : public Window
                 }
                 break;
             }
-            case MP_STATION: {
+            case TileType::Station: {
                 const Station *st = Station::GetIfValid((StationID)this->objIndex);
                 if(st == nullptr) break;
 
-                DrawString(ir, GetString(CM_STR_LAND_TOOLTIPS_STATION_NAME, st->index), TC_BLACK, SA_CENTER);
+                DrawString(ir, GetString(CM_STR_LAND_TOOLTIPS_STATION_NAME, st->index), TextColour::Black, {AlignmentH::Centre, AlignmentV::Middle});
                 ir.top += text_height;
 
                 for (const CargoSpec *cs : _sorted_standard_cargo_specs) {
@@ -229,51 +229,51 @@ void ShowLandTooltips(TileIndex tile, Window *parent) {
     last_tooltip_tile = tile;
 
     if (tile == INVALID_TILE) {
-        CloseWindowById(CM_WC_LAND_TOOLTIPS, 0);
+        CloseWindowById(WindowClass::CmLandTooltips, 0);
         return;
     }
 
     uint param = 0;
     switch (GetTileType(tile)) {
-        case MP_HOUSE: {
+        case TileType::House: {
             if (_settings_client.gui.cm_land_tooltips_for_houses) {
                 const HouseID house = GetHouseType(tile);
-                param = ((house & 0xFFFF) << 16) | MP_HOUSE;
+                param = ((house & 0xFFFF) << 16) | to_underlying(TileType::House);
             }
             break;
         }
-        case MP_INDUSTRY: {
+        case TileType::Industry: {
             if (_settings_client.gui.cm_land_tooltips_for_industries) {
                 const Industry *ind = Industry::GetByTile(tile);
                 // if(ind->produced_cargo[0] == CT_INVALID && ind->produced_cargo[1] == CT_INVALID) return;
-                param = ((ind->index.base() & 0xFFFF) << 16) | MP_INDUSTRY;
+                param = ((ind->index.base() & 0xFFFF) << 16) | to_underlying(TileType::Industry);
             }
             break;
         }
-        case MP_STATION: {
+        case TileType::Station: {
             if (_settings_client.gui.cm_land_tooltips_for_stations) {
                 if (IsRailWaypoint(tile) || HasTileWaterGround(tile) || IsRoadWaypoint(tile)) break;
                 const Station *st = Station::GetByTile(tile);
-                param = ((st->index.base() & 0xFFFF) << 16) | MP_STATION;
+                param = ((st->index.base() & 0xFFFF) << 16) | to_underlying(TileType::Station);
                 break;
             }
         }
         default:
             break;
     }
-    CloseWindowById(CM_WC_LAND_TOOLTIPS, 0);
+    CloseWindowById(WindowClass::CmLandTooltips, 0);
 
     if (param == 0) return;
     new LandTooltipsWindow(parent, param);
 }
 
 static const NWidgetPart _nested_station_rating_tooltip_widgets[] = {
-    NWidget(WWT_PANEL, COLOUR_GREY, 0), SetMinimalSize(64, 32), EndContainer(),
+    NWidget(WWT_PANEL, Colours::Grey, 0), SetMinimalSize(64, 32), EndContainer(),
 };
 
 static WindowDesc _station_rating_tooltip_desc(
-    WDP_MANUAL, {}, 0, 0,
-    WC_STATION_RATING_TOOLTIP, WC_NONE,
+    WindowPosition::Manual, {}, 0, 0,
+    WindowClass::StationRatingTooltip, WindowClass::None,
     {},
     _nested_station_rating_tooltip_widgets
 );
@@ -335,7 +335,7 @@ public:
             uint last_speed = ge->HasVehicleEverTriedLoading() ? ge->last_speed : 0xFF;
 
             uint32 var18 = std::min<uint32>(ge->time_since_pickup, 0xFF) | (std::min<uint32>(ge->max_waiting_cargo, 0xFFFF) << 8) | (std::min<uint32>(last_speed, 0xFF) << 24);
-            uint32 var10 = (this->st->last_vehicle_type == VEH_INVALID) ? 0x0 : (this->st->last_vehicle_type + 0x10);
+            uint32 var10 = (this->st->last_vehicle_type == VehicleType::Invalid) ? 0x0 : (to_underlying(this->st->last_vehicle_type) + 0x10);
             // TODO can desync
             uint16 callback = GetCargoCallback(CBID_CARGO_STATION_RATING_CALC, var10, var18, this->cs);
             int newgrf_rating = 0;
@@ -372,7 +372,7 @@ public:
         if (!this->newgrf_rating_used) {
 
             uint8_t waittime = ge->time_since_pickup;
-            if (this->st->last_vehicle_type == VEH_SHIP) waittime >>= 2;
+            if (this->st->last_vehicle_type == VehicleType::Ship) waittime >>= 2;
             int waittime_stage = 0;
             if (waittime <= 21) waittime_stage = 1;
             if (waittime <= 12) waittime_stage = 2;
@@ -381,7 +381,7 @@ public:
             total_rating += STATION_RATING_WAITTIME[waittime_stage];
 
             this->data.push_back(GetString(
-                this->st->last_vehicle_type == VEH_SHIP ? CM_STR_STATION_RATING_TOOLTIP_WAITTIME_SHIP : CM_STR_STATION_RATING_TOOLTIP_WAITTIME,
+                this->st->last_vehicle_type == VehicleType::Ship ? CM_STR_STATION_RATING_TOOLTIP_WAITTIME_SHIP : CM_STR_STATION_RATING_TOOLTIP_WAITTIME,
                 CM_STR_STATION_RATING_TOOLTIP_WAITTIME_0 + waittime_stage,
                 (ge->time_since_pickup * 5 + 1) / 2,
                 this->RoundRating(STATION_RATING_WAITTIME[waittime_stage])
@@ -451,7 +451,7 @@ public:
             if (this->newgrf_rating_used && i >= 2 && i <= 4)
                 width += RATING_TOOLTIP_NEWGRF_INDENT;
             size.width = std::max(size.width, width);
-            size.height += GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.hsep_normal;
+            size.height += GetCharacterHeight(FontSize::Normal) + WidgetDimensions::scaled.hsep_normal;
         }
         size.height -= WidgetDimensions::scaled.hsep_normal;
     }
@@ -465,12 +465,12 @@ public:
 
         auto ir = r.Shrink(WidgetDimensions::scaled.framerect).Shrink(WidgetDimensions::scaled.bevel);
 
-        DrawString(ir, this->data[0], TC_LIGHT_BLUE, SA_CENTER);
-        ir.top += GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.vsep_normal;
+        DrawString(ir, this->data[0], TextColour::LightBlue, {AlignmentH::Centre, AlignmentV::Middle});
+        ir.top += GetCharacterHeight(FontSize::Normal) + WidgetDimensions::scaled.vsep_normal;
         for (uint i = 1; i < data.size(); i++) {
             auto indent = (this->newgrf_rating_used && i >= 2 && i <= 4 ? RATING_TOOLTIP_NEWGRF_INDENT : 0);
-            DrawString(ir.Indent(indent, _current_text_dir == TD_RTL), this->data[i], TC_BLACK);
-            ir.top += GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.vsep_normal;
+            DrawString(ir.Indent(indent, _current_text_dir == TD_RTL), this->data[i], TextColour::Black);
+            ir.top += GetCharacterHeight(FontSize::Normal) + WidgetDimensions::scaled.vsep_normal;
         }
     }
 
@@ -485,11 +485,11 @@ public:
         /* We can show tooltips while dragging tools. These are shown as long as
          * we are dragging the tool. Normal tooltips work with hover or rmb. */
         switch (this->close_cond) {
-            case TCC_RIGHT_CLICK: if (!_right_button_down) this->Close(); break;
-            case TCC_HOVER: if (!_mouse_hovering) this->Close(); break;
-            case TCC_NONE: break;
+            case TooltipCloseCondition::RightClick: if (!_right_button_down) this->Close(); break;
+            case TooltipCloseCondition::Hover: if (!_mouse_hovering) this->Close(); break;
+            case TooltipCloseCondition::None: break;
 
-            case TCC_EXIT_VIEWPORT: {
+            case TooltipCloseCondition::ExitViewport: {
                 Window *w = FindWindowFromPt(_cursor.pos.x, _cursor.pos.y);
                 if (w == nullptr || IsPtInWindowViewport(w, _cursor.pos.x, _cursor.pos.y) == nullptr) this->Close();
                 break;
@@ -499,7 +499,7 @@ public:
 };
 
 bool ShowStationRatingTooltip(Window *parent, const Station *st, const CargoSpec *cs, TooltipCloseCondition close_cond) {
-    CloseWindowById(WC_STATION_RATING_TOOLTIP, 0);
+    CloseWindowById(WindowClass::StationRatingTooltip, 0);
     new StationRatingTooltipWindow(parent, st, cs, close_cond);
     return true;
 }
@@ -511,9 +511,9 @@ bool ShowStationRatingTooltip(Window *parent, const Station *st, const CargoSpec
 //     if (!HasModalProgress()) return true;
 
 //     switch (w->window_class) {
-//         case WC_MAIN_WINDOW:    ///< The background, i.e. the game.
-//         case WC_MODAL_PROGRESS: ///< The actual progress window.
-//         case WC_CONFIRM_POPUP_QUERY: ///< The abort window.
+//         case WindowClass::MainWindow:    ///< The background, i.e. the game.
+//         case WindowClass::ModalProgress: ///< The actual progress window.
+//         case WindowClass::ConfirmPopupQuery: ///< The abort window.
 //             return true;
 
 //         default:

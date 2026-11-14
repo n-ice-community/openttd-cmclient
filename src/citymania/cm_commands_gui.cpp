@@ -1,4 +1,6 @@
 #include "../stdafx.h"
+#include "../company_base.h"
+#include "../string_func.h"
 
 #include "cm_commands_gui.hpp"
 
@@ -280,18 +282,20 @@ bool GetAdmin() { return _admin; }
 void IniLoginInitiate(){
 	if(_inilogin != NULL) return; //it was already set
 	_inilogin = new IniFile({CFG_LOGIN_KEY});
-	_inilogin->LoadFromDisk(CFG_LOGIN_FILE, BASE_DIR);
+	_inilogin->LoadFromDisk(CFG_LOGIN_FILE, Subdirectory::Base);
 	if (FileExists(_personal_dir + "/citymania.cfg"))
 		IniReloadLogin();
 }
 
 std::string GetLoginItem(std::string_view itemname){
+	IniLoginInitiate();
 	IniGroup &group = _inilogin->GetOrCreateGroup(CFG_LOGIN_KEY);
 	IniItem &item = group.GetOrCreateItem(itemname);
 	return item.value.value_or("");
 }
 
 std::string GetServerItem(std::string_view itemname) {
+    IniLoginInitiate();
     IniGroup &group = _inilogin->GetOrCreateGroup(CFG_SERVER_KEY);
     IniItem &item = group.GetOrCreateItem(itemname);
     return item.value.value_or("");
@@ -542,7 +546,7 @@ static NWidgetBase *MakeCargoButtons(int *biggest_index)
 	NWidgetVertical *ver = new NWidgetVertical;
 
 	for (int i = 0; i < _sorted_standard_cargo_specs.size(); i++) {
-		NWidgetBackground *leaf = new NWidgetBackground(WWT_PANEL, COLOUR_ORANGE, CTW_CARGO_FIRST + i, NULL);
+		NWidgetBackground *leaf = new NWidgetBackground(WWT_PANEL, Colours::Orange, CTW_CARGO_FIRST + i, NULL);
 		leaf->tool_tip = STR_GRAPH_CARGO_PAYMENT_TOGGLE_CARGO;
 		leaf->SetFill(1, 0);
 		ver->Add(leaf);
@@ -553,110 +557,110 @@ static NWidgetBase *MakeCargoButtons(int *biggest_index)
 
 static const NWidgetPart _nested_commands_toolbar_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
-		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
-		NWidget(WWT_CAPTION, COLOUR_GREY), SetDataTip(STR_TOOLBAR_COMMANDS_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
-		NWidget(WWT_STICKYBOX, COLOUR_GREY),
+		NWidget(WWT_CLOSEBOX, Colours::Grey),
+		NWidget(WWT_CAPTION, Colours::Grey), SetDataTip(STR_TOOLBAR_COMMANDS_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_STICKYBOX, Colours::Grey),
 	EndContainer(),
 	NWidget(NWID_HORIZONTAL),
 		NWidget(NWID_VERTICAL),
 			NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, CTW_GOAL), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_GOAL_CAPTION, STR_TOOLBAR_COMMANDS_GOAL_TOOLTIP),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, CTW_QUEST), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_QUEST_CAPTION, STR_TOOLBAR_COMMANDS_QUEST_TOOLTIP),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, CTW_SCORE), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_SCORE_CAPTION, STR_TOOLBAR_COMMANDS_SCORE_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, Colours::Grey, CTW_GOAL), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_GOAL_CAPTION, STR_TOOLBAR_COMMANDS_GOAL_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, Colours::Grey, CTW_QUEST), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_QUEST_CAPTION, STR_TOOLBAR_COMMANDS_QUEST_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, Colours::Grey, CTW_SCORE), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_SCORE_CAPTION, STR_TOOLBAR_COMMANDS_SCORE_TOOLTIP),
 			EndContainer(),
 			NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, CTW_TOWN), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_TOWN_CAPTION, STR_TOOLBAR_COMMANDS_TOWN_TOOLTIP),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, CTW_TOWN_ID), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_TOWN_ID_CAPTION, STR_TOOLBAR_COMMANDS_TOWN_ID_TOOLTIP),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, CTW_HINT), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_HINT_CAPTION, STR_TOOLBAR_COMMANDS_HINT_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, Colours::Grey, CTW_TOWN), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_TOWN_CAPTION, STR_TOOLBAR_COMMANDS_TOWN_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, Colours::Grey, CTW_TOWN_ID), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_TOWN_ID_CAPTION, STR_TOOLBAR_COMMANDS_TOWN_ID_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, Colours::Grey, CTW_HINT), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_HINT_CAPTION, STR_TOOLBAR_COMMANDS_HINT_TOOLTIP),
 			EndContainer(),
 			NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, CTW_LOGIN), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_LOGIN_CAPTION, STR_TOOLBAR_COMMANDS_LOGIN_TOOLTIP),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, CTW_NAME), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_NAME_CAPTION, STR_TOOLBAR_COMMANDS_NAME_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, Colours::Grey, CTW_LOGIN), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_LOGIN_CAPTION, STR_TOOLBAR_COMMANDS_LOGIN_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, Colours::Grey, CTW_NAME), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_NAME_CAPTION, STR_TOOLBAR_COMMANDS_NAME_TOOLTIP),
 			EndContainer(),
 			NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, CTW_TIMELEFT), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_TIMELEFT_CAPTION, STR_TOOLBAR_COMMANDS_TIMELEFT_TOOLTIP),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, CTW_INFO), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_INFO_CAPTION, STR_TOOLBAR_COMMANDS_INFO_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, Colours::Grey, CTW_TIMELEFT), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_TIMELEFT_CAPTION, STR_TOOLBAR_COMMANDS_TIMELEFT_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, Colours::Grey, CTW_INFO), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_INFO_CAPTION, STR_TOOLBAR_COMMANDS_INFO_TOOLTIP),
 			EndContainer(),
 			NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_WHITE, CTW_NS0), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_NS_CAPTION, STR_TOOLBAR_COMMANDS_NS_TOOLTIP),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_WHITE, CTW_NS1), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_NS_CAPTION, STR_TOOLBAR_COMMANDS_NS_TOOLTIP),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_WHITE, CTW_NS2), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_NS_CAPTION, STR_TOOLBAR_COMMANDS_NS_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, Colours::White, CTW_NS0), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_NS_CAPTION, STR_TOOLBAR_COMMANDS_NS_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, Colours::White, CTW_NS1), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_NS_CAPTION, STR_TOOLBAR_COMMANDS_NS_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, Colours::White, CTW_NS2), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_NS_CAPTION, STR_TOOLBAR_COMMANDS_NS_TOOLTIP),
 			EndContainer(),
 			NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_WHITE, CTW_NS3), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_NS_CAPTION, STR_TOOLBAR_COMMANDS_NS_TOOLTIP),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_WHITE, CTW_NS4), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_NS_CAPTION, STR_TOOLBAR_COMMANDS_NS_TOOLTIP),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_WHITE, CTW_NS5), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_NS_CAPTION, STR_TOOLBAR_COMMANDS_NS_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, Colours::White, CTW_NS3), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_NS_CAPTION, STR_TOOLBAR_COMMANDS_NS_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, Colours::White, CTW_NS4), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_NS_CAPTION, STR_TOOLBAR_COMMANDS_NS_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, Colours::White, CTW_NS5), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_NS_CAPTION, STR_TOOLBAR_COMMANDS_NS_TOOLTIP),
 			EndContainer(),
 			NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_WHITE, CTW_NS6), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_NS_CAPTION, STR_TOOLBAR_COMMANDS_NS_TOOLTIP),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_WHITE, CTW_NS7), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_NS_CAPTION, STR_TOOLBAR_COMMANDS_NS_TOOLTIP),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_WHITE, CTW_NS9), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_NS_CAPTION, STR_TOOLBAR_COMMANDS_NS_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, Colours::White, CTW_NS6), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_NS_CAPTION, STR_TOOLBAR_COMMANDS_NS_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, Colours::White, CTW_NS7), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_NS_CAPTION, STR_TOOLBAR_COMMANDS_NS_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, Colours::White, CTW_NS9), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_NS_CAPTION, STR_TOOLBAR_COMMANDS_NS_TOOLTIP),
 			EndContainer(),
 			NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_WHITE, CTW_NS10), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_NS_CAPTION, STR_TOOLBAR_COMMANDS_NS_TOOLTIP),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_WHITE, CTW_NSX1), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_NS_CAPTION, STR_TOOLBAR_COMMANDS_NS_TOOLTIP),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_WHITE, CTW_NSX2), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_NS_CAPTION, STR_TOOLBAR_COMMANDS_NS_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, Colours::White, CTW_NS10), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_NS_CAPTION, STR_TOOLBAR_COMMANDS_NS_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, Colours::White, CTW_NSX1), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_NS_CAPTION, STR_TOOLBAR_COMMANDS_NS_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, Colours::White, CTW_NSX2), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_NS_CAPTION, STR_TOOLBAR_COMMANDS_NS_TOOLTIP),
 			EndContainer(),
 			NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_WHITE, CTW_NSX3), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_NS_CAPTION, STR_TOOLBAR_COMMANDS_NS_TOOLTIP),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_WHITE, CTW_NSX4), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_NS_CAPTION, STR_TOOLBAR_COMMANDS_NS_TOOLTIP),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_WHITE, CTW_NSX5), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_NS_CAPTION, STR_TOOLBAR_COMMANDS_NS_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, Colours::White, CTW_NSX3), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_NS_CAPTION, STR_TOOLBAR_COMMANDS_NS_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, Colours::White, CTW_NSX4), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_NS_CAPTION, STR_TOOLBAR_COMMANDS_NS_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, Colours::White, CTW_NSX5), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_NS_CAPTION, STR_TOOLBAR_COMMANDS_NS_TOOLTIP),
 			EndContainer(),
 			NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, CTW_RESETME), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_RESETME_CAPTION, STR_TOOLBAR_COMMANDS_RESETME_TOOLTIP),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, CTW_SAVEME), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_SAVEME_CAPTION, STR_TOOLBAR_COMMANDS_SAVEME_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, Colours::Grey, CTW_RESETME), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_RESETME_CAPTION, STR_TOOLBAR_COMMANDS_RESETME_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, Colours::Grey, CTW_SAVEME), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_SAVEME_CAPTION, STR_TOOLBAR_COMMANDS_SAVEME_TOOLTIP),
 			EndContainer(),
 			//more
 			NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, CTW_TOPICS), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_TOPICS_CAPTION, STR_TOOLBAR_COMMANDS_TOPICS_TOOLTIP),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, CTW_HELP), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_HELP_CAPTION, STR_TOOLBAR_COMMANDS_HELP_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, Colours::Grey, CTW_TOPICS), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_TOPICS_CAPTION, STR_TOOLBAR_COMMANDS_TOPICS_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, Colours::Grey, CTW_HELP), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_HELP_CAPTION, STR_TOOLBAR_COMMANDS_HELP_TOOLTIP),
 			EndContainer(),
 			NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, CTW_TOPIC1), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_TOPIC1_CAPTION, STR_TOOLBAR_COMMANDS_TOPIC1_TOOLTIP),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, CTW_RULES), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_RULES_CAPTION, STR_TOOLBAR_COMMANDS_RULES_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, Colours::Grey, CTW_TOPIC1), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_TOPIC1_CAPTION, STR_TOOLBAR_COMMANDS_TOPIC1_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, Colours::Grey, CTW_RULES), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_RULES_CAPTION, STR_TOOLBAR_COMMANDS_RULES_TOOLTIP),
 			EndContainer(),
 			NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, CTW_TOPIC2), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_TOPIC2_CAPTION, STR_TOOLBAR_COMMANDS_TOPIC2_TOOLTIP),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, CTW_CBHINT), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_CBHINT_CAPTION, STR_TOOLBAR_COMMANDS_CBHINT_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, Colours::Grey, CTW_TOPIC2), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_TOPIC2_CAPTION, STR_TOOLBAR_COMMANDS_TOPIC2_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, Colours::Grey, CTW_CBHINT), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_CBHINT_CAPTION, STR_TOOLBAR_COMMANDS_CBHINT_TOOLTIP),
 			EndContainer(),
 			NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, CTW_TOPIC3), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_TOPIC3_CAPTION, STR_TOOLBAR_COMMANDS_TOPIC3_TOOLTIP),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, CTW_BEST), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_BEST_CAPTION, STR_TOOLBAR_COMMANDS_BEST_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, Colours::Grey, CTW_TOPIC3), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_TOPIC3_CAPTION, STR_TOOLBAR_COMMANDS_TOPIC3_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, Colours::Grey, CTW_BEST), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_BEST_CAPTION, STR_TOOLBAR_COMMANDS_BEST_TOOLTIP),
 			EndContainer(),
 			NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, CTW_TOPIC4), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_TOPIC4_CAPTION, STR_TOOLBAR_COMMANDS_TOPIC4_TOOLTIP),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, CTW_RANK), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_RANK_CAPTION, STR_TOOLBAR_COMMANDS_RANK_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, Colours::Grey, CTW_TOPIC4), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_TOPIC4_CAPTION, STR_TOOLBAR_COMMANDS_TOPIC4_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, Colours::Grey, CTW_RANK), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_RANK_CAPTION, STR_TOOLBAR_COMMANDS_RANK_TOOLTIP),
 			EndContainer(),
 			NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, CTW_TOPIC5), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_TOPIC5_CAPTION, STR_TOOLBAR_COMMANDS_TOPIC5_TOOLTIP),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, CTW_ME), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_ME_CAPTION, STR_TOOLBAR_COMMANDS_ME_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, Colours::Grey, CTW_TOPIC5), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_TOPIC5_CAPTION, STR_TOOLBAR_COMMANDS_TOPIC5_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, Colours::Grey, CTW_ME), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_ME_CAPTION, STR_TOOLBAR_COMMANDS_ME_TOOLTIP),
 			EndContainer(),
 			NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, CTW_TOPIC6), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_TOPIC6_CAPTION, STR_TOOLBAR_COMMANDS_TOPIC6_TOOLTIP),
-				NWidget(WWT_PANEL, COLOUR_GREY), SetResize(0, 1), EndContainer(),
+				NWidget(WWT_PUSHTXTBTN, Colours::Grey, CTW_TOPIC6), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_TOPIC6_CAPTION, STR_TOOLBAR_COMMANDS_TOPIC6_TOOLTIP),
+				NWidget(WWT_PANEL, Colours::Grey), SetResize(0, 1), EndContainer(),
 			EndContainer(),
-			NWidget(WWT_PANEL, COLOUR_GREY), SetResize(0, 1), EndContainer(),
+			NWidget(WWT_PANEL, Colours::Grey), SetResize(0, 1), EndContainer(),
 		EndContainer(),
 		NWidget(NWID_VERTICAL),
-			NWidget(WWT_TEXTBTN, COLOUR_GREY, CTW_CHOOSE_CARGO_AMOUNT), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_OPTION_CARGO_A_CAPTION, STR_TOOLBAR_COMMANDS_OPTION_CARGO_A_TOOLTIP),
-			NWidget(WWT_TEXTBTN, COLOUR_GREY, CTW_CHOOSE_CARGO_INCOME), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_OPTION_CARGO_I_CAPTION, STR_TOOLBAR_COMMANDS_OPTION_CARGO_I_TOOLTIP),
-			NWidget(WWT_TEXTBTN, COLOUR_GREY, CTW_CHOOSE_CARGO), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_OPTION_CARGO_CAPTION, STR_TOOLBAR_COMMANDS_OPTION_CARGO_TOOLTIP),
+			NWidget(WWT_TEXTBTN, Colours::Grey, CTW_CHOOSE_CARGO_AMOUNT), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_OPTION_CARGO_A_CAPTION, STR_TOOLBAR_COMMANDS_OPTION_CARGO_A_TOOLTIP),
+			NWidget(WWT_TEXTBTN, Colours::Grey, CTW_CHOOSE_CARGO_INCOME), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_OPTION_CARGO_I_CAPTION, STR_TOOLBAR_COMMANDS_OPTION_CARGO_I_TOOLTIP),
+			NWidget(WWT_TEXTBTN, Colours::Grey, CTW_CHOOSE_CARGO), SetMinimalSize(40, 20), SetFill(1, 0), SetDataTip(STR_TOOLBAR_COMMANDS_OPTION_CARGO_CAPTION, STR_TOOLBAR_COMMANDS_OPTION_CARGO_TOOLTIP),
 			NWidgetFunction(MakeCargoButtons),
-			NWidget(WWT_PANEL, COLOUR_GREY), SetResize(0, 1), EndContainer(),
+			NWidget(WWT_PANEL, Colours::Grey), SetResize(0, 1), EndContainer(),
 		EndContainer(),
 	EndContainer(),
 };
 
 static WindowDesc _commands_toolbar_desc(
-	WDP_ALIGN_TOOLBAR, {}, 0, 0,
-	WC_COMMAND_TOOLBAR, WC_NONE,
+	WindowPosition::AlignToolbar, {}, 0, 0,
+	WindowClass::CmCommandToolbar, WindowClass::None,
 	WDF_CONSTRUCTION,
 	_nested_commands_toolbar_widgets, lengthof(_nested_commands_toolbar_widgets)
 );*/
 
 void ShowCommandsToolbar()
 {
-	// DeleteWindowByClass(WC_COMMAND_TOOLBAR);
+	// DeleteWindowByClass(WindowClass::CmCommandToolbar);
 	// AllocateWindowDescFront<CommandsToolbarWindow>(&_commands_toolbar_desc, 0);
 }
 
@@ -675,9 +679,9 @@ class CommunityServerManager: public HTTPCallback {
 	void SaveServerString() const {
 		_server_list_text += this->buf;
         //NetworkClientSendChatToServer("*** data has been saved.");
-        if (FindWindowByClass(CM_WC_LOGIN_WINDOW)) ReloadServerButtons();
-        else if (FindWindowByClass(WC_SELECT_GAME)) {
-            Window *w = FindWindowByClass(WC_SELECT_GAME);
+        if (FindWindowByClass(WindowClass::CmLoginWindow)) ReloadServerButtons();
+        else if (FindWindowByClass(WindowClass::SelectGame)) {
+            Window *w = FindWindowByClass(WindowClass::SelectGame);
             ShowServerButtons(w->left, w->top, w->height, w->width);
         }
         else return;
@@ -691,7 +695,7 @@ class CommunityServerManager: public HTTPCallback {
 	}
 
 	void OnFailure() override {
-		ShowErrorMessage(GetEncodedString(CM_STR_SB_SERVER_LIST_UNREACHABLE), {}, WL_ERROR);
+		ShowErrorMessage(GetEncodedString(CM_STR_SB_SERVER_LIST_UNREACHABLE), {}, WarningLevel::Error);
         //NetworkClientSendChatToServer("*** connection failed.");
 	}
 
@@ -839,7 +843,7 @@ bool GetCommunityServer(int number, bool findonly) {
 
     } else if (findonly) return false;
 
-	ShowErrorMessage(GetEncodedString(CM_STR_SB_SERVER_LIST_ERROR_FILE), {}, WL_ERROR);
+	ShowErrorMessage(GetEncodedString(CM_STR_SB_SERVER_LIST_ERROR_FILE), {}, WarningLevel::Error);
 	return false;
 }
 /* end of serverbuttons */
@@ -873,7 +877,7 @@ public:
 	}
 
 	void OnFailure() override {
-		ShowErrorMessage(GetEncodedString(CM_STR_LOGIN_ERROR_SIGN_IN_FAILED), {}, WL_ERROR);
+		ShowErrorMessage(GetEncodedString(CM_STR_LOGIN_ERROR_SIGN_IN_FAILED), {}, WarningLevel::Error);
 	}
 
 	bool IsCancelled() const override {
@@ -884,7 +888,7 @@ public:
 		if(strlen(this->buf) == 4 && _networking){
 			NetworkClientSendChatToServer(fmt::format("!login {}", this->buf));
 		} else{
-			ShowErrorMessage(GetEncodedString(CM_STR_LOGIN_ERROR_BAD_INPUT), {}, WL_ERROR);
+			ShowErrorMessage(GetEncodedString(CM_STR_LOGIN_ERROR_BAD_INPUT), {}, WarningLevel::Error);
 		}
 		this->proccessing = false;
 	}
@@ -979,7 +983,7 @@ struct LoginWindow : public Window { LoginWindowQueryWidgets query_widget;
 	}
 
 	void Close([[maybe_unused]] int data) override {
-		CloseWindowByClass(CM_WC_SERVER_BUTTONS);
+		CloseWindowByClass(WindowClass::CmServerButtons);
 		this->Window::Close();  
     }
 
@@ -1317,13 +1321,13 @@ struct ServerButtonsWindow : Window {
 		this->InitNested(window_number);
 
 		if(_community == 1){
-            this->GetWidget<NWidgetCore>(WID_SB_SELECT_NICE)->colour = COLOUR_ORANGE;
+            this->GetWidget<NWidgetCore>(WID_SB_SELECT_NICE)->colour = Colours::Orange;
 		}
 		else if(_community == 2){
-			this->GetWidget<NWidgetCore>(WID_SB_SELECT_BTPRO)->colour = COLOUR_ORANGE;
+			this->GetWidget<NWidgetCore>(WID_SB_SELECT_BTPRO)->colour = Colours::Orange;
 		}
 		else if(_community == 3){
-			this->GetWidget<NWidgetCore>(WID_SB_SELECT_CITYMANIA)->colour = COLOUR_ORANGE;
+			this->GetWidget<NWidgetCore>(WID_SB_SELECT_CITYMANIA)->colour = Colours::Orange;
 		}
 	}
 
@@ -1351,7 +1355,7 @@ struct ServerButtonsWindow : Window {
 							NetworkClientConnectGame(fmt::format("{}:{}", _cc_address, _cc_porti), COMPANY_SPECTATOR);
                         }
                     }
-                } else ShowErrorMessage(GetEncodedString(CM_STR_SB_SERVER_DISABLED), {}, WL_ERROR);
+                } else ShowErrorMessage(GetEncodedString(CM_STR_SB_SERVER_DISABLED), {}, WarningLevel::Error);
                 break;
 		}
 	}
@@ -1418,8 +1422,8 @@ struct ServerButtonsWindow : Window {
 					if (widget - AC_SERVERS + 1 > _servercount) _cc_name = "";
 
 					//SetDParamStr(0, _cc_name);
-					//DrawString(r.left, r.right, r.top + 10, CM_STR_SB_NETWORK_DIRECT_JOIN_GAME, TC_FROMSTRING, SA_CENTER);
-					DrawStringMultiLine(r, GetString(CM_STR_SB_NETWORK_DIRECT_JOIN_GAME, _cc_name), TC_FROMSTRING, SA_CENTER);
+					//DrawString(r.left, r.right, r.top + 10, CM_STR_SB_NETWORK_DIRECT_JOIN_GAME, TextColour::FromString, {AlignmentH::Centre, AlignmentV::Middle});
+					DrawStringMultiLine(r, GetString(CM_STR_SB_NETWORK_DIRECT_JOIN_GAME, _cc_name), TextColour::FromString, {AlignmentH::Centre, AlignmentV::Middle});
 
 				}
 				break;
@@ -1429,11 +1433,11 @@ struct ServerButtonsWindow : Window {
 
 std::unique_ptr<NWidgetBase> MakeServerButtons()
 {
-	std::int8_t _community = stoi(GetServerItem(COMMUNITY));
+	std::int8_t _community = std::atoi(GetServerItem(COMMUNITY).c_str());
 	auto ver = std::make_unique<NWidgetVertical>();
 
 	if(_community == 0 || _server_list_text.empty()){
-		auto leaf = std::make_unique<NWidgetBackground>(WWT_PANEL, COLOUR_GREY, AC_SERVERS);
+		auto leaf = std::make_unique<NWidgetBackground>(WWT_PANEL, Colours::Grey, AC_SERVERS);
 		ver->Add(std::move(leaf));
 		return ver;
 	}
@@ -1468,7 +1472,7 @@ std::unique_ptr<NWidgetBase> MakeServerButtons()
 		auto spce = std::make_unique<NWidgetSpacer>(4, 0);
 		spce->SetFill(1, 0);
 		hor->Add(std::move(spce));
-		auto leaf = std::make_unique<NWidgetBackground>(WWT_PANEL, COLOUR_ORANGE, AC_SERVERS + i);
+		auto leaf = std::make_unique<NWidgetBackground>(WWT_PANEL, Colours::Orange, AC_SERVERS + i);
 		if(aactive[i] == 0) leaf->SetDisabled(true);
 		leaf->SetStringTip(CM_STR_SB_NETWORK_DIRECT_JOIN_GAME, CM_STR_SB_NETWORK_DIRECT_JOIN_TOOLTIP);
 		leaf->SetMinimalSize(80, 25);
@@ -1495,45 +1499,45 @@ std::unique_ptr<NWidgetBase> MakeServerButtons()
 /* user login */
 static constexpr std::initializer_list<NWidgetPart> _nested_login_window_widgets = {
 	NWidget(NWID_HORIZONTAL),
-		NWidget(WWT_CLOSEBOX, COLOUR_BROWN),
-		NWidget(WWT_CAPTION, COLOUR_BROWN), SetStringTip(CM_STR_LOGIN_WINDOW_CAPTION,0),
-		NWidget(WWT_STICKYBOX, COLOUR_BROWN),
+		NWidget(WWT_CLOSEBOX, Colours::Brown),
+		NWidget(WWT_CAPTION, Colours::Brown), SetStringTip(CM_STR_LOGIN_WINDOW_CAPTION, INVALID_STRING_ID),
+		NWidget(WWT_STICKYBOX, Colours::Brown),
 	EndContainer(),
-	NWidget(WWT_PANEL, COLOUR_BROWN), SetResize(1, 0),
+	NWidget(WWT_PANEL, Colours::Brown), SetResize(1, 0),
 		NWidget(NWID_VERTICAL, NWidContainerFlag::EqualSize), SetPadding(10),
 			//welcome
 			NWidget(NWID_SPACER), SetMinimalSize(0, 5),
 			NWidget(NWID_VERTICAL, NWidContainerFlag::EqualSize),
-				NWidget(WWT_TEXT, INVALID_COLOUR, LWW_TXT1), SetMinimalSize(100, 15), SetAlignment(SA_LEFT), SetFill(1, 0),
-				NWidget(WWT_TEXT, INVALID_COLOUR, LWW_TXT2), SetMinimalSize(100, 15), SetAlignment(SA_LEFT), SetFill(1, 0),
+				NWidget(WWT_TEXT, Colours::Invalid, LWW_TXT1), SetMinimalSize(100, 15), SetAlignment(AlignmentH::Start), SetFill(1, 0),
+				NWidget(WWT_TEXT, Colours::Invalid, LWW_TXT2), SetMinimalSize(100, 15), SetAlignment(AlignmentH::Start), SetFill(1, 0),
 			EndContainer(),
 			//username and pw
 			NWidget(NWID_VERTICAL, NWidContainerFlag::EqualSize),
 				NWidget(NWID_SPACER), SetMinimalSize(0, 10),
-				NWidget(WWT_TEXT, INVALID_COLOUR, LWW_USERNAME),
+				NWidget(WWT_TEXT, Colours::Invalid, LWW_USERNAME),
 				NWidget(NWID_SPACER), SetMinimalSize(0, 5),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, LWW_USER_NAME), SetMinimalSize(100, 25), SetFill(1, 0),
+				NWidget(WWT_PUSHTXTBTN, Colours::Grey, LWW_USER_NAME), SetMinimalSize(100, 25), SetFill(1, 0),
 				SetStringTip(CM_STR_LOGIN_WINDOW_USERNAME_DISPLAY, CM_STR_LOGIN_WINDOW_CHANGE_USERNAME_HELPTEXT),
                 NWidget(NWID_SPACER), SetMinimalSize(0, 10),
-				NWidget(WWT_TEXT, INVALID_COLOUR, LWW_PASSWORD),
+				NWidget(WWT_TEXT, Colours::Invalid, LWW_PASSWORD),
 				NWidget(NWID_SPACER), SetMinimalSize(0, 5),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, LWW_USER_PW), SetMinimalSize(100, 25), SetFill(1, 0),
+				NWidget(WWT_PUSHTXTBTN, Colours::Grey, LWW_USER_PW), SetMinimalSize(100, 25), SetFill(1, 0),
 				SetStringTip(CM_STR_LOGIN_WINDOW_PASSWORD_DISPLAY, CM_STR_LOGIN_WINDOW_CHANGE_PASSWORD_HELPTEXT),
 				NWidget(NWID_SPACER), SetMinimalSize(0, 15),
 			EndContainer(),
 			//login and logout
             NWidget(NWID_VERTICAL, NWidContainerFlag::EqualSize),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_ORANGE, LWW_USER_LOGIN), SetMinimalSize(100, 25), SetAlignment(SA_CENTER), SetFill(1, 0),
+				NWidget(WWT_PUSHTXTBTN, Colours::Orange, LWW_USER_LOGIN), SetMinimalSize(100, 25), SetAlignment({AlignmentH::Centre, AlignmentV::Middle}), SetFill(1, 0),
 				SetStringTip(CM_STR_TOOLBAR_COMMANDS_LOGIN_CAPTION, CM_STR_TOOLBAR_COMMANDS_LOGIN_TOOLTIP),
 				NWidget(NWID_SPACER), SetMinimalSize(0, 15),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_ORANGE, LWW_USER_LOGOUT), SetMinimalSize(100, 25), SetAlignment(SA_CENTER), SetFill(1, 0),
+				NWidget(WWT_PUSHTXTBTN, Colours::Orange, LWW_USER_LOGOUT), SetMinimalSize(100, 25), SetAlignment({AlignmentH::Centre, AlignmentV::Middle}), SetFill(1, 0),
 				SetStringTip(CM_STR_TOOLBAR_COMMANDS_LOGOUT_CAPTION, CM_STR_TOOLBAR_COMMANDS_LOGOUT_TOOLTIP),
             EndContainer(),
 			NWidget(NWID_SPACER), SetMinimalSize(0,108), //Placeholder
 			NWidget(NWID_VERTICAL, NWidContainerFlag::EqualSize),
-				NWidget(WWT_TEXT, INVALID_COLOUR, LWW_TXT3), SetMinimalSize(100, 15), SetAlignment(SA_LEFT), SetFill(1, 0),
-				NWidget(WWT_TEXT, INVALID_COLOUR, LWW_TXT4), SetMinimalSize(100, 15), SetAlignment(SA_LEFT), SetFill(1, 0),
-				NWidget(WWT_TEXT, INVALID_COLOUR, LWW_URL), SetMinimalSize(100, 15), SetAlignment(SA_LEFT), SetFill(1, 0),
+				NWidget(WWT_TEXT, Colours::Invalid, LWW_TXT3), SetMinimalSize(100, 15), SetAlignment(AlignmentH::Start), SetFill(1, 0),
+				NWidget(WWT_TEXT, Colours::Invalid, LWW_TXT4), SetMinimalSize(100, 15), SetAlignment(AlignmentH::Start), SetFill(1, 0),
+				NWidget(WWT_TEXT, Colours::Invalid, LWW_URL), SetMinimalSize(100, 15), SetAlignment(AlignmentH::Start), SetFill(1, 0),
 			EndContainer(),
 		EndContainer(),
 	EndContainer(),
@@ -1542,56 +1546,56 @@ static constexpr std::initializer_list<NWidgetPart> _nested_login_window_widgets
 /* admin login */
 static constexpr std::initializer_list<NWidgetPart> _nested_admin_window_widgets = {
 	NWidget(NWID_HORIZONTAL),
-		NWidget(WWT_CLOSEBOX, COLOUR_BROWN),
-		NWidget(WWT_CAPTION, COLOUR_BROWN), SetStringTip(CM_STR_LOGIN_WINDOW_CAPTION,0),
-		NWidget(WWT_STICKYBOX, COLOUR_BROWN),
+		NWidget(WWT_CLOSEBOX, Colours::Brown),
+		NWidget(WWT_CAPTION, Colours::Brown), SetStringTip(CM_STR_LOGIN_WINDOW_CAPTION, INVALID_STRING_ID),
+		NWidget(WWT_STICKYBOX, Colours::Brown),
 	EndContainer(),
-	NWidget(WWT_PANEL, COLOUR_BROWN), SetResize(1, 0),
+	NWidget(WWT_PANEL, Colours::Brown), SetResize(1, 0),
 		NWidget(NWID_VERTICAL, NWidContainerFlag::EqualSize), SetPadding(10),
 			//welcome
 			NWidget(NWID_SPACER), SetMinimalSize(0, 5),
 			NWidget(NWID_VERTICAL, NWidContainerFlag::EqualSize),
-				NWidget(WWT_TEXT, INVALID_COLOUR, LWW_TXT1), SetMinimalSize(100, 15), SetAlignment(SA_LEFT), SetFill(1, 0),
-				NWidget(WWT_TEXT, INVALID_COLOUR, LWW_TXT2), SetMinimalSize(100, 15), SetAlignment(SA_LEFT), SetFill(1, 0),
+				NWidget(WWT_TEXT, Colours::Invalid, LWW_TXT1), SetMinimalSize(100, 15), SetAlignment(AlignmentH::Start), SetFill(1, 0),
+				NWidget(WWT_TEXT, Colours::Invalid, LWW_TXT2), SetMinimalSize(100, 15), SetAlignment(AlignmentH::Start), SetFill(1, 0),
 			EndContainer(),
 			//username and pw
 			NWidget(NWID_VERTICAL, NWidContainerFlag::EqualSize),
 				NWidget(NWID_SPACER), SetMinimalSize(0, 10),
-				NWidget(WWT_TEXT, INVALID_COLOUR, LWW_USERNAME),
+				NWidget(WWT_TEXT, Colours::Invalid, LWW_USERNAME),
 				NWidget(NWID_SPACER), SetMinimalSize(0, 5),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, LWW_USER_NAME), SetMinimalSize(100, 25), SetFill(1, 0),
+				NWidget(WWT_PUSHTXTBTN, Colours::Grey, LWW_USER_NAME), SetMinimalSize(100, 25), SetFill(1, 0),
 				SetStringTip(CM_STR_LOGIN_WINDOW_USERNAME_DISPLAY, CM_STR_LOGIN_WINDOW_CHANGE_USERNAME_HELPTEXT),
                 NWidget(NWID_SPACER), SetMinimalSize(0, 10),
-				NWidget(WWT_TEXT, INVALID_COLOUR, LWW_PASSWORD),
+				NWidget(WWT_TEXT, Colours::Invalid, LWW_PASSWORD),
 				NWidget(NWID_SPACER), SetMinimalSize(0, 5),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, LWW_USER_PW), SetMinimalSize(100, 25), SetFill(1, 0),
+				NWidget(WWT_PUSHTXTBTN, Colours::Grey, LWW_USER_PW), SetMinimalSize(100, 25), SetFill(1, 0),
 				SetStringTip(CM_STR_LOGIN_WINDOW_PASSWORD_DISPLAY, CM_STR_LOGIN_WINDOW_CHANGE_PASSWORD_HELPTEXT),
 				NWidget(NWID_SPACER), SetMinimalSize(0, 10),
-				NWidget(WWT_TEXT, INVALID_COLOUR, LWW_PASSWORD_ADMIN),
+				NWidget(WWT_TEXT, Colours::Invalid, LWW_PASSWORD_ADMIN),
 				NWidget(NWID_SPACER), SetMinimalSize(0, 5),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, LWW_ADMIN_PW), SetMinimalSize(100, 25), SetFill(1, 0),
+				NWidget(WWT_PUSHTXTBTN, Colours::Grey, LWW_ADMIN_PW), SetMinimalSize(100, 25), SetFill(1, 0),
 				SetStringTip(CM_STR_LOGIN_WINDOW_PASSWORD_DISPLAY, CM_STR_LOGIN_WINDOW_CHANGE_PASSWORD_HELPTEXT),
 				NWidget(NWID_SPACER), SetMinimalSize(0, 15),
 			EndContainer(),
 			//login and logout
             NWidget(NWID_VERTICAL, NWidContainerFlag::EqualSize),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_ORANGE, LWW_USER_LOGIN), SetMinimalSize(100, 25), SetAlignment(SA_CENTER), SetFill(1, 0),
+				NWidget(WWT_PUSHTXTBTN, Colours::Orange, LWW_USER_LOGIN), SetMinimalSize(100, 25), SetAlignment({AlignmentH::Centre, AlignmentV::Middle}), SetFill(1, 0),
 				SetStringTip(CM_STR_TOOLBAR_COMMANDS_LOGIN_CAPTION, CM_STR_TOOLBAR_COMMANDS_LOGIN_TOOLTIP),
 				NWidget(NWID_SPACER), SetMinimalSize(0, 15),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_ORANGE, LWW_USER_LOGOUT), SetMinimalSize(100, 25), SetAlignment(SA_CENTER), SetFill(1, 0),
+				NWidget(WWT_PUSHTXTBTN, Colours::Orange, LWW_USER_LOGOUT), SetMinimalSize(100, 25), SetAlignment({AlignmentH::Centre, AlignmentV::Middle}), SetFill(1, 0),
 				SetStringTip(CM_STR_TOOLBAR_COMMANDS_LOGOUT_CAPTION, CM_STR_TOOLBAR_COMMANDS_LOGOUT_TOOLTIP),
 				NWidget(NWID_SPACER), SetMinimalSize(0, 15),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_ORANGE, LWW_ADMIN_LOGIN), SetMinimalSize(100, 25), SetAlignment(SA_CENTER), SetFill(1, 0),
+				NWidget(WWT_PUSHTXTBTN, Colours::Orange, LWW_ADMIN_LOGIN), SetMinimalSize(100, 25), SetAlignment({AlignmentH::Centre, AlignmentV::Middle}), SetFill(1, 0),
 				SetStringTip(CM_STR_LOGIN_WINDOW_LOGIN_CAPTION_ADMIN, CM_STR_LOGIN_WINDOW_LOGIN_TOOLTIP_ADMIN),
 				NWidget(NWID_SPACER), SetMinimalSize(0, 15),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_ORANGE, LWW_ADMIN_LOGOUT), SetMinimalSize(100, 25), SetAlignment(SA_CENTER), SetFill(1, 0),
+				NWidget(WWT_PUSHTXTBTN, Colours::Orange, LWW_ADMIN_LOGOUT), SetMinimalSize(100, 25), SetAlignment({AlignmentH::Centre, AlignmentV::Middle}), SetFill(1, 0),
 				SetStringTip(CM_STR_LOGIN_WINDOW_LOGOUT_CAPTION_ADMIN, CM_STR_LOGIN_WINDOW_LOGOUT_TOOLTIP_ADMIN),
             EndContainer(),
 			NWidget(NWID_SPACER), SetMinimalSize(0,14), //Placeholder
 			NWidget(NWID_VERTICAL, NWidContainerFlag::EqualSize),
-				//NWidget(WWT_TEXT, INVALID_COLOUR, LWW_TXT3), SetMinimalSize(100, 15), SetAlignment(SA_LEFT), SetFill(1, 0),
-				//NWidget(WWT_TEXT, INVALID_COLOUR, LWW_TXT4), SetMinimalSize(100, 15), SetAlignment(SA_LEFT), SetFill(1, 0),
-				NWidget(WWT_TEXT, INVALID_COLOUR, LWW_URL), SetMinimalSize(100, 10), SetAlignment(SA_LEFT), SetFill(1, 0),
+				//NWidget(WWT_TEXT, Colours::Invalid, LWW_TXT3), SetMinimalSize(100, 15), SetAlignment(AlignmentH::Start), SetFill(1, 0),
+				//NWidget(WWT_TEXT, Colours::Invalid, LWW_TXT4), SetMinimalSize(100, 15), SetAlignment(AlignmentH::Start), SetFill(1, 0),
+				NWidget(WWT_TEXT, Colours::Invalid, LWW_URL), SetMinimalSize(100, 10), SetAlignment(AlignmentH::Start), SetFill(1, 0),
 			EndContainer(),
 		EndContainer(),
 	EndContainer(),
@@ -1600,33 +1604,33 @@ static constexpr std::initializer_list<NWidgetPart> _nested_admin_window_widgets
 /* admin company buttons */
 static constexpr std::initializer_list<NWidgetPart> _nested_admin_company_window_widgets = {
 	NWidget(NWID_HORIZONTAL),
-		NWidget(WWT_CAPTION, COLOUR_GREY, ACB_COMPANY_CAPTION), SetStringTip(CM_STR_ACB_COMPANY_ADMIN_CAPTION, 0), SetMinimalSize(10, 17),
+		NWidget(WWT_CAPTION, Colours::Grey, ACB_COMPANY_CAPTION), SetStringTip(CM_STR_ACB_COMPANY_ADMIN_CAPTION, INVALID_STRING_ID), SetMinimalSize(10, 17),
 	EndContainer(),
-	NWidget(WWT_PANEL, COLOUR_GREY), SetResize(1, 0),
+	NWidget(WWT_PANEL, Colours::Grey), SetResize(1, 0),
 		NWidget(NWID_HORIZONTAL),
 			NWidget(NWID_SPACER), SetMinimalSize(5, 0), SetFill(1, 0),
 			NWidget(NWID_VERTICAL, NWidContainerFlag::EqualSize), SetPIP(5, 3, 5),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, ACB_COMPANY_LOCK), SetMinimalSize(10, 13), SetFill(1, 0), SetStringTip(CM_STR_ACB_LOCK, CM_STR_ACB_LOCK_TOOLTIP),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, ACB_COMPANY_UNLOCK), SetMinimalSize(10, 13), SetFill(1, 0), SetStringTip(CM_STR_ACB_UNLOCK, CM_STR_ACB_UNLOCK_TOOLTIP),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, ACB_COMPANY_KNOWN), SetMinimalSize(10, 13), SetFill(1, 0), SetStringTip(CM_STR_ACB_KNOWN, CM_STR_ACB_KNOWN_TOOLTIP),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, ACB_COMPANY_RESET_KNOWN), SetMinimalSize(10, 13), SetFill(1, 0), SetStringTip(CM_STR_ACB_RESET_KNOWN, CM_STR_ACB_RESET_KNOWN_TOOLTIP),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, ACB_COMPANY_MOVE_PLAYER), SetMinimalSize(10, 13), SetFill(1, 0), SetStringTip(CM_STR_ACB_MOVE_PLAYER_TO, CM_STR_ACB_MOVE_PLAYER_TO_TOOLTIP),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, ACB_COMPANY_NEWSTICKET_COMP), SetMinimalSize(10, 13), SetFill(1, 0), SetStringTip(CM_STR_ACB_COMPANY_NEWSTICKET_BUTTON_COMP, CM_STR_ACB_COMPANY_NEWSTICKET_BUTTON_COMP_TOOLTIP),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, ACB_COMPANY_SUSPEND), SetMinimalSize(10, 13), SetFill(1, 0), SetStringTip(CM_STR_ACB_SUSPEND, CM_STR_ACB_SUSPEND_TOOLTIP),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, ACB_COMPANY_UNSUSPEND), SetMinimalSize(10, 13), SetFill(1, 0), SetStringTip(CM_STR_ACB_UNSUSPEND, CM_STR_ACB_UNSUSPEND_TOOLTIP),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, ACB_COMPANY_JOIN2),SetMinimalSize(10, 13), SetFill(1, 0),SetStringTip(CM_STR_ACB_COMPANY_JOIN2, CM_STR_ACB_COMPANY_JOIN2_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, Colours::Grey, ACB_COMPANY_LOCK), SetMinimalSize(10, 13), SetFill(1, 0), SetStringTip(CM_STR_ACB_LOCK, CM_STR_ACB_LOCK_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, Colours::Grey, ACB_COMPANY_UNLOCK), SetMinimalSize(10, 13), SetFill(1, 0), SetStringTip(CM_STR_ACB_UNLOCK, CM_STR_ACB_UNLOCK_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, Colours::Grey, ACB_COMPANY_KNOWN), SetMinimalSize(10, 13), SetFill(1, 0), SetStringTip(CM_STR_ACB_KNOWN, CM_STR_ACB_KNOWN_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, Colours::Grey, ACB_COMPANY_RESET_KNOWN), SetMinimalSize(10, 13), SetFill(1, 0), SetStringTip(CM_STR_ACB_RESET_KNOWN, CM_STR_ACB_RESET_KNOWN_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, Colours::Grey, ACB_COMPANY_MOVE_PLAYER), SetMinimalSize(10, 13), SetFill(1, 0), SetStringTip(CM_STR_ACB_MOVE_PLAYER_TO, CM_STR_ACB_MOVE_PLAYER_TO_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, Colours::Grey, ACB_COMPANY_NEWSTICKET_COMP), SetMinimalSize(10, 13), SetFill(1, 0), SetStringTip(CM_STR_ACB_COMPANY_NEWSTICKET_BUTTON_COMP, CM_STR_ACB_COMPANY_NEWSTICKET_BUTTON_COMP_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, Colours::Grey, ACB_COMPANY_SUSPEND), SetMinimalSize(10, 13), SetFill(1, 0), SetStringTip(CM_STR_ACB_SUSPEND, CM_STR_ACB_SUSPEND_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, Colours::Grey, ACB_COMPANY_UNSUSPEND), SetMinimalSize(10, 13), SetFill(1, 0), SetStringTip(CM_STR_ACB_UNSUSPEND, CM_STR_ACB_UNSUSPEND_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, Colours::Grey, ACB_COMPANY_JOIN2),SetMinimalSize(10, 13), SetFill(1, 0),SetStringTip(CM_STR_ACB_COMPANY_JOIN2, CM_STR_ACB_COMPANY_JOIN2_TOOLTIP),
 			EndContainer(),
 			NWidget(NWID_SPACER), SetMinimalSize(5, 0), SetFill(1, 0),
 			NWidget(NWID_VERTICAL, NWidContainerFlag::EqualSize), SetPIP(5, 3, 5),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, ACB_COMPANY_EMPTY), SetMinimalSize(10, 13), SetFill(1, 0), SetStringTip(CM_STR_ACB_EMPTY, CM_STR_ACB_EMPTY_TOOLTIP),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, ACB_COMPANY_RESET), SetMinimalSize(10, 13), SetFill(1, 0), SetStringTip(CM_STR_ACB_RESET, CM_STR_ACB_RESET_TOOLTIP),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, ACB_COMPANY_RESET_SPEC), SetMinimalSize(10, 13), SetFill(1, 0), SetStringTip(CM_STR_ACB_RESET_SPEC, CM_STR_ACB_RESET_SPEC_TOOLTIP),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, ACB_COMPANY_RESET_KICK), SetMinimalSize(10, 13), SetFill(1, 0), SetStringTip(CM_STR_ACB_RESET_KICK, CM_STR_ACB_RESET_KICK_TOOLTIP),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, ACB_RESET_COMPANY_TIMER_120), SetMinimalSize(10, 13), SetFill(1, 0), SetStringTip(CM_STR_ACB_RESET_TIMER_120, CM_STR_ACB_RESET_TIMER_120_TOOLTIP),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, ACB_RESET_COMPANY_TIMER), SetMinimalSize(10, 13), SetFill(1, 0), SetStringTip(CM_STR_ACB_RESET_TIMER, CM_STR_ACB_RESET_TIMER_TOOLTIP),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, ACB_RESET_COMPANY_TIMER_CANCEL), SetMinimalSize(10, 13), SetFill(1, 0), SetStringTip(CM_STR_ACB_RESET_TIMER_CANCEL, CM_STR_ACB_RESET_TIMER_CANCEL_TOOLTIP),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, ACB_COMPANY_AWARNING), SetMinimalSize(10, 13), SetFill(1, 0), SetStringTip(CM_STR_ACB_AWARNING, CM_STR_ACB_AWARNING_TOOLTIP),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, ACB_COMPANY_LEAVE),SetMinimalSize(10, 13), SetFill(1, 0),SetStringTip(STR_NETWORK_COMPANY_LIST_SPECTATE, CM_STR_NETWORK_COMPANY_LIST_SPECTATE),
+				NWidget(WWT_PUSHTXTBTN, Colours::Grey, ACB_COMPANY_EMPTY), SetMinimalSize(10, 13), SetFill(1, 0), SetStringTip(CM_STR_ACB_EMPTY, CM_STR_ACB_EMPTY_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, Colours::Grey, ACB_COMPANY_RESET), SetMinimalSize(10, 13), SetFill(1, 0), SetStringTip(CM_STR_ACB_RESET, CM_STR_ACB_RESET_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, Colours::Grey, ACB_COMPANY_RESET_SPEC), SetMinimalSize(10, 13), SetFill(1, 0), SetStringTip(CM_STR_ACB_RESET_SPEC, CM_STR_ACB_RESET_SPEC_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, Colours::Grey, ACB_COMPANY_RESET_KICK), SetMinimalSize(10, 13), SetFill(1, 0), SetStringTip(CM_STR_ACB_RESET_KICK, CM_STR_ACB_RESET_KICK_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, Colours::Grey, ACB_RESET_COMPANY_TIMER_120), SetMinimalSize(10, 13), SetFill(1, 0), SetStringTip(CM_STR_ACB_RESET_TIMER_120, CM_STR_ACB_RESET_TIMER_120_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, Colours::Grey, ACB_RESET_COMPANY_TIMER), SetMinimalSize(10, 13), SetFill(1, 0), SetStringTip(CM_STR_ACB_RESET_TIMER, CM_STR_ACB_RESET_TIMER_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, Colours::Grey, ACB_RESET_COMPANY_TIMER_CANCEL), SetMinimalSize(10, 13), SetFill(1, 0), SetStringTip(CM_STR_ACB_RESET_TIMER_CANCEL, CM_STR_ACB_RESET_TIMER_CANCEL_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, Colours::Grey, ACB_COMPANY_AWARNING), SetMinimalSize(10, 13), SetFill(1, 0), SetStringTip(CM_STR_ACB_AWARNING, CM_STR_ACB_AWARNING_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, Colours::Grey, ACB_COMPANY_LEAVE),SetMinimalSize(10, 13), SetFill(1, 0),SetStringTip(STR_NETWORK_COMPANY_LIST_SPECTATE, CM_STR_NETWORK_COMPANY_LIST_SPECTATE),
 			EndContainer(),
 			NWidget(NWID_SPACER), SetMinimalSize(5, 0), SetFill(1, 0),
 		EndContainer(),
@@ -1636,15 +1640,15 @@ static constexpr std::initializer_list<NWidgetPart> _nested_admin_company_window
 
 static constexpr std::initializer_list<NWidgetPart> _nested_server_buttons_window_widgets = {
 	NWidget(NWID_HORIZONTAL),
-		NWidget(WWT_CLOSEBOX, COLOUR_BROWN),
-		NWidget(WWT_CAPTION, COLOUR_BROWN), SetStringTip(CM_STR_SB_SERVER_LIST,0),
-		NWidget(WWT_STICKYBOX, COLOUR_BROWN),
+		NWidget(WWT_CLOSEBOX, Colours::Brown),
+		NWidget(WWT_CAPTION, Colours::Brown), SetStringTip(CM_STR_SB_SERVER_LIST, INVALID_STRING_ID),
+		NWidget(WWT_STICKYBOX, Colours::Brown),
 	EndContainer(),
-	NWidget(WWT_PANEL, COLOUR_BROWN), SetFill(0, 1),
+	NWidget(WWT_PANEL, Colours::Brown), SetFill(0, 1),
 		NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize), SetPadding(4), SetPIP(0, 7, 0),
- 				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SB_SELECT_NICE), SetMinimalSize(80, 25), SetStringTip(CM_STR_SB_SELECT_NICE, 0),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SB_SELECT_BTPRO), SetMinimalSize(80, 25), SetStringTip(CM_STR_SB_SELECT_BTPRO, 0),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SB_SELECT_CITYMANIA), SetMinimalSize(80, 25), SetStringTip(CM_STR_SB_SELECT_CITYMANIA, 0),
+ 				NWidget(WWT_PUSHTXTBTN, Colours::Grey, WID_SB_SELECT_NICE), SetMinimalSize(80, 25), SetStringTip(CM_STR_SB_SELECT_NICE, INVALID_STRING_ID),
+				NWidget(WWT_PUSHTXTBTN, Colours::Grey, WID_SB_SELECT_BTPRO), SetMinimalSize(80, 25), SetStringTip(CM_STR_SB_SELECT_BTPRO, INVALID_STRING_ID),
+				NWidget(WWT_PUSHTXTBTN, Colours::Grey, WID_SB_SELECT_CITYMANIA), SetMinimalSize(80, 25), SetStringTip(CM_STR_SB_SELECT_CITYMANIA, INVALID_STRING_ID),
  		EndContainer(),
 		NWidget(NWID_SPACER), SetMinimalSize(0, 3),
         NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize),
@@ -1696,32 +1700,32 @@ void CheckAdmin() {
 
 /* user login */
 static WindowDesc _login_window_desc(
-	WDP_CENTER, "cm_commands", 0, 0,
-	CM_WC_LOGIN_WINDOW, WC_NONE,
+	WindowPosition::Center, "cm_login", 0, 0,
+	WindowClass::CmLoginWindow, WindowClass::None,
 	WindowDefaultFlag::Construction,
 	_nested_login_window_widgets
 );
 
 /* admin login */ 
 static WindowDesc _admin_window_desc(
-	WDP_CENTER, "cm_commands", 0, 0,
-	CM_WC_LOGIN_WINDOW, WC_NONE,
+	WindowPosition::Center, "cm_admin_login", 0, 0,
+	WindowClass::CmLoginWindow, WindowClass::None,
 	WindowDefaultFlag::Construction,
 	_nested_admin_window_widgets
 );
 
 /* admin company buttons */ 
 static WindowDesc _admin_company_buttons_desc(
-	WDP_AUTO, "cm_commands", 0, 0,
-    CM_WC_ADMIN_COMPANY_BUTTONS, WC_NONE,
+	WindowPosition::Automatic, "", 0, 0,
+    WindowClass::CmAdminCompanyButtons, WindowClass::None,
     WindowDefaultFlag::Construction,
     _nested_admin_company_window_widgets
 );
 
 /* server buttons */
  static WindowDesc _server_buttons_desc(
-	WDP_AUTO, "cm_commands", 0, 0,
-    CM_WC_SERVER_BUTTONS, WC_NONE,
+	WindowPosition::Automatic, "cm_server_buttons", 0, 0,
+    WindowClass::CmServerButtons, WindowClass::None,
 	WindowDefaultFlag::Construction,
     _nested_server_buttons_window_widgets
 );
@@ -1731,7 +1735,7 @@ void ShowLoginWindow() {
     IniLoginInitiate();
     CheckCommunity();
     CheckAdmin();
-    CloseWindowByClass(CM_WC_LOGIN_WINDOW);
+    CloseWindowByClass(WindowClass::CmLoginWindow);
     if (!_admin)
         AllocateWindowDescFront<LoginWindow>(_login_window_desc, 0);
     else
@@ -1741,7 +1745,7 @@ void ShowLoginWindow() {
 /* admin company buttons */
 void ShowAdminCompanyButtons(int left, int top, int width, int company2, bool draw, bool redraw) {
     if (!draw) {
-        CloseWindowById(CM_WC_ADMIN_COMPANY_BUTTONS, company2);
+        CloseWindowById(WindowClass::CmAdminCompanyButtons, company2);
         /* clear for company */
         ACB_Location[company2 - 1][0] = 0;
         ACB_Location[company2 - 1][1] = 0;
@@ -1760,7 +1764,7 @@ void ShowAdminCompanyButtons(int left, int top, int width, int company2, bool dr
     ACB_Location[company2 - 1][1] = top;
     ACB_Location[company2 - 1][2] = width;
 
-    CloseWindowById(CM_WC_ADMIN_COMPANY_BUTTONS, company2);
+    CloseWindowById(WindowClass::CmAdminCompanyButtons, company2);
 	Window *w;
     w = new AdminCompanyButtonsWindow(_admin_company_buttons_desc, company2);
     w->top = top;
@@ -1781,8 +1785,8 @@ void ShowServerButtons(int left, int top, int height, int width) {
 
 	/* create window at coordinates */
     Window *b;
-    if (FindWindowByClass(CM_WC_SERVER_BUTTONS))
-		CloseWindowByClass(CM_WC_SERVER_BUTTONS);
+    if (FindWindowByClass(WindowClass::CmServerButtons))
+		CloseWindowByClass(WindowClass::CmServerButtons);
     b = new ServerButtonsWindow(_server_buttons_desc, 0);
     //b->top = top+height;
     b->top = _top;

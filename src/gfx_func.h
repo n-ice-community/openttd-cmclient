@@ -216,12 +216,20 @@ inline bool FillDrawPixelInfo(DrawPixelInfo *n, const Rect &r)
 }
 
 /* window.cpp */
-enum DrawOverlappedWindowFlags {
-    DOWF_NONE         =      0,
-    DOWF_MARK_DIRTY   = 1 << 0,
-    DOWF_SHOW_DEBUG   = 1 << 1,
+enum class DrawOverlappedWindowFlag : uint8_t {
+    MarkDirty, ///< Mark the drawn area as dirty for the video driver.
+    ShowDebug, ///< Show the dirty blocks of the viewports for debugging.
 };
-DECLARE_ENUM_AS_BIT_SET(DrawOverlappedWindowFlags)
+using DrawOverlappedWindowFlags = EnumBitSet<DrawOverlappedWindowFlag, uint8_t>;
+
+/** Debug flags for drawing, set with the console. */
+enum class GfxDebugFlag : uint8_t {
+    ShowWindowDirty, ///< Show the dirty windows.
+    ShowWidgetDirty, ///< Show the dirty widgets.
+    ShowRectDirty, ///< Show the dirty rectangles.
+};
+using GfxDebugFlags = EnumBitSet<GfxDebugFlag, uint32>;
+extern GfxDebugFlags _gfx_debug_flags;
 void DrawOverlappedWindowForAll(int left, int top, int right, int bottom);
 
 void SetMouseCursorBusy(bool busy);

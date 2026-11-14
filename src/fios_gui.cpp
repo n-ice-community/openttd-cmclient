@@ -534,8 +534,7 @@ public:
 		if (_game_mode != GameMode::Menu && !_networking && _game_mode != GameMode::Editor) {
 			Command<Commands::Pause>::Post(PauseMode::SaveLoad, true);
 		}
-		SetObjectToPlace(SPR_CURSOR_ZZZ, PAL_NONE, HT_NONE, WindowClass::MainWindow, 0);
-#error CM_DDSP_ZZZ
+		SetObjectToPlace(SPR_CURSOR_ZZZ, PAL_NONE, HT_NONE, WindowClass::MainWindow, 0, CM_DDSP_NONE);
 		this->OnInvalidateData(SLIWD_RESCAN_FILES);
 
 		ResetObjectToPlace();

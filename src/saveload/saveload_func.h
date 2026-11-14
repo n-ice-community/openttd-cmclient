@@ -37,7 +37,11 @@ void DoExitSave();
 
 void DoAutoOrNetsave(FiosNumberedSaveName &counter);
 
-SaveLoadResult SaveWithFilter(std::shared_ptr<struct SaveFilter> writer, bool threaded);
+namespace citymania {
+struct SavePreset;
+}
+
+SaveLoadResult SaveWithFilter(std::shared_ptr<struct SaveFilter> writer, bool threaded, citymania::SavePreset preset);
 SaveLoadResult LoadWithFilter(std::shared_ptr<struct LoadFilter> reader);
 
 bool SaveloadCrashWithMissingNewGRFs();

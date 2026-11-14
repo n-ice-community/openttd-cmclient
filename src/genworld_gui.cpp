@@ -237,7 +237,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_heightmap_load_widge
 						NWidget(WWT_TEXT, Colours::Invalid), SetStringTip(STR_MAPGEN_HEIGHTMAP_HEIGHT, STR_MAPGEN_HEIGHTMAP_HEIGHT_TOOLTIP), SetFill(1, 1),
 						NWidget(WWT_TEXT, Colours::Invalid), SetStringTip(STR_MAPGEN_QUANTITY_OF_RIVERS, STR_CONFIG_SETTING_RIVER_AMOUNT_HELPTEXT), SetFill(1, 1),
 						NWidget(WWT_TEXT, Colours::Invalid), SetStringTip(STR_MAPGEN_BORDER_TYPE, STR_MAPGEN_BORDER_TYPE_TOOLTIP), SetFill(1, 1),
-						NWidget(WWT_TEXT, INVALID_COLOUR), SetStringTip(STR_MAPGEN_BORDER_TYPE, STR_MAPGEN_BORDER_TYPE_TOOLTIP), SetFill(1, 1),
+						NWidget(WWT_TEXT, Colours::Invalid), SetStringTip(STR_MAPGEN_BORDER_TYPE, STR_MAPGEN_BORDER_TYPE_TOOLTIP), SetFill(1, 1),
 					EndContainer(),
 
 					/* Left half widgets (global column 2) */
@@ -258,7 +258,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_heightmap_load_widge
 						EndContainer(),
 						NWidget(WWT_DROPDOWN, Colours::Orange, WID_GL_RIVER_PULLDOWN), SetToolTip(STR_CONFIG_SETTING_RIVER_AMOUNT_HELPTEXT), SetFill(1, 1),
 						NWidget(WWT_DROPDOWN, Colours::Orange, WID_GL_BORDERS_PULLDOWN), SetToolTip(STR_MAPGEN_BORDER_TYPE_TOOLTIP), SetFill(1, 1),
-						NWidget(WWT_DROPDOWN, COLOUR_ORANGE, WID_GL_BORDERS_PULLDOWN), SetToolTip(STR_MAPGEN_BORDER_TYPE_TOOLTIP), SetFill(1, 1),
+						NWidget(WWT_DROPDOWN, Colours::Orange, WID_GL_BORDERS_PULLDOWN), SetToolTip(STR_MAPGEN_BORDER_TYPE_TOOLTIP), SetFill(1, 1),
 					EndContainer(),
 				EndContainer(),
 

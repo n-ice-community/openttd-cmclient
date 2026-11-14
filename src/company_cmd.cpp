@@ -84,8 +84,8 @@ Company::Company(CompanyID index, StringID name_1, bool is_ai) : CompanyPool::Po
 	this->build_object_limit = (uint32_t)_settings_game.construction.build_object_frame_burst << 16;
 
 	InvalidateWindowData(WindowClass::PerformanceDetail, 0, CompanyID::Invalid());
-	InvalidateWindowClassesData(WC_WATCH_COMPANY, 0);
-	InvalidateWindowClassesData(WC_WATCH_COMPANYA, 1);
+	InvalidateWindowClassesData(WindowClass::WatchCompany, 0);
+	InvalidateWindowClassesData(WindowClass::WatchCompanyAdmin, 1);
 }
 
 /** Close the associated company windows. */
@@ -108,8 +108,8 @@ void Company::PostDestructor(size_t index)
 	InvalidateWindowData(WindowClass::LinkGraphLegend, 0);
 	/* If the currently shown error message has this company in it, then close it. */
 	InvalidateWindowData(WindowClass::ErrorMessage, 0);
-	InvalidateWindowClassesData(WC_WATCH_COMPANY, 0);
-	InvalidateWindowClassesData(WC_WATCH_COMPANYA, 1);
+	InvalidateWindowClassesData(WindowClass::WatchCompany, 0);
+	InvalidateWindowClassesData(WindowClass::WatchCompanyAdmin, 1);
 }
 
 /**
@@ -1264,7 +1264,7 @@ CommandCost CmdRenameCompany(DoCommandFlags flags, const std::string &text)
 
 		InvalidateWindowClassesData(WindowClass::Company, WID_C_COMPANY_NAME);
 		MarkWholeScreenDirty();
-		InvalidateWindowClassesData(WC_WATCH_COMPANY, 0);
+		InvalidateWindowClassesData(WindowClass::WatchCompany, 0);
 		CompanyAdminUpdate(c);
 
 		std::string new_name = GetString(STR_COMPANY_NAME, c->index);

@@ -1328,7 +1328,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_client_list_widgets 
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, Colours::Grey),
 		NWidget(WWT_CAPTION, Colours::Grey), SetStringTip(STR_NETWORK_CLIENT_LIST_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
-		NWidget(WWT_IMGBTN, Colours::Grey, CM_WID_CL_TOGGLE_OVERLAY), SetStringTip(SPR_LARGE_SMALL_WINDOW, CM_STR_TOGGLE_CLIENTS_OVERLAY),
+		NWidget(WWT_IMGBTN, Colours::Grey, CM_WID_CL_TOGGLE_OVERLAY), SetSpriteTip(SPR_LARGE_SMALL_WINDOW, CM_STR_TOGGLE_CLIENTS_OVERLAY),
 		NWidget(WWT_DEFSIZEBOX, Colours::Grey),
 		NWidget(WWT_STICKYBOX, Colours::Grey),
 	EndContainer(),
@@ -1803,7 +1803,7 @@ private:
 
 	static void CMOnClickCompanyWatch(NetworkClientListWindow * /* w */, Point /* pt */, CompanyID company_id)
 	{
-		citymania::ShowWatchWindow(company_id, 0);
+		citymania::ShowWatchWindow(company_id, citymania::WatchCompanyType::Company);
 	}
 
 	/**

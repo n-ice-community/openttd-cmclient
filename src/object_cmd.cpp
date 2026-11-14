@@ -355,7 +355,7 @@ CommandCost CmdBuildObject(DoCommandFlags flags, TileIndex tile, ObjectType type
 				hq_score = UpdateCompanyRatingAndValue(c, false);
 				c->location_of_HQ = tile;
 				SetWindowDirty(WindowClass::Company, c->index);
-				InvalidateWindowData(WC_CLIENT_LIST, 0);
+				InvalidateWindowData(WindowClass::NetworkClientList, 0);
 			}
 			break;
 		}

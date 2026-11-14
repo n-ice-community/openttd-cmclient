@@ -193,7 +193,7 @@ inline void Blitter_40bppAnim::Draw(const Blitter::BlitterParams *bp, ZoomLevel 
 
 			switch (mode) {
 				case BlitterMode::ColourRemap:
-				case BlitterMode::CMTintRemap:
+				case BlitterMode::CmTintRemap:
 				case BlitterMode::CrashRemap:
 					if (src_px->a == 255) {
 						do {
@@ -202,7 +202,7 @@ inline void Blitter_40bppAnim::Draw(const Blitter::BlitterParams *bp, ZoomLevel 
 							if (m == 0) {
 								switch (mode) {
 									case BlitterMode::ColourRemap: *dst = *src_px; break;
-									case BlitterMode::CMTintRemap: *dst = citymania::Remap32RGB(src_px->r, src_px->g, src_px->b, remap); break;
+									case BlitterMode::CmTintRemap: *dst = citymania::Remap32RGB(src_px->r, src_px->g, src_px->b, remap); break;
 									case BlitterMode::CrashRemap: *dst = this->MakeDark(*src_px); break;
 									default: NOT_REACHED();
 								}
@@ -226,7 +226,7 @@ inline void Blitter_40bppAnim::Draw(const Blitter::BlitterParams *bp, ZoomLevel 
 							if (m == 0) {
 								switch (mode) {
 									case BlitterMode::ColourRemap: *dst = this->ComposeColourRGBANoCheck(src_px->r, src_px->g, src_px->b, src_px->a, b); break;
-									case BlitterMode::CMTintRemap: *dst = citymania::Remap32RGBANoCheck(src_px->r, src_px->g, src_px->b, src_px->a, b, remap); break;
+									case BlitterMode::CmTintRemap: *dst = citymania::Remap32RGBANoCheck(src_px->r, src_px->g, src_px->b, src_px->a, b, remap); break;
 									case BlitterMode::CrashRemap: *dst = this->ComposeColourPANoCheck(this->MakeDark(*src_px), src_px->a, b); break;
 									default: NOT_REACHED();
 								}
@@ -362,7 +362,7 @@ void Blitter_40bppAnim::Draw(Blitter::BlitterParams *bp, BlitterMode mode, ZoomL
 		default: NOT_REACHED();
 		case BlitterMode::Normal: Draw<BlitterMode::Normal>(bp, zoom); return;
 		case BlitterMode::ColourRemap: Draw<BlitterMode::ColourRemap>(bp, zoom); return;
-		case BlitterMode::CMTintRemap: Draw<BlitterMode::CMTintRemap>(bp, zoom); return;
+		case BlitterMode::CmTintRemap: Draw<BlitterMode::CmTintRemap>(bp, zoom); return;
 		case BlitterMode::Transparent: Draw<BlitterMode::Transparent>(bp, zoom); return;
 		case BlitterMode::TransparentRemap: Draw<BlitterMode::TransparentRemap>(bp, zoom); return;
 		case BlitterMode::CrashRemap: Draw<BlitterMode::CrashRemap>(bp, zoom); return;

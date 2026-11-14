@@ -367,7 +367,7 @@ public:
 		SaveLoad::Array<VarFileType::U32, 32>("delivered_cargo", SLE_OBJECT_ADDRESS(CompanyEconomyEntry, delivered_cargo), SaveLoadVersion::CountIndividualCargoes, SaveLoadVersion::ExtendCargotypes),
 		SaveLoad::Array<VarFileType::U32, NUM_CARGO>("delivered_cargo", SLE_OBJECT_ADDRESS(CompanyEconomyEntry, delivered_cargo), SaveLoadVersion::ExtendCargotypes),
 		SaveLoad::Variable<VarFileType::I32>("performance_history", SLE_OBJECT_ADDRESS(CompanyEconomyEntry, performance_history)),
-		CM_SLE_ARR("__cm_cargo_income", CompanyEconomyEntry, cm.cargo_income, SLE_INT64, NUM_CARGO),
+		SaveLoad::Array<VarFileType::I64, NUM_CARGO>("__cm_cargo_income", SLE_OBJECT_ADDRESS(CompanyEconomyEntry, cm.cargo_income), SaveLoadVersion::TableChunks),
 	};
 	static inline const SaveLoadCompatTable compat_description = _company_economy_compat;
 
@@ -555,8 +555,8 @@ static const SaveLoad _company_desc[] = {
 	SaveLoad::Struct<SlCompanyEconomy>("cur_economy"),
 	SaveLoad::StructList<SlCompanyOldEconomy>("old_economy"),
 	SaveLoad::StructList<SlCompanyLiveries>("liveries", SaveLoadVersion::Liveries),
-	CM_SLE_VAR("__cm_is_server", CompanyProperties, cm.is_server, SLE_BOOL),
-	CM_SLE_VAR("__cm_is_scored", CompanyProperties, cm.is_scored, SLE_BOOL),
+	SaveLoad::Variable<VarFileType::Bool>("__cm_is_server", SLE_OBJECT_ADDRESS(CompanyProperties, cm.is_server), SaveLoadVersion::TableChunks),
+	SaveLoad::Variable<VarFileType::Bool>("__cm_is_scored", SLE_OBJECT_ADDRESS(CompanyProperties, cm.is_scored), SaveLoadVersion::TableChunks),
 };
 
 struct PLYRChunkHandler : ChunkHandler {

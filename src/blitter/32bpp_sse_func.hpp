@@ -413,7 +413,7 @@ bmcr_alpha_blend_single:
 				}
 				break;
 
-			case BlitterMode::CMTintRemap:
+			case BlitterMode::CmTintRemap:
 				for (uint x = (uint) bp->width; x > 0; x--) {
 					if (src_mv->m == 0) {
 						if (src->a != 0) {
@@ -510,11 +510,11 @@ bm_normal:
 		case BlitterMode::TransparentRemap: Draw<BlitterMode::TransparentRemap, ReadMode::None, BlockType::None, true>(bp, zoom); return;
 		case BlitterMode::CrashRemap: Draw<BlitterMode::CrashRemap, ReadMode::None, BlockType::None, true>(bp, zoom); return;
 		case BlitterMode::BlackRemap: Draw<BlitterMode::BlackRemap, ReadMode::None, BlockType::None, true>(bp, zoom); return;
-		case BlitterMode::CMTintRemap:
+		case BlitterMode::CmTintRemap:
 			if (bp->skip_left != 0 || bp->width <= MARGIN_REMAP_THRESHOLD) {
-				Draw<BlitterMode::CMTintRemap, ReadMode::WithSkip, BlockType::None, true>(bp, zoom); return;
+				Draw<BlitterMode::CmTintRemap, ReadMode::WithSkip, BlockType::None, true>(bp, zoom); return;
 			} else {
-				Draw<BlitterMode::CMTintRemap, ReadMode::WithMargin, BlockType::None, true>(bp, zoom); return;
+				Draw<BlitterMode::CmTintRemap, ReadMode::WithMargin, BlockType::None, true>(bp, zoom); return;
 			}
 	}
 }

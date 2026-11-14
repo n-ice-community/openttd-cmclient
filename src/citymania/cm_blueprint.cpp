@@ -90,9 +90,9 @@ void Blueprint::Add(TileIndex source_tile, Blueprint::Item item) {
 
 up<Command> GetBlueprintCommand(TileIndex start, const Blueprint::Item &item) {
     static const Track SIGNAL_POS_TRACK[] = {
-        TRACK_LEFT, TRACK_LEFT, TRACK_RIGHT, TRACK_RIGHT,
-        TRACK_UPPER, TRACK_UPPER, TRACK_LOWER, TRACK_LOWER,
-        TRACK_X, TRACK_X, TRACK_Y, TRACK_Y,
+        Track::Left, Track::Left, Track::Right, Track::Right,
+        Track::Upper, Track::Upper, Track::Lower, Track::Lower,
+        Track::X, Track::X, Track::Y, Track::Y,
     };
     static const uint SIGNAL_POS_NUM[] = {
         1, 0, 1, 0,
@@ -131,16 +131,18 @@ up<Command> GetBlueprintCommand(TileIndex start, const Blueprint::Item &item) {
             // TODO check that other end is where it should be
             return make_up<cmd::BuildTunnel>(
                 AddTileIndexDiffCWrap(start, item.tdiff),
-                TRANSPORT_RAIL,
-                _cur_railtype
+                TransportType::Rail,
+                _cur_railtype,
+                INVALID_ROADTYPE
             );
         case Blueprint::Item::Type::RAIL_BRIDGE:
             return make_up<cmd::BuildBridge>(
                 AddTileIndexDiffCWrap(start, item.u.rail.bridge.other_end),
                 AddTileIndexDiffCWrap(start, item.tdiff),
-                TRANSPORT_RAIL,
+                TransportType::Rail,
                 item.u.rail.bridge.type,
-                _cur_railtype
+                _cur_railtype,
+                INVALID_ROADTYPE
             );
         case Blueprint::Item::Type::RAIL_STATION_PART:
             return make_up<cmd::BuildRailStation>(
@@ -159,7 +161,7 @@ up<Command> GetBlueprintCommand(TileIndex start, const Blueprint::Item &item) {
             return make_up<cmd::BuildRailStation>(
                 AddTileIndexDiffCWrap(start, item.tdiff),
                 _cur_railtype,
-                AXIS_X,
+                Axis::X,
                 1,
                 1,
                 _station_gui.sel_class,
@@ -176,10 +178,10 @@ up<Command> GetBlueprintCommand(TileIndex start, const Blueprint::Item &item) {
                 false,  // convert_signal
                 true,  // skip_existing_signals
                 false,  // ctrl_pressed
-                SIGTYPE_BLOCK,  // cycle_start
-                SIGTYPE_BLOCK,  // cycle_stop
+                SignalType::Block,  // cycle_start
+                SignalType::Block,  // cycle_stop
                 SIGNAL_POS_NUM[item.u.rail.signal.pos] +
-                    (item.u.rail.signal.type <= SIGTYPE_LAST_NOPBS && !item.u.rail.signal.twoway ? 1 : 0),
+                    (item.u.rail.signal.type <= SignalType::Combo && !item.u.rail.signal.twoway ? 1 : 0),
                 false  // signals_copy
             );
         default:
@@ -200,7 +202,7 @@ std::multimap<TileIndex, ObjectTileHighlight> Blueprint::GetTiles(TileIndex tile
     for (auto &item: this->items) {
         if (item.type != Item::Type::RAIL_STATION) continue;
         if (GetBlueprintCommand(tile, item)->test().Succeeded())
-            can_build_station_sign.insert(item.u.rail.station.id);
+            can_build_station_sign.insert(StationID{item.u.rail.station.id});
     }
 
     for (auto &o: this->items) {
@@ -234,12 +236,12 @@ std::multimap<TileIndex, ObjectTileHighlight> Blueprint::GetTiles(TileIndex tile
                 add_tile(otile, ObjectTileHighlight::make_rail_depot(palette, o.u.rail.depot.ddir));
                 break;
             case Item::Type::RAIL_STATION_PART: {
-                RailStationTileLayout stl{nullptr, o.u.rail.station_part.numtracks, o.u.rail.station_part.plat_len};  // TODO statspec
+                RailStationTileLayout<StationType::Rail> stl{nullptr, o.u.rail.station_part.numtracks, o.u.rail.station_part.plat_len};  // TODO statspec
                 auto it = stl.begin();
                 TileArea area{tile, o.u.rail.station_part.numtracks, o.u.rail.station_part.plat_len};
-                if (o.u.rail.station_part.axis == AXIS_X) std::swap(area.w, area.h);
+                if (o.u.rail.station_part.axis == Axis::X) std::swap(area.w, area.h);
 
-                if (palette == CM_PALETTE_TINT_WHITE && can_build_station_sign.find(o.u.rail.station_part.id) == can_build_station_sign.end())
+                if (palette == CM_PALETTE_TINT_WHITE && can_build_station_sign.find(StationID{o.u.rail.station_part.id}) == can_build_station_sign.end())
                     palette = CM_PALETTE_TINT_ORANGE_DEEP;
                 IterateStation(otile, o.u.rail.station_part.axis, o.u.rail.station_part.numtracks, o.u.rail.station_part.plat_len,
                     [&](TileIndex tile, int, int) {
@@ -264,14 +266,14 @@ std::multimap<TileIndex, ObjectTileHighlight> Blueprint::GetTiles(TileIndex tile
 
 sp<Blueprint> Blueprint::Rotate() {
     static const Trackdir ROTATE_TRACKDIR[] = {
-        TRACKDIR_Y_SE, TRACKDIR_X_SW,
-        TRACKDIR_RIGHT_S, TRACKDIR_LEFT_S,
-        TRACKDIR_UPPER_W, TRACKDIR_LOWER_W,
-        TRACKDIR_RVREV_SE, TRACKDIR_RVREV_SW,
-        TRACKDIR_Y_NW, TRACKDIR_X_NE,
-        TRACKDIR_RIGHT_N, TRACKDIR_LEFT_N,
-        TRACKDIR_UPPER_E, TRACKDIR_LOWER_E,
-        TRACKDIR_RVREV_NW, TRACKDIR_RVREV_NE
+        Trackdir::Y_SE, Trackdir::X_SW,
+        Trackdir::Right_S, Trackdir::Left_S,
+        Trackdir::Upper_W, Trackdir::Lower_W,
+        Trackdir::RvRev_SE, Trackdir::RvRev_SW,
+        Trackdir::Y_NW, Trackdir::X_NE,
+        Trackdir::Right_N, Trackdir::Left_N,
+        Trackdir::Upper_E, Trackdir::Lower_E,
+        Trackdir::RvRev_NW, Trackdir::RvRev_NE
     };
     static const uint ROTATE_SIGNAL_POS[] = {
         // 5, 4, 7, 6,
@@ -288,7 +290,7 @@ sp<Blueprint> Blueprint::Rotate() {
     };
 
     auto rotate_dir = [](DiagDirection ddir) -> DiagDirection {
-        return ChangeDiagDir(ddir, DIAGDIRDIFF_90RIGHT);
+        return ChangeDiagDir(ddir, DiagDirDiff::Right90);
     };
 
     for (auto &o: this->items) {
@@ -297,7 +299,7 @@ sp<Blueprint> Blueprint::Rotate() {
         switch(o.type) {
             case Item::Type::RAIL_TRACK:
                 bi.u.rail.track.length = o.u.rail.track.length;
-                bi.u.rail.track.start_dir = ROTATE_TRACKDIR[o.u.rail.track.start_dir];
+                bi.u.rail.track.start_dir = ROTATE_TRACKDIR[to_underlying(o.u.rail.track.start_dir)];
                 break;
             case Item::Type::RAIL_BRIDGE:
                 bi.u.rail.bridge.type = o.u.rail.bridge.type;
@@ -317,8 +319,8 @@ sp<Blueprint> Blueprint::Rotate() {
                 break;
             case Item::Type::RAIL_STATION_PART: {
                 auto ediff = rotate({
-                    (int16)(o.tdiff.x + (o.u.rail.station_part.axis == AXIS_X ? o.u.rail.station_part.plat_len : o.u.rail.station_part.numtracks) - 1),
-                    (int16)(o.tdiff.y + (o.u.rail.station_part.axis == AXIS_X ? o.u.rail.station_part.numtracks : o.u.rail.station_part.plat_len) - 1),
+                    (int16)(o.tdiff.x + (o.u.rail.station_part.axis == Axis::X ? o.u.rail.station_part.plat_len : o.u.rail.station_part.numtracks) - 1),
+                    (int16)(o.tdiff.y + (o.u.rail.station_part.axis == Axis::X ? o.u.rail.station_part.numtracks : o.u.rail.station_part.plat_len) - 1),
                 });
                 bi.tdiff = {std::min(odiff.x, ediff.x), std::min(odiff.y, ediff.y)};
                 bi.u.rail.station_part.id = o.u.rail.station_part.id;
@@ -358,35 +360,36 @@ static void BlueprintAddSignals(sp<Blueprint> &blueprint, TileIndex tile, TileIn
         blueprint->Add(tile, bi);
     };
     auto rails = GetTrackBits(tile);
-    if (!(rails & TRACK_BIT_Y)) {
-        if (!(rails & TRACK_BIT_X)) {
-            if (rails & TRACK_BIT_LEFT) add(TRACK_LEFT, 2, 0);
-            if (rails & TRACK_BIT_RIGHT) add(TRACK_RIGHT, 0, 2);
-            if (rails & TRACK_BIT_UPPER) add(TRACK_UPPER, 3, 4);
-            if (rails & TRACK_BIT_LOWER) add(TRACK_LOWER, 1, 6);
+    if (!(rails.Test(Track::Y))) {
+        if (!(rails.Test(Track::X))) {
+            if (rails.Test(Track::Left)) add(Track::Left, 2, 0);
+            if (rails.Test(Track::Right)) add(Track::Right, 0, 2);
+            if (rails.Test(Track::Upper)) add(Track::Upper, 3, 4);
+            if (rails.Test(Track::Lower)) add(Track::Lower, 1, 6);
         } else {
-            add(TRACK_X, 3, 8);
+            add(Track::X, 3, 8);
         }
     } else {
-        add(TRACK_Y, 3, 10);
+        add(Track::Y, 3, 10);
     }
 }
 
 static void BlueprintAddTracks(sp<Blueprint> &blueprint, TileIndex tile, TileIndexDiffC tdiff, TileArea &area,
-                               std::map<TileIndex, Track> &track_tiles) {
+                               std::map<TileIndex, TrackBits> &track_tiles) {
     // tilearea is iterated by x and y so chose direction to go in uniterated area
-    static const Trackdir _track_iterate_dir[TRACK_END] = { TRACKDIR_X_SW, TRACKDIR_Y_SE, TRACKDIR_UPPER_E, TRACKDIR_LOWER_E, TRACKDIR_LEFT_S, TRACKDIR_RIGHT_S};
+#warning "TODO Checkagain"
+    static const EnumIndexArray<Trackdir, Track, Track::End> _track_iterate_dir = { Trackdir::X_SW, Trackdir::Y_SE, Trackdir::Upper_E, Trackdir::Lower_E, Trackdir::Left_S, Trackdir::Right_S};
 
-    for (Track track = TRACK_BEGIN; track < TRACK_END; track++) {
+    for (Track track : EnumRange(Track::End)) {
         TileIndex c_tile = tile;
         TileIndex end_tile = INVALID_TILE;
         uint16 length = 0;
         Track c_track = track;
         Trackdir c_tdir = _track_iterate_dir[track];
-        while (IsPlainRailTile(c_tile) && HasBit(GetTrackBits(c_tile), c_track)) {
-            if (HasBit(track_tiles[c_tile], c_track)) break;
+        while (IsPlainRailTile(c_tile) && GetTrackBits(c_tile).Test(c_track)) {
+            if (track_tiles[c_tile].Test(c_track)) break;
             length++;
-            SetBit(track_tiles[c_tile], c_track);
+            track_tiles[c_tile].Set(c_track);
             end_tile = c_tile;
             c_tile = TileAddByDiagDir(c_tile, TrackdirToExitdir(c_tdir));
             if (!area.Contains(c_tile)) break;
@@ -410,21 +413,21 @@ void BlueprintCopyArea(TileIndex start, TileIndex end) {
 
     auto blueprint = std::make_shared<Blueprint>();
 
-    std::map<TileIndex, Track> track_tiles;
+    std::map<TileIndex, TrackBits> track_tiles;
     std::multimap<StationID, TileIndex> station_tiles;
     std::set<StationID> stations;
 
     for (TileIndex tile : ta) {
         TileIndexDiffC td = TileIndexToTileIndexDiffC(tile, start);
         switch (GetTileType(tile)) {
-            case MP_STATION:
+            case TileType::Station:
                 if (IsRailStation(tile)) {
                     stations.insert(GetStationIndex(tile));
                     if (stations.size() > 10) return;
                 }
                 break;
 
-            case MP_RAILWAY:
+            case TileType::Railway:
                 switch (GetRailTileType(tile)) {
                     case RailTileType::Depot: {
                         Blueprint::Item bi(Blueprint::Item::Type::RAIL_DEPOT, td);
@@ -442,8 +445,8 @@ void BlueprintCopyArea(TileIndex start, TileIndex end) {
                         NOT_REACHED();
                 }
                 break;
-            case MP_TUNNELBRIDGE: {
-                if (GetTunnelBridgeTransportType(tile) != TRANSPORT_RAIL) break;
+            case TileType::TunnelBridge: {
+                if (GetTunnelBridgeTransportType(tile) != TransportType::Rail) break;
                 auto other = GetOtherTunnelBridgeEnd(tile);
                 if (!ta.Contains(other)) break;
                 if (other < tile) break;
@@ -471,12 +474,12 @@ void BlueprintCopyArea(TileIndex start, TileIndex end) {
 
         if (!ta.Contains(st->xy)) continue;
 
-        TileArea sta(TileXY(st->rect.left, st->rect.top), TileXY(st->rect.right, st->rect.bottom));
+        TileArea sta = st->spread;
         bool in_area = true;
         bool sign_part = false;
         std::vector<TileIndex> tiles;
         for (TileIndex tile : sta) {
-            if (!IsTileType(tile, MP_STATION) || GetStationIndex(tile) != sid || !IsRailStation(tile)) continue;
+            if (!IsTileType(tile, TileType::Station) || GetStationIndex(tile) != sid || !IsRailStation(tile)) continue;
             if (!ta.Contains(tile)) {
                 in_area = false;
                 break;
@@ -488,7 +491,7 @@ void BlueprintCopyArea(TileIndex start, TileIndex end) {
         if (!in_area) continue;
 
         Blueprint::Item bi(Blueprint::Item::Type::RAIL_STATION, TileIndexToTileIndexDiffC(st->xy, start));
-        bi.u.rail.station.id = sid;
+        bi.u.rail.station.id = sid.base();
         bi.u.rail.station.has_part = sign_part;
         blueprint->Add(st->xy, bi);
 
@@ -498,13 +501,13 @@ void BlueprintCopyArea(TileIndex start, TileIndex end) {
                 continue;
 
             auto axis = GetRailStationAxis(tile);
-            auto platform_delta = (axis == AXIS_X ? TileDiffXY(1, 0) : TileDiffXY(0, 1));
-            auto track_delta = (axis == AXIS_Y ? TileDiffXY(1, 0) : TileDiffXY(0, 1));
+            auto platform_delta = (axis == Axis::X ? TileDiffXY(1, 0) : TileDiffXY(0, 1));
+            auto track_delta = (axis == Axis::Y ? TileDiffXY(1, 0) : TileDiffXY(0, 1));
             auto plat_len = 0;
 
             auto can_add_tile = [=](TileIndex tile) {
                 return (IsValidTile(tile)
-                    && IsTileType(tile, MP_STATION)
+                    && IsTileType(tile, TileType::Station)
                     && GetStationIndex(tile) == sid
                     && IsRailStation(tile)
                     && GetRailStationAxis(tile) == axis);
@@ -544,7 +547,7 @@ void BlueprintCopyArea(TileIndex start, TileIndex end) {
             }
 
             Blueprint::Item bi(Blueprint::Item::Type::RAIL_STATION_PART, TileIndexToTileIndexDiffC(tile, start));
-            bi.u.rail.station_part.id = sid;
+            bi.u.rail.station_part.id = sid.base();
             bi.u.rail.station_part.axis = axis;
             bi.u.rail.station_part.numtracks = numtracks;
             bi.u.rail.station_part.plat_len = plat_len;
@@ -597,19 +600,19 @@ void BuildBlueprint(sp<Blueprint> &blueprint, TileIndex start) {
                 // TODO station types
                 TileIndex tile = AddTileIndexDiffCWrap(start, item.tdiff);
                 auto cc = GetBlueprintCommand(start, item);
-                cc->with_callback([blueprint, tile, start, sign_part=item.u.rail.station.has_part, sid=item.u.rail.station.id] (bool res)->bool {
+                cc->with_callback([blueprint, tile, start, sign_part=item.u.rail.station.has_part, sid=StationID{item.u.rail.station.id}] (bool res)->bool {
                     if (!res) return false;
                     StationID station_id = GetStationIndex(tile);
                     for (auto &item : blueprint->items) {
                         if (item.type != Blueprint::Item::Type::RAIL_STATION_PART) continue;
-                        if (item.u.rail.station_part.id != sid) continue;
+                        if (item.u.rail.station_part.id != sid.base()) continue;
                         auto cc = GetBlueprintCommand(start, item);
                         auto &scmd = dynamic_cast<cmd::BuildRailStation &>(*cc);
                         scmd.adjacent = true;
                         scmd.station_to_join = station_id;
                         scmd.post();
                     }
-                    if (!sign_part) ::Command<CMD_REMOVE_FROM_RAIL_STATION>::Post(tile, (TileIndex)0, false);
+                    if (!sign_part) ::Command<Commands::RemoveFromRailStation>::Post(tile, (TileIndex)0, false);
                     return true;
                 }
                 ).post();
@@ -652,7 +655,7 @@ bool LoadBlueprint(uint slot) {
     if (slot >= MAX_BLUEPRINT_SLOTS) return false;
     _active_blueprint = {INVALID_TILE, _blueprint_slots[slot]};
     if (_active_blueprint.second == nullptr) {
-        ShowErrorMessage(GetEncodedString(CM_STR_NO_BLUEPRINT_IN_SLOT, slot), {}, WL_ERROR);
+        ShowErrorMessage(GetEncodedString(CM_STR_NO_BLUEPRINT_IN_SLOT, slot), {}, WarningLevel::Error);
     }
     return _active_blueprint.second != nullptr;
 }

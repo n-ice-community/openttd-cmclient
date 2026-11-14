@@ -55,8 +55,8 @@ T ChooseGraphColour(T a, T b) {
 	return _settings_client.gui.cm_graph_background ? b : a;
 }
 
-static const Colours CM_WINDOW_BG1 = COLOUR_BROWN;
-static const Colours CM_WINDOW_BG2 = COLOUR_GREY;
+static const Colours CM_WINDOW_BG1 = Colours::Brown;
+static const Colours CM_WINDOW_BG2 = Colours::Grey;
 #define CM_WINDOW_BG (ChooseGraphColour(CM_WINDOW_BG1, CM_WINDOW_BG2))
 
 namespace citymania {
@@ -86,11 +86,11 @@ void ChangeGraphBackgroundColour(NWidgetPart *nwid_begin, NWidgetPart *nwid_end)
 }  // namespace citymania
 
 #define GRAPH_BASE_COLOUR (ChooseGraphColour<PixelColour>(GREY_SCALE(2), GREY_SCALE(8)))
-#define GRAPH_GRID_COLOUR (ChooseGraphColour<PixelColour>(GREY_SCALE(3), GetColourGradient(COLOUR_GREY, SHADE_NORMAL)))
+#define GRAPH_GRID_COLOUR (ChooseGraphColour<PixelColour>(GREY_SCALE(3), GetColourGradient(Colours::Grey, Shade::Normal)))
 #define GRAPH_AXIS_LINE_COLOUR (ChooseGraphColour<PixelColour>(GREY_SCALE(3), GREY_SCALE(2)))
 #define GRAPH_ZERO_LINE_COLOUR (ChooseGraphColour<PixelColour>(GREY_SCALE(8), GREY_SCALE(2)))
 #define GRAPH_YEAR_LINE_COLOUR (ChooseGraphColour<PixelColour>(GREY_SCALE(5), GREY_SCALE(7)))
-#define GRAPH_AXIS_LABEL_COLOUR (ChooseGraphColour((TextColour)((uint)TC_IS_PALETTE_COLOUR | 0xC), TC_BLACK))
+#define GRAPH_AXIS_LABEL_COLOUR (ChooseGraphColour(GREY_SCALE(4), PC_BLACK))
 #define GRAPH_OUTLINE_COLOUR (ChooseGraphColour<PixelColour>(PC_GREY, GREY_SCALE(6)))
 
 /* CityMania code end */
@@ -451,7 +451,7 @@ protected:
 		r.right  -= ScaleGUITrad(rtl ? 9 : 5);
 
 		/* Initial number of horizontal lines. */
-		int cm_grid_size_y = std::max(ScaleGUITrad(MIN_GRID_PIXEL_SIZE), GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.vsep_normal);
+		int cm_grid_size_y = std::max(ScaleGUITrad(MIN_GRID_PIXEL_SIZE), GetCharacterHeight(FontSize::Normal) + WidgetDimensions::scaled.vsep_normal);
 		int num_hori_lines = 320 / cm_grid_size_y;
 		/* For the rest of the height, the number of horizontal lines will increase more slowly. */
 		int resize = (r.bottom - r.top - 160) / (2 * cm_grid_size_y);
@@ -571,11 +571,11 @@ protected:
 			TimerGameEconomy::Month mo = this->month;
 			TimerGameEconomy::Year yr = this->year;
 			for (int i = 0; i < this->num_on_x_axis; i++) {
-				if (i >=1) { // CM skips first				
+				if (i >=1) { // CM skips first
 					DrawStringMultiLineWithClipping(x - x_sep / 2, x + x_sep / 2, y + ScaleGUITrad(4), this->height,
 						GetString(month == 6 ? STR_GRAPH_X_LABEL_MONTH_YEAR : STR_GRAPH_X_LABEL_MONTH, STR_MONTH_ABBREV_JAN + month, year),
 						GRAPH_AXIS_LABEL_COLOUR, AlignmentH::Centre);
-					
+
 					if (rtl) {
 						DrawStringMultiLineWithClipping(x + x_sep, x, y, this->height,
 							GetString(mo == 0 ? STR_GRAPH_X_LABEL_MONTH_YEAR : STR_GRAPH_X_LABEL_MONTH, STR_MONTH_ABBREV_JAN + mo, yr),
@@ -619,7 +619,7 @@ protected:
 				label += iterator;
 				x += x_sep;
 			}
-			DrawString(r.left, r.right, y + GetCharacterHeight(FontSize::Small), GetString(this->cm_footer), GRAPH_AXIS_LABEL_COLOUR, SA_HOR_CENTER);
+			DrawString(r.left, r.right, y + GetCharacterHeight(FontSize::Small), GetString(this->cm_footer), GRAPH_AXIS_LABEL_COLOUR, AlignmentH::Centre);
 		}
 
 		/* Draw lines and dots. */
@@ -695,7 +695,7 @@ protected:
 			if (_settings_client.gui.cm_graph_background == 0 && sq1000_brightness > 64 * 64 * 1000) continue;
 			if (_settings_client.gui.cm_graph_background == 1 && sq1000_brightness < 192 * 64 * 1000) continue;
 			draw_dataset(dataset, GRAPH_OUTLINE_COLOUR, outline);
-		} // TODO Color 
+		} // TODO Color
 
 		/* Draw unhighlighted datasets. */
 		for (const DataSet &dataset : this->data) {
@@ -1041,7 +1041,7 @@ struct BaseCompanyCargoGraphWindow: BaseCompanyGraphWindow {
 		this->cargo_types = _standard_cargo_mask;
 
 		this->vscroll = this->GetScrollbar(WID_GRAPH_MATRIX_SCROLLBAR);
-		this->vscroll->SetCount(CountBits(this->cargo_types));
+		this->vscroll->SetCount(this->cargo_types.Count());
 
 		this->FinishInitNested(number);
 
@@ -1058,9 +1058,9 @@ struct BaseCompanyCargoGraphWindow: BaseCompanyGraphWindow {
 			return;
 		}
 
-		size.height = GetCharacterHeight(FS_SMALL) + WidgetDimensions::scaled.framerect.Vertical();
+		size.height = GetCharacterHeight(FontSize::Small) + WidgetDimensions::scaled.framerect.Vertical();
 
-		for (CargoType cargo_type : SetCargoBitIterator(this->cargo_types)) {
+		for (CargoType cargo_type : this->cargo_types) {
 			const CargoSpec *cs = CargoSpec::Get(cargo_type);
 
 			Dimension d = GetStringBoundingBox(GetString(STR_GRAPH_CARGO_PAYMENT_CARGO, cs->name));
@@ -1088,12 +1088,12 @@ struct BaseCompanyCargoGraphWindow: BaseCompanyGraphWindow {
 		Rect line = r.WithHeight(this->line_height);
 
 		for (const CargoSpec *cs : _sorted_cargo_specs) {
-			if (!HasBit(this->cargo_types, cs->Index())) continue;
+			if (!this->cargo_types.Test(static_cast<CargoType>(cs->Index()))) continue;
 
 			if (pos-- > 0) continue;
 			if (--max < 0) break;
 
-			bool lowered = !HasBit(this->GetExcludedCargoTypes(), cs->Index());
+			bool lowered = !this->GetExcludedCargoTypes().Test(static_cast<CargoType>(cs->Index()));
 
 			/* Redraw frame if lowered */
 			if (lowered) DrawFrameRect(line, CM_WINDOW_BG, FrameFlag::Lowered);
@@ -1132,10 +1132,10 @@ struct BaseCompanyCargoGraphWindow: BaseCompanyGraphWindow {
 				SndClickBeep();
 
 				for (const CargoSpec *cs : _sorted_cargo_specs) {
-					if (!HasBit(this->cargo_types, cs->Index())) continue;
+					if (!this->cargo_types.Test(static_cast<CargoType>(cs->Index()))) continue;
 					if (row-- > 0) continue;
 
-					ToggleBit(this->GetExcludedCargoTypes(), cs->Index());
+					this->GetExcludedCargoTypes().Flip(static_cast<CargoType>(cs->Index()));
 					this->InvalidateData();
 					this->SetDirty();
 					break;
@@ -1184,7 +1184,7 @@ struct OperatingProfitGraphWindow : BaseCompanyGraphWindow {
 	}
 };
 
-static constexpr std::initializer_list<NWidgetPart> _nested_operating_profit_widgets = {
+static NWidgetPart _nested_operating_profit_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, Colours::Brown),
 		NWidget(WWT_CAPTION, Colours::Brown), SetStringTip(STR_GRAPH_OPERATING_PROFIT_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
@@ -1243,11 +1243,11 @@ struct IncomeGraphWindow : citymania::BaseCompanyCargoGraphWindow {
 	OverflowSafeInt64 GetGraphData(const Company *c, int j) override
 	{
 		auto excluded_cargo_types = this->GetExcludedCargoTypes();
-		if (excluded_cargo_types == 0) return c->old_economy[j].income;
+		if (excluded_cargo_types.None()) return c->old_economy[j].income;
 
 		OverflowSafeInt64 total_income = 0;
 		for (const CargoSpec *cs : _sorted_standard_cargo_specs) {
-			if (!HasBit(excluded_cargo_types, cs->Index())){
+			if (!excluded_cargo_types.Test(static_cast<CargoType>(cs->Index()))) {
 				total_income += c->old_economy[j].cm.cargo_income[cs->Index()];
 			}
 		}
@@ -1256,7 +1256,7 @@ struct IncomeGraphWindow : citymania::BaseCompanyCargoGraphWindow {
 
 };
 
-static constexpr std::initializer_list<NWidgetPart> _nested_income_graph_widgets = {
+static NWidgetPart _nested_income_graph_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, Colours::Brown),
 		NWidget(WWT_CAPTION, Colours::Brown), SetStringTip(STR_GRAPH_INCOME_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
@@ -1334,12 +1334,12 @@ struct DeliveredCargoGraphWindow : citymania::BaseCompanyCargoGraphWindow {
 
 		auto excluded_cargo_types = this->GetExcludedCargoTypes();
 
-		if (excluded_cargo_types == 0){
+		if (excluded_cargo_types.None()){
 			return c->old_economy[j].delivered_cargo.GetSum<OverflowSafeInt64>();
 		}
 		OverflowSafeInt64 total_delivered = 0;
 		for (const CargoSpec *cs : _sorted_standard_cargo_specs) {
-			if (!HasBit(excluded_cargo_types, cs->Index())){
+			if (!excluded_cargo_types.Test(static_cast<CargoType>(cs->Index()))) {
 				total_delivered += c->old_economy[j].delivered_cargo[cs->Index()];
 			}
 		}
@@ -1347,7 +1347,7 @@ struct DeliveredCargoGraphWindow : citymania::BaseCompanyCargoGraphWindow {
 	}
 };
 
-static constexpr std::initializer_list<NWidgetPart> _nested_delivered_cargo_graph_widgets = {
+static NWidgetPart _nested_delivered_cargo_graph_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, Colours::Brown),
 		NWidget(WWT_CAPTION, Colours::Brown), SetStringTip(STR_GRAPH_CARGO_DELIVERED_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
@@ -1425,7 +1425,7 @@ struct PerformanceHistoryGraphWindow : BaseCompanyGraphWindow {
 	}
 };
 
-static constexpr std::initializer_list<NWidgetPart> _nested_performance_history_widgets = {
+static NWidgetPart _nested_performance_history_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, Colours::Brown),
 		NWidget(WWT_CAPTION, Colours::Brown), SetStringTip(STR_GRAPH_COMPANY_PERFORMANCE_RATINGS_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
@@ -1479,7 +1479,7 @@ struct CompanyValueGraphWindow : BaseCompanyGraphWindow {
 	}
 };
 
-static constexpr std::initializer_list<NWidgetPart> _nested_company_value_graph_widgets = {
+static NWidgetPart _nested_company_value_graph_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, Colours::Brown),
 		NWidget(WWT_CAPTION, Colours::Brown), SetStringTip(STR_GRAPH_COMPANY_VALUES_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
@@ -1559,7 +1559,7 @@ struct BaseCargoGraphWindow : BaseGraphWindow {
 		if (row >= this->vscroll->GetCount()) return std::nullopt;
 
 		for (const CargoSpec *cs : _sorted_cargo_specs) {
-			if (!this->cargo_types.Test(cs->Index())) continue;
+			if (!this->cargo_types.Test(static_cast<CargoType>(cs->Index()))) continue;
 			if (row-- > 0) continue;
 
 			return cs->Index();
@@ -1614,7 +1614,7 @@ struct BaseCargoGraphWindow : BaseGraphWindow {
 		Rect line = r.WithHeight(this->line_height);
 
 		for (const CargoSpec *cs : _sorted_cargo_specs) {
-			if (!this->cargo_types.Test(cs->Index())) continue;
+			if (!this->cargo_types.Test(static_cast<CargoType>(cs->Index()))) continue;
 
 			if (pos-- > 0) continue;
 			if (--max < 0) break;
@@ -1665,7 +1665,7 @@ struct BaseCargoGraphWindow : BaseGraphWindow {
 				SndClickBeep();
 
 				for (const CargoSpec *cs : _sorted_cargo_specs) {
-					if (!this->cargo_types.Test(cs->Index())) continue;
+					if (!this->cargo_types.Test(static_cast<CargoType>(cs->Index()))) continue;
 					if (row-- > 0) continue;
 
 					this->GetExcludedCargoTypes().Flip(cs->Index());
@@ -1756,7 +1756,7 @@ struct PaymentRatesGraphWindow : BaseCargoGraphWindow {
 	}
 };
 
-static constexpr std::initializer_list<NWidgetPart> _nested_cargo_payment_rates_widgets = {
+static NWidgetPart _nested_cargo_payment_rates_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, Colours::Brown),
 		NWidget(WWT_CAPTION, Colours::Brown), SetStringTip(STR_GRAPH_CARGO_PAYMENT_RATES_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
@@ -1777,7 +1777,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_cargo_payment_rates_
 						NWidget(NWID_SPACER), SetMinimalSize(0, 4),
 						NWidget(NWID_HORIZONTAL),
 							NWidget(WWT_MATRIX, Colours::Brown, WID_GRAPH_MATRIX), SetFill(1, 0), SetResize(0, 2), SetMatrixDataTip(1, 0, STR_GRAPH_CARGO_PAYMENT_TOGGLE_CARGO), SetScrollbar(WID_GRAPH_MATRIX_SCROLLBAR),
-							NWidget(NWID_VSCROLLBAR, COLOUR_BROWN, WID_GRAPH_MATRIX_SCROLLBAR),
+							NWidget(NWID_VSCROLLBAR, Colours::Brown, WID_GRAPH_MATRIX_SCROLLBAR),
 						EndContainer(),
 						// CM NWidget(NWID_SPACER), SetMinimalSize(0, 24), SetFill(0, 1),
 					EndContainer(),
@@ -2163,7 +2163,7 @@ struct IndustryProductionGraphWindow : BaseCargoGraphWindow {
 	}
 };
 
-static constexpr std::initializer_list<NWidgetPart> _nested_industry_production_widgets = {
+static NWidgetPart _nested_industry_production_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, Colours::Brown),
 		NWidget(WWT_CAPTION, Colours::Brown, WID_GRAPH_CAPTION),
@@ -2328,7 +2328,7 @@ struct TownCargoGraphWindow : BaseCargoGraphWindow {
 	}
 };
 
-static constexpr std::initializer_list<NWidgetPart> _nested_town_cargo_graph_widgets = {
+static NWidgetPart _nested_town_cargo_graph_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, Colours::Brown),
 		NWidget(WWT_CAPTION, Colours::Brown, WID_GRAPH_CAPTION),
@@ -2415,7 +2415,7 @@ std::unique_ptr<NWidgetBase> MakeCompanyButtonRowsGraphGUI()
 	return MakeCompanyButtonRows(WID_PRD_COMPANY_FIRST, WID_PRD_COMPANY_LAST, CM_WINDOW_BG, 8, STR_PERFORMANCE_DETAIL_SELECT_COMPANY_TOOLTIP);
 }
 
-static constexpr std::initializer_list<NWidgetPart> _nested_performance_rating_detail_widgets = {
+static NWidgetPart _nested_performance_rating_detail_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, Colours::Brown),
 		NWidget(WWT_CAPTION, Colours::Brown), SetStringTip(STR_PERFORMANCE_DETAIL, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),

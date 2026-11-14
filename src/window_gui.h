@@ -233,9 +233,9 @@ enum class WindowFlag : uint8_t {
 	WhiteBorder,      ///< Window white border counter bit mask.
 	Highlighted,      ///< Window has a widget that has a highlight.
 	Centred,          ///< Window is centered and shall stay centered after ReInit.
-	CMDirty, ///< Whole window is dirty, and requires repainting. (jgrpp viewports)
-	CMWidgetsDirty, ///< One or more widgets are dirty, and require repainting. (jgrpp viewports)
-	CMDragDirtied, ///< The window has already been marked dirty as blocks as part of the current drag operation (jgrpp viewports)
+	CmDirty, ///< Whole window is dirty, and requires repainting. (jgrpp viewports)
+	CmWidgetsDirty, ///< One or more widgets are dirty, and require repainting. (jgrpp viewports)
+	CmDragDirtied, ///< The window has already been marked dirty as blocks as part of the current drag operation (jgrpp viewports)
 };
 
 /** Bitset of \c WindowFlag elements. */

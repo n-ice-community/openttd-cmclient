@@ -239,6 +239,7 @@ enum class SmallMapType : uint8_t {
 	Routes, ///< Routes legend.
 	Vegetation, ///< Vegetation legend.
 	Owners, ///< Owners legend.
+	CmImba, ///< CityMania IMBA legend.
 	End, ///< End marker.
 };
 
@@ -645,14 +646,14 @@ static inline uint32 CM_GetSmallMapIMBAPixels(TileIndex tile, TileType t)
 {
 	// const SmallMapColourScheme *cs = &_heightmap_schemes[_settings_client.gui.smallmap_land_colour];
 	switch (t) {
-		// case MP_TREES:
-		// 	if (GetTreeGround(tile) == TREE_GROUND_SNOW_DESERT || GetTreeGround(tile) == TREE_GROUND_ROUGH_SNOW) {
-		// 		return (_settings_game.game_creation.landscape == LT_ARCTIC) ? MKCOLOUR_XYYX(PC_LIGHT_BLUE, PC_TREES) : MKCOLOUR_XYYX(PC_ORANGE, PC_TREES);
+		// case TileType::Trees:
+		// 	if (GetTreeGround(tile) == TreeGround::SnowOrDesert || GetTreeGround(tile) == TreeGround::RoughSnow) {
+		// 		return (_settings_game.game_creation.landscape == LandscapeType::Arctic) ? MKCOLOUR_XYYX(PC_LIGHT_BLUE, PC_TREES) : MKCOLOUR_XYYX(PC_ORANGE, PC_TREES);
 		// 	}
 		// 	return MKCOLOUR_XYYX(PC_GRASS_LAND, PC_TREES);
 
-		case MP_CLEAR:
-			if (IsClearGround(tile, CLEAR_FIELDS) || IsClearGround(tile, CLEAR_DESERT)) {
+		case TileType::Clear:
+			if (IsClearGround(tile, ClearGround::Fields) || IsClearGround(tile, ClearGround::Desert)) {
 				const SmallMapColourScheme *cs = &_heightmap_schemes[3];
 				return cs->height_colours[TileHeight(tile)];
 			}
@@ -662,7 +663,7 @@ static inline uint32 CM_GetSmallMapIMBAPixels(TileIndex tile, TileType t)
 
 		default:
 			const SmallMapColourScheme *cs = &_heightmap_schemes[_settings_client.gui.smallmap_land_colour];
-			return ApplyMask(cs->height_colours[TileHeight(tile)], &_smallmap_vehicles_andor[t]);
+			return ApplyMask(cs->height_colours[TileHeight(tile)], _smallmap_vehicles_andor[t]);
 	}
 }
 
@@ -1325,7 +1326,7 @@ protected:
 		int select_buttons_plane;
 		switch (this->map_type) {
 			case SmallMapType::Industries:
-			case CM_SMT_IMBA:
+			case SmallMapType::CmImba:
 				legend_tooltip = STR_SMALLMAP_TOOLTIP_INDUSTRY_SELECTION;
 				enable_all_tooltip = STR_SMALLMAP_TOOLTIP_ENABLE_ALL_INDUSTRIES;
 				disable_all_tooltip = STR_SMALLMAP_TOOLTIP_DISABLE_ALL_INDUSTRIES;
@@ -1363,7 +1364,7 @@ protected:
 		this->GetWidget<NWidgetCore>(WID_SM_DISABLE_ALL)->SetStringTip(STR_SMALLMAP_DISABLE_ALL, disable_all_tooltip);
 		this->GetWidget<NWidgetStacked>(WID_SM_SHOW_IND_NAMES_SEL)->SetDisplayedPlane(industry_names_select_plane);
 		this->GetWidget<NWidgetStacked>(WID_SM_SELECT_BUTTONS)->SetDisplayedPlane(select_buttons_plane);
-		this->SetWidgetDisabledState(WID_SM_SHOW_HEIGHT, this->map_type == CM_SMT_IMBA);
+		this->SetWidgetDisabledState(WID_SM_SHOW_HEIGHT, this->map_type == SmallMapType::CmImba);
 	}
 
 	/**
@@ -1394,7 +1395,7 @@ protected:
 
 				case TileType::Industry:
 					/* Special handling of industries while in "Industries" smallmap view. */
-					if (this->map_type == SmallMapType::Industries || this->map_type == CM_SMT_IMBA) {
+					if (this->map_type == SmallMapType::Industries || this->map_type == SmallMapType::CmImba) {
 						/* If industry is allowed to be seen, use its colour on the map.
 						 * This has the highest priority above any value in _tiletype_importance. */
 						IndustryType type = Industry::GetByTile(ti)->type;
@@ -1443,7 +1444,7 @@ protected:
 			case SmallMapType::Owners:
 				return GetSmallMapOwnerPixels(tile, et, IncludeHeightmap::IfEnabled);
 
-			case CM_SMT_IMBA:
+			case SmallMapType::CmImba:
 				return CM_GetSmallMapIMBAPixels(tile, et);
 
 			default: NOT_REACHED();
@@ -1590,7 +1591,7 @@ public:
 			for (const LegendAndColour &tbl : _legend_table[i]) {
 				if (tbl.end) break;
 				std::string str;
-				if (i == SmallMapType::Industries || i == CM_SMT_IMBA) {
+				if (i == SmallMapType::Industries || i == SmallMapType::CmImba) {
 					str = GetString(STR_SMALLMAP_INDUSTRY, tbl.legend, IndustryPool::MAX_SIZE);
 				} else if (i == SmallMapType::LinkStats) {
 					str = GetString(STR_SMALLMAP_LINKSTATS, tbl.legend);
@@ -1711,7 +1712,7 @@ public:
 
 					switch (this->map_type) {
 						case SmallMapType::Industries:
-						case CM_SMT_IMBA:
+						case SmallMapType::CmImba:
 							/* Industry name must be formatted, since it's not in tiny font in the specs.
 							 * So, draw with a parameter and use the STR_SMALLMAP_INDUSTRY string, which is tiny font */
 							if (tbl.show_on_map && tbl.industry_type == _smallmap_industry_highlight) {
@@ -1816,12 +1817,12 @@ public:
 				break;
 
 			case WID_SM_LEGEND: // Legend
-				if (this->map_type == SmallMapType::Industries || this->map_type == SmallMapType::LinkStats || this->map_type == SmallMapType::Owners || this->map_type == CM_SMT_IMBA) {
+				if (this->map_type == SmallMapType::Industries || this->map_type == SmallMapType::LinkStats || this->map_type == SmallMapType::Owners || this->map_type == SmallMapType::CmImba) {
 					int click_pos = this->GetPositionOnLegend(pt);
 					if (click_pos < 0) break;
 
 					/* If industry type small map*/
-					if (this->map_type == SmallMapType::Industries || this->map_type == CM_SMT_IMBA) {
+					if (this->map_type == SmallMapType::Industries || this->map_type == SmallMapType::CmImba) {
 						/* If click on industries label, find right industry type and enable/disable it. */
 						if (click_pos < _smallmap_industry_count) {
 							this->SelectLegendItem(click_pos, _legend_from_industries, _smallmap_industry_count);
@@ -1845,7 +1846,7 @@ public:
 				LegendAndColour *tbl = nullptr;
 				switch (this->map_type) {
 					case SmallMapType::Industries:
-					case CM_SMT_IMBA:
+					case SmallMapType::CmImba:
 						tbl = _legend_from_industries;
 						this->BreakIndustryChainLink();
 						break;
@@ -1894,7 +1895,7 @@ public:
 
 			case 0: {
 				extern std::bitset<NUM_INDUSTRYTYPES> _displayed_industries;
-				if (this->map_type != CM_SMT_IMBA) this->SwitchMapType(CM_SMT_IMBA);
+				if (this->map_type != SmallMapType::CmImba) this->SwitchMapType(SmallMapType::CmImba);
 
 				for (int i = 0; i != _smallmap_industry_count; i++) {
 					_legend_from_industries[i].show_on_map = _displayed_industries.test(_legend_from_industries[i].industry_type);
@@ -1961,7 +1962,7 @@ public:
 
 };
 
-SmallMapType SmallMapWindow::map_type = CM_SMT_IMBA;
+SmallMapType SmallMapWindow::map_type = SmallMapType::CmImba;
 bool SmallMapWindow::show_towns = true;
 bool SmallMapWindow::show_ind_names = false;
 int SmallMapWindow::map_height_limit = -1;

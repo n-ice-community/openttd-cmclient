@@ -8,6 +8,9 @@
 /** @file afterload.cpp Code updating data after game load. */
 
 #include "../stdafx.h"
+#include "../core/string_builder.hpp"
+#include "../game/game_text.hpp"
+#include "../table/control_codes.h"
 #include "../void_map.h"
 #include "../signs_base.h"
 #include "../depot_base.h"
@@ -776,7 +779,7 @@ bool AfterLoadGame()
 	if (IsSavegameVersionBefore(SaveLoadVersion::CalendarSubDateFract)) _settings_game.economy.minutes_per_calendar_year = CalendarTime::DEF_MINUTES_PER_YEAR;
 
 	/* Set the correct default for 'minutes per year' if the savegame was created before the setting existed. */
-	if (IsSavegameVersionBefore(SLV_CALENDAR_SUB_DATE_FRACT)) _settings_game.economy.minutes_per_calendar_year = CalendarTime::DEF_MINUTES_PER_YEAR;
+	if (IsSavegameVersionBefore(SaveLoadVersion::CalendarSubDateFract)) _settings_game.economy.minutes_per_calendar_year = CalendarTime::DEF_MINUTES_PER_YEAR;
 
 	/* Update economy year. If we don't have a separate economy date saved, follow the calendar date. */
 	if (IsSavegameVersionBefore(SaveLoadVersion::EconomyDate)) {

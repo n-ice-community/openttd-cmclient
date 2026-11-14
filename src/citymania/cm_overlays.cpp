@@ -68,7 +68,7 @@ public:
         this->box.x = this->x - this->box.width / 2;
         this->box.y = this->y - this->box.height;
 
-        // Window *toolbar = FindWindowById(WC_MAIN_TOOLBAR, 0);
+        // Window *toolbar = FindWindowById(WindowClass::MainToolbar, 0);
         // if (toolbar != nullptr && toolbar->left < this->box.x + this->box.width + this->padding) {
         //     this->box.y = toolbar->top + toolbar->height + this->padding;
         // }
@@ -147,7 +147,7 @@ public:
 
         /* Paint a half-transparent box behind the client list */
         GfxFillRect(rect.left, rect.top, rect.right - 1, rect.bottom - 1,
-            PALETTE_TO_TRANSPARENT, FILLRECT_RECOLOUR // black, but with some alpha for background
+            PALETTE_TO_TRANSPARENT, FillRectMode::Recolour // black, but with some alpha for background
         );
 
         this->DrawContent(rect.Shrink(this->padding));
@@ -249,7 +249,7 @@ public:
     }
 
     Dimension GetContentDimension() override {
-        return aligner.Init(this->data, this->padding, FS_NORMAL);
+        return aligner.Init(this->data, this->padding, FontSize::Normal);
     }
 
     void DrawContent(Rect rect) override {

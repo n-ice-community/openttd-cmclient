@@ -937,10 +937,10 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::ReceiveClientIdentify(Packet &
 
 	/* Find common savegame compression format to use */
 	auto preset = citymania::FindCompatibleSavePreset("", savegame_formats);
-	if (!preset) return this->SendError(NETWORK_ERROR_NOT_EXPECTED);
+	if (!preset) return this->SendError(NetworkErrorCode::NotExpected);
 	this->cm_preset = *preset;
 
-	Debug(sl, 2, "Using saveload preset '%s:%d' for client %d (mask %d)", this->cm_preset.format->name, (int)this->cm_preset.compression_level, (int)this->client_id, (int)savegame_formats);
+	Debug(Facility::Sl, Severity::Warning, "Using saveload preset '%s:%d' for client %d (mask %d)", this->cm_preset.format->name, (int)this->cm_preset.compression_level, (int)this->client_id, (int)savegame_formats);
 
 	/* join another company does not affect these values */
 	switch (playas.base()) {

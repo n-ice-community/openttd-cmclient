@@ -1155,7 +1155,7 @@ struct DepotWindow : Window {
 
 	EventState OnHotkey(int hotkey) override
 	{
-		if (this->owner != _local_company) return ES_NOT_HANDLED;
+		if (this->owner != _local_company) return EventState::NotHandled;
 		return Window::OnHotkey(hotkey);
 	}
 
@@ -1189,7 +1189,7 @@ static WindowDesc _road_depot_desc(
 	WindowPosition::Automatic, "depot_roadveh", 316, 97,
 	WindowClass::VehicleDepot, WindowClass::None,
 	{},
-	_nested_train_depot_widgets.
+	_nested_train_depot_widgets,
 	&DepotWindow::hotkeys
 );
 

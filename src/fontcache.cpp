@@ -39,7 +39,7 @@ FontCacheSettings _fcsettings;
 /* static */ std::unique_ptr<FontCache> FontProviderManager::LoadFont(FontSize fs, FontType fonttype, bool search, const std::string &font_name, const std::any &os_handle)
 {
 	for (auto &provider : FontProviderManager::GetProviders()) {
-		auto fc = provider->LoadFont(fs, fonttype);
+		auto fc = provider->LoadFont(fs, fonttype, search, font_name, os_handle);
 		if (fc != nullptr) return fc;
 	}
 

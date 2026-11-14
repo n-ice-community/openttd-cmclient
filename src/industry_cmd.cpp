@@ -2074,7 +2074,7 @@ bool CanBuildIndustryOnTile(IndustryType type, TileIndex tile) {
 	if (indspec->callback_mask.Test(IndustryCallbackMask::Location)) {
 		ret = CheckIfCallBackAllowsCreation(
 			tile, type, 0, 0, 0, _current_company,
-			_current_company == OWNER_DEITY ? IACT_RANDOMCREATION : IACT_USERCREATION);
+			_current_company == OWNER_DEITY ? IndustryAvailabilityCallType::RandomCreation : IndustryAvailabilityCallType::UserCreation);
 	} else {
 		ret = _check_new_industry_procs[GetIndustrySpec(type)->check_proc](tile);
 	}

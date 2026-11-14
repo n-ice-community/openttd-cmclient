@@ -840,7 +840,7 @@ int DrawVehiclePurchaseInfo(int left, int right, int y, EngineID engine_number, 
 
 	if (_settings_client.gui.newgrf_developer_tools) {
 		DrawString(left, right, y, GetString(CM_STR_PURCHASE_ENGINE_ID, e->index, e->grf_prop.local_id));
-		y += GetCharacterHeight(FS_NORMAL);
+		y += GetCharacterHeight(FontSize::Normal);
 	}
 
 	switch (e->type) {

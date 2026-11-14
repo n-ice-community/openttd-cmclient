@@ -112,10 +112,10 @@ enum WidgetType : uint8_t {
 /**
  * Base widget flags.
  */
-enum WidgetBaseFlags : uint8 {
-	WBF_DIRTY            = 1 <<  0, ///< Widget is dirty.
+enum class WidgetBaseFlag : uint8_t {
+	Dirty, ///< Widget is dirty.
 };
-DECLARE_ENUM_AS_BIT_SET(WidgetBaseFlags)
+using WidgetBaseFlags = EnumBitSet<WidgetBaseFlag, uint8_t>;
 
 /** Different forms of sizing nested widgets, using NWidgetBase::AssignSizePosition() */
 enum class SizingType : uint8_t {

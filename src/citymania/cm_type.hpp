@@ -3,6 +3,7 @@
 
 #include "../core/geometry_type.hpp"
 #include "../core/overflowsafe_type.hpp"
+#include "../3rdparty/fmt/format.h"
 
 #include <cstddef>
 #include <memory>

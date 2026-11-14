@@ -242,12 +242,12 @@ bool GUIPlaceProcDragXY(ViewportDragDropSelectionProcess proc, TileIndex start_t
 					// safe tiles are: TREES or non-FIELD clear tiles (because they're expensive to demolish)
 					if (tree_start_tile != INVALID_TILE &&
 							(cur_tile != prev_tile + 1 ||
-							(!IsTileType(cur_tile, MP_TREES) && (!IsTileType(cur_tile, MP_CLEAR) || IsClearGround(cur_tile, CLEAR_FIELDS))))) {
-						Command<CMD_CLEAR_AREA>::Post(STR_ERROR_CAN_T_CLEAR_THIS_AREA, CcPlaySound_EXPLOSION, tree_start_tile, tree_recent_tile, 0);
+							(!IsTileType(cur_tile, TileType::Trees) && (!IsTileType(cur_tile, TileType::Clear) || IsClearGround(cur_tile, ClearGround::Fields))))) {
+						Command<Commands::ClearArea>::Post(STR_ERROR_CAN_T_CLEAR_THIS_AREA, CcPlaySound_EXPLOSION, tree_start_tile, tree_recent_tile, 0);
 						tree_start_tile = tree_recent_tile = INVALID_TILE;
 					}
 					// if current tile is a tree
-					if (IsTileType(cur_tile, MP_TREES)) {
+					if (IsTileType(cur_tile, TileType::Trees)) {
 						if (tree_start_tile == INVALID_TILE) {
 							tree_start_tile = cur_tile;
 						}
@@ -257,7 +257,7 @@ bool GUIPlaceProcDragXY(ViewportDragDropSelectionProcess proc, TileIndex start_t
 				}
 				// one last ride to flavortown
 				if (tree_start_tile != INVALID_TILE) {
-					Command<CMD_CLEAR_AREA>::Post(STR_ERROR_CAN_T_CLEAR_THIS_AREA, CcPlaySound_EXPLOSION, tree_start_tile, tree_recent_tile, 0);
+					Command<Commands::ClearArea>::Post(STR_ERROR_CAN_T_CLEAR_THIS_AREA, CcPlaySound_EXPLOSION, tree_start_tile, tree_recent_tile, 0);
 				}
 			} else {  // diagonal area
 				DiagonalTileArea diag_area{start_tile, end_tile};
@@ -268,12 +268,12 @@ bool GUIPlaceProcDragXY(ViewportDragDropSelectionProcess proc, TileIndex start_t
 					// safe tiles are: TREES or non-FIELD clear tiles (because they're expensive to demolish)
 					if (tree_start_tile != INVALID_TILE &&
 							(!((tile_diff.x == 1 && tile_diff.y == 1) || (tile_diff.x == -1 && tile_diff.y == -1)) ||
-							(!IsTileType(cur_tile, MP_TREES) && (!IsTileType(cur_tile, MP_CLEAR) || IsClearGround(cur_tile, CLEAR_FIELDS))))) {
-						Command<CMD_CLEAR_AREA>::Post(STR_ERROR_CAN_T_CLEAR_THIS_AREA, CcPlaySound_EXPLOSION, tree_start_tile, tree_recent_tile, 1);
+							(!IsTileType(cur_tile, TileType::Trees) && (!IsTileType(cur_tile, TileType::Clear) || IsClearGround(cur_tile, ClearGround::Fields))))) {
+						Command<Commands::ClearArea>::Post(STR_ERROR_CAN_T_CLEAR_THIS_AREA, CcPlaySound_EXPLOSION, tree_start_tile, tree_recent_tile, 1);
 						tree_start_tile = tree_recent_tile = INVALID_TILE;
 					}
 					// if current tile is a tree
-					if (IsTileType(cur_tile, MP_TREES)) {
+					if (IsTileType(cur_tile, TileType::Trees)) {
 						if (tree_start_tile == INVALID_TILE) {
 							tree_start_tile = cur_tile;
 						}
@@ -283,7 +283,7 @@ bool GUIPlaceProcDragXY(ViewportDragDropSelectionProcess proc, TileIndex start_t
 				}
 				// one last ride to flavortown
 				if (tree_start_tile != INVALID_TILE) {
-					Command<CMD_CLEAR_AREA>::Post(STR_ERROR_CAN_T_CLEAR_THIS_AREA, CcPlaySound_EXPLOSION, tree_start_tile, tree_recent_tile, 1);
+					Command<Commands::ClearArea>::Post(STR_ERROR_CAN_T_CLEAR_THIS_AREA, CcPlaySound_EXPLOSION, tree_start_tile, tree_recent_tile, 1);
 				}
 			}
 			break;
@@ -794,7 +794,7 @@ struct ScenarioEditorLandscapeGenerationWindow : Window {
 				break;
 
 			case WID_ETT_PLACE_ROUGH: // Place rough land button
-				HandlePlacePushButton(this, WID_ETT_PLACE_ROUGH, SPR_CURSOR_ROCKY_AREA, HT_RECT);
+				HandlePlacePushButton(this, WID_ETT_PLACE_ROUGH, SPR_CURSOR_ROCKY_AREA, HT_RECT, CM_DDSP_NONE);
 				this->last_user_action = widget;
 				break;
 
@@ -910,7 +910,7 @@ struct ScenarioEditorLandscapeGenerationWindow : Window {
 		}
 	}
 
-	EventState OnCTRLStateChange() override
+	EventState OnCTRLStateChange()
 	{
 		switch (this->last_user_action) {
 			case WID_ETT_PLACE_ROCKS:

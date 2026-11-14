@@ -43,15 +43,15 @@ public:
 		std::vector<GlyphID> glyphs; ///< The glyphs we're drawing.
 		std::vector<Position> positions; ///< The positions of the glyphs.
 		std::vector<int> glyph_to_char; ///< The char index of the glyphs.
-		Font font; ///< The font used to layout these.
+		Font *font; ///< The font used to layout these.
 
 	public:
-		FallbackVisualRun(const Font &font, const char32_t *chars, int glyph_count, int char_offset, int x);
-		const Font &GetFont() const override { return this->font; }
+		FallbackVisualRun(Font *font, const char32_t *chars, int glyph_count, int char_offset, int x);
+		const Font *GetFont() const override { return this->font; }
 		size_t GetGlyphCount() const override { return this->glyphs.size(); }
 		std::span<const GlyphID> GetGlyphs() const override { return this->glyphs; }
 		std::span<const Position> GetPositions() const override { return this->positions; }
-		int GetLeading() const override { return this->font.GetFontCache().GetHeight(); }
+		int GetLeading() const override { return this->font->GetFontCache().GetHeight(); }
 		std::span<const int> GetGlyphToCharMap() const override { return this->glyph_to_char; }
 	};
 
@@ -112,7 +112,7 @@ public:
 FallbackParagraphLayout::FallbackVisualRun::FallbackVisualRun(Font *font, const char32_t *chars, int char_count, int char_offset, int x) :
 		font(font)
 {
-	FontCache &fc = font.GetFontCache();
+	FontCache &fc = font->GetFontCache();
 	const bool isbuiltin = fc.IsBuiltInFont();
 
 	this->glyphs.reserve(char_count);
@@ -210,7 +210,7 @@ std::unique_ptr<const ParagraphLayouter::Line> FallbackParagraphLayout::NextLine
 		assert(iter != this->runs.end());
 	}
 
-	FontSize fontsize = iter->second.fontsize;
+	FontSize fontsize = iter->second->fontsize;
 	const char32_t *next_run = this->buffer_begin + iter->first;
 
 	const char32_t *begin = this->buffer;

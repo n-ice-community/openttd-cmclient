@@ -52,9 +52,9 @@ enum WatchCompanyQuery {
 	EWQ_BAN1,
 };
 
-enum WatchCompanyType {
-	EWT_COMPANY = 0,
-	EWT_CLIENT,
+enum class WatchCompanyType {
+	Company = 0,
+	Client,
 };
 
 class WatchCompany : public Window
@@ -68,13 +68,13 @@ protected:
 
 	int watched_client;
 	WatchCompanyQuery query_widget;
-	int Wtype;
+	WatchCompanyType Wtype;
 
 	void SetWatchWindowTitle( );
 	void ScrollToTile( TileIndex tile );
 
 public:
-	WatchCompany(WindowDesc &desc, int window_number, CompanyID company_to_watch, int Wtype);
+	WatchCompany(WindowDesc &desc, int window_number, CompanyID company_to_watch, WatchCompanyType Wtype);
 
 	void DrawWidget(const Rect &r, int widget) const override;
 	void OnClick(Point pt, int widget, int click_count) override;
@@ -90,7 +90,7 @@ public:
 	void OnDoCommand(CompanyID company, TileIndex tile);
 };
 
-void ShowWatchWindow(CompanyID company_to_watch, int type);
+void ShowWatchWindow(CompanyID company_to_watch, WatchCompanyType type);
 void UpdateWatching(CompanyID company, TileIndex tile);
 
 } // namespace citymania

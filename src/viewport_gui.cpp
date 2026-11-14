@@ -180,7 +180,7 @@ void ShowExtraViewportWindow(int x, int y, int /* z */)
 	int i = 0;
 
 	/* find next free window number for extra viewport */
-	while (FindWindowById(WC_EXTRA_VIEWPORT, i) != nullptr) i++;
+	while (FindWindowById(WindowClass::ExtraViewport, i) != nullptr) i++;
 
 	auto w = new ExtraViewportWindow(_extra_viewport_desc, i, INVALID_TILE);
 	if (w) ScrollWindowTo(x, y, 0, w);

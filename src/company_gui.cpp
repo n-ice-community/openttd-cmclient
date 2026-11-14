@@ -1018,9 +1018,8 @@ public:
 			/* Set company colour livery */
 			for (LiveryScheme scheme : this->visible_schemes) {
 				/* Changed colour for the selected scheme, or all visible schemes if CTRL is pressed. */
-#error _loaded_newgrf_features.livery is not obvious come back and check
 				if (this->sel.schemes.Test(scheme) ||
-					(citymania::_fn_mod && _livery_class[scheme] == this->livery_class && HasBit(_loaded_newgrf_features.used_liveries, scheme))) {) {
+					(citymania::_fn_mod && _livery_class[scheme] == this->livery_class && _loaded_newgrf_features.used_liveries.Test(scheme))) {
 					Command<Commands::SetCompanyColour>::Post(scheme, widget == WID_SCL_PRI_COL_DROPDOWN, colour);
 				}
 			}
@@ -1893,8 +1892,8 @@ static constexpr std::initializer_list<NWidgetPart> _nested_company_widgets = {
 							NWidget(NWID_SPACER),
 						EndContainer(),
 						/* Admin company buttons */
-						NWidget(NWID_SELECTION, INVALID_COLOUR, CM_WID_C_SELECT_ADMINBUTTONS),
-							NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, CM_WID_C_ADMINBUTTONS), SetStringTip(CM_STR_ACB_COMPANY_ADMIN_BUTTON, CM_STR_ACB_COMPANY_ADMIN_BUTTON_TOOLTIP),
+						NWidget(NWID_SELECTION, Colours::Invalid, CM_WID_C_SELECT_ADMINBUTTONS),
+							NWidget(WWT_PUSHTXTBTN, Colours::Grey, CM_WID_C_ADMINBUTTONS), SetStringTip(CM_STR_ACB_COMPANY_ADMIN_BUTTON, CM_STR_ACB_COMPANY_ADMIN_BUTTON_TOOLTIP),
 						EndContainer(),
 					EndContainer(),
 				EndContainer(),
@@ -1921,12 +1920,12 @@ static constexpr std::initializer_list<NWidgetPart> _nested_company_widgets = {
 						NWidget(NWID_SELECTION, Colours::Invalid, WID_C_SELECT_MULTIPLAYER),
 							NWidget(WWT_PUSHTXTBTN, Colours::Grey, WID_C_COMPANY_JOIN), SetStringTip(STR_COMPANY_VIEW_JOIN, STR_COMPANY_VIEW_JOIN_TOOLTIP),
 						EndContainer(),
-						// NWidget(NWID_SELECTION, INVALID_COLOUR, WID_C_SELECT_MOD),
+						// NWidget(NWID_SELECTION, Colours::Invalid, WID_C_SELECT_MOD),
 						// 	NWidget(NWID_SPACER), SetMinimalSize(0, 0), SetFill(0, 1),
 						// 	NWidget(NWID_VERTICAL), SetPIP(4, 2, 4),
-						// 		NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_C_MOD_COMPANY_JOIN), SetFill(1, 0), SetDataTip(STR_MOD_COMPANY_JOIN_BUTTON, STR_NULL),
-						// 		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_C_MOD_COMPANY_TOGGLE_LOCK), SetFill(1, 0), SetDataTip(STR_MOD_TOGGLE_LOCK_BUTTON, STR_NULL),
-						// 		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_C_MOD_COMPANY_RESET), SetFill(1, 0), SetDataTip(STR_MOD_COMPANY_RESET_BUTTON, STR_NULL),
+						// 		NWidget(WWT_PUSHTXTBTN, Colours::Grey, WID_C_MOD_COMPANY_JOIN), SetFill(1, 0), SetDataTip(STR_MOD_COMPANY_JOIN_BUTTON, STR_NULL),
+						// 		NWidget(WWT_TEXTBTN, Colours::Grey, WID_C_MOD_COMPANY_TOGGLE_LOCK), SetFill(1, 0), SetDataTip(STR_MOD_TOGGLE_LOCK_BUTTON, STR_NULL),
+						// 		NWidget(WWT_TEXTBTN, Colours::Grey, WID_C_MOD_COMPANY_RESET), SetFill(1, 0), SetDataTip(STR_MOD_COMPANY_RESET_BUTTON, STR_NULL),
 						// 	EndContainer(),
 						// EndContainer(),
 				EndContainer(),
@@ -2400,8 +2399,8 @@ struct CompanyWindow : Window
 	/* Admin company buttons: close window */
 	void Close([[maybe_unused]] int data) override
 	{
-         if (FindWindowById(CM_WC_ADMIN_COMPANY_BUTTONS,this->window_number+1))
-			CloseWindowById(CM_WC_ADMIN_COMPANY_BUTTONS,this->window_number+1);
+         if (FindWindowById(WindowClass::CmAdminCompanyButtons,this->window_number+1))
+			CloseWindowById(WindowClass::CmAdminCompanyButtons,this->window_number+1);
 		this->Window::Close();  
     }
 };

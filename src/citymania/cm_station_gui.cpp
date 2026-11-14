@@ -1,4 +1,5 @@
 #include "../stdafx.h"
+#include "../station_func.h"
 
 #include "cm_station_gui.hpp"
 
@@ -161,7 +162,7 @@ const Station *CheckClickOnDeadStationSign() {
     if (w == nullptr) return nullptr;
     Viewport *vp = IsPtInWindowViewport(w, x, y);
 
-    if (!HasBit(_display_opt, DO_SHOW_STATION_NAMES) && !IsInvisibilitySet(TO_SIGNS))
+    if (!_display_opt.Test(DisplayOption::ShowStationNames) && !IsInvisibilitySet(TransparencyOption::Signs))
         return nullptr;
 
     x = ScaleByZoom(x - vp->left, vp->zoom) + vp->virtual_left;
@@ -183,7 +184,7 @@ const Station *CheckClickOnDeadStationSign() {
 
 // bool CheckStationJoin(TileIndex start_tile, TileIndex /* end_tile */) {
 //     if (citymania::_fn_mod) {
-//         if (IsTileType (start_tile, MP_STATION)) {
+//         if (IsTileType (start_tile, TileType::Station)) {
 //             citymania::SelectStationToJoin(Station::GetByTile(start_tile));
 //             return true;
 //         }
@@ -217,62 +218,62 @@ static DiagDirection TileFractCoordsToDiagDir(Point pt) {
     auto y = pt.y & TILE_UNIT_MASK;
     bool diag = (x + y) < 16;
     if (x < y) {
-        return diag ? DIAGDIR_NE : DIAGDIR_SE;
+        return diag ? DiagDirection::NE : DiagDirection::SE;
     }
-    return diag ? DIAGDIR_NW : DIAGDIR_SW;
+    return diag ? DiagDirection::NW : DiagDirection::SW;
 }
 
 static DiagDirection RoadBitsToDiagDir(RoadBits bits) {
-    if (bits < ROAD_SE) {
-        return bits == ROAD_NW ? DIAGDIR_NW : DIAGDIR_SW;
+    if (bits < RoadBits{RoadBit::SE}) {
+        return bits == RoadBits{RoadBit::NW} ? DiagDirection::NW : DiagDirection::SW;
     }
-    return bits == ROAD_SE ? DIAGDIR_SE : DIAGDIR_NE;
+    return bits == RoadBits{RoadBit::SE} ? DiagDirection::SE : DiagDirection::NE;
 }
 
 DiagDirection AutodetectRailObjectDirection(TileIndex tile, Point pt) {
     RoadBits bits = FindRailsToConnect(tile);
     // FIXME after this point repeats road autodetection
-    if (HasExactlyOneBit(bits)) return RoadBitsToDiagDir(bits);
-    if (bits == ROAD_NONE) bits = ROAD_ALL;
+    if (bits.Count() == 1) return RoadBitsToDiagDir(bits);
+    if (bits.None()) bits = ROAD_ALL;
     RoadBits frac_bits = DiagDirToRoadBits(TileFractCoordsToDiagDir(pt));
-    if (HasExactlyOneBit(frac_bits & bits)) {
+    if ((frac_bits & bits).Count() == 1) {
         return RoadBitsToDiagDir(frac_bits & bits);
     }
     frac_bits |= MirrorRoadBits(frac_bits);
-    if (HasExactlyOneBit(frac_bits & bits)) {
+    if ((frac_bits & bits).Count() == 1) {
         return RoadBitsToDiagDir(frac_bits & bits);
     }
-    for (DiagDirection ddir = DIAGDIR_BEGIN; ddir < DIAGDIR_END; ddir++) {
-        if (DiagDirToRoadBits(ddir) & bits) {
+    for (DiagDirection ddir : EnumRange(DiagDirection::End)) {
+        if ((DiagDirToRoadBits(ddir) & bits).Any()) {
             return ddir;
         }
     }
     NOT_REACHED();
 }
 
+#warning "TODO Check"
 static RoadBits FindRoadsToConnect(TileIndex tile, RoadType roadtype) {
-    RoadBits bits = ROAD_NONE;
-    DiagDirection ddir;
+    RoadBits bits{};
     auto cur_rtt = GetRoadTramType(roadtype);
     // Prioritize roadbits that head in this direction
-    for (ddir = DIAGDIR_BEGIN; ddir < DIAGDIR_END; ddir++) {
+    for (DiagDirection ddir : EnumRange(DiagDirection::End)) {
         TileIndex cur_tile = AddTileIndexDiffCWrap(tile, TileIndexDiffCByDiagDir(ddir));
         if (cur_tile == INVALID_TILE) continue;
 
-        if (GetAnyRoadBits(cur_tile, cur_rtt, true) &
-            DiagDirToRoadBits(ReverseDiagDir(ddir)))
+        if ((GetAnyRoadBits(cur_tile, cur_rtt, true) &
+            DiagDirToRoadBits(ReverseDiagDir(ddir))).Any())
         {
             bits |= DiagDirToRoadBits(ddir);
         }
     }
-    if (bits != ROAD_NONE) {
+    if (bits.Any()) {
         return bits;
     }
     // Try to connect to any road passing by
-    for (ddir = DIAGDIR_BEGIN; ddir < DIAGDIR_END; ddir++) {
+    for (DiagDirection ddir : EnumRange(DiagDirection::End)) {
         TileIndex cur_tile = AddTileIndexDiffCWrap(tile, TileIndexDiffCByDiagDir(ddir));
         if (cur_tile == INVALID_TILE) continue;
-        if (GetTileType(cur_tile) == MP_ROAD && HasTileRoadType(cur_tile, cur_rtt) &&
+        if (GetTileType(cur_tile) == TileType::Road && HasTileRoadType(cur_tile, cur_rtt) &&
                 (GetRoadTileType(cur_tile) == RoadTileType::Normal)) {
             bits |= DiagDirToRoadBits(ddir);
         }
@@ -282,9 +283,11 @@ static RoadBits FindRoadsToConnect(TileIndex tile, RoadType roadtype) {
 
 bool CheckDriveThroughRoadStopDirection(TileArea area, RoadBits r) {
     for (TileIndex tile : area) {
-        if (GetTileType(tile) != MP_ROAD) continue;
+        if (GetTileType(tile) != TileType::Road) continue;
         if (GetRoadTileType(tile) != RoadTileType::Normal) continue;
-        if (GetAllRoadBits(tile) & ~r) return false;
+        RoadBits remaining = GetAllRoadBits(tile);
+        remaining.Reset(r);
+        if (remaining.Any()) return false;
     }
     return true;
 }
@@ -294,22 +297,22 @@ bool CheckDriveThroughRoadStopDirection(TileArea area, RoadBits r) {
  */
 DiagDirection AutodetectRoadObjectDirection(TileIndex tile, Point pt, RoadType roadtype) {
     RoadBits bits = FindRoadsToConnect(tile, roadtype);
-    if (HasExactlyOneBit(bits)) {
+    if (bits.Count() == 1) {
         return RoadBitsToDiagDir(bits);
     }
-    if (bits == ROAD_NONE) {
+    if (bits.None()) {
         bits = ROAD_ALL;
     }
     RoadBits frac_bits = DiagDirToRoadBits(TileFractCoordsToDiagDir(pt));
-    if (HasExactlyOneBit(frac_bits & bits)) {
+    if ((frac_bits & bits).Count() == 1) {
         return RoadBitsToDiagDir(frac_bits & bits);
     }
     frac_bits |= MirrorRoadBits(frac_bits);
-    if (HasExactlyOneBit(frac_bits & bits)) {
+    if ((frac_bits & bits).Count() == 1) {
         return RoadBitsToDiagDir(frac_bits & bits);
     }
-    for (DiagDirection ddir = DIAGDIR_BEGIN; ddir < DIAGDIR_END; ddir++) {
-        if (DiagDirToRoadBits(ddir) & bits) {
+    for (DiagDirection ddir : EnumRange(DiagDirection::End)) {
+        if ((DiagDirToRoadBits(ddir) & bits).Any()) {
             return ddir;
         }
     }
@@ -335,7 +338,7 @@ DiagDirection AutodetectDriveThroughRoadStopDirection(TileArea area, Point pt, R
     if (area.w > area.h) return STATIONDIR_X;
     if (area.w < area.h) return STATIONDIR_Y;
 
-    return DiagDirToAxis(AutodetectRoadObjectDirection(area.tile, pt, roadtype)) == AXIS_X ? STATIONDIR_X : STATIONDIR_Y;
+    return DiagDirToAxis(AutodetectRoadObjectDirection(area.tile, pt, roadtype)) == Axis::X ? STATIONDIR_X : STATIONDIR_Y;
 }
 
 uint GetMonthlyFrom256Tick(uint amount) {
@@ -349,9 +352,9 @@ uint GetAverageHouseProduction(uint8_t amount) {
     };
     if (amount == 0) return 0;
     switch (_settings_game.economy.town_cargogen_mode) {
-        case TCGM_ORIGINAL:
+        case TownCargoGenMode::Original:
             return GetMonthlyFrom256Tick(AVG[EconomyIsInRecession() ? 1 : 0][amount]);
-        case TCGM_BITCOUNT: {
+        case TownCargoGenMode::Bitcount: {
             uint amt = (amount + 7) / 8;
             if (EconomyIsInRecession()) amt += 2;
             else amt *= 2;
@@ -379,19 +382,19 @@ static void AddProducedCargo_Town(TileIndex tile, CargoArray &produced)
 
             CargoType cargo = GetCargoTranslation(GB(callback, 8, 7), hs->grf_prop.grffile);
 
-            if (cargo == CT_INVALID) continue;
+            if (cargo == INVALID_CARGO) continue;
             produced[cargo] += GetMonthlyFrom256Tick((uint)GB(callback, 0, 8)) ;
         }
     } else {
         if (hs->population > 0) {
             auto avg = GetAverageHouseProduction(hs->population);
-            for (const CargoSpec *cs : CargoSpec::town_production_cargoes[TPE_PASSENGERS]) {
+            for (const CargoSpec *cs : CargoSpec::town_production_cargoes[TownProductionEffect::Passengers]) {
                 produced[cs->Index()] += avg;
             }
         }
         if (hs->mail_generation > 0) {
             auto avg = GetAverageHouseProduction(hs->mail_generation);
-            for (const CargoSpec *cs : CargoSpec::town_production_cargoes[TPE_MAIL]) {
+            for (const CargoSpec *cs : CargoSpec::town_production_cargoes[TownProductionEffect::Mail]) {
                 produced[cs->Index()] += avg;
             }
         }
@@ -418,19 +421,19 @@ CargoArray GetProductionAroundTiles(TileIndex tile, int w, int h, int rad)
      * everything except industries */
     for(auto tile : ta) {
         switch (GetTileType(tile)) {
-            case MP_INDUSTRY:
+            case TileType::Industry:
                 industries.insert(GetIndustryIndex(tile));
                 break;
-            case MP_HOUSE:
+            case TileType::House:
                 AddProducedCargo_Town(tile, produced);
                 break;
-            case MP_OBJECT:
+            case TileType::Object:
                 if (IsObjectType(tile, OBJECT_HQ)) {
                     auto pax_avg = GetMonthlyFrom256Tick(HQ_AVG_POP[EconomyIsInRecession() ? 1 : 0][GetAnimationFrame(tile)]);
                     auto mail_avg = GetMonthlyFrom256Tick(HQ_AVG_MAIL[EconomyIsInRecession() ? 1 : 0][GetAnimationFrame(tile)]);
-                    for (const CargoSpec *cs : CargoSpec::town_production_cargoes[TPE_PASSENGERS])
+                    for (const CargoSpec *cs : CargoSpec::town_production_cargoes[TownProductionEffect::Passengers])
                         produced[cs->Index()] += pax_avg;
-                    for (const CargoSpec *cs : CargoSpec::town_production_cargoes[TPE_MAIL])
+                    for (const CargoSpec *cs : CargoSpec::town_production_cargoes[TownProductionEffect::Mail])
                         produced[cs->Index()] += mail_avg;
                 }
             default: break;
@@ -470,13 +473,17 @@ static TileArea GetStationJoinArea(StationID station_id) {
     auto station = Station::GetIfValid(station_id);
     if (station == nullptr) return {};
 
-    auto &r = station->rect;
+    const TileArea &spread = station->spread;
+    const int left = TileX(spread.tile);
+    const int top = TileY(spread.tile);
+    const int right = left + spread.w - 1;
+    const int bottom = top + spread.h - 1;
     auto d = (int)_settings_game.station.station_spread - 1;
     TileArea ta(
-        TileXY(std::max<int>(r.right - d, 0),
-               std::max<int>(r.bottom - d, 0)),
-        TileXY(std::min<int>(r.left + d, Map::SizeX() - 1),
-               std::min<int>(r.top + d, Map::SizeY() - 1))
+        TileXY(std::max<int>(right - d, 0),
+               std::max<int>(bottom - d, 0)),
+        TileXY(std::min<int>(left + d, Map::SizeX() - 1),
+               std::min<int>(top + d, Map::SizeY() - 1))
     );
 
     return ta;
@@ -500,7 +507,7 @@ extern DiagDirection AddAutodetectionRotation(DiagDirection ddir);  // cm_highli
 //     area.Expand(1);
 //     area.ClampToMap();
 //     for (auto tile : area) {
-//         if (IsTileType(tile, MP_STATION) && GetTileOwner(tile) == _local_company) {
+//         if (IsTileType(tile, TileType::Station) && GetTileOwner(tile) == _local_company) {
 //             Station *st = Station::GetByTile(tile);
 //             if (st == nullptr || st->index == this->station_to_join) continue;
 //             if (this->station_to_join != StationID::Invalid()) {
@@ -604,7 +611,7 @@ void ResetSelectedStationToJoin() {
 }
 
 void SetStationHighlightCoverage(Station *station, bool sel) {
-    SetWindowDirty(WC_STATION_VIEW, _selected_station);
+    SetWindowDirty(WindowClass::StationView, _selected_station);
     if (station == nullptr) {
         _station_highlight_mode = StationHighlightMode::None;
     } else if (!sel) {
@@ -614,7 +621,7 @@ void SetStationHighlightCoverage(Station *station, bool sel) {
         _selected_station = station->index;
         _station_highlight_mode = StationHighlightMode::Coverage;
     }
-    SetWindowDirty(WC_STATION_VIEW, _selected_station);
+    SetWindowDirty(WindowClass::StationView, _selected_station);
     UpdateActiveTool();
 }
 
@@ -634,7 +641,7 @@ void OnStationRemoved(const Station *station) {
         _selected_station = StationID::Invalid();
         if (_station_highlight_mode == StationHighlightMode::Coverage) {
             _station_highlight_mode = StationHighlightMode::None;
-            SetWindowDirty(WC_STATION_VIEW, _selected_station);
+            SetWindowDirty(WindowClass::StationView, _selected_station);
         }
         UpdateActiveTool();
     }
@@ -683,7 +690,7 @@ static void UpdateStationAction(std::optional<TileArea> area, up<Command> cmdptr
     check_area->ClampToMap();
     StationID overlap_station = StationID::Invalid();
     for (auto tile : *check_area) {
-        if (!IsTileType(tile, MP_STATION)) continue;
+        if (!IsTileType(tile, TileType::Station)) continue;
         StationID st = GetStationIndex(tile);
         if (!Station::IsValidID(st) || Station::Get(st)->owner != _local_company) continue;
 
@@ -786,9 +793,9 @@ static HighlightMap PrepareHighlightMap(Station *st_join, std::optional<ObjectHi
 
     if (st_join != nullptr) {
         // Highlight joining station blue
-        TileArea ta(TileXY(st_join->rect.left, st_join->rect.top), TileXY(st_join->rect.right, st_join->rect.bottom));
+        TileArea ta = st_join->spread;
         for (TileIndex t : ta) {
-            if (!IsTileType(t, MP_STATION) || GetStationIndex(t) != st_join->index) continue;
+            if (!IsTileType(t, TileType::Station) || GetStationIndex(t) != st_join->index) continue;
             hlmap.Add(t, ObjectTileHighlight::make_struct_tint(CM_PALETTE_TINT_BLUE));
         }
     }
@@ -917,7 +924,7 @@ ToolGUIInfo PlacementAction::PrepareGUIInfo(std::optional<ObjectHighlight> ohl, 
         // TODO can we use rad_area since we already have it?
         auto production = citymania::GetProductionAroundTiles(area->tile, area->w, area->h, rad);
         bool has_header = false;
-        for (CargoType i = 0; i < NUM_CARGO; i++) {
+        for (CargoType i : EnumRange(NUM_CARGO)) {
             if (production[i] == 0) continue;
 
             switch (sct) {
@@ -938,11 +945,10 @@ ToolGUIInfo PlacementAction::PrepareGUIInfo(std::optional<ObjectHighlight> ohl, 
         }
 
         // Add accepted cargo information
-        CargoTypes always_accepted;
-        auto cargoes = ::GetAcceptanceAroundTiles(area->tile, area->w, area->h, rad, &always_accepted);
+        auto [cargoes, always_accepted] = ::GetAcceptanceAroundTiles(area->tile, area->w, area->h, rad);
         /* Convert cargo counts to a set of cargo bits, and draw the result. */
         std::vector<std::pair<uint, std::string>> cargostr;
-        for (CargoType i = 0; i < NUM_CARGO; i++) {
+        for (CargoType i : EnumRange(NUM_CARGO)) {
             switch (sct) {
                 case SCT_PASSENGERS_ONLY: if (!IsCargoInClass(i, CargoClass::Passengers)) continue; break;
                 case SCT_NON_PASSENGERS_ONLY: if (IsCargoInClass(i, CargoClass::Passengers)) continue; break;
@@ -952,7 +958,7 @@ ToolGUIInfo PlacementAction::PrepareGUIInfo(std::optional<ObjectHighlight> ohl, 
             if (cargoes[i] > 0) {
                 if(cargoes[i] < 8) {
                     cargostr.emplace_back(2, GetString(CM_STR_BULID_INFO_OVERLAY_ACCEPTS_CARGO_PARTIAL, 1 << i, cargoes[i]));
-                } else if (HasBit(always_accepted, i)) {
+                } else if (always_accepted.Test(i)) {
                     cargostr.emplace_back(1, GetString(CM_STR_BULID_INFO_OVERLAY_ACCEPTS_CARGO_FULL, 1 << i, cargoes[i]));
                 } else {
                     cargostr.emplace_back(0, GetString(CM_STR_BULID_INFO_OVERLAY_ACCEPTS_CARGO, 1 << i));
@@ -1094,7 +1100,7 @@ void StationSelectAction::HandleMouseRelease() {
     _selected_join_station = StationID::Invalid();
     auto st = CheckClickOnDeadStationSign();
 
-    if (st == nullptr && IsValidTile(this->cur_tile) && IsTileType(this->cur_tile, MP_STATION)) {
+    if (st == nullptr && IsValidTile(this->cur_tile) && IsTileType(this->cur_tile, TileType::Station)) {
         st = Station::GetByTile(this->cur_tile);
     }
 
@@ -1107,9 +1113,9 @@ void StationSelectAction::HandleMouseRelease() {
 ToolGUIInfo StationSelectAction::GetGUIInfo() {
     if (!IsValidTile(this->cur_tile)) return {};
     HighlightMap hlmap;
-    hlmap.Add(this->cur_tile, ObjectTileHighlight::make_border(CM_PALETTE_TINT_BLUE, ZoningBorder::FULL));
+    hlmap.Add(this->cur_tile, ObjectTileHighlight::make_border(CM_PALETTE_TINT_BLUE, ZONING_BORDERS_FULL));
     BuildInfoOverlayData data;
-    Station *st = IsTileType(this->cur_tile, MP_STATION) ? Station::GetByTile(this->cur_tile) : nullptr;
+    Station *st = IsTileType(this->cur_tile, TileType::Station) ? Station::GetByTile(this->cur_tile) : nullptr;
     if (st) {
         data.emplace_back(0, PAL_NONE, GetString(CM_STR_BULID_INFO_OVERLAY_JOIN_STATION, st->index));
     } else {
@@ -1128,13 +1134,13 @@ TileArea GetCommandArea(const up<Command> &cmd) {
     if (auto rail_cmd = dynamic_cast<cmd::BuildRailStation *>(cmd.get())) {
         auto w = rail_cmd->numtracks;
         auto h = rail_cmd->plat_len;
-        if (!rail_cmd->axis) std::swap(w, h);
+        if (rail_cmd->axis == Axis::X) std::swap(w, h);
         return {rail_cmd->tile_org, w, h};
     } else if (auto road_cmd = dynamic_cast<cmd::BuildRoadStop *>(cmd.get())) {
         return {road_cmd->tile, road_cmd->width, road_cmd->length};
     } else if (auto dock_cmd = dynamic_cast<cmd::BuildDock *>(cmd.get())) {
         DiagDirection dir = GetInclinedSlopeDirection(GetTileSlope(dock_cmd->tile));
-        TileIndex tile_to = (dir != INVALID_DIAGDIR ? TileAddByDiagDir(dock_cmd->tile, ReverseDiagDir(dir)) : dock_cmd->tile);
+        TileIndex tile_to = (dir != DiagDirection::Invalid ? TileAddByDiagDir(dock_cmd->tile, ReverseDiagDir(dir)) : dock_cmd->tile);
         return {dock_cmd->tile, tile_to};
     } else if (auto airport_cmd = dynamic_cast<cmd::BuildAirport *>(cmd.get())) {
         const AirportSpec *as = AirportSpec::Get(airport_cmd->airport_type);
@@ -1218,10 +1224,17 @@ bool ExecuteBuildCommand(Taction *action, Tcallback callback, Targ arg) {
 
 // --- RailStationBuildTool::RemoveAction ---
 
+/** Last tile of a tile area, the tile opposite to the area's start tile. */
+static TileIndex GetCMEndTile(const TileArea &area)
+{
+    if (area.w == 0 || area.h == 0 || area.tile == INVALID_TILE) return INVALID_TILE;
+    return TileAddXY(area.tile, area.w - 1, area.h - 1);
+}
+
 up<Command> RailStationBuildTool::RemoveAction::GetCommand(TileArea area) {
     auto cmd = make_up<cmd::RemoveFromRailStation>(
         area.tile,
-        area.CMGetEndTile(),
+        GetCMEndTile(area),
         !citymania::_fn_mod
     );
     cmd->with_error(STR_ERROR_CAN_T_REMOVE_PART_OF_STATION);
@@ -1241,7 +1254,7 @@ std::optional<TileArea> RailStationBuildTool::SizedPlacementAction::GetArea() co
     if (!IsValidTile(this->cur_tile)) return std::nullopt;
     auto w = _settings_client.gui.station_numtracks;
     auto h = _settings_client.gui.station_platlength;
-    if (_station_gui.axis == AXIS_X) std::swap(w, h);
+    if (_station_gui.axis == Axis::X) std::swap(w, h);
     return TileArea{this->cur_tile, w, h};
 }
 
@@ -1272,7 +1285,7 @@ up<Command> RailStationBuildTool::DragNDropPlacementAction::GetCommand(TileArea 
     uint numtracks = area.w;
     uint platlength = area.h;
 
-    if (_station_gui.axis == AXIS_X) std::swap(numtracks, platlength);
+    if (_station_gui.axis == Axis::X) std::swap(numtracks, platlength);
 
     auto cmd = make_up<cmd::BuildRailStation>(
         area.tile,
@@ -1300,7 +1313,7 @@ std::optional<ObjectHighlight> RailStationBuildTool::DragNDropPlacementAction::G
 std::optional<ObjectHighlight> RailStationBuildTool::SizedPlacementAction::GetObjectHighlight(TileIndex tile) {
     uint16_t w = _settings_client.gui.station_numtracks;
     uint16_t h = _settings_client.gui.station_platlength;
-    if (_station_gui.axis == AXIS_X) std::swap(w, h);
+    if (_station_gui.axis == Axis::X) std::swap(w, h);
     return ObjectHighlight::make_rail_station(tile, w, h, _station_gui.axis, _station_gui.sel_class, _station_gui.sel_type);
 }
 
@@ -1312,7 +1325,7 @@ RailStationBuildTool::RailStationBuildTool() : mode(Mode::SIZED) {
 
 void RailStationBuildTool::Update(Point pt, TileIndex tile) {
     Mode new_mode;
-    if (FindWindowById(WC_SELECT_STATION, 0) != nullptr) {
+    if (FindWindowById(WindowClass::JoinStation, 0) != nullptr) {
         new_mode = Mode::PICKER;
     } else if (_remove_button_clicked) {
         new_mode = Mode::REMOVE;
@@ -1365,7 +1378,7 @@ up<Command> RoadStopBuildTool::RemoveAction::GetCommand(TileArea area) {
         _fn_mod
     );
     auto rti = GetRoadTypeInfo(_cur_roadtype);
-    cmd->with_error(rti->strings.err_remove_station[to_underlying(this->stop_type)]);
+    cmd->with_error(rti->strings.err_remove_station[this->stop_type]);
     return cmd;
 }
 
@@ -1377,8 +1390,8 @@ bool RoadStopBuildTool::RemoveAction::Execute(TileArea area) {
 
 up<Command> RoadStopBuildTool::DragNDropPlacementAction::GetCommand(TileArea area, StationID to_join, bool adjacent) {
     DiagDirection ddir = this->ddir;
-    bool drive_through = this->ddir >= DIAGDIR_END;
-    if (drive_through) ddir = static_cast<DiagDirection>(this->ddir - DIAGDIR_END); // Adjust picker result to actual direction.
+    bool drive_through = this->ddir >= DiagDirection::End;
+    if (drive_through) ddir = static_cast<DiagDirection>(this->ddir - DiagDirection::End); // Adjust picker result to actual direction.
 
     auto res = make_up<cmd::BuildRoadStop>(
         area.tile,
@@ -1423,12 +1436,12 @@ RoadStopBuildTool::RoadStopBuildTool(RoadStopType stop_type) : mode(Mode::DRAGDR
 
 void RoadStopBuildTool::DragNDropPlacementAction::Update(Point pt, TileIndex tile) {
     citymania::DragNDropPlacementAction::Update(pt, tile);
-    this->ddir = DIAGDIR_NE;
+    this->ddir = DiagDirection::NE;
     auto area = this->GetArea();
     if (pt.x != -1 && area.has_value()) {
         auto ddir = _roadstop_gui.orientation;
 
-        if (ddir >= DIAGDIR_END && ddir < STATIONDIR_AUTO) {
+        if (ddir >= DiagDirection::End && ddir < STATIONDIR_AUTO) {
             // When placed on road autorotate anyway
             if (ddir == STATIONDIR_X) {
                 if (!CheckDriveThroughRoadStopDirection(area.value(), ROAD_X))
@@ -1448,7 +1461,7 @@ void RoadStopBuildTool::DragNDropPlacementAction::Update(Point pt, TileIndex til
 
 void RoadStopBuildTool::Update(Point pt, TileIndex tile) {
     Mode new_mode;
-    if (FindWindowById(WC_SELECT_STATION, 0) != nullptr) {
+    if (FindWindowById(WindowClass::JoinStation, 0) != nullptr) {
         new_mode = Mode::PICKER;
     } else if (_remove_button_clicked) {
         new_mode = Mode::REMOVE;
@@ -1522,13 +1535,13 @@ bool DockBuildTool::SizedPlacementAction::Execute(TileIndex tile) {
 }
 
 std::optional<ObjectHighlight> DockBuildTool::SizedPlacementAction::GetObjectHighlight(TileIndex tile) {
-    return ObjectHighlight::make_dock(tile, this->GetDirection(tile).value_or(DIAGDIR_SE));
+    return ObjectHighlight::make_dock(tile, this->GetDirection(tile).value_or(DiagDirection::SE));
 }
 
 std::optional<DiagDirection> DockBuildTool::SizedPlacementAction::GetDirection(TileIndex tile) const {
     if (!IsValidTile(tile)) return std::nullopt;
     auto slope_dir = GetInclinedSlopeDirection(GetTileSlope(tile));
-    if (slope_dir == INVALID_DIAGDIR) return std::nullopt;
+    if (slope_dir == DiagDirection::Invalid) return std::nullopt;
     return ReverseDiagDir(slope_dir);
 };
 
@@ -1541,7 +1554,7 @@ DockBuildTool::DockBuildTool() : mode(Mode::SIZED) {
 
 void DockBuildTool::Update(Point pt, TileIndex tile) {
     Mode new_mode;
-    if (FindWindowById(WC_SELECT_STATION, 0) != nullptr) {
+    if (FindWindowById(WindowClass::JoinStation, 0) != nullptr) {
         new_mode = Mode::PICKER;
     } else if (_remove_button_clicked) {
         new_mode = Mode::REMOVE;
@@ -1652,7 +1665,7 @@ AirportBuildTool::AirportBuildTool() : mode(Mode::SIZED) {
 
 void AirportBuildTool::Update(Point pt, TileIndex tile) {
     Mode new_mode;
-    if (FindWindowById(WC_SELECT_STATION, 0) != nullptr) {
+    if (FindWindowById(WindowClass::JoinStation, 0) != nullptr) {
         new_mode = Mode::PICKER;
     } else if (_remove_button_clicked) {
         new_mode = Mode::REMOVE;

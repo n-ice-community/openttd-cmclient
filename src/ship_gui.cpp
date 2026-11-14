@@ -8,6 +8,7 @@
 /** @file ship_gui.cpp GUI for ships. */
 
 #include "stdafx.h"
+#include "settings_type.h"
 #include "vehicle_base.h"
 #include "window_gui.h"
 #include "gfx_func.h"

@@ -571,7 +571,7 @@ void Window::RaiseButtons(bool autoraise)
  * Invalidate a widget, i.e. mark it as being changed and in need of redraw.
  * @param widget_index the widget to redraw.
  */
-void Window::SetWidgetDirty(WidgetID widget_index) const
+void Window::SetWidgetDirty(WidgetID widget_index) /* CM const */
 {
 	/* Sometimes this function is called before the window is even fully initialized */
 	auto it = this->widget_lookup.find(widget_index);
@@ -866,27 +866,6 @@ static void DispatchMouseWheelEvent(Window *w, NWidgetCore *nwid, int wheel)
 }
 
 /**
- * Returns whether a window may be shown or not.
- * @param w The window to consider.
- * @return True iff it may be shown, otherwise false.
- */
-static bool MayBeShown(const Window *w)
-{
-	/* If we're not modal, everything is okay. */
-	if (!HasModalProgress()) return true;
-
-	switch (w->window_class) {
-		case WindowClass::MainWindow: ///< The background, i.e. the game.
-		case WindowClass::ModalProgress: ///< The actual progress window.
-		case WindowClass::ConfirmPopupQuery: ///< The abort window.
-			return true;
-
-		default:
-			return false;
-	}
-}
-
-/**
  * Generate repaint events for the visible part of window w within the rectangle.
  *
  * The function goes recursively upwards in the window stack, and splits the rectangle
@@ -951,11 +930,11 @@ void DrawOverlappedWindow(Window *w, int left, int top, int right, int bottom, D
 	dp->dst_ptr = BlitterFactory::GetCurrentBlitter()->MoveTo(_screen.dst_ptr, left, top);
 	dp->zoom = ZoomLevel::Min;
 	w->OnPaint();
-	if (flags & DOWF_SHOW_DEBUG) [[ unlikely ]] {
+	if (flags.Test(DrawOverlappedWindowFlag::ShowDebug)) [[ unlikely ]] {
 		extern void ViewportDrawDirtyBlocks();
 		ViewportDrawDirtyBlocks();
 	}
-	if (flags & DOWF_MARK_DIRTY) {
+	if (flags.Test(DrawOverlappedWindowFlag::MarkDirty)) {
 		VideoDriver::GetInstance()->MakeDirty(left, top, right - left, bottom - top);
 		UnsetDirtyBlocks(left, top, right, bottom);
 	}
@@ -981,7 +960,7 @@ void DrawOverlappedWindowForAll(int left, int top, int right, int bottom)
 				left < w->left + w->width &&
 				top < w->top + w->height) {
 			/* Window w intersects with the rectangle => needs repaint */
-			DrawOverlappedWindow(w, std::max(left, w->left), std::max(top, w->top), std::min(right, w->left + w->width), std::min(bottom, w->top + w->height), DOWF_NONE);
+			DrawOverlappedWindow(w, std::max(left, w->left), std::max(top, w->top), std::min(right, w->left + w->width), std::min(bottom, w->top + w->height), DrawOverlappedWindowFlags{});
 		}
 	}
 }
@@ -993,7 +972,7 @@ void DrawOverlappedWindowForAll(int left, int top, int right, int bottom)
  */
 void Window::SetDirty()
 {
-	this->flags.Set(WindowFlag::CMDirty);
+	this->flags.Set(WindowFlag::CmDirty);
 }
 
 /**
@@ -1801,7 +1780,7 @@ static Point LocalGetWindowPlacement(const WindowDesc &desc, int16_t sm_width, i
 				}
 			}
 		}
-		pt.y = w->top + ((desc.parent_cls == WC_BUILD_TOOLBAR || desc.parent_cls == WC_SCEN_LAND_GEN) ? w->height : 10);
+		pt.y = w->top + ((desc.parent_cls == WindowClass::BuildToolbar || desc.parent_cls == WindowClass::ScenarioGenerateLandscape) ? w->height : 10);
 		return pt;
 	}
 
@@ -2229,8 +2208,8 @@ static EventState HandleWindowDragging()
 				break;
 			}
 
-			if (!w->flags.Test(WindowFlag::CMDragDirtied)) {
-				w->flags.Set(WindowFlag::CMDragDirtied);
+			if (!w->flags.Test(WindowFlag::CmDragDirtied)) {
+				w->flags.Set(WindowFlag::CmDragDirtied);
 				w->SetDirtyAsBlocks();
 			}
 
@@ -2995,8 +2974,8 @@ static void MouseLoop(MouseClick click, int mousewheel)
 		switch (click) {
 			case MouseClick::DoubleLeft:
 			case MouseClick::Left:
-				if (citymania::HandleMouseClick(vp, click == MC_DOUBLE_LEFT)) return;
-				if (HandleViewportClicked(*vp, x, y, click == MC_DOUBLE_LEFT)) return;
+				if (citymania::HandleMouseClick(vp, click == MouseClick::DoubleLeft)) return;
+				if (HandleViewportClicked(*vp, x, y, click == MouseClick::DoubleLeft)) return;
 				if (!w->flags.Test(WindowFlag::DisableVpScroll) &&
 						_settings_client.gui.scroll_mode == ViewportScrollMode::MapLMB) {
 					_scrolling_viewport = true;
@@ -3727,11 +3706,11 @@ WindowPopup::WindowPopup(WindowDesc &desc, WindowPopupType t): Window(desc)
 	int x, y;
 
 	switch (this->type) {
-		case WPUT_CENTERED:
+		case WindowPopupType::Centred:
 			x = _cursor.pos.x - sm_width / 2;
 			y = _cursor.pos.y - this->window_desc.GetDefaultHeight() / 2;
 			break;
-		case WPUT_WIDGET_RELATIVE:
+		case WindowPopupType::WidgetRelative:
 			if (this->wpu_widget != std::numeric_limits<uint>::max()) {
 				NWidgetBase *wid = this->GetWidget<NWidgetBase>(this->wpu_widget);
 				x = _cursor.pos.x - wid->pos_x + this->wpu_mod_x;
@@ -3739,7 +3718,7 @@ WindowPopup::WindowPopup(WindowDesc &desc, WindowPopupType t): Window(desc)
 				break;
 			}
 			[[ fallthrough ]];  // suppress warning, no idea if it's actually correct
-		case WPUT_ORIGIN:
+		case WindowPopupType::Origin:
 		default:
 			x = _cursor.pos.x + this->wpu_mod_x;
 			y = _cursor.pos.y + this->wpu_mod_y;

@@ -338,7 +338,7 @@ void CcBuildRailTunnel(Commands, const CommandCost &result, TileIndex tile)
 	if (result.Succeeded()) {
 		if (_settings_client.sound.confirm) SndPlayTileFx(SND_20_CONSTRUCTION_RAIL, tile);
 		if (!_settings_client.gui.persistent_buildingtools) ResetObjectToPlace();
-		StoreRailPlacementEndpoints(tile, _build_tunnel_endtile, TileX(tile) == TileX(_build_tunnel_endtile) ? TRACK_Y : TRACK_X, false);
+		StoreRailPlacementEndpoints(tile, _build_tunnel_endtile, TileX(tile) == TileX(_build_tunnel_endtile) ? Track::Y : Track::X, false);
 	} else {
 		SetRedErrorSquare(_build_tunnel_endtile);
 	}
@@ -468,29 +468,30 @@ static void HandleAutoSignalPlacement()
 	}
 }
 
+// TODO 16 migration
 // TODO this looks like it could be polished
 RoadBits FindRailsToConnect(TileIndex tile) {
-	RoadBits directed = ROAD_NONE;
-	RoadBits passing = ROAD_NONE;
+	RoadBits directed = RoadBits{};
+	RoadBits passing = RoadBits{};
 	DiagDirection ddir;
-	for (ddir = DIAGDIR_BEGIN; ddir < DIAGDIR_END; ddir++) {
+	for (ddir = DiagDirection::Begin; ddir < DiagDirection::End; ddir++) {
 		TileIndex cur_tile = AddTileIndexDiffCWrap(tile, TileIndexDiffCByDiagDir(ddir));
 		if (cur_tile == INVALID_TILE) continue;
 		if (HasStationTileRail(cur_tile)) {
-			if (GetRailStationTrackBits(cur_tile) & DiagdirReachesTracks(ddir)) {
+			if ((TrackBits{AxisToTrack(GetRailStationAxis(cur_tile))} & DiagdirReachesTracks(ddir)).Any()) {
 				directed |= DiagDirToRoadBits(ddir);
 			}
 			continue;
 		}
-		if (!IsTileType(cur_tile, MP_RAILWAY)) continue;
+		if (!IsTileType(cur_tile, TileType::Railway)) continue;
 		if (!IsPlainRail(cur_tile)) continue;
 		passing |= DiagDirToRoadBits(ddir);
-		if (GetTrackBits(cur_tile) & DiagdirReachesTracks(ddir)) {
+		if ((GetTrackBits(cur_tile) & DiagdirReachesTracks(ddir)).Any()) {
 			directed |= DiagDirToRoadBits(ddir);
 		}
 	}
 	// Prioritize track bits that head in this direction
-	if (directed != ROAD_NONE) {
+	if (directed != RoadBits{}) {
 		return directed;
 	}
 	return passing;
@@ -702,7 +703,7 @@ struct BuildRailToolbarWindow : Window {
 		}
 
 		this->last_user_action = widget;
-		bool started = HandlePlacePushButton(this, widget, this->GetCursorForWidget(widget), this->GetHighLightStyleForWidget(widget));
+		bool started = HandlePlacePushButton(this, widget, this->GetCursorForWidget(widget), this->GetHighLightStyleForWidget(widget), CM_DDSP_NONE);
 
 		switch (widget) {
 			case WID_RAT_BUILD_DEPOT:
@@ -730,7 +731,7 @@ struct BuildRailToolbarWindow : Window {
 				break;
 			}
 			case WID_RAT_POLYRAIL: {
-				bool was_snap = GetRailSnapMode() == RSM_SNAP_TO_RAIL;
+				bool was_snap = GetRailSnapMode() == RailSnapMode::SnapToRail;
 				bool was_open = this->IsWidgetLowered(WID_RAT_POLYRAIL);
 				bool do_snap;
 				bool do_open;
@@ -754,7 +755,7 @@ struct BuildRailToolbarWindow : Window {
 				/* close/open the tool */
 				if (was_open != do_open) HandlePlacePushButton(this, WID_RAT_POLYRAIL, GetRailTypeInfo(railtype)->cursor.autorail, HT_RAIL | HT_POLY, DDSP_PLACE_RAIL);
 				/* set snapping mode */
-				if (do_open) SetRailSnapMode(do_snap ? RSM_SNAP_TO_RAIL : RSM_NO_SNAP);
+				if (do_open) SetRailSnapMode(do_snap ? RailSnapMode::SnapToRail : RailSnapMode::NoSnap);
 
 				this->last_user_action = WID_RAT_POLYRAIL;
 				if (was_open == do_open) return; // prevent switching the "remove" button state
@@ -791,7 +792,7 @@ struct BuildRailToolbarWindow : Window {
 			case HOTKEY_BLUEPRINT_ROTATE:
 				if (this->last_user_action == CM_WID_RAT_BLUEPRINT_PLACE) {
 					citymania::RotateActiveBlueprint();
-					return ES_HANDLED;
+					return EventState::Handled;
 				}
 				break;
 
@@ -802,12 +803,12 @@ struct BuildRailToolbarWindow : Window {
 						SetObjectToPlace(SPR_CURSOR_RAIL_STATION, PAL_NONE, CM_HT_BLUEPRINT_PLACE, this->window_class, this->window_number, CM_DDSP_BLUEPRINT_AREA);
 						this->last_user_action = CM_WID_RAT_BLUEPRINT_PLACE;
 					}
-					return ES_HANDLED;
+					return EventState::Handled;
 				}
 				if (hotkey >= HOTKEY_BLUEPRINT_SAVE && hotkey < HOTKEY_BLUEPRINT_SAVE_END) {
 					citymania::SaveBlueprint(hotkey - HOTKEY_BLUEPRINT_SAVE);
 					ResetObjectToPlace();
-					return ES_HANDLED;
+					return EventState::Handled;
 				}
 		}
 
@@ -1384,7 +1385,7 @@ public:
 		_station_gui.axis = OtherAxis(_station_gui.axis);
 		this->LowerWidget(WID_BRAS_PLATFORM_DIR_X + _station_gui.axis);
 		this->SetDirty();
-		CloseWindowById(WindowClass::SelectStation, 0);
+		CloseWindowById(WindowClass::JoinStation, 0);
 	}
 
 	void OnPaint() override
@@ -1918,9 +1919,9 @@ static constexpr std::initializer_list<NWidgetPart> _nested_signal_builder_widge
 
 	/* Container for both signal groups, spacers, and convert/autofill buttons. */
 	NWidget(NWID_HORIZONTAL),
-		NWidget(NWID_SELECTION, INVALID_COLOUR, CM_WID_BS_BLOCK_BUTTON_SEL),
-			NWidget(WWT_PUSHARROWBTN, COLOUR_DARK_GREEN, CM_WID_BS_HIDE_BLOCK), SetMinimalSize(9, 12), SetArrowWidgetTypeTip(AWV_DECREASE, CM_STR_HIDE_BLOCK_SIGNAL_TOOLTIP), SetFill(0, 1),
-			NWidget(WWT_PUSHARROWBTN, COLOUR_DARK_GREEN, CM_WID_BS_SHOW_BLOCK), SetMinimalSize(9, 12), SetArrowWidgetTypeTip(AWV_INCREASE, CM_STR_SHOW_BLOCK_SIGNAL_TOOLTIP), SetFill(0, 1),
+		NWidget(NWID_SELECTION, Colours::Invalid, CM_WID_BS_BLOCK_BUTTON_SEL),
+			NWidget(WWT_PUSHARROWBTN, Colours::DarkGreen, CM_WID_BS_HIDE_BLOCK), SetMinimalSize(9, 12), SetArrowWidgetTypeTip(ArrowWidgetType::Decrease, CM_STR_HIDE_BLOCK_SIGNAL_TOOLTIP), SetFill(0, 1),
+			NWidget(WWT_PUSHARROWBTN, Colours::DarkGreen, CM_WID_BS_SHOW_BLOCK), SetMinimalSize(9, 12), SetArrowWidgetTypeTip(ArrowWidgetType::Increase, CM_STR_SHOW_BLOCK_SIGNAL_TOOLTIP), SetFill(0, 1),
 		EndContainer(),
 		/* Block signals (can be hidden). */
 		NWidget(NWID_SELECTION, Colours::Invalid, WID_BS_BLOCK_SEL),
@@ -2058,9 +2059,9 @@ public:
 			/* Indicate to the OnClick that the action comes from a hotkey rather
 			 * then from a click and that the CTRL state should be ignored. */
 			case BRDHK_ROTATE:
-				if (_build_depot_direction < DIAGDIR_END) {
+				if (_build_depot_direction < DiagDirection::End) {
 					this->RaiseWidget(WID_BRAD_DEPOT_NE + _build_depot_direction);
-					_build_depot_direction = ChangeDiagDir(_build_depot_direction, DIAGDIRDIFF_90RIGHT);
+					_build_depot_direction = ChangeDiagDir(_build_depot_direction, DiagDirDiff::Right90);
 					this->LowerWidget(WID_BRAD_DEPOT_NE + _build_depot_direction);
 				} else {
 					citymania::RotateAutodetection();
@@ -2088,7 +2089,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_build_depot_widgets 
 		NWidget(WWT_CLOSEBOX, Colours::DarkGreen),
 		NWidget(WWT_CAPTION, Colours::DarkGreen), SetStringTip(STR_BUILD_DEPOT_TRAIN_ORIENTATION_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
 	EndContainer(),
-	NWidget(WWT_PANEL, COLOUR_DARK_GREEN),
+	NWidget(WWT_PANEL, Colours::DarkGreen),
 		NWidget(NWID_VERTICAL), SetPIP(0, WidgetDimensions::unscaled.vsep_normal, 0), SetPadding(WidgetDimensions::unscaled.picker),
 			NWidget(NWID_HORIZONTAL_LTR), SetPIP(0, WidgetDimensions::unscaled.hsep_normal, 0), SetPIPRatio(1, 0, 1),
 				NWidget(NWID_VERTICAL), SetPIP(0, WidgetDimensions::unscaled.vsep_normal, 0),

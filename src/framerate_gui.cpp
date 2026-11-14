@@ -397,7 +397,6 @@ static constexpr EnumIndexArray<PerformanceElement, PerformanceElement, Performa
 	PerformanceElement::Video,
 	PerformanceElement::Sound,
 };
-#error check why performance elemnets are disabled
 /**
  * Get the \c CompanyID associated with the AI of the given \c PerformanceElement.
  * @param e The element to convert.

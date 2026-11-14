@@ -526,7 +526,7 @@ void UnpackNetworkCommand(const CommandPacket &cp)
 {
 	citymania::BeforeNetworkCommandExecution(cp);
 	auto args = EndianBufferReader::ToValue<typename CommandTraits<Tcmd>::Args>(cp.data);
-	Debug(misc, 5, "UnpackNetworkCommand cmd={} my={}", GetCommandName(cp.cmd), cp.my_cmd);
+	Debug(Facility::Misc, Severity::Debug1, "UnpackNetworkCommand cmd={} my={}", GetCommandName(cp.cmd), cp.my_cmd);
 	Command<Tcmd>::PostFromNet(cp.err_msg, std::get<Tcb>(_callback_tuple), cp.my_cmd, args);
 	citymania::AfterNetworkCommandExecution(cp);
 }

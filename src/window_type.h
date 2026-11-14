@@ -131,7 +131,7 @@ enum class WindowClass : uint16_t {
 	 *   - 0 = #ToolTipsWidgets
 	 */
 	ToolTips,
-	WC_STATION_RATING_TOOLTIP,
+	StationRatingTooltip,
 
 	/**
 	 * Query string window; %Window numbers:
@@ -394,10 +394,10 @@ enum class WindowClass : uint16_t {
 	BuildObject,
 
 	/* CityMania watch company */
-	WC_WATCH_COMPANY,
+	WatchCompany,
 
 	/* CityMania watch company admin version */
-	WC_WATCH_COMPANYA,
+	WatchCompanyAdmin,
 
 	/**
 	 * Build house; %Window numbers:
@@ -549,7 +549,7 @@ enum class WindowClass : uint16_t {
 	 *   - #CompanyID = #CompanyWidgets
 	 */
 	Finances,
-	WC_CARGOS,
+	Cargos,
 
 	/**
 	 * Income graph; %Window numbers:
@@ -754,13 +754,13 @@ enum class WindowClass : uint16_t {
 	/*
 	 * CityMania extra windows
 	 */
-	CM_WC_LAND_TOOLTIPS,
-	CM_WC_ZONING_TOOLBAR,
-	CM_WC_COMMAND_TOOLBAR,
-	CM_WC_LOGIN_WINDOW,
-	CM_WC_CB_TOWN,
-    CM_WC_ADMIN_COMPANY_BUTTONS,
-    CM_WC_SERVER_BUTTONS,
+	CmLandTooltips,
+	CmZoningToolbar,
+	CmCommandToolbar,
+	CmLoginWindow,
+	CmCbTown,
+    CmAdminCompanyButtons,
+    CmServerButtons,
 
 	Invalid = 0xFFFF, ///< Invalid window.
 };

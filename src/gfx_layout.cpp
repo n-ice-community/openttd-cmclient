@@ -36,6 +36,9 @@
 /** Cache of ParagraphLayout lines. */
 std::unique_ptr<Layouter::LineCache> Layouter::linecache;
 
+/** Cache of fonts per size and colour. */
+EnumIndexArray<Layouter::FontColourMap, FontSize, FontSize::End> Layouter::fonts;
+
 /**
  * Helper for getting a ParagraphLayouter of the given type.
  *
@@ -55,7 +58,7 @@ static inline void GetLayouter(Layouter::LineCacheItem &line, std::string_view s
 	const typename T::CharType *buffer_last = buff_begin + str.size() + 1;
 	typename T::CharType *buff = buff_begin;
 	FontMap &font_mapping = line.runs;
-	Font f{state};
+	Font *f = Layouter::GetFont(state.fontsize, state.colour);
 
 	font_mapping.clear();
 
@@ -91,7 +94,7 @@ static inline void GetLayouter(Layouter::LineCacheItem &line, std::string_view s
 		if (font_mapping.empty() || font_mapping.back().first != buff - buff_begin) {
 			font_mapping.emplace_back(buff - buff_begin, f);
 		}
-		f = state;
+		f = Layouter::GetFont(state.fontsize, state.colour);
 	}
 
 	/* Better safe than sorry. */
@@ -327,7 +330,7 @@ ptrdiff_t Layouter::GetCharAtPosition(int x, size_t line_index) const
 /**
  * Get a static font instance.
  */
-Font *Layouter::GetFont(FontSize size, TextColour colour)
+Font *Layouter::GetFont(FontSize size, ExtendedTextColour colour)
 {
 	FontColourMap::iterator it = fonts[size].find(colour);
 	if (it != fonts[size].end()) return it->second.get();

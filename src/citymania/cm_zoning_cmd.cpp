@@ -78,7 +78,7 @@ Town *CMCalcClosestTownFromTile(TileIndex tile, uint threshold = INT_MAX)
 Town *CMClosestTownFromTile(TileIndex tile, uint threshold)
 {
 	switch (GetTileType(tile)) {
-		case MP_ROAD:
+		case TileType::Road:
 			if (IsRoadDepot(tile)) return CalcClosestTownFromTile(tile, threshold);
 
 			if (!HasTownOwnedRoad(tile)) {
@@ -98,7 +98,7 @@ Town *CMClosestTownFromTile(TileIndex tile, uint threshold)
 			}
 			[[fallthrough]];
 
-		case MP_HOUSE:
+		case TileType::House:
 			return Town::GetByTile(tile);
 
 		default:
@@ -139,8 +139,7 @@ bool IsAreaWithinAcceptanceZoneOfStation(TileArea area) {
 		TileX(area.tile) + area.w + catchment, TileY(area.tile) + area.h + catchment));
 
 	for (Station *st: morestations.GetStations()) {
-		Rect rect = st->GetCatchmentRect();
-		return TileArea(TileXY(rect.left, rect.top), TileXY(rect.right, rect.bottom)).Intersects(area);
+		return TileArea{st->spread}.Expand(st->GetCatchmentRadius()).Intersects(area);
 	}
 	return false;
 }
@@ -185,14 +184,14 @@ SpriteID TileZoneCheckOpinionEvaluation(TileIndex tile, Owner owner) {
 SpriteID TileZoneCheckBuildEvaluation(TileIndex tile, Owner owner) {
 	/* Let's first check for the obvious things you cannot build on */
 	switch ( GetTileType(tile) ) {
-		case MP_INDUSTRY:
-		case MP_OBJECT:
-		case MP_HOUSE:
+		case TileType::Industry:
+		case TileType::Object:
+		case TileType::House:
 			return CM_SPR_PALETTE_ZONING_RED; //can't build
-		case MP_STATION:
-		case MP_TUNNELBRIDGE:
-		case MP_ROAD:
-		case MP_RAILWAY: {
+		case TileType::Station:
+		case TileType::TunnelBridge:
+		case TileType::Road:
+		case TileType::Railway: {
 			if (GetTileOwner(tile) != owner) return CM_SPR_PALETTE_ZONING_RED; //can't build
 			else return INVALID_SPRITE_ID;
 		}
@@ -204,7 +203,7 @@ SpriteID TileZoneCheckBuildEvaluation(TileIndex tile, Owner owner) {
 //black if within, light blue if only in acceptance zone and nothing if no nearby station.
  SpriteID TileZoneCheckStationCatchmentEvaluation(TileIndex tile) {
 	// Never on a station.
-	if (IsTileType(tile, MP_STATION)){
+	if (IsTileType(tile, TileType::Station)){
 		return INVALID_SPRITE_ID;
 	}
 	return INVALID_SPRITE_ID;
@@ -213,7 +212,7 @@ SpriteID TileZoneCheckBuildEvaluation(TileIndex tile, Owner owner) {
 //Detect whether a building is unserved by a station of owner.
 //return red if unserved, orange if only accepting, nothing if served or not a building
 SpriteID TileZoneCheckUnservedBuildingsEvaluation(TileIndex tile) {
-	if (IsTileType (tile, MP_HOUSE))
+	if (IsTileType (tile, TileType::House))
 	{
 		StationFinder stations(TileArea(tile, 1, 1));
 
@@ -228,7 +227,7 @@ SpriteID TileZoneCheckUnservedBuildingsEvaluation(TileIndex tile) {
 //Detect whether an industry is unserved by a station of owner.
 //return red if unserved, orange if only accepting, nothing if served or not a building
 SpriteID TileZoneCheckUnservedIndustriesEvaluation(TileIndex tile) {
-	if (IsTileType(tile, MP_INDUSTRY)) {
+	if (IsTileType(tile, TileType::Industry)) {
 		Industry *ind = Industry::GetByTile(tile);
 		StationFinder stations(ind->location);
 
@@ -327,7 +326,7 @@ SpriteID TileZoneCheckTownsGrowthTiles(TileIndex tile) {
 // For station shows whether it is active
 SpriteID TileZoneCheckActiveStations(TileIndex tile) {
 	// Never on a station.
-	if (!IsTileType(tile, MP_STATION)){
+	if (!IsTileType(tile, TileType::Station)){
 		return INVALID_SPRITE_ID;
 	}
 
@@ -389,7 +388,7 @@ SpriteID GetTownZoneBorderColor(uint8 zone) {
 void DrawTileZoning(const TileInfo *ti) {
 
 	if(_zoning.outer == EvaluationMode::CHECKNOTHING && _zoning.inner == EvaluationMode::CHECKNOTHING) return; //nothing to do
-	if (_game_mode != GM_NORMAL || ti->tile >= Map::Size() || IsTileType(ti->tile, MP_VOID)) return; //check invalid
+	if (_game_mode != GameMode::Normal || ti->tile >= Map::Size() || IsTileType(ti->tile, TileType::Void)) return; //check invalid
 	if (_zoning.outer != EvaluationMode::CHECKNOTHING){
 		if (_zoning.outer == EvaluationMode::CHECKTOWNZONES ||
 			    _zoning.outer == EvaluationMode::CHECKBULUNSER ||

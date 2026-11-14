@@ -1,4 +1,5 @@
 #include "../stdafx.h"
+#include "../command_func.h"
 
 #include "cm_command_log.hpp"
 
@@ -69,7 +70,7 @@ void ExecuteFakeCommands(TimerGameTick::TickCounter counter) {
             x.cp.my_cmd = false;
 
             for (NetworkClientSocket *cs : NetworkClientSocket::Iterate()) {
-                if (cs->status >= NetworkClientSocket::STATUS_MAP) {
+                if (cs->status >= NetworkClientSocket::ClientStatus::Map) {
                     cs->outgoing_queue.push_back(x.cp);
                 }
             }

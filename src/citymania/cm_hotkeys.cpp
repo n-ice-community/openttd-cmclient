@@ -88,12 +88,12 @@ void UpdateModKeys(bool shift_pressed, bool ctrl_pressed, bool alt_pressed, bool
 
     if (fn_mod_prev != _fn_mod) {
         for (auto w : Window::IterateFromFront()) {
-            if (w->CM_OnFnModStateChange() == ES_HANDLED) break;
+            if (w->CM_OnFnModStateChange() == EventState::Handled) break;
         }
     }
     if (remove_mod_prev != _remove_mod) {
         for (auto w : Window::IterateFromFront()) {
-            if (w->CM_OnRemoveModStateChange() == ES_HANDLED) break;
+            if (w->CM_OnRemoveModStateChange() == EventState::Handled) break;
         }
     }
 }
@@ -150,7 +150,7 @@ void RailToolbar_UpdateRemoveWidgetStatus(Window *w, int widget, bool remove_act
             if (!_settings_client.gui.station_dragdrop) {
                 int x = _settings_client.gui.station_numtracks;
                 int y = _settings_client.gui.station_platlength;
-                if (_station_gui.axis == 0) std::swap(x, y);
+                if (_station_gui.axis == Axis::X) std::swap(x, y);
                 SetTileSelectSize(x, y);
             } else {
                 VpSetPlaceSizingLimit(_settings_game.station.station_spread);
@@ -162,7 +162,7 @@ void RailToolbar_UpdateRemoveWidgetStatus(Window *w, int widget, bool remove_act
 bool RailToolbar_RemoveModChanged(Window *w, bool invert_remove, bool remove_active, bool button_clicked) {
     if (w->IsWidgetDisabled(WID_RAT_REMOVE)) return false;
 
-    CloseWindowById(WC_SELECT_STATION, 0);
+    CloseWindowById(WindowClass::JoinStation, 0);
     for (uint i = WID_RAT_BUILD_NS; i < WID_RAT_REMOVE; i++) {
         if (w->IsWidgetLowered(i)) {
             auto old_active = remove_active;
@@ -244,7 +244,7 @@ void RoadToolbar_UpdateOptionWidgetStatus(Window *w, int widget, bool remove_act
 
 bool RoadToolbar_RemoveModChanged(Window *w, bool remove_active, bool button_clicked, bool is_road) {
     if (w->IsWidgetDisabled(WID_ROT_REMOVE)) return false;
-    CloseWindowById(WC_SELECT_STATION, 0);
+    CloseWindowById(WindowClass::JoinStation, 0);
     for (uint i = WID_ROT_ROAD_X; i < WID_ROT_REMOVE; i++) {
         if (w->IsWidgetLowered(i)) {
             auto old_active = remove_active;

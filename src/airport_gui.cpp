@@ -46,9 +46,9 @@
 #include "safeguards.h"
 
 
-static AirportClassID _selected_airport_class; ///< the currently visible airport class
-static int _selected_airport_index;            ///< the index of the selected airport in the current class or -1
-static uint8_t _selected_airport_layout;          ///< selected airport layout number.
+AirportClassID _selected_airport_class; ///< the currently visible airport class
+int _selected_airport_index;            ///< the index of the selected airport in the current class or -1
+uint8_t _selected_airport_layout;          ///< selected airport layout number.
 
 static void ShowBuildAirportPicker(Window *parent);
 

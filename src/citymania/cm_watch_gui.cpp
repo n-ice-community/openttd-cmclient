@@ -63,7 +63,7 @@ namespace citymania {
 
 // 	for (int company_num = COMPANY_FIRST; company_num < MAX_COMPANIES; company_num++ ) {
 // 		/* Manage Company Buttons */
-// 		auto company_panel = std::make_unique<NWidgetBackground>( WWT_PANEL, COLOUR_GREY, EWW_PB_COMPANY_FIRST + company_num );
+// 		auto company_panel = std::make_unique<NWidgetBackground>( WWT_PANEL, Colours::Grey, EWW_PB_COMPANY_FIRST + company_num );
 // 		company_panel->SetMinimalSizeAbsolute(company_sprite_size.width, company_sprite_size.height);
 // 		company_panel->SetResize( 0, 0 );
 // 		company_panel->SetFill( 1, 0 );
@@ -72,7 +72,7 @@ namespace citymania {
 
 // 		/* Manage Has Client Blot */
 
-// 		auto hasclient_panel = std::make_unique<NWidgetBackground>(WWT_PANEL, COLOUR_GREY, EWW_HAS_CLIENT_FIRST + company_num);
+// 		auto hasclient_panel = std::make_unique<NWidgetBackground>(WWT_PANEL, Colours::Grey, EWW_HAS_CLIENT_FIRST + company_num);
 // 		company_panel->SetMinimalSizeAbsolute( blot_sprite_size.width, blot_sprite_size.height );
 // 		company_panel->SetResize( 0, 0 );
 // 		company_panel->SetFill( 1, 0 );
@@ -96,7 +96,7 @@ static std::unique_ptr<NWidgetBase> MakeCompanyButtons2() {
 
 	// for (const Company *c : Company::Iterate()) {
 	for (int widnum = EWW_COMPANY_BEGIN; widnum < EWW_COMPANY_END; widnum++) {
-		auto company_panel = std::make_unique<NWidgetBackground>(WWT_PANEL, COLOUR_GREY, widnum);
+		auto company_panel = std::make_unique<NWidgetBackground>(WWT_PANEL, Colours::Grey, widnum);
 		company_panel->SetMinimalSizeAbsolute(company_sprite_size.width, company_sprite_size.height);
 		company_panel->SetResize(1, 0);
 		company_panel->SetFill(1, 1);
@@ -104,7 +104,7 @@ static std::unique_ptr<NWidgetBase> MakeCompanyButtons2() {
 		widget_container_horiz->Add(std::move(company_panel));
 	}
 
-	// auto filler = new NWidgetBackground(WWT_PANEL, COLOUR_GREY, EWW_COMPANY_FILLER);
+	// auto filler = new NWidgetBackground(WWT_PANEL, Colours::Grey, EWW_COMPANY_FILLER);
 	// filler->SetFill(1, 1);
 	// filler->SetResize(1, 0);
 	// filler->SetMinimalSizeAbsolute(0, company_sprite_size.height);
@@ -123,36 +123,36 @@ static std::unique_ptr<NWidgetBase> MakeCompanyButtons2() {
 static const NWidgetPart _nested_watch_company_widgets[] = {
 	/* Title Bar with close box, title, shade and stick boxes */
 	NWidget(NWID_HORIZONTAL),
-		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
-		NWidget(WWT_CAPTION, COLOUR_GREY, EWW_CAPTION),
-		NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, EWW_LOCATION), SetMinimalSize(12, 14), SetSpriteTip(SPR_GOTO_LOCATION, CM_STR_WATCH_LOCATION_TOOLTIP),
-		NWidget(WWT_SHADEBOX, COLOUR_GREY),
-		NWidget(WWT_DEFSIZEBOX, COLOUR_GREY),
-		NWidget(WWT_STICKYBOX, COLOUR_GREY),
+		NWidget(WWT_CLOSEBOX, Colours::Grey),
+		NWidget(WWT_CAPTION, Colours::Grey, EWW_CAPTION),
+		NWidget(WWT_PUSHIMGBTN, Colours::Grey, EWW_LOCATION), SetMinimalSize(12, 14), SetSpriteTip(SPR_GOTO_LOCATION, CM_STR_WATCH_LOCATION_TOOLTIP),
+		NWidget(WWT_SHADEBOX, Colours::Grey),
+		NWidget(WWT_DEFSIZEBOX, Colours::Grey),
+		NWidget(WWT_STICKYBOX, Colours::Grey),
 	EndContainer( ),
 	// NWidget( NWID_HORIZONTAL ),
 	// 	NWidget( NWID_VERTICAL ),
 	// 		NWidgetFunction( MakeCompanyButtons ),
 	// 		/* Buton Zoom Out, In, Scrollto */
 	// 		NWidget(NWID_HORIZONTAL),
-	// 			NWidget( WWT_PUSHIMGBTN, COLOUR_GREY, EWW_ZOOMOUT ), SetDataTip( SPR_IMG_ZOOMOUT, STR_TOOLBAR_TOOLTIP_ZOOM_THE_VIEW_OUT),
-	// 			NWidget( WWT_PUSHIMGBTN, COLOUR_GREY, EWW_ZOOMIN ),  SetDataTip( SPR_IMG_ZOOMIN, STR_TOOLBAR_TOOLTIP_ZOOM_THE_VIEW_IN),
-	// 			NWidget( WWT_PUSHIMGBTN, COLOUR_GREY, EWW_CENTER ),  SetDataTip( SPR_CENTRE_VIEW_VEHICLE, STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW_TT),
-	// 			NWidget( WWT_PANEL, COLOUR_GREY, EWW_NEW_WINDOW ),   SetDataTip( 0, STR_WATCH_CLICK_NEW_WINDOW ), EndContainer( ),
+	// 			NWidget( WWT_PUSHIMGBTN, Colours::Grey, EWW_ZOOMOUT ), SetDataTip( SPR_IMG_ZOOMOUT, STR_TOOLBAR_TOOLTIP_ZOOM_THE_VIEW_OUT),
+	// 			NWidget( WWT_PUSHIMGBTN, Colours::Grey, EWW_ZOOMIN ),  SetDataTip( SPR_IMG_ZOOMIN, STR_TOOLBAR_TOOLTIP_ZOOM_THE_VIEW_IN),
+	// 			NWidget( WWT_PUSHIMGBTN, Colours::Grey, EWW_CENTER ),  SetDataTip( SPR_CENTRE_VIEW_VEHICLE, STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW_TT),
+	// 			NWidget( WWT_PANEL, Colours::Grey, EWW_NEW_WINDOW ),   SetDataTip( 0, STR_WATCH_CLICK_NEW_WINDOW ), EndContainer( ),
 	// 		EndContainer( ),
 	// 		/* Background panel for resize purpose */
-	// 		NWidget( WWT_PANEL, COLOUR_GREY ), SetResize( 0, 1 ), EndContainer( ),
+	// 		NWidget( WWT_PANEL, Colours::Grey ), SetResize( 0, 1 ), EndContainer( ),
 	// 	EndContainer( ),
 	// 	/* Watch Pannel */
-		NWidget(WWT_PANEL, COLOUR_GREY),
-			NWidget(NWID_VIEWPORT, INVALID_COLOUR, EWW_WATCH), SetPadding(2, 2, 2, 2), SetResize(1, 1), SetFill(1, 1),
+		NWidget(WWT_PANEL, Colours::Grey),
+			NWidget(NWID_VIEWPORT, Colours::Invalid, EWW_WATCH), SetPadding(2, 2, 2, 2), SetResize(1, 1), SetFill(1, 1),
 		EndContainer( ),
 	// EndContainer( ),
 	/* Status Bar with resize buton */
 	NWidget(NWID_HORIZONTAL),
-		// NWidget(WWT_PANEL, COLOUR_GREY), SetFill(1, 1), SetResize(1, 0), EndContainer(),
+		// NWidget(WWT_PANEL, Colours::Grey), SetFill(1, 1), SetResize(1, 0), EndContainer(),
 		NWidgetFunction(MakeCompanyButtons2),
-		NWidget(WWT_RESIZEBOX, COLOUR_GREY),
+		NWidget(WWT_RESIZEBOX, Colours::Grey),
 	EndContainer( ),
 };
 
@@ -160,8 +160,8 @@ static const NWidgetPart _nested_watch_company_widgets[] = {
  * Watch Company Window Descriptor
  */
 static WindowDesc _watch_company_desc(
-	WDP_AUTO, "cm_watch_gui", 300, 257,
-	WC_WATCH_COMPANY, WC_NONE,
+	WindowPosition::Automatic, "cm_watch_gui", 300, 257,
+	WindowClass::WatchCompany, WindowClass::None,
 	WindowDefaultFlag::NoFocus,
 	_nested_watch_company_widgets
 );
@@ -170,53 +170,53 @@ static WindowDesc _watch_company_desc(
 static const NWidgetPart _nested_watch_company_widgetsA[] = {
 	/* Title Bar with close box, title, shade and stick boxes */
 	NWidget(NWID_HORIZONTAL),
-		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
-		NWidget(WWT_CAPTION, COLOUR_GREY, EWW_CAPTION ), SetStringTip(CM_STR_WATCH_WINDOW_TITLE, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
-		NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, EWW_LOCATION), SetMinimalSize(12, 14), SetStringTip(SPR_GOTO_LOCATION, CM_STR_WATCH_LOCATION_TOOLTIP),
-		NWidget(WWT_SHADEBOX, COLOUR_GREY),
-		NWidget(WWT_DEFSIZEBOX, COLOUR_GREY),
-		NWidget(WWT_STICKYBOX, COLOUR_GREY),
+		NWidget(WWT_CLOSEBOX, Colours::Grey),
+		NWidget(WWT_CAPTION, Colours::Grey, EWW_CAPTION ), SetStringTip(CM_STR_WATCH_WINDOW_TITLE, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_PUSHIMGBTN, Colours::Grey, EWW_LOCATION), SetMinimalSize(12, 14), SetSpriteTip(SPR_GOTO_LOCATION, CM_STR_WATCH_LOCATION_TOOLTIP),
+		NWidget(WWT_SHADEBOX, Colours::Grey),
+		NWidget(WWT_DEFSIZEBOX, Colours::Grey),
+		NWidget(WWT_STICKYBOX, Colours::Grey),
 	EndContainer(),
 	NWidget( NWID_HORIZONTAL ),
 		NWidget( NWID_VERTICAL ),
 			/* Buton Zoom Out, In, Scrollto */
-		NWidget(NWID_SELECTION, INVALID_COLOUR, EWW_ENABLE_SELECT),
+		NWidget(NWID_SELECTION, Colours::Invalid, EWW_ENABLE_SELECT),
 				NWidget(NWID_VERTICAL),
-					NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, EWW_KICK), SetMinimalSize(40, 20), SetFill(1, 0), SetStringTip(CM_STR_XI_KICK),
-					NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, EWW_BAN), SetMinimalSize(40, 20), SetFill(1, 0), SetStringTip(CM_STR_XI_BAN),
-					NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, EWW_LOCK), SetMinimalSize(40, 20), SetFill(1, 0), SetStringTip(CM_STR_XI_LOCK),
-					NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, EWW_UNLOCK), SetMinimalSize(40, 20), SetFill(1, 0), SetStringTip(CM_STR_XI_UNLOCK),
-					NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, EWW_JOIN), SetMinimalSize(40, 20), SetFill(1, 0), SetStringTip(CM_STR_XI_JOIN),
-					NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, EWW_KICKC), SetMinimalSize(40, 20), SetFill(1, 0), SetStringTip(CM_STR_XI_KICKC),
-					NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, EWW_RESET), SetMinimalSize(40, 20), SetFill(1, 0), SetStringTip(CM_STR_XI_RESET),
+					NWidget(WWT_PUSHTXTBTN, Colours::Grey, EWW_KICK), SetMinimalSize(40, 20), SetFill(1, 0), SetStringTip(CM_STR_XI_KICK),
+					NWidget(WWT_PUSHTXTBTN, Colours::Grey, EWW_BAN), SetMinimalSize(40, 20), SetFill(1, 0), SetStringTip(CM_STR_XI_BAN),
+					NWidget(WWT_PUSHTXTBTN, Colours::Grey, EWW_LOCK), SetMinimalSize(40, 20), SetFill(1, 0), SetStringTip(CM_STR_XI_LOCK),
+					NWidget(WWT_PUSHTXTBTN, Colours::Grey, EWW_UNLOCK), SetMinimalSize(40, 20), SetFill(1, 0), SetStringTip(CM_STR_XI_UNLOCK),
+					NWidget(WWT_PUSHTXTBTN, Colours::Grey, EWW_JOIN), SetMinimalSize(40, 20), SetFill(1, 0), SetStringTip(CM_STR_XI_JOIN),
+					NWidget(WWT_PUSHTXTBTN, Colours::Grey, EWW_KICKC), SetMinimalSize(40, 20), SetFill(1, 0), SetStringTip(CM_STR_XI_KICKC),
+					NWidget(WWT_PUSHTXTBTN, Colours::Grey, EWW_RESET), SetMinimalSize(40, 20), SetFill(1, 0), SetStringTip(CM_STR_XI_RESET),
 				EndContainer(),
 			EndContainer(),
 			NWidget(NWID_HORIZONTAL),
-				NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, EWW_ZOOMOUT), SetSpriteTip(SPR_IMG_ZOOMOUT, STR_TOOLBAR_TOOLTIP_ZOOM_THE_VIEW_OUT),
-				NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, EWW_ZOOMIN), SetSpriteTip(SPR_IMG_ZOOMIN, STR_TOOLBAR_TOOLTIP_ZOOM_THE_VIEW_IN),
-				NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, EWW_CENTER), SetSpriteTip(SPR_CENTRE_VIEW_VEHICLE, STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW_TOOLTIP),
-				NWidget(WWT_PANEL, COLOUR_GREY, EWW_NEW_WINDOW), EndContainer(),
+				NWidget(WWT_PUSHIMGBTN, Colours::Grey, EWW_ZOOMOUT), SetSpriteTip(SPR_IMG_ZOOMOUT, STR_TOOLBAR_TOOLTIP_ZOOM_THE_VIEW_OUT),
+				NWidget(WWT_PUSHIMGBTN, Colours::Grey, EWW_ZOOMIN), SetSpriteTip(SPR_IMG_ZOOMIN, STR_TOOLBAR_TOOLTIP_ZOOM_THE_VIEW_IN),
+				NWidget(WWT_PUSHIMGBTN, Colours::Grey, EWW_CENTER), SetSpriteTip(SPR_CENTRE_VIEW_VEHICLE, STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW_TOOLTIP),
+				NWidget(WWT_PANEL, Colours::Grey, EWW_NEW_WINDOW), EndContainer(),
 			EndContainer(),
 			NWidget(NWID_HORIZONTAL),
-				NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, EWW_CLIENTS), SetMinimalSize(23, 10), SetStringTip(SPR_IMG_COMPANY_GENERAL, CM_STR_XI_PLAYERS_TOOLTIP),
-				NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, EWW_COMPANYW), SetMinimalSize(23, 10), SetStringTip(SPR_IMG_COMPANY_LIST, CM_STR_XI_COMPANYW_TOOLTIP),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, EWW_COMPANYHQ), SetMinimalSize(23, 10), SetStringTip(CM_STR_XI_COMPANYHQ, CM_STR_XI_COMPANYHQ_TOOLTIP),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, EWW_PRIVATEP_MESSAGE), SetMinimalSize(23, 10), SetStringTip(CM_STR_XI_PRIVATE_PLAYER_MESSAGE, CM_STR_XI_PRIVATE_PLAYER_MESSAGE_TOOLTIP),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, EWW_PRIVATEC_MESSAGE), SetMinimalSize(23, 10), SetStringTip(CM_STR_XI_PRIVATE_COMPANY_MESSAGE, CM_STR_XI_PRIVATE_COMPANY_MESSAGE_TOOLTIP),
-				NWidget(WWT_PANEL, COLOUR_GREY, EWW_NEW_WINDOW), EndContainer(),
+				NWidget(WWT_PUSHIMGBTN, Colours::Grey, EWW_CLIENTS), SetMinimalSize(23, 10), SetSpriteTip(SPR_IMG_COMPANY_GENERAL, CM_STR_XI_PLAYERS_TOOLTIP),
+				NWidget(WWT_PUSHIMGBTN, Colours::Grey, EWW_COMPANYW), SetMinimalSize(23, 10), SetSpriteTip(SPR_IMG_COMPANY_LIST, CM_STR_XI_COMPANYW_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, Colours::Grey, EWW_COMPANYHQ), SetMinimalSize(23, 10), SetStringTip(CM_STR_XI_COMPANYHQ, CM_STR_XI_COMPANYHQ_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, Colours::Grey, EWW_PRIVATEP_MESSAGE), SetMinimalSize(23, 10), SetStringTip(CM_STR_XI_PRIVATE_PLAYER_MESSAGE, CM_STR_XI_PRIVATE_PLAYER_MESSAGE_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, Colours::Grey, EWW_PRIVATEC_MESSAGE), SetMinimalSize(23, 10), SetStringTip(CM_STR_XI_PRIVATE_COMPANY_MESSAGE, CM_STR_XI_PRIVATE_COMPANY_MESSAGE_TOOLTIP),
+				NWidget(WWT_PANEL, Colours::Grey, EWW_NEW_WINDOW), EndContainer(),
 			EndContainer(),
 			/* Background panel for resize purpose */
-			NWidget(WWT_PANEL, COLOUR_GREY), SetResize(0, 1), EndContainer(),
+			NWidget(WWT_PANEL, Colours::Grey), SetResize(0, 1), EndContainer(),
 		EndContainer(),
 		/* Watch Pannel */
-		NWidget(WWT_PANEL, COLOUR_GREY),
-			NWidget(NWID_VIEWPORT, INVALID_COLOUR, EWW_WATCH), SetPadding(2, 2, 2, 2), SetResize(1, 1), SetFill(1, 1),
+		NWidget(WWT_PANEL, Colours::Grey),
+			NWidget(NWID_VIEWPORT, Colours::Invalid, EWW_WATCH), SetPadding(2, 2, 2, 2), SetResize(1, 1), SetFill(1, 1),
 		EndContainer(),
 	EndContainer(),
 	/* Status Bar with resize buton */
 	NWidget(NWID_HORIZONTAL),
-		NWidget(WWT_PANEL, COLOUR_GREY), SetFill(1, 1), SetResize(1, 0), EndContainer(),
-		NWidget(WWT_RESIZEBOX, COLOUR_GREY),
+		NWidget(WWT_PANEL, Colours::Grey), SetFill(1, 1), SetResize(1, 0), EndContainer(),
+		NWidget(WWT_RESIZEBOX, Colours::Grey),
 	EndContainer(),
 };
 
@@ -224,8 +224,8 @@ static const NWidgetPart _nested_watch_company_widgetsA[] = {
  * Watch Company Window Descriptor
  */
 static WindowDesc _watch_company_descA(
-	WDP_AUTO, "watch_gui_client", 448, 256,
-	WC_WATCH_COMPANYA, WC_NONE,
+	WindowPosition::Automatic, "watch_gui_client", 448, 256,
+	WindowClass::WatchCompanyAdmin, WindowClass::None,
 	WindowDefaultFlag::Construction,
 	_nested_watch_company_widgetsA
 );
@@ -245,10 +245,10 @@ static void ResetCallback(Window *w, bool confirmed)
  * @param window_number The window number for the class
  * @param company_to_watch Company ID for watching a particular company
  */
-WatchCompany::WatchCompany(WindowDesc &desc, int window_number, CompanyID company_to_watch = CompanyID::Invalid(), int Wtype=EWT_COMPANY) : Window(desc)
+WatchCompany::WatchCompany(WindowDesc &desc, int window_number, CompanyID company_to_watch = CompanyID::Invalid(), WatchCompanyType Wtype=WatchCompanyType::Company) : Window(desc)
 {
 	this->Wtype = Wtype;
-	if(this->Wtype == EWT_CLIENT){
+	if(this->Wtype == WatchCompanyType::Client){
 		this->watched_client = window_number;
 		NetworkClientInfo *ci = NetworkClientInfo::GetByClientID((ClientID)this->watched_client);
 
@@ -256,7 +256,7 @@ WatchCompany::WatchCompany(WindowDesc &desc, int window_number, CompanyID compan
 		this->InitNested(window_number);
 		this->owner = (Owner)this->watched_company;
 	}
-	else if(this->Wtype == EWT_COMPANY){
+	else if(this->Wtype == WatchCompanyType::Company){
 
 		this->watched_company = company_to_watch;
 
@@ -277,7 +277,7 @@ WatchCompany::WatchCompany(WindowDesc &desc, int window_number, CompanyID compan
 
 	Point pt;
 	/* the main window with the main view */
-	const Window *w = FindWindowById(WC_MAIN_WINDOW, 0);
+	const Window *w = FindWindowById(WindowClass::MainWindow, 0);
 
 	/* center on same place as main window (zoom is maximum, no adjustment needed) */
 	pt.x = w->viewport->scrollpos_x + w->viewport->virtual_width / 2;
@@ -297,16 +297,16 @@ WatchCompany::WatchCompany(WindowDesc &desc, int window_number, CompanyID compan
 std::string WatchCompany::GetWidgetString(WidgetID widget, StringID stringid) const {
 	if(widget != EWW_CAPTION) return this->Window::GetWidgetString(widget, stringid);
 
-	if(this->Wtype == EWT_COMPANY) {
+	if(this->Wtype == WatchCompanyType::Company) {
 		return GetString(CM_STR_WATCH_WINDOW_TITLE, this->company_name);
 	}
-	//EWT_CLIENT
+	//WatchCompanyType::Client
 	return GetString(CM_STR_WATCH_WINDOW_TITLE_CLIENT, this->client_name, this->company_name, this->watched_company);
 }
 
 void WatchCompany::OnPaint()
 {
-	if(this->Wtype == EWT_CLIENT){
+	if(this->Wtype == WatchCompanyType::Client){
 		bool wstate = Company::IsValidID(this->watched_company);
 		for(int i = EWW_LOCK; i <= EWW_COMPANYW; i++){
 			this->SetWidgetDisabledState(i, wstate);
@@ -318,7 +318,7 @@ void WatchCompany::OnPaint()
 
 void WatchCompany::DrawWidget(const Rect &r, int widget) const
 {
-	if(this->Wtype != EWT_COMPANY) return;
+	if(this->Wtype != WatchCompanyType::Company) return;
 	/* draw the widget */
 	/* Company Button */
 	if (IsInsideMM(widget, EWW_PB_COMPANY_FIRST, EWW_PB_COMPANY_LAST + 1)) {
@@ -350,7 +350,8 @@ void WatchCompany::DrawWidget(const Rect &r, int widget) const
 			if (!_networking) { // Local game, draw the Blot
 				DrawSprite(SPR_BLOT, Company::IsValidAiID(widget - EWW_HAS_CLIENT_FIRST) ? PALETTE_TO_ORANGE : PALETTE_TO_GREEN, (r.left + r.right - sprite_size.width) / 2, (r.top + r.bottom - sprite_size.height) / 2 );
 			} else { // Network game, draw the blot according to company client count
-				DrawSprite(SPR_BLOT, this->company_count_client[widget-EWW_HAS_CLIENT_FIRST] > 0 ? (company_activity[widget-EWW_HAS_CLIENT_FIRST] > 0 ? PALETTE_TO_RED : PALETTE_TO_GREEN) : PALETTE_TO_GREY, (r.left + r.right - sprite_size.width) / 2, (r.top + r.bottom - sprite_size.height) / 2 );
+				const CompanyID cid{static_cast<uint8_t>(widget - EWW_HAS_CLIENT_FIRST)};
+				DrawSprite(SPR_BLOT, this->company_count_client[cid] > 0 ? (company_activity[cid] > 0 ? PALETTE_TO_RED : PALETTE_TO_GREEN) : PALETTE_TO_GREY, (r.left + r.right - sprite_size.width) / 2, (r.top + r.bottom - sprite_size.height) / 2 );
 			}
 		}
 	}
@@ -439,7 +440,7 @@ void WatchCompany::OnClick(Point /* pt */, int widget, int /* click_count */)
 	}
 	else if ( IsInsideMM(widget, EWW_HAS_CLIENT_FIRST, EWW_HAS_CLIENT_LAST + 1)) {
 		if(_networking && Company::IsValidID(widget - EWW_HAS_CLIENT_FIRST)){
-			ShowNetworkChatQueryWindow(DESTTYPE_TEAM, widget - EWW_HAS_CLIENT_FIRST);
+			ShowNetworkChatQueryWindow(NetworkChatDestinationType::Team, widget - EWW_HAS_CLIENT_FIRST);
 		}
 	}
 	else {
@@ -447,7 +448,7 @@ void WatchCompany::OnClick(Point /* pt */, int widget, int /* click_count */)
 			case EWW_ZOOMOUT: DoZoomInOutWindow(ZOOM_OUT, this); break;
 			case EWW_ZOOMIN: DoZoomInOutWindow(ZOOM_IN,  this); break;
 			case EWW_CENTER: { // location button (move main view to same spot as this view) 'Center Main View'
-				Window *w = FindWindowById(WC_MAIN_WINDOW, 0);
+				Window *w = FindWindowById(WindowClass::MainWindow, 0);
 				int x = this->viewport->scrollpos_x; // Where is the watch looking at
 				int y = this->viewport->scrollpos_y;
 
@@ -456,7 +457,7 @@ void WatchCompany::OnClick(Point /* pt */, int widget, int /* click_count */)
 				w->viewport->dest_scrollpos_y =  y - (w->viewport->virtual_height - this->viewport->virtual_height) / 2;
 			} break;
 			case EWW_NEW_WINDOW:
-				ShowWatchWindow(this->watched_company, 0);
+				ShowWatchWindow(this->watched_company, WatchCompanyType::Company);
 				break;
 			case EWW_LOCK:
 			case EWW_UNLOCK:
@@ -480,11 +481,11 @@ void WatchCompany::OnClick(Point /* pt */, int widget, int /* click_count */)
 				break;
 			case EWW_PRIVATEP_MESSAGE:{
 				const NetworkClientInfo *ci = NetworkClientInfo::GetByClientID((ClientID)this->watched_client);
-				if(ci) ShowNetworkChatQueryWindow(DESTTYPE_CLIENT, ci->client_id);
+				if(ci) ShowNetworkChatQueryWindow(NetworkChatDestinationType::Client, to_underlying(ci->client_id));
 				break;
 			}
 			case EWW_PRIVATEC_MESSAGE:
-				ShowNetworkChatQueryWindow(DESTTYPE_TEAM, this->watched_company.base());
+				ShowNetworkChatQueryWindow(NetworkChatDestinationType::Team, this->watched_company.base());
 				break;
 			case EWW_CLIENTS:
 				NetworkClientSendChatToServer("!clients");
@@ -516,7 +517,7 @@ void WatchCompany::OnQueryTextFinished(std::optional<std::string> str)
 
 void WatchCompany::OnInvalidateData(int data, bool /* gui_scope */)
 {
-	if(this->Wtype == EWT_COMPANY){
+	if(this->Wtype == WatchCompanyType::Company){
 		/* Disable the companies who are not active */
 		// for (CompanyID i = COMPANY_FIRST; i < MAX_COMPANIES; i++) {
 		// 	this->SetWidgetDisabledState(EWW_PB_COMPANY_FIRST + i , !Company::IsValidID(i) );
@@ -569,7 +570,7 @@ void WatchCompany::OnInvalidateData(int data, bool /* gui_scope */)
 		/* Make sure the widget is lowered */
 		if (Company::IsValidID(this->watched_company))
 			this->LowerWidget(EWW_COMPANY_BEGIN + this->watched_company.base());
-	} else if(this->Wtype == EWT_CLIENT) {
+	} else if(this->Wtype == WatchCompanyType::Client) {
 		if (data == 2) {
 			this->Close();
 			return;
@@ -640,15 +641,15 @@ void WatchCompany::OnRealtimeTick([[maybe_unused]] uint delta_ms)
 	}
 }
 
-void ShowWatchWindow(CompanyID company_to_watch=CompanyID::Invalid(), int type=EWT_COMPANY)
+void ShowWatchWindow(CompanyID company_to_watch=CompanyID::Invalid(), WatchCompanyType type=WatchCompanyType::Company)
 {
-	if (type == EWT_COMPANY) {
+	if (type == WatchCompanyType::Company) {
 		int i = 0;
 		/* find next free window number for watch viewport */
-		while (FindWindowById(WC_WATCH_COMPANY, i) != NULL) i++;
+		while (FindWindowById(WindowClass::WatchCompany, i) != NULL) i++;
 		new WatchCompany(_watch_company_desc, i, company_to_watch, type);
-	} else if (type == EWT_CLIENT) {
-		if (BringWindowToFrontById(WC_WATCH_COMPANYA, company_to_watch)) return;
+	} else if (type == WatchCompanyType::Client) {
+		if (BringWindowToFrontById(WindowClass::WatchCompanyAdmin, company_to_watch)) return;
 		new WatchCompany(_watch_company_descA, company_to_watch.base(), company_to_watch, type);
 	}
 }
@@ -657,14 +658,14 @@ void UpdateWatching(CompanyID /* company */, TileIndex tile) {
 	/* Send Tile Number to Watching Company Windows */
 	WatchCompany *wc;
 	for(int watching_window = 0; ; watching_window++){
-		wc = dynamic_cast<citymania::WatchCompany*>(FindWindowById(WC_WATCH_COMPANY, watching_window));
+		wc = dynamic_cast<citymania::WatchCompany*>(FindWindowById(WindowClass::WatchCompany, watching_window));
 		if(wc != NULL) wc->OnDoCommand(_current_company, tile);
 		else break;
 	}
 
 	for (const NetworkClientInfo *ci : NetworkClientInfo::Iterate()) {
 		if (ci->client_playas == _current_company) {
-			wc = dynamic_cast<citymania::WatchCompany*>(FindWindowById(WC_WATCH_COMPANYA, ci->client_id));
+			wc = dynamic_cast<citymania::WatchCompany*>(FindWindowById(WindowClass::WatchCompanyAdmin, ci->client_id));
 			if (wc != NULL) wc->OnDoCommand(_current_company, tile);
 			break;
 		}

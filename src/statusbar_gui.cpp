@@ -179,7 +179,7 @@ struct StatusBarWindow : Window {
 						epm.first,
 						std::min(citymania::get_average_command_lag(), 9999)
 					);
-					DrawString(tr, str, TC_FROMSTRING, SA_HOR_CENTER);
+					DrawString(tr, str, TextColour::FromString, AlignmentH::Centre);
 				}
 				break;
 		}
@@ -274,6 +274,6 @@ void ShowStatusBar()
 }
 
 void CM_RedrawStatusBar() {
-	StatusBarWindow *w = dynamic_cast<StatusBarWindow*>(FindWindowById(WC_STATUS_BAR, 0));
+	StatusBarWindow *w = dynamic_cast<StatusBarWindow*>(FindWindowById(WindowClass::Statusbar, 0));
 	if (w != nullptr) w->ReInit();
 }

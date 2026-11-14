@@ -102,7 +102,7 @@ struct ZoningWindow : public Window {
 		int x = r.left + WidgetDimensions::scaled.framerect.left;
 		int y = r.top;
 
-		DrawString(rtl ? r.left : x + clk_dif + 1, (rtl ? r.right + clk_dif : r.right), y + 1 + clk_dif, strid, TC_FROMSTRING, SA_LEFT);
+		DrawString(rtl ? r.left : x + clk_dif + 1, (rtl ? r.right + clk_dif : r.right), y + 1 + clk_dif, strid, TextColour::FromString, AlignmentH::Start);
 	}
 
 	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
@@ -135,7 +135,7 @@ struct ZoningWindow : public Window {
 		bool deselect = (_zoning.outer == zoning);
 		_zoning.outer = deselect ? EvaluationMode::CHECKNOTHING : zoning;
 		MarkWholeScreenDirty();
-		return ES_HANDLED;
+		return EventState::Handled;
 	}
 
 	static inline HotkeyList hotkeys{"zoning_gui", {
@@ -167,7 +167,7 @@ static std::unique_ptr<NWidgetBase> MakeZoningButtons()
 		int offset = (i == 0) ? ZTW_OUTER_FIRST : ZTW_INNER_FIRST;
 
 		for (int j = 0; j < zone_types_size; j++) {
-			auto leaf = std::make_unique<NWidgetBackground>(WWT_PANEL, i==0 ? COLOUR_ORANGE : COLOUR_YELLOW, offset + j);
+			auto leaf = std::make_unique<NWidgetBackground>(WWT_PANEL, i==0 ? Colours::Orange : Colours::Yellow, offset + j);
 			leaf->SetFill(1, 0);
 			leaf->SetPadding(0, 0, 0, 0);
 			vert->Add(std::move(leaf));
@@ -179,19 +179,19 @@ static std::unique_ptr<NWidgetBase> MakeZoningButtons()
 
 static const NWidgetPart _nested_zoning_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
-		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
-		NWidget(WWT_CAPTION, COLOUR_GREY, ZTW_CAPTION), SetStringTip(CM_STR_ZONING_TOOLBAR, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
-		NWidget(WWT_SHADEBOX, COLOUR_GREY),
-		NWidget(WWT_STICKYBOX, COLOUR_GREY),
+		NWidget(WWT_CLOSEBOX, Colours::Grey),
+		NWidget(WWT_CAPTION, Colours::Grey, ZTW_CAPTION), SetStringTip(CM_STR_ZONING_TOOLBAR, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_SHADEBOX, Colours::Grey),
+		NWidget(WWT_STICKYBOX, Colours::Grey),
 	EndContainer(),
-	NWidget(WWT_PANEL, COLOUR_GREY),
+	NWidget(WWT_PANEL, Colours::Grey),
 		NWidgetFunction(MakeZoningButtons),
 	EndContainer()
 };
 
 static WindowDesc _zoning_desc (
-	WDP_AUTO, "cm_zoning", 0, 0,
-	CM_WC_ZONING_TOOLBAR, WC_NONE,
+	WindowPosition::Automatic, "cm_zoning", 0, 0,
+	WindowClass::CmZoningToolbar, WindowClass::None,
 	{},
 	_nested_zoning_widgets,
 	&ZoningWindow::hotkeys

@@ -63,9 +63,9 @@ public:
     void UpdateSize() {
         this->padding = ScaleGUITrad(3);
         auto icon_size = GetSpriteSize(CM_SPR_COMPANY_ICON);
-        auto common_height = std::max<int>(icon_size.height, GetCharacterHeight(FS_NORMAL));
+        auto common_height = std::max<int>(icon_size.height, GetCharacterHeight(FontSize::Normal));
         this->line_height = common_height + this->padding;
-        this->text_offset_y = (common_height - GetCharacterHeight(FS_NORMAL)) / 2;
+        this->text_offset_y = (common_height - GetCharacterHeight(FontSize::Normal)) / 2;
         this->icon_offset_y = (common_height - icon_size.height) / 2;
         this->box.height = this->padding;
         this->box.width = 0;
@@ -76,7 +76,7 @@ public:
         this->box.width += this->padding * 3 + icon_size.width;
         this->box.x = this->padding;
         this->box.y = this->padding;
-        Window *toolbar = FindWindowById(WC_MAIN_TOOLBAR, 0);
+        Window *toolbar = FindWindowById(WindowClass::MainToolbar, 0);
         if (toolbar != nullptr && toolbar->left < this->box.x + this->box.width + this->padding) {
             this->box.y = toolbar->top + toolbar->height + this->padding;
         }
@@ -124,8 +124,8 @@ public:
             this->drawn = false;
         }
 
-        if (_game_mode != GM_NORMAL) return;
-        if (_iconsole_mode != ICONSOLE_CLOSED) return;
+        if (_game_mode != GameMode::Normal) return;
+        if (_iconsole_mode != IConsoleMode::Closed) return;
         if (!_networking) return;
         if (!_settings_client.gui.cm_show_client_overlay) return;
 
@@ -146,7 +146,7 @@ public:
 
         /* Paint a half-transparent box behind the client list */
         GfxFillRect(this->box.x, this->box.y, this->box.x + this->box.width - 1, this->box.y + this->box.height - 1,
-            PALETTE_TO_TRANSPARENT, FILLRECT_RECOLOUR // black, but with some alpha for background
+            PALETTE_TO_TRANSPARENT, FillRectMode::Recolour // black, but with some alpha for background
         );
 
         int y = this->box.y + this->padding;
@@ -156,18 +156,18 @@ public:
         auto text_right = this->box.x + this->box.width - 1 - this->padding;
 
         const std::pair<TextColour, SpriteID> STYLES[] = {
-            {TC_SILVER, PAL_NONE},
-            {TC_ORANGE, CM_SPR_HOST_WHITE},
-            {TC_WHITE , CM_SPR_PLAYER_WHITE},
-            {TC_SILVER, CM_SPR_COMPANY_ICON},
-            {TC_ORANGE, CM_SPR_COMPANY_ICON_HOST},
-            {TC_WHITE , CM_SPR_COMPANY_ICON_PLAYER},
+            {TextColour::Silver, PAL_NONE},
+            {TextColour::Orange, CM_SPR_HOST_WHITE},
+            {TextColour::White , CM_SPR_PLAYER_WHITE},
+            {TextColour::Silver, CM_SPR_COMPANY_ICON},
+            {TextColour::Orange, CM_SPR_COMPANY_ICON_HOST},
+            {TextColour::White , CM_SPR_COMPANY_ICON_PLAYER},
         };
         std::vector<std::tuple<CompanyID, std::string, uint8>> clients;
         for (const NetworkClientInfo *ci : NetworkClientInfo::Iterate()) {
             uint8 style = 0;
             if (ci->client_id == _network_own_client_id) style = 2;
-            if (ci->client_id == CLIENT_ID_SERVER) style = 1;
+            if (ci->client_id == ClientID::Server) style = 1;
             if (Company::IsValidID(ci->client_playas)) style += 3;
             clients.emplace_back(ci->client_playas, ci->client_name, style);
 
@@ -175,9 +175,9 @@ public:
         std::sort(clients.begin(), clients.end());
         for (const auto &[playas, name, style] : clients) {
             auto [colour, icon] = STYLES[style];
-            // auto colour = TC_SILVER;
-            // if (ci->client_id == _network_own_client_id) colour = TC_WHITE;
-            // if (ci->client_id == CLIENT_ID_SERVER) colour = TC_ORANGE;
+            // auto colour = TextColour::Silver;
+            // if (ci->client_id == _network_own_client_id) colour = TextColour::White;
+            // if (ci->client_id == ClientID::Server) colour = TextColour::Orange;
             DrawString(text_left, text_right, y + this->text_offset_y, name, colour);
 
             if (icon != PAL_NONE) DrawSprite(icon, GetCompanyPalette(playas), x, y + this->icon_offset_y);

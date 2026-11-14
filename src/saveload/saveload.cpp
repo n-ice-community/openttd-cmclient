@@ -2921,7 +2921,7 @@ struct ZSTDSaveFilter : SaveFilter {
 	 * @param len    Amount of bytes to write.
 	 * @param mode   Mode for ZSTD_compressStream2.
 	 */
-	void WriteLoop(uint8_t *p, size_t len, ZSTD_EndDirective mode)
+	void WriteLoop(const uint8_t *p, size_t len, ZSTD_EndDirective mode)
 	{
 		uint8_t buf[MEMORY_CHUNK_SIZE]; // output buffer
 		ZSTD_inBuffer input{p, len, 0};
@@ -2938,7 +2938,7 @@ struct ZSTDSaveFilter : SaveFilter {
 		} while (!finished);
 	}
 
-	void Write(uint8_t *buf, size_t size) override
+	void Write(const uint8_t *buf, size_t size) override
 	{
 		this->WriteLoop(buf, size, ZSTD_e_continue);
 	}
@@ -3031,7 +3031,7 @@ static std::optional<SavePreset> ParseSavePreset(const std::string &str)
             if (level != Clamp<int>(level, slf.min_compression, slf.max_compression)) {
                 /* Invalid compression level, show the error and use default level */
                 ShowErrorMessage(GetEncodedString(STR_CONFIG_ERROR),
-                	GetEncodedString(STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_LEVEL, level_str), WL_CRITICAL);
+                	GetEncodedString(STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_LEVEL, level_str), WarningLevel::Critical);
                 return SavePreset{&slf, slf.default_compression};
             }
 
@@ -3039,7 +3039,7 @@ static std::optional<SavePreset> ParseSavePreset(const std::string &str)
         }
     }
     ShowErrorMessage(GetEncodedString(STR_CONFIG_ERROR),
-    	GetEncodedString(STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_ALGORITHM, str), WL_CRITICAL);
+    	GetEncodedString(STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_ALGORITHM, str), WarningLevel::Critical);
     return {};
 }
 
@@ -3263,10 +3263,8 @@ static void SaveFileError()
 static SaveLoadResult SaveFileToDisk(bool threaded, citymania::SavePreset preset)
 {
 	try {
-		auto [fmt, compression] = GetSavegameFormat(_savegame_format);
-
 		/* We have written our stuff to memory, now write it to file! */
-		_sl.sf->Write(preset.format.tag.data(), preset.format.tag.size());
+		_sl.sf->Write(preset.format->tag.data(), preset.format->tag.size());
 
 		_sl.sf = preset.format->init_write(_sl.sf, preset.compression_level);
 		_sl.dumper->Flush(_sl.sf);
@@ -3315,7 +3313,7 @@ void WaitTillSaved()
  * @param threaded Whether to try to perform the saving asynchronously.
  * @return Return the result of the action. #SaveLoadResult::Ok or #SaveLoadResult::Error
  */
-static SaveLoadResult DoSave(std::shared_ptr<SaveFilter> writer, bool threaded, , citymania::SavePreset preset)
+static SaveLoadResult DoSave(std::shared_ptr<SaveFilter> writer, bool threaded, citymania::SavePreset preset)
 {
 	assert(!_sl.saveinprogress);
 
@@ -3432,7 +3430,7 @@ static SaveLoadResult DoLoad(std::shared_ptr<LoadFilter> reader, bool load_check
 		SlError(STR_GAME_SAVELOAD_ERROR_BROKEN_INTERNAL_ERROR, fmt::format("Loader for '{}' is not available.", fmt->name));
 	}
 
-	Debug(sl, 2, "Using saveload format '%s'", fmt->name);
+	Debug(Facility::Sl, Severity::Warning, "Using saveload format '%s'", fmt->name);
 
 	_sl.lf = fmt->init_load(_sl.lf);
 	_sl.reader = std::make_unique<ReadBuffer>(_sl.lf);

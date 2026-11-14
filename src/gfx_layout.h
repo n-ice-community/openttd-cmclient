@@ -68,7 +68,7 @@ public:
 	 */
 	inline void SetColour(ExtendedTextColour c)
 	{
-		// assert(((c & TC_COLOUR_MASK) >= TC_BLUE && (c & TC_COLOUR_MASK) <= TC_BLACK) || (c & TC_COLOUR_MASK) == TC_INVALID);  CM seems redundant and crashes custom colors (in graphs)
+		// assert(((c & TC_COLOUR_MASK) >= TextColour::Blue && (c & TC_COLOUR_MASK) <= TextColour::Black) || (c & TC_COLOUR_MASK) == TextColour::Invalid);  CM seems redundant and crashes custom colors (in graphs)
 		// assert((c & (TC_COLOUR_MASK | TC_FLAGS_MASK)) == c);  TODO may or may not be redundant as well
 		assert((c.colour >= TextColour::Begin && c.colour < TextColour::End) || c.colour == TextColour::Invalid);
 		assert(!c.flags.Test(ExtendedTextColourFlag::IsPaletteColour));
@@ -140,7 +140,7 @@ template <> struct std::hash<FontState> {
 };
 
 /** Mapping from index to font. */
-using FontMap = std::vector<std::pair<int, Font>>;
+using FontMap = std::vector<std::pair<int, Font *>>;
 
 /**
  * Interface to glue fallback and normal layouter into one.
@@ -315,10 +315,10 @@ private:
 
 	static LineCacheItem &GetCachedParagraphLayout(std::string_view str, const FontState &state);
 
-	using FontColourMap = std::map<TextColour, std::unique_ptr<Font>>;
-	static FontColourMap fonts[FS_END];
+	using FontColourMap = std::map<ExtendedTextColour, std::unique_ptr<Font>>;
+	static EnumIndexArray<FontColourMap, FontSize, FontSize::End> fonts;
 public:
-	static Font *GetFont(FontSize size, TextColour colour);
+	static Font *GetFont(FontSize size, ExtendedTextColour colour);
 
 	Layouter(std::string_view str, int maxw = INT32_MAX, FontSize fontsize = FontSize::Normal);
 	Dimension GetBounds();

@@ -89,12 +89,7 @@ static bool _whole_screen_dirty = false;
 bool _gfx_draw_active = false;
 static std::vector<Rect> _dirty_blocks;
 static std::vector<Rect> _pending_dirty_blocks;
-enum GfxDebugFlags {
-	GDF_SHOW_WINDOW_DIRTY,
-	GDF_SHOW_WIDGET_DIRTY,
-	GDF_SHOW_RECT_DIRTY,
-};
-uint32 _gfx_debug_flags;
+GfxDebugFlags _gfx_debug_flags;
 
 void GfxScroll(int left, int top, int width, int height, int xo, int yo)
 {
@@ -553,7 +548,7 @@ static int DrawLayoutLine(const ParagraphLayouter::Line &line, int y, int left, 
 		 * another size would be chosen it won't have truncated too little for
 		 * the truncation dots.
 		 */
-		truncation_layout.emplace(GetEllipsis(), INT32_MAX, line.GetVisualRun(0).GetFont().fontsize);
+		truncation_layout.emplace(GetEllipsis(), INT32_MAX, line.GetVisualRun(0).GetFont()->fontsize);
 		truncation_width = truncation_layout->GetBounds().width;
 
 		/* Is there enough space even for an ellipsis? */
@@ -611,13 +606,13 @@ static int DrawLayoutLine(const ParagraphLayouter::Line &line, int y, int left, 
 			const auto &positions = run.GetPositions();
 			const Font *f = run.GetFont();
 
-			FontCache &fc = f.GetFontCache();
-			ExtendedTextColour colour{f.colour};
+			FontCache &fc = f->GetFontCache();
+			ExtendedTextColour colour{f->colour};
 			if (colour == TextColour::Invalid || initial_colour.flags.Test(ExtendedTextColourFlag::Forced)) colour = initial_colour;
 			bool colour_has_shadow = !colour.flags.Test(ExtendedTextColourFlag::NoShade) && colour != TextColour::Black;
 			/* Update the last colour for the truncation ellipsis. */
 			last_colour = colour;
-			if (do_shadow && (!fc->GetDrawGlyphShadow() || !colour_has_shadow)) continue;
+			if (do_shadow && (!fc.GetDrawGlyphShadow() || !colour_has_shadow)) continue;
 			SetColourRemap(do_shadow ? TextColour::Black : colour);
 
 			for (size_t i = 0; i < run.GetGlyphCount(); i++) {
@@ -633,7 +628,7 @@ static int DrawLayoutLine(const ParagraphLayouter::Line &line, int y, int left, 
 				/* Truncated away. */
 				if (truncation && (begin_x < min_x || end_x > max_x)) continue;
 
-				const Sprite *sprite = fc->GetGlyph(glyph);
+				const Sprite *sprite = fc.GetGlyph(glyph);
 				/* Check clipping (the "+ 1" is for the shadow). */
 				if (begin_x + sprite->x_offs > dpi_right || begin_x + sprite->x_offs + sprite->width /* - 1 + 1 */ < dpi_left) continue;
 
@@ -1011,7 +1006,7 @@ static BlitterMode GetBlitterMode(PaletteID pal)
 {
 
 	if (pal >= CM_PALETTE_TINT_BASE && pal < CM_PALETTE_TINT_END)
-		return BlitterMode::CMTintRemap;
+		return BlitterMode::CmTintRemap;
 
 	switch (pal) {
 		case PAL_NONE:          return BlitterMode::Normal;
@@ -1514,7 +1509,7 @@ static void DrawDirtyViewport(uint occlusion, int left, int top, int right, int 
 		}
 	}
 
-	if (_game_mode == GM_MENU) {
+	if (_game_mode == GameMode::Menu) {
 		RedrawScreenRect(left, top, right, bottom);
 	} else {
 		extern void ViewportDrawChk(const Viewport &vp, int left, int top, int right, int bottom);
@@ -1522,7 +1517,7 @@ static void DrawDirtyViewport(uint occlusion, int left, int top, int right, int 
 
 		if (_dirty_viewport_disp_flags.Any({NWidgetDisplayFlag::ShadeGrey, NWidgetDisplayFlag::ShadeDimmed})) {
 			GfxFillRect(left, top, right - 1, bottom - 1,
-					(_dirty_viewport_disp_flags.Test(NWidgetDisplayFlag::ShadeDimmed)) ? PALETTE_TO_TRANSPARENT : PALETTE_NEWSPAPER, FILLRECT_RECOLOUR);
+					(_dirty_viewport_disp_flags.Test(NWidgetDisplayFlag::ShadeDimmed)) ? PALETTE_TO_TRANSPARENT : PALETTE_NEWSPAPER, FillRectMode::Recolour);
 		}
 		VideoDriver::GetInstance()->MakeDirty(left, top, right - left, bottom - top);
 	}
@@ -1553,7 +1548,7 @@ void DrawDirtyBlocks()
 	if (_whole_screen_dirty) {
 		RedrawScreenRect(0, 0, _screen.width, _screen.height);
 		for (Window *w : Window::IterateFromBack()) {
-			w->flags.Reset({WindowFlag::CMDirty, WindowFlag::CMWidgetsDirty, WindowFlag::CMDragDirtied});
+			w->flags.Reset({WindowFlag::CmDirty, WindowFlag::CmWidgetsDirty, WindowFlag::CmDragDirtied});
 		}
 		_whole_screen_dirty = false;
 	} else {
@@ -1570,33 +1565,33 @@ void DrawDirtyBlocks()
 		Backup dpi_backup(_cur_dpi, &bk);
 
 		for (Window *w : Window::IterateFromBack()) {
-			w->flags.Reset(WindowFlag::CMDragDirtied);
+			w->flags.Reset(WindowFlag::CmDragDirtied);
 			if (!MayBeShown(w)) continue;
 
 			if (w->viewport != nullptr) w->viewport->is_drawn = false;
 
-			if (w->flags.Test(WindowFlag::CMDirty)) {
+			if (w->flags.Test(WindowFlag::CmDirty)) {
 				clear_overlays();
-				DrawOverlappedWindowFlags flags = DOWF_MARK_DIRTY;
-				if (HasBit(_gfx_debug_flags, GDF_SHOW_WINDOW_DIRTY)) [[ unlikely ]] {
-					flags |= DOWF_SHOW_DEBUG;
+				DrawOverlappedWindowFlags flags = DrawOverlappedWindowFlag::MarkDirty;
+				if (_gfx_debug_flags.Test(GfxDebugFlag::ShowWindowDirty)) [[ unlikely ]] {
+					flags |= DrawOverlappedWindowFlag::ShowDebug;
 				}
 				DrawOverlappedWindowWithClipping(w, w->left, w->top, w->left + w->width, w->top + w->height, flags);
-				w->flags.Reset({WindowFlag::CMDirty, WindowFlag::CMWidgetsDirty});
-			} else if (w->flags.Test(WindowFlag::CMWidgetsDirty)) {
+				w->flags.Reset({WindowFlag::CmDirty, WindowFlag::CmWidgetsDirty});
+			} else if (w->flags.Test(WindowFlag::CmWidgetsDirty)) {
 				if (w->nested_root != nullptr) {
 					clear_overlays();
 					w->nested_root->FillDirtyWidgets(dirty_widgets);
 					for (NWidgetBase *widget : dirty_widgets) {
-						DrawOverlappedWindowFlags flags = DOWF_MARK_DIRTY;
-						if (HasBit(_gfx_debug_flags, GDF_SHOW_WIDGET_DIRTY)) [[ unlikely ]] {
-							flags |= DOWF_SHOW_DEBUG;
+						DrawOverlappedWindowFlags flags = DrawOverlappedWindowFlag::MarkDirty;
+						if (_gfx_debug_flags.Test(GfxDebugFlag::ShowWidgetDirty)) [[ unlikely ]] {
+							flags |= DrawOverlappedWindowFlag::ShowDebug;
 						}
 						DrawOverlappedWindowWithClipping(w, w->left + widget->pos_x, w->top + widget->pos_y, w->left + widget->pos_x + widget->current_x, w->top + widget->pos_y + widget->current_y, flags);
 					}
 					dirty_widgets.clear();
 				}
-				w->flags.Reset(WindowFlag::CMWidgetsDirty);
+				w->flags.Reset(WindowFlag::CmWidgetsDirty);
 			}
 
 			if (w->viewport != nullptr && !w->IsShaded()) {
@@ -1605,7 +1600,7 @@ void DrawDirtyBlocks()
 					vp->ClearDirty();
 				} else if (vp->is_dirty) {
 					clear_overlays();
-					PerformanceAccumulator framerate(PFE_DRAWWORLD);
+					PerformanceAccumulator framerate(PerformanceElement::ViewportDrawing);
 					_cur_dpi->left = 0;
 					_cur_dpi->top = 0;
 					_cur_dpi->width = _screen.width;
@@ -1616,9 +1611,9 @@ void DrawDirtyBlocks()
 
 					_dirty_viewport = vp.get();
 					_dirty_viewport_disp_flags = w->cm_viewport_widget->disp_flags;
-					TransparencyOptionBits to_backup = _transparency_opt;
+					TransparencyOptions to_backup = _transparency_opt;
 					if (_dirty_viewport_disp_flags.Test(NWidgetDisplayFlag::NoTransparency)) {
-						_transparency_opt &= (1 << TO_SIGNS) | (1 << TO_TEXT); // Disable all transparency, except textual stuff
+						_transparency_opt &= TransparencyOptions{TransparencyOption::Signs, TransparencyOption::Text}; // Disable all transparency, except textual stuff
 					}
 
 					{
@@ -1722,9 +1717,9 @@ void DrawDirtyBlocks()
 		for (const Rect &r : _dirty_blocks) {
 			RedrawScreenRect(r.left, r.top, r.right, r.bottom);
 		}
-		if (HasBit(_gfx_debug_flags, GDF_SHOW_RECT_DIRTY)) [[ unlikely ]] {
+		if (_gfx_debug_flags.Test(GfxDebugFlag::ShowRectDirty)) [[ unlikely ]] {
 			for (const Rect &r : _dirty_blocks) {
-				GfxFillRect(r.left, r.top, r.right, r.bottom, _string_colourmap[++_dirty_block_colour & 0xF], FILLRECT_CHECKER);
+				GfxFillRect(r.left, r.top, r.right, r.bottom, _string_colourmap[++_dirty_block_colour & 0xF], FillRectMode::Checker);
 			}
 		}
 	}

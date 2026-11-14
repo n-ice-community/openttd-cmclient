@@ -5,6 +5,7 @@
 #include "../direction_type.h"
 #include "../map_func.h"
 #include "../newgrf_roadstop.h"
+#include "../newgrf_station.h"
 #include "../road_type.h"
 #include "../signal_type.h"
 #include "../station_map.h"
@@ -28,19 +29,22 @@
 
 namespace citymania {
 
-enum ZoningBorder: uint8 {
-    NONE = 0,
-    TOP_LEFT = 1,
-    TOP_RIGHT = 2,
-    BOTTOM_RIGHT = 4,
-    BOTTOM_LEFT = 8,
-    TOP_CORNER = 16,
-    RIGHT_CORNER = 32,
-    BOTTOM_CORNER = 64,
-    LEFT_CORNER = 128,
-    FULL = TOP_LEFT | TOP_RIGHT | BOTTOM_LEFT | BOTTOM_RIGHT,
+/**
+ * Borders of a zoning area. The values are bit indices of #ZoningBorders, so their bit masks
+ * (1, 2, 4, ..., 128) match the ones used for the border sprites.
+ */
+enum class ZoningBorder : uint8_t {
+    TopLeft = 0,
+    TopRight = 1,
+    BottomRight = 2,
+    BottomLeft = 3,
+    TopCorner = 4,
+    RightCorner = 5,
+    BottomCorner = 6,
+    LeftCorner = 7,
 };
-DECLARE_ENUM_AS_BIT_SET(ZoningBorder);
+using ZoningBorders = EnumBitSet<ZoningBorder, uint8_t>;
+static constexpr ZoningBorders ZONING_BORDERS_FULL{ZoningBorder::TopLeft, ZoningBorder::TopRight, ZoningBorder::BottomRight, ZoningBorder::BottomLeft};
 
 TileArea ClampToVisibleMap(const TileArea &area);
 
@@ -55,7 +59,7 @@ public:
     SpriteID highlight_pal = PAL_NONE;
     SpriteID sprite = 0;
     SpriteID selection = PAL_NONE;
-    ZoningBorder border[4] = {};
+    ZoningBorders border[4] = {};
     SpriteID border_colour[4] = {};
     uint border_count = 0;
 
@@ -77,8 +81,8 @@ public:
         return this->icon;
     }
 
-    void add_border(ZoningBorder border, SpriteID colour) {
-        if (border == ZoningBorder::NONE || !colour) return;
+    void add_border(ZoningBorders border, SpriteID colour) {
+        if (border.None() || !colour) return;
         this->border[this->border_count] = border;
         this->border_colour[this->border_count] = colour;
         this->border_count++;
@@ -154,7 +158,7 @@ public:
             struct {
                 Axis axis;
                 uint8_t section;
-                StationClassID spec_class;
+                uint16_t spec_class;  // raw StationClassID, PoolID is not trivial inside a union
                 uint16_t spec_index;
                 uint32_t base_tile;  // TODO should be TileArea but TileIndex can't go into union
                 uint16_t w;
@@ -179,7 +183,7 @@ public:
                 RoadType roadtype;
                 DiagDirection ddir;
                 bool is_truck;
-                RoadStopClassID spec_class;
+                uint16_t spec_class;  // raw RoadStopClassID, PoolID is not trivial inside a union
                 uint16_t spec_index;
             } stop;
             struct {
@@ -205,7 +209,7 @@ public:
         struct {
             Axis axis;
         } dock_flat;
-        ZoningBorder border;
+        uint8_t border;
     } u;
 
     ObjectTileHighlight(Type type, SpriteID palette): type{type}, palette{palette} {}
@@ -229,7 +233,7 @@ public:
     static ObjectTileHighlight make_point(SpriteID palette);
     static ObjectTileHighlight make_rect(SpriteID palette);
     static ObjectTileHighlight make_numbered_rect(SpriteID palette, uint32 number);
-    static ObjectTileHighlight make_border(SpriteID palette, ZoningBorder border);
+    static ObjectTileHighlight make_border(SpriteID palette, ZoningBorders border);
     static ObjectTileHighlight make_tint(SpriteID palette);
     static ObjectTileHighlight make_struct_tint(SpriteID palette);
 
@@ -286,12 +290,12 @@ public:
                     Trackdir start_dir;
                 } track;
                 struct {
-                    StationID id;
+                    uint16_t id;  // raw StationID, PoolID is not trivial inside a union
                     bool has_part;
                 } station;
                 struct {
                     Axis axis;
-                    StationID id;
+                    uint16_t id;  // raw StationID, PoolID is not trivial inside a union
                     uint8_t numtracks;
                     uint8_t plat_len;
                 } station_part;
@@ -384,12 +388,12 @@ public:
     Type type = Type::NONE;
     TileIndex tile = INVALID_TILE;
     TileIndex end_tile = INVALID_TILE;
-    Trackdir trackdir = INVALID_TRACKDIR;
+    Trackdir trackdir = Trackdir::Invalid;
     TileIndex tile2 = INVALID_TILE;
     TileIndex end_tile2 = INVALID_TILE;
-    Trackdir trackdir2 = INVALID_TRACKDIR;
-    Axis axis = INVALID_AXIS;
-    DiagDirection ddir = INVALID_DIAGDIR;
+    Trackdir trackdir2 = Trackdir::Invalid;
+    Axis axis = Axis::Invalid;
+    DiagDirection ddir = DiagDirection::Invalid;
     RoadType roadtype = INVALID_ROADTYPE;
     bool is_truck = false;
     RoadStopClassID road_stop_spec_class;

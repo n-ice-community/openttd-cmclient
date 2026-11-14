@@ -3398,7 +3398,7 @@ public:
 				v->PlayLeaveStationSound(true);
 			}
 		} else {
-			if (this->owner != _local_company) return ES_NOT_HANDLED;
+			if (this->owner != _local_company) return EventState::NotHandled;
 		}
 		return Window::OnHotkey(hotkey);
 	}

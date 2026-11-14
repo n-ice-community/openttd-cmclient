@@ -1,4 +1,5 @@
 #include "../stdafx.h"
+#include "../company_base.h"
 
 #include "cm_town_gui.hpp"
 
@@ -93,9 +94,9 @@ private:
 	Town *town;
 	std::list<CargoX> cargoes;
 
-	enum CBTownWindowPlanes {
-		CBTWP_MP_GOALS = 0,
-		CBTWP_MP_CB,
+	enum class CBTownWindowPlanes {
+		Goals = 0,
+		Cb,
 	};
 
 public:
@@ -104,7 +105,7 @@ public:
 		for (uint i = 0; i < NUM_CARGO ; i++) {
 			CargoX c;
 			c.id = i;
-			c.from = CB_GetFrom(i);
+			c.from = CB_GetFrom(static_cast<CargoType>(i));
 			this->cargoes.push_back(c);
 		}
 		cargoes.sort(CB_sortCargoesByFrom);
@@ -191,7 +192,7 @@ public:
 
 		switch(widget){
 			case WID_CB_DETAILS:
-				size.height = (GetCharacterHeight(FS_NORMAL) + EXP_LINESPACE) * 5;
+				size.height = (GetCharacterHeight(FontSize::Normal) + EXP_LINESPACE) * 5;
 				break;
 			case WID_CB_GOALS: {
 				uint desired_height = 0;
@@ -204,7 +205,7 @@ public:
 					}
 				}
 				if (desired_height > 0)
-					size.height = desired_height * (GetCharacterHeight(FS_NORMAL) + EXP_LINESPACE) + EXP_TOPPADDING - EXP_LINESPACE;
+					size.height = desired_height * (GetCharacterHeight(FontSize::Normal) + EXP_LINESPACE) + EXP_TOPPADDING - EXP_LINESPACE;
 				break;
 			}
 			case WID_CB_CARGO_NAME:
@@ -215,11 +216,11 @@ public:
 			case WID_CB_CARGO_FROM:
 			case WID_CB_CARGO_PREVIOUS: {
 				uint desired_height = 0;
-				for(CargoType cargo = 0; cargo < NUM_CARGO; cargo++){
+				for(CargoType cargo{0}; cargo < NUM_CARGO; cargo++){
 					if(CB_GetReq(cargo) > 0) desired_height++;
 				}
 				if (desired_height > 0)
-					size.height = desired_height * (GetCharacterHeight(FS_NORMAL) + EXP_LINESPACE) + EXP_TOPPADDING - EXP_LINESPACE;
+					size.height = desired_height * (GetCharacterHeight(FontSize::Normal) + EXP_LINESPACE) + EXP_TOPPADDING - EXP_LINESPACE;
 				break;
 			}
 		}
@@ -227,7 +228,7 @@ public:
 
 	void DrawWidget(const Rect &r, int widget) const override
 	{
-		static const uint EXP_LINESPACE  = GetCharacterHeight(FS_NORMAL) + 2;
+		static const uint EXP_LINESPACE  = GetCharacterHeight(FontSize::Normal) + 2;
 		Rect tr = r.Shrink(WidgetDimensions::scaled.framerect);
 
 		switch(widget){
@@ -236,7 +237,7 @@ public:
 				if(this->town->cm.cb.growth_state == TownGrowthState::GROWING)
 					DrawString(tr, CM_STR_TOWN_CB_GROWING);
 				else DrawString(tr, CM_STR_TOWN_CB_NOT_GROWING);
-				tr.top += GetCharacterHeight(FS_NORMAL);
+				tr.top += GetCharacterHeight(FontSize::Normal);
 
 				// population
 				DrawString(tr, GetString(
@@ -244,7 +245,7 @@ public:
 					this->town->cache.population,
 					this->town->cache.num_houses
 				));
-				tr.top += GetCharacterHeight(FS_NORMAL);
+				tr.top += GetCharacterHeight(FontSize::Normal);
 
 				DrawExtraTownInfo(tr, this->town, EXP_LINESPACE, false);
 
@@ -289,8 +290,8 @@ public:
 					if (it2 == cargoes2.begin()) { // header
 						// FIXME rtl support
 						DrawString(tr.Shrink(ScaleGUITrad(14), 0, 0, 0),
-							(CM_STR_TOWN_GROWTH_HEADER_CARGO + widget - WID_CB_CARGO_NAME), TC_FROMSTRING,
-							(widget == WID_CB_CARGO_NAME) ? SA_LEFT : SA_RIGHT);
+							(CM_STR_TOWN_GROWTH_HEADER_CARGO + widget - WID_CB_CARGO_NAME), TextColour::FromString,
+							(widget == WID_CB_CARGO_NAME) ? AlignmentH::Start : AlignmentH::End);
 
 						tr.top += EXP_LINESPACE;
 					}
@@ -321,14 +322,14 @@ public:
 							//when not required -> all faded
 							else string_to_draw = CM_STR_TOWN_CB_CARGO_AMOUNT_NOT;
 
-							DrawString(tr, GetString(string_to_draw, delivered), TC_FROMSTRING, SA_RIGHT);
+							DrawString(tr, GetString(string_to_draw, delivered), TextColour::FromString, AlignmentH::End);
 							break;
 						}
 						case WID_CB_CARGO_REQ: {
 							requirements = CB_GetTownReq(this->town->cache.population, CB_GetReq(cargos->Index()), from, true);
 							 //when required
 							string_to_draw = (this->town->cache.population >= from) ? CM_STR_TOWN_CB_CARGO_REQ_YES : CM_STR_TOWN_CB_CARGO_REQ_NOT;
-							DrawString(tr, GetString(string_to_draw, requirements), TC_FROMSTRING, SA_RIGHT);
+							DrawString(tr, GetString(string_to_draw, requirements), TextColour::FromString, AlignmentH::End);
 							break;
 						}
 						case WID_CB_CARGO_PREVIOUS: {
@@ -341,7 +342,7 @@ public:
 							}
 							else string_to_draw = CM_STR_TOWN_CB_CARGO_PREVIOUS_NOT;
 
-							DrawString(tr, GetString(string_to_draw, this->town->cm.cb.delivered_last_month[cargos->Index()]), TC_FROMSTRING, SA_RIGHT);
+							DrawString(tr, GetString(string_to_draw, this->town->cm.cb.delivered_last_month[cargos->Index()]), TextColour::FromString, AlignmentH::End);
 							break;
 						}
 						case WID_CB_CARGO_STORE: {
@@ -351,7 +352,7 @@ public:
 								else string_to_draw = CM_STR_TOWN_CB_CARGO_STORE_NOT;
 							}
 
-							DrawString(tr, GetString(string_to_draw, this->town->cm.cb.stored[cargos->Index()]), TC_FROMSTRING, SA_RIGHT);
+							DrawString(tr, GetString(string_to_draw, this->town->cm.cb.stored[cargos->Index()]), TextColour::FromString, AlignmentH::End);
 							break;
 						}
 						case WID_CB_CARGO_STORE_PCT: {
@@ -365,13 +366,13 @@ public:
 								);
 							}
 
-							DrawString(tr, str, TC_FROMSTRING, SA_RIGHT);
+							DrawString(tr, str, TextColour::FromString, AlignmentH::End);
 							break;
 						}
 						case WID_CB_CARGO_FROM: {
 							string_to_draw = (this->town->cache.population >= from) ? CM_STR_TOWN_CB_CARGO_FROM_YES : CM_STR_TOWN_CB_CARGO_FROM_NOT; //when required
 
-							DrawString(tr, GetString(string_to_draw, from), TC_FROMSTRING, SA_RIGHT);
+							DrawString(tr, GetString(string_to_draw, from), TextColour::FromString, AlignmentH::End);
 							break;
 						}
 						//last case
@@ -389,7 +390,7 @@ public:
 
 	void OnPaint() override {
 		if (!this->IsShaded()) {
-			int plane = CB_Enabled() ? CBTWP_MP_CB : CBTWP_MP_GOALS;
+			int plane = to_underlying(CB_Enabled() ? CBTownWindowPlanes::Cb : CBTownWindowPlanes::Goals);
 			NWidgetStacked *wi = this->GetWidget<NWidgetStacked>(WID_CB_SELECT_REQUIREMENTS);
 			if (plane != wi->shown_plane) {
 				wi->SetDisplayedPlane(plane);
@@ -405,9 +406,9 @@ public:
 	{
 		if (hotkey == CM_THK_BUILD_STATUE) {
 			TownExecuteAction(this->town, TownAction::BuildStatue);
-			return ES_HANDLED;
+			return EventState::Handled;
 		}
-		return ES_NOT_HANDLED;
+		return EventState::NotHandled;
 	}
 
 	static inline HotkeyList hotkeys{"cm_town_cb_view", {
@@ -420,51 +421,51 @@ public:
 
 static const NWidgetPart _nested_cb_town_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
-		NWidget(WWT_CLOSEBOX, COLOUR_BROWN),
-		NWidget(WWT_CAPTION, COLOUR_BROWN, WID_CB_CAPTION), SetStringTip(CM_STR_TOWN_VIEW_CB_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
-		NWidget(WWT_PUSHIMGBTN, COLOUR_BROWN, WID_CB_CENTER_VIEW), SetAspect(WidgetDimensions::ASPECT_LOCATION), SetSpriteTip(SPR_GOTO_LOCATION, STR_TOWN_VIEW_CENTER_TOOLTIP),
-		NWidget(WWT_SHADEBOX, COLOUR_BROWN),
-		NWidget(WWT_DEFSIZEBOX, COLOUR_BROWN),
-		NWidget(WWT_STICKYBOX, COLOUR_BROWN),
+		NWidget(WWT_CLOSEBOX, Colours::Brown),
+		NWidget(WWT_CAPTION, Colours::Brown, WID_CB_CAPTION), SetStringTip(CM_STR_TOWN_VIEW_CB_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_PUSHIMGBTN, Colours::Brown, WID_CB_CENTER_VIEW), SetAspect(WidgetDimensions::ASPECT_LOCATION), SetSpriteTip(SPR_GOTO_LOCATION, STR_TOWN_VIEW_CENTER_TOOLTIP),
+		NWidget(WWT_SHADEBOX, Colours::Brown),
+		NWidget(WWT_DEFSIZEBOX, Colours::Brown),
+		NWidget(WWT_STICKYBOX, Colours::Brown),
 	EndContainer(),
-	NWidget(WWT_PANEL, COLOUR_BROWN),
+	NWidget(WWT_PANEL, Colours::Brown),
 		NWidget(NWID_VERTICAL),
 			NWidget(NWID_SPACER), SetMinimalSize(0, 5),  SetResize(1, 0), SetFill(1, 0),
 			NWidget(NWID_HORIZONTAL),
-				NWidget(WWT_EMPTY, INVALID_COLOUR, WID_CB_DETAILS), SetMinimalSize(260, 0), SetResize(1, 0), SetFill(1, 0),
+				NWidget(WWT_EMPTY, Colours::Invalid, WID_CB_DETAILS), SetMinimalSize(260, 0), SetResize(1, 0), SetFill(1, 0),
 				NWidget(NWID_VERTICAL),
 					NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize),
-						NWidget(WWT_PUSHTXTBTN, COLOUR_BROWN, WID_CB_ADVERT),SetMinimalSize(33, 12),SetFill(1, 0), SetStringTip(CM_STR_CB_LARGE_ADVERTISING_CAMPAIGN),
+						NWidget(WWT_PUSHTXTBTN, Colours::Brown, WID_CB_ADVERT),SetMinimalSize(33, 12),SetFill(1, 0), SetStringTip(CM_STR_CB_LARGE_ADVERTISING_CAMPAIGN),
 						NWidget(NWID_SPACER), SetMinimalSize(2, 0),
-						NWidget(WWT_PUSHTXTBTN, COLOUR_BROWN, WID_CB_FUND),SetMinimalSize(33, 12),SetFill(1, 0), SetStringTip(CM_STR_CB_NEW_BUILDINGS),
+						NWidget(WWT_PUSHTXTBTN, Colours::Brown, WID_CB_FUND),SetMinimalSize(33, 12),SetFill(1, 0), SetStringTip(CM_STR_CB_NEW_BUILDINGS),
 						NWidget(NWID_SPACER), SetMinimalSize(4, 0),
 					EndContainer(),
 					NWidget(NWID_SPACER), SetMinimalSize(0, 2),
 					NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize),
-						NWidget(WWT_TEXTBTN, COLOUR_BROWN, WID_CB_ADVERT_REGULAR),SetMinimalSize(33, 12),SetFill(1, 0), SetStringTip(CM_STR_CB_ADVERT_REGULAR, CM_STR_CB_ADVERT_REGULAR_TT),
+						NWidget(WWT_TEXTBTN, Colours::Brown, WID_CB_ADVERT_REGULAR),SetMinimalSize(33, 12),SetFill(1, 0), SetStringTip(CM_STR_CB_ADVERT_REGULAR, CM_STR_CB_ADVERT_REGULAR_TT),
  						NWidget(NWID_SPACER), SetMinimalSize(2, 0),
-						NWidget(WWT_TEXTBTN, COLOUR_BROWN, WID_CB_FUND_REGULAR),SetMinimalSize(33, 12),SetFill(1, 0), SetStringTip(CM_STR_CB_FUND_REGULAR, CM_STR_CB_FUND_REGULAR_TT),
+						NWidget(WWT_TEXTBTN, Colours::Brown, WID_CB_FUND_REGULAR),SetMinimalSize(33, 12),SetFill(1, 0), SetStringTip(CM_STR_CB_FUND_REGULAR, CM_STR_CB_FUND_REGULAR_TT),
 						NWidget(NWID_SPACER), SetMinimalSize(4, 0),
 					EndContainer(),
 					NWidget(NWID_SPACER), SetMinimalSize(0, 2),
 					NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize),
   						NWidget(NWID_SPACER), SetMinimalSize(33, 0), SetFill(1, 0),
   						NWidget(NWID_SPACER), SetMinimalSize(2, 0),
-						NWidget(WWT_TEXTBTN, COLOUR_BROWN, WID_CB_POWERFUND),SetMinimalSize(33, 12),SetFill(1, 0), SetStringTip(CM_STR_CB_POWERFUND, CM_STR_CB_POWERFUND_TT),
+						NWidget(WWT_TEXTBTN, Colours::Brown, WID_CB_POWERFUND),SetMinimalSize(33, 12),SetFill(1, 0), SetStringTip(CM_STR_CB_POWERFUND, CM_STR_CB_POWERFUND_TT),
 						NWidget(NWID_SPACER), SetMinimalSize(4, 0),
 					EndContainer(),
 				EndContainer(),
 			EndContainer(),
 			NWidget(NWID_SPACER), SetMinimalSize(0, 5),  SetResize(1, 0), SetFill(1, 0),
-			NWidget(NWID_SELECTION, INVALID_COLOUR, WID_CB_SELECT_REQUIREMENTS),
-				NWidget(WWT_EMPTY, INVALID_COLOUR, WID_CB_GOALS),SetMinimalSize(50 + 35 + 35 + 40 + 35 + 30, 0), SetResize(1, 0), SetFill(1, 0),
+			NWidget(NWID_SELECTION, Colours::Invalid, WID_CB_SELECT_REQUIREMENTS),
+				NWidget(WWT_EMPTY, Colours::Invalid, WID_CB_GOALS),SetMinimalSize(50 + 35 + 35 + 40 + 35 + 30, 0), SetResize(1, 0), SetFill(1, 0),
 				NWidget(NWID_HORIZONTAL),
-					NWidget(WWT_EMPTY, INVALID_COLOUR, WID_CB_CARGO_NAME),SetMinimalSize(50, 0), SetResize(0, 0), SetFill(1, 0),
-					NWidget(WWT_EMPTY, INVALID_COLOUR, WID_CB_CARGO_AMOUNT),SetMinimalSize(35, 0), SetResize(1, 0), SetFill(0, 0),
-					NWidget(WWT_EMPTY, INVALID_COLOUR, WID_CB_CARGO_REQ),SetMinimalSize(35, 0), SetResize(1, 0), SetFill(0, 0),
-					NWidget(WWT_EMPTY, INVALID_COLOUR, WID_CB_CARGO_PREVIOUS),SetMinimalSize(40, 0),  SetResize(1, 0), SetFill(0, 0),
-					NWidget(WWT_EMPTY, INVALID_COLOUR, WID_CB_CARGO_STORE),SetMinimalSize(35, 0), SetResize(1, 0), SetFill(0, 0),
-					NWidget(WWT_EMPTY, INVALID_COLOUR, WID_CB_CARGO_STORE_PCT),SetMinimalSize(30, 0), SetResize(1, 0), SetFill(0, 0),
+					NWidget(WWT_EMPTY, Colours::Invalid, WID_CB_CARGO_NAME),SetMinimalSize(50, 0), SetResize(0, 0), SetFill(1, 0),
+					NWidget(WWT_EMPTY, Colours::Invalid, WID_CB_CARGO_AMOUNT),SetMinimalSize(35, 0), SetResize(1, 0), SetFill(0, 0),
+					NWidget(WWT_EMPTY, Colours::Invalid, WID_CB_CARGO_REQ),SetMinimalSize(35, 0), SetResize(1, 0), SetFill(0, 0),
+					NWidget(WWT_EMPTY, Colours::Invalid, WID_CB_CARGO_PREVIOUS),SetMinimalSize(40, 0),  SetResize(1, 0), SetFill(0, 0),
+					NWidget(WWT_EMPTY, Colours::Invalid, WID_CB_CARGO_STORE),SetMinimalSize(35, 0), SetResize(1, 0), SetFill(0, 0),
+					NWidget(WWT_EMPTY, Colours::Invalid, WID_CB_CARGO_STORE_PCT),SetMinimalSize(30, 0), SetResize(1, 0), SetFill(0, 0),
 				EndContainer(),
 			EndContainer(),
 			NWidget(NWID_SPACER), SetMinimalSize(0, 0), SetResize(1, 0), SetFill(1, 1),
@@ -472,16 +473,16 @@ static const NWidgetPart _nested_cb_town_widgets[] = {
 	EndContainer(),
 	NWidget(NWID_HORIZONTAL),
 		NWidget(NWID_HORIZONTAL),
-			NWidget(WWT_PUSHTXTBTN, COLOUR_BROWN, WID_CB_TOWN_VIEW), SetMinimalSize(40, 12), SetFill(1, 1), SetResize(1, 0), SetStringTip(CM_STR_CB_GUI_TOWN_VIEW_BUTTON, CM_STR_CB_GUI_TOWN_VIEW_TOOLTIP),
-			NWidget(WWT_PUSHTXTBTN, COLOUR_BROWN, WID_CB_SHOW_AUTHORITY), SetMinimalSize(40, 12), SetFill(1, 1), SetResize(1, 0), SetStringTip(STR_TOWN_VIEW_LOCAL_AUTHORITY_BUTTON, STR_TOWN_VIEW_LOCAL_AUTHORITY_TOOLTIP),
+			NWidget(WWT_PUSHTXTBTN, Colours::Brown, WID_CB_TOWN_VIEW), SetMinimalSize(40, 12), SetFill(1, 1), SetResize(1, 0), SetStringTip(CM_STR_CB_GUI_TOWN_VIEW_BUTTON, CM_STR_CB_GUI_TOWN_VIEW_TOOLTIP),
+			NWidget(WWT_PUSHTXTBTN, Colours::Brown, WID_CB_SHOW_AUTHORITY), SetMinimalSize(40, 12), SetFill(1, 1), SetResize(1, 0), SetStringTip(STR_TOWN_VIEW_LOCAL_AUTHORITY_BUTTON, STR_TOWN_VIEW_LOCAL_AUTHORITY_TOOLTIP),
 		EndContainer(),
-		NWidget(WWT_RESIZEBOX, COLOUR_BROWN),
+		NWidget(WWT_RESIZEBOX, Colours::Brown),
 	EndContainer(),
 };
 
 static WindowDesc _cb_town_desc(
-	WDP_AUTO, "cm_town_cb", 160, 30,
-	CM_WC_CB_TOWN, WC_NONE,
+	WindowPosition::Automatic, "cm_town_cb", 160, 30,
+	WindowClass::CmCbTown, WindowClass::None,
 	{},
 	_nested_cb_town_widgets,
 	&CBTownWindow::hotkeys

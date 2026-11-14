@@ -3,13 +3,15 @@
 
 #include "../../cargo_type.h"
 
+#include <array>
+
 namespace citymania {
 
 namespace ext {
 
 class CompanyEconomyEntry {
 public:
-    Money cargo_income[NUM_CARGO]; ///< Cargo income from each cargo type
+    std::array<Money, NUM_CARGO> cargo_income{}; ///< Cargo income from each cargo type
 };
 
 class Company {

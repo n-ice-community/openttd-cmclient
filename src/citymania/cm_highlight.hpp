@@ -14,11 +14,11 @@
 
 #include "../table/sprites.h"
 
-enum TileHighlightType {
-    THT_NONE,
-    THT_WHITE,
-    THT_BLUE,
-    THT_RED,
+enum class TileHighlightType : uint8_t {
+    None,
+    White,
+    Blue,
+    Red,
 };
 
 namespace citymania {
@@ -43,9 +43,9 @@ void UpdateTownZoning(Town *town, uint32 prev_edge);
 void UpdateZoningTownHouses(const Town *town, uint32 old_houses);
 HighLightStyle UpdateTileSelection(HighLightStyle new_drawstyle);
 
-std::pair<ZoningBorder, uint8> GetTownZoneBorder(TileIndex tile);
-ZoningBorder GetAnyStationCatchmentBorder(TileIndex tlie);
-// std::pair<ZoningBorder, uint8> GetTownAdvertisementBorder(TileIndex tile);
+std::pair<ZoningBorders, uint8> GetTownZoneBorder(TileIndex tile);
+ZoningBorders GetAnyStationCatchmentBorder(TileIndex tlie);
+// std::pair<ZoningBorders, uint8> GetTownAdvertisementBorder(TileIndex tile);
 //
 SpriteID GetTownTileZoningPalette(TileIndex tile);
 SpriteID GetIndustryTileZoningPalette(TileIndex tile, Industry *ind);
