@@ -1,3 +1,42 @@
+---
+# Follows the C++ rules in .editorconfig as closely as clang-format allows.
+Language: Cpp
 BasedOnStyle: LLVM
+
+# indent_style = tab; cpp_alignment_tab_fill_style = use_spaces
+UseTab: ForIndentation
 IndentWidth: 4
-SpacesBeforeTrailingComments: 2
+TabWidth: 4
+
+# cpp_indent_access_specifiers = false; cpp_indent_class_members_from_access_specifiers = true
+AccessModifierOffset: -4
+# cpp_namespace_indentation = all
+NamespaceIndentation: All
+# cpp_indent_case_labels = true
+IndentCaseLabels: true
+
+# cpp_new_line_before_open_brace_function = new_line, every other brace on the same line
+BreakBeforeBraces: WebKit
+
+# cpp_max_line_length unset; existing line breaks are kept
+ColumnLimit: 0
+# cpp_simple_block_style = line_break; cpp_new_line_close_brace_same_line_empty_function = false
+AllowShortFunctionsOnASingleLine: None
+# cpp_simple_embedded_statement_style / cpp_simple_case_statement_style = do_not_change
+AllowShortIfStatementsOnASingleLine: WithoutElse
+AllowShortLoopsOnASingleLine: true
+AllowShortCaseLabelsOnASingleLine: true
+# cpp_break_template_declaration = line_break
+BreakTemplateDeclarations: Yes
+# insert_final_newline = true
+InsertNewlineAtEOF: true
+
+# cpp_int_align_eq = true
+AlignConsecutiveAssignments: Consecutive
+# cpp_align_multiline_binary_expressions_chain = false
+AlignOperands: DontAlign
+
+# Not in .editorconfig: keep include order (stdafx.h first, safeguards.h last), no namespace end comments
+SortIncludes: Never
+FixNamespaceComments: false
+...
