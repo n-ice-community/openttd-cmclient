@@ -12,7 +12,6 @@
 #include "script_log.hpp"
 #include "../../debug.h"
 #include "../../window_func.h"
-#include "../../string_func.h"
 
 #include "../../safeguards.h"
 
@@ -56,6 +55,6 @@
 	}
 
 	/* Also still print to debug window */
-	Debug(script, level, "[{}] [{}] {}", ScriptObject::GetRootCompany(), logc, line.text);
-	InvalidateWindowClassesData(WC_SCRIPT_DEBUG, ScriptObject::GetRootCompany());
+	Debug(Facility::Script, static_cast<Severity>(level), "[{}] [{}] {}", ScriptObject::GetRootCompany(), logc, line.text);
+	InvalidateWindowClassesData(WindowClass::ScriptDebug, ScriptObject::GetRootCompany());
 }

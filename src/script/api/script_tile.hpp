@@ -52,12 +52,12 @@ public:
 	 */
 	enum Corner {
 		/* Note: these values represent part of the in-game Corner enum */
-		CORNER_W       = ::CORNER_W,       ///< West corner
-		CORNER_S       = ::CORNER_S,       ///< South corner
-		CORNER_E       = ::CORNER_E,       ///< East corner
-		CORNER_N       = ::CORNER_N,       ///< North corner
+		CORNER_W = to_underlying(::Corner::W), ///< West corner.
+		CORNER_S = to_underlying(::Corner::S), ///< South corner.
+		CORNER_E = to_underlying(::Corner::E), ///< East corner.
+		CORNER_N = to_underlying(::Corner::N), ///< North corner.
 
-		CORNER_INVALID = ::CORNER_INVALID, ///< An invalid corner
+		CORNER_INVALID = to_underlying(::Corner::Invalid), ///< An invalid corner.
 	};
 
 	/**
@@ -100,10 +100,10 @@ public:
 	 */
 	enum TransportType {
 		/* Note: these values represent part of the in-game TransportType enum */
-		TRANSPORT_RAIL    =  ::TRANSPORT_RAIL,  ///< Tile with rail.
-		TRANSPORT_ROAD    =  ::TRANSPORT_ROAD,  ///< Tile with road.
-		TRANSPORT_WATER   =  ::TRANSPORT_WATER, ///< Tile with navigable waterways.
-		TRANSPORT_AIR     =  ::TRANSPORT_AIR,   ///< Tile with airport.
+		TRANSPORT_RAIL = to_underlying(::TransportType::Rail), ///< Tile with rail.
+		TRANSPORT_ROAD = to_underlying(::TransportType::Road), ///< Tile with road.
+		TRANSPORT_WATER = to_underlying(::TransportType::Water), ///< Tile with navigable waterways.
+		TRANSPORT_AIR = to_underlying(::TransportType::Air), ///< Tile with airport.
 
 		/* Custom added value, only valid for this API */
 		TRANSPORT_INVALID = -1, ///< Tile without any transport type.

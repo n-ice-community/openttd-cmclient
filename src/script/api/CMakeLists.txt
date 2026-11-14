@@ -52,6 +52,7 @@ foreach(API "ai;AI" "game;GS" "template;Template")
                         -DSCRIPT_API_SOURCE_FILE=${CMAKE_CURRENT_SOURCE_DIR}/squirrel_export.sq.hpp.in
                         -DSCRIPT_API_BINARY_FILE=${SCRIPT_API_BINARY_FILE}
                         -DSCRIPT_API_FILE=${SCRIPT_API_FILE}
+                        -DSQUIRREL_EXPORT_SQQ_HPP=${SCRIPT_API_FILE_NAME}.sq.hpp
                         -DAPIUC=${APIUC}
                         -DAPILC=${APILC}
                         -P ${CMAKE_SOURCE_DIR}/cmake/scripts/SquirrelExport.cmake
@@ -160,6 +161,7 @@ add_files(
     script_companymode.hpp
     script_controller.hpp
     script_date.hpp
+    script_depot.hpp
     script_depotlist.hpp
     script_engine.hpp
     script_enginelist.hpp
@@ -234,6 +236,7 @@ add_files(
     script_companymode.cpp
     script_controller.cpp
     script_date.cpp
+    script_depot.cpp
     script_depotlist.cpp
     script_engine.cpp
     script_enginelist.cpp

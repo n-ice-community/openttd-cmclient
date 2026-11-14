@@ -37,7 +37,7 @@ static void OpenBankFile(const std::string &filename)
 	/* If there is no sound file (nosound set), don't load anything */
 	if (filename.empty()) return;
 
-	original_sound_file = std::make_unique<RandomAccessFile>(filename, BASESET_DIR);
+	original_sound_file = std::make_unique<RandomAccessFile>(filename, Subdirectory::Baseset);
 	size_t pos = original_sound_file->GetPos();
 	uint count = original_sound_file->ReadDword();
 
@@ -51,7 +51,7 @@ static void OpenBankFile(const std::string &filename)
 		/* Corrupt sample data? Just leave the allocated memory as those tell
 		 * there is no sound to play (size = 0 due to calloc). Not allocating
 		 * the memory disables valid NewGRFs that replace sounds. */
-		Debug(misc, 6, "Incorrect number of sounds in '{}', ignoring.", filename);
+		Debug(Facility::Misc, Severity::Debug2, "Incorrect number of sounds in '{}', ignoring.", filename);
 		return;
 	}
 
@@ -89,7 +89,7 @@ static bool SetBankSource(MixerChannel *mc, SoundEntry *sound, SoundID sound_id)
 
 void InitializeSound()
 {
-	Debug(misc, 1, "Loading sound effects...");
+	Debug(Facility::Misc, Severity::Error, "Loading sound effects...");
 	OpenBankFile(BaseSounds::GetUsedSet()->files[0].filename);
 }
 
@@ -120,9 +120,10 @@ static void StartSound(SoundID sound_id, float pan, uint volume)
 	MxActivateChannel(mc);
 }
 
-
-static const uint8_t _vol_factor_by_zoom[] = {255, 255, 255, 190, 134, 87};
-static_assert(lengthof(_vol_factor_by_zoom) == to_underlying(ZoomLevel::End));
+/** Volume scaling for each zoom level. */
+static constexpr EnumIndexArray<uint8_t, ZoomLevel, ZoomLevel::End> _vol_factor_by_zoom{
+	255, 255, 255, 190, 134, 8
+};
 
 static const uint8_t _sound_base_vol[] = {
 	128,  90, 128, 128, 128, 128, 128, 128,
@@ -156,7 +157,6 @@ void SndCopyToPool()
 	for (uint i = 0; i < ORIGINAL_SAMPLE_COUNT; i++) {
 		sound[i] = _original_sounds[_sound_idx[i]];
 		sound[i].volume = _sound_base_vol[i];
-		sound[i].priority = 0;
 	}
 }
 
@@ -184,10 +184,9 @@ void ChangeSoundSet(int index)
 
 		*sound = _original_sounds[_sound_idx[i]];
 		sound->volume = _sound_base_vol[i];
-		sound->priority = 0;
 	}
 
-	InvalidateWindowData(WC_GAME_OPTIONS, WN_GAME_OPTIONS_GAME_OPTIONS, 0, true);
+	InvalidateWindowData(WindowClass::GameOptions, GameOptionsWindowNumber::GameOptions, 0, true);
 }
 
 /**
@@ -215,7 +214,7 @@ static void SndPlayScreenCoordFx(SoundID sound, int left, int right, int top, in
 			StartSound(
 				sound,
 				panning,
-				_vol_factor_by_zoom[to_underlying(vp.zoom)]
+				_vol_factor_by_zoom[vp.zoom]
 			);
 			return;
 		}
@@ -266,18 +265,21 @@ void SndConfirmBeep()
 /** Names corresponding to the sound set's files */
 static const std::string_view _sound_file_names[] = { "samples" };
 
+/** @copydoc BaseSet::GetFilenames */
 template <>
 /* static */ std::span<const std::string_view> BaseSet<SoundsSet>::GetFilenames()
 {
 	return _sound_file_names;
 }
 
+/** @copydoc BaseMedia::GetExtension */
 template <>
 /* static */ std::string_view BaseMedia<SoundsSet>::GetExtension()
 {
 	return ".obs"; // OpenTTD Base Sounds
 }
 
+/** @copydoc BaseMedia::DetermineBestSet */
 template <>
 /* static */ bool BaseMedia<SoundsSet>::DetermineBestSet()
 {

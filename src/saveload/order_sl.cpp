@@ -5,7 +5,7 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <https://www.gnu.org/licenses/old-licenses/gpl-2.0>.
  */
 
-/** @file order_sl.cpp Code handling saving and loading of orders */
+/** @file order_sl.cpp Code handling saving and loading of orders. */
 
 #include "../stdafx.h"
 
@@ -15,6 +15,7 @@
 #include "saveload_internal.h"
 #include "../order_backup.h"
 #include "../settings_type.h"
+#include "../vehicle_base.h"
 #include "../network/network.h"
 
 #include "../safeguards.h"
@@ -29,11 +30,11 @@ void Order::ConvertFromOldSavegame()
 	this->flags = 0;
 
 	/* First handle non-stop - use value from savegame if possible, else use value from config file */
-	if (_settings_client.gui.sg_new_nonstop || (IsSavegameVersionBefore(SLV_22) && _savegame_type != SGT_TTO && _savegame_type != SGT_TTD && _settings_client.gui.new_nonstop)) {
+	if (_settings_client.gui.sg_new_nonstop || (IsSavegameVersionBefore(SaveLoadVersion::SavePatches) && _savegame_type != SavegameType::TTO && _savegame_type != SavegameType::TTD && _settings_client.gui.new_nonstop)) {
 		/* OFB_NON_STOP */
-		this->SetNonStopType((old_flags & 8) ? OrderNonStopFlags{OrderNonStopFlag::NoIntermediate, OrderNonStopFlag::NoDestination} : OrderNonStopFlag::NoIntermediate);
+		this->SetNonStopType((old_flags & 8) ? OrderNonStopFlags{OrderNonStopFlag::NonStop, OrderNonStopFlag::GoVia} : OrderNonStopFlag::NonStop);
 	} else {
-		this->SetNonStopType((old_flags & 8) ? OrderNonStopFlag::NoIntermediate : OrderNonStopFlags{});
+		this->SetNonStopType((old_flags & 8) ? OrderNonStopFlag::NonStop : OrderNonStopFlags{});
 	}
 
 	switch (this->GetType()) {
@@ -50,7 +51,7 @@ void Order::ConvertFromOldSavegame()
 			this->SetLoadType(OrderLoadType::LoadIfPossible);
 		} else {
 			/* old OTTD versions stored full_load_any in config file - assume it was enabled when loading */
-			this->SetLoadType(_settings_client.gui.sg_full_load_any || IsSavegameVersionBefore(SLV_22) ? OrderLoadType::FullLoadAny : OrderLoadType::FullLoad);
+			this->SetLoadType(_settings_client.gui.sg_full_load_any || IsSavegameVersionBefore(SaveLoadVersion::SavePatches) ? OrderLoadType::FullLoadAny : OrderLoadType::FullLoad);
 		}
 
 		if (this->IsType(OT_GOTO_STATION)) this->SetStopLocation(OrderStopLocation::FarEnd);
@@ -144,47 +145,47 @@ OldOrderSaveLoadItem &AllocateOldOrder(size_t pool_index)
 SaveLoadTable GetOrderDescription()
 {
 	static const SaveLoad _order_desc[] = {
-		     SLE_VARNAME(OldOrderSaveLoadItem, order.type,  "type",  SLE_UINT8),
-		     SLE_VARNAME(OldOrderSaveLoadItem, order.flags, "flags", SLE_UINT8),
-		     SLE_VARNAME(OldOrderSaveLoadItem, order.dest,  "dest",  SLE_UINT16),
-		 SLE_CONDVARNAME(OldOrderSaveLoadItem, next,        "next",  SLE_FILE_U16 | SLE_VAR_U32, SL_MIN_VERSION, SLV_69),
-		 SLE_CONDVARNAME(OldOrderSaveLoadItem, next,        "next",  SLE_UINT32,                 SLV_69, SL_MAX_VERSION),
-		 SLE_CONDVARNAME(OldOrderSaveLoadItem, order.refit_cargo, "refit_cargo", SLE_UINT8,   SLV_36, SL_MAX_VERSION),
-		 SLE_CONDVARNAME(OldOrderSaveLoadItem, order.wait_time,   "wait_time",   SLE_UINT16,  SLV_67, SL_MAX_VERSION),
-		 SLE_CONDVARNAME(OldOrderSaveLoadItem, order.travel_time, "travel_time", SLE_UINT16,  SLV_67, SL_MAX_VERSION),
-		 SLE_CONDVARNAME(OldOrderSaveLoadItem, order.max_speed,   "max_speed",   SLE_UINT16, SLV_172, SL_MAX_VERSION),
+		SaveLoad::Variable<VarFileType::U8>("type", SLE_OBJECT_ADDRESS(OldOrderSaveLoadItem, order.type)),
+		SaveLoad::Variable<VarFileType::U8>("flags", SLE_OBJECT_ADDRESS(OldOrderSaveLoadItem, order.flags)),
+		SaveLoad::Variable<VarFileType::U16>("dest", SLE_OBJECT_ADDRESS(OldOrderSaveLoadItem, order.dest)),
+		SaveLoad::Variable<VarFileType::U16>("next", SLE_OBJECT_ADDRESS(OldOrderSaveLoadItem, next), SaveLoadVersion::MinVersion, SaveLoadVersion::MoreCargoPackets),
+		SaveLoad::Variable<VarFileType::U32>("next", SLE_OBJECT_ADDRESS(OldOrderSaveLoadItem, next), SaveLoadVersion::MoreCargoPackets),
+		SaveLoad::Variable<VarFileType::U8>("refit_cargo", SLE_OBJECT_ADDRESS(OldOrderSaveLoadItem, order.refit_cargo), SaveLoadVersion::RefitOrders),
+		SaveLoad::Variable<VarFileType::U16>("wait_time", SLE_OBJECT_ADDRESS(OldOrderSaveLoadItem, order.wait_time), SaveLoadVersion::Timetables),
+		SaveLoad::Variable<VarFileType::U16>("travel_time", SLE_OBJECT_ADDRESS(OldOrderSaveLoadItem, order.travel_time), SaveLoadVersion::Timetables),
+		SaveLoad::Variable<VarFileType::U16>("max_speed", SLE_OBJECT_ADDRESS(OldOrderSaveLoadItem, order.max_speed), SaveLoadVersion::OrderMaxSpeed),
 	};
 
 	return _order_desc;
 }
 
 struct ORDRChunkHandler : ChunkHandler {
-	ORDRChunkHandler() : ChunkHandler('ORDR', CH_READONLY) {}
+	ORDRChunkHandler() : ChunkHandler("ORDR", ChunkType::ReadOnly) {}
 
 	void Load() const override
 	{
-		if (IsSavegameVersionBefore(SLV_5, 2)) {
+		if (IsSavegameVersionBefore(SaveLoadVersion::BigMap, 2)) {
 			/* Version older than 5.2 did not have a ->next pointer. Convert them
 			 * (in the old days, the orderlist was 5000 items big) */
 			size_t len = SlGetFieldLength();
 
-			if (IsSavegameVersionBefore(SLV_5)) {
+			if (IsSavegameVersionBefore(SaveLoadVersion::BigMap)) {
 				/* Pre-version 5 had another layout for orders
 				 * (uint16_t instead of uint32_t) */
 				len /= sizeof(uint16_t);
 				std::vector<uint16_t> orders(len);
 
-				SlCopy(&orders[0], len, SLE_UINT16);
+				SlCopy<VarFileType::U16>(orders);
 
 				for (size_t i = 0; i < len; ++i) {
 					auto &item = AllocateOldOrder(i);
 					item.order.AssignOrder(UnpackVersion4Order(orders[i]));
 				}
-			} else if (IsSavegameVersionBefore(SLV_5, 2)) {
+			} else if (IsSavegameVersionBefore(SaveLoadVersion::BigMap, 2)) {
 				len /= sizeof(uint32_t);
 				std::vector<uint32_t> orders(len);
 
-				SlCopy(&orders[0], len, SLE_UINT32);
+				SlCopy<VarFileType::U32>(orders);
 
 				for (size_t i = 0; i < len; ++i) {
 					auto &item = AllocateOldOrder(i);
@@ -218,13 +219,13 @@ template <typename T>
 class SlOrders : public VectorSaveLoadHandler<SlOrders<T>, T, Order> {
 public:
 	static inline const SaveLoad description[] = {
-		SLE_VAR(Order, type,        SLE_UINT8),
-		SLE_VAR(Order, flags,       SLE_UINT8),
-		SLE_VAR(Order, dest,        SLE_UINT16),
-		SLE_VAR(Order, refit_cargo, SLE_UINT8),
-		SLE_VAR(Order, wait_time,   SLE_UINT16),
-		SLE_VAR(Order, travel_time, SLE_UINT16),
-		SLE_VAR(Order, max_speed,   SLE_UINT16),
+		SaveLoad::Variable<VarFileType::U8>("type", SLE_OBJECT_ADDRESS(Order, type)),
+		SaveLoad::Variable<VarFileType::U8>("flags", SLE_OBJECT_ADDRESS(Order, flags)),
+		SaveLoad::Variable<VarFileType::U16>("dest", SLE_OBJECT_ADDRESS(Order, dest)),
+		SaveLoad::Variable<VarFileType::U8>("refit_cargo", SLE_OBJECT_ADDRESS(Order, refit_cargo)),
+		SaveLoad::Variable<VarFileType::U16>("wait_time", SLE_OBJECT_ADDRESS(Order, wait_time)),
+		SaveLoad::Variable<VarFileType::U16>("travel_time", SLE_OBJECT_ADDRESS(Order, travel_time)),
+		SaveLoad::Variable<VarFileType::U16>("max_speed", SLE_OBJECT_ADDRESS(Order, max_speed)),
 	};
 	static inline const SaveLoadCompatTable compat_description = {};
 
@@ -240,16 +241,16 @@ template class SlOrders<OrderBackup>;
 SaveLoadTable GetOrderListDescription()
 {
 	static const SaveLoad _orderlist_desc[] = {
-		SLE_CONDVARNAME(OrderList, old_order_index, "first", SLE_FILE_U16 | SLE_VAR_U32, SL_MIN_VERSION, SLV_69),
-		SLE_CONDVARNAME(OrderList, old_order_index, "first", SLE_UINT32,                 SLV_69, SLV_ORDERS_OWNED_BY_ORDERLIST),
-		SLEG_CONDSTRUCTLIST("orders", SlOrders<OrderList>, SLV_ORDERS_OWNED_BY_ORDERLIST, SL_MAX_VERSION),
+		SaveLoad::Variable<VarFileType::U16>("first", SLE_OBJECT_ADDRESS(OrderList, old_order_index), SaveLoadVersion::MinVersion, SaveLoadVersion::MoreCargoPackets),
+		SaveLoad::Variable<VarFileType::U32>("first", SLE_OBJECT_ADDRESS(OrderList, old_order_index), SaveLoadVersion::MoreCargoPackets, SaveLoadVersion::OrdersOwnedByOrderlist),
+		SaveLoad::StructList<SlOrders<OrderList>>("orders", SaveLoadVersion::OrdersOwnedByOrderlist),
 	};
 
 	return _orderlist_desc;
 }
 
 struct ORDLChunkHandler : ChunkHandler {
-	ORDLChunkHandler() : ChunkHandler('ORDL', CH_TABLE) {}
+	ORDLChunkHandler() : ChunkHandler("ORDL", ChunkType::Table) {}
 
 	void Save() const override
 	{
@@ -269,7 +270,7 @@ struct ORDLChunkHandler : ChunkHandler {
 		int index;
 
 		while ((index = SlIterateArray()) != -1) {
-			OrderList *list = new (OrderListID(index)) OrderList();
+			OrderList *list = OrderList::CreateAtIndex(OrderListID(index));
 			SlObject(list, slt);
 		}
 
@@ -277,7 +278,7 @@ struct ORDLChunkHandler : ChunkHandler {
 
 	void FixPointers() const override
 	{
-		bool migrate_orders = IsSavegameVersionBefore(SLV_ORDERS_OWNED_BY_ORDERLIST);
+		bool migrate_orders = IsSavegameVersionBefore(SaveLoadVersion::OrdersOwnedByOrderlist);
 
 		for (OrderList *list : OrderList::Iterate()) {
 			SlObject(list, GetOrderListDescription());
@@ -296,31 +297,31 @@ struct ORDLChunkHandler : ChunkHandler {
 SaveLoadTable GetOrderBackupDescription()
 {
 	static const SaveLoad _order_backup_desc[] = {
-		     SLE_VAR(OrderBackup, user,                     SLE_UINT32),
-		     SLE_VAR(OrderBackup, tile,                     SLE_UINT32),
-		     SLE_VAR(OrderBackup, group,                    SLE_UINT16),
-		 SLE_CONDVAR(OrderBackup, service_interval,         SLE_FILE_U32 | SLE_VAR_U16,  SL_MIN_VERSION, SLV_192),
-		 SLE_CONDVAR(OrderBackup, service_interval,         SLE_UINT16,                SLV_192, SL_MAX_VERSION),
-		    SLE_SSTR(OrderBackup, name,                     SLE_STR),
-		 SLE_CONDREF(OrderBackup, clone,                    REF_VEHICLE,               SLV_192, SL_MAX_VERSION),
-		     SLE_VAR(OrderBackup, cur_real_order_index,     SLE_UINT8),
-		 SLE_CONDVAR(OrderBackup, cur_implicit_order_index, SLE_UINT8,                 SLV_176, SL_MAX_VERSION),
-		 SLE_CONDVAR(OrderBackup, current_order_time,       SLE_UINT32,                SLV_176, SL_MAX_VERSION),
-		 SLE_CONDVAR(OrderBackup, lateness_counter,         SLE_INT32,                 SLV_176, SL_MAX_VERSION),
-		 SLE_CONDVAR(OrderBackup, timetable_start,          SLE_FILE_I32 | SLE_VAR_U64, SLV_176, SLV_TIMETABLE_START_TICKS_FIX),
-		 SLE_CONDVAR(OrderBackup, timetable_start,          SLE_UINT64,                 SLV_TIMETABLE_START_TICKS_FIX, SL_MAX_VERSION),
-		 SLE_CONDVAR(OrderBackup, vehicle_flags,            SLE_FILE_U8 | SLE_VAR_U16, SLV_176, SLV_180),
-		 SLE_CONDVAR(OrderBackup, vehicle_flags,            SLE_UINT16,                SLV_180, SL_MAX_VERSION),
-		SLE_CONDVARNAME(OrderBackup, old_order_index, "orders", SLE_FILE_U16 | SLE_VAR_U32, SL_MIN_VERSION, SLV_69),
-		SLE_CONDVARNAME(OrderBackup, old_order_index, "orders", SLE_UINT32,                 SLV_69, SLV_ORDERS_OWNED_BY_ORDERLIST),
-		SLEG_CONDSTRUCTLIST("orders", SlOrders<OrderBackup>, SLV_ORDERS_OWNED_BY_ORDERLIST, SL_MAX_VERSION),
+		SaveLoad::Variable<VarFileType::U32>("user", SLE_OBJECT_ADDRESS(OrderBackup, user)),
+		SaveLoad::Variable<VarFileType::U32>("tile", SLE_OBJECT_ADDRESS(OrderBackup, tile)),
+		SaveLoad::Variable<VarFileType::U16>("group", SLE_OBJECT_ADDRESS(OrderBackup, group)),
+		SaveLoad::Variable<VarFileType::U32>("service_interval", SLE_OBJECT_ADDRESS(OrderBackup, service_interval), SaveLoadVersion::MinVersion, SaveLoadVersion::FixOrderBackup),
+		SaveLoad::Variable<VarFileType::U16>("service_interval", SLE_OBJECT_ADDRESS(OrderBackup, service_interval), SaveLoadVersion::FixOrderBackup),
+		SaveLoad::String("name", SLE_OBJECT_ADDRESS(OrderBackup, name)),
+		SaveLoad::Reference<SLRefType::Vehicle>("clone", SLE_OBJECT_ADDRESS(OrderBackup, clone), SaveLoadVersion::FixOrderBackup),
+		SaveLoad::Variable<VarFileType::U8>("cur_real_order_index", SLE_OBJECT_ADDRESS(OrderBackup, cur_real_order_index)),
+		SaveLoad::Variable<VarFileType::U8>("cur_implicit_order_index", SLE_OBJECT_ADDRESS(OrderBackup, cur_implicit_order_index), SaveLoadVersion::BackupOrderState),
+		SaveLoad::Variable<VarFileType::U32>("current_order_time", SLE_OBJECT_ADDRESS(OrderBackup, current_order_time), SaveLoadVersion::BackupOrderState),
+		SaveLoad::Variable<VarFileType::I32>("lateness_counter", SLE_OBJECT_ADDRESS(OrderBackup, lateness_counter), SaveLoadVersion::BackupOrderState),
+		SaveLoad::Variable<VarFileType::I32>("timetable_start", SLE_OBJECT_ADDRESS(OrderBackup, timetable_start), SaveLoadVersion::BackupOrderState, SaveLoadVersion::TimetableStartTicksFix),
+		SaveLoad::Variable<VarFileType::U64>("timetable_start", SLE_OBJECT_ADDRESS(OrderBackup, timetable_start), SaveLoadVersion::TimetableStartTicksFix),
+		SaveLoad::Variable<VarFileType::U8>("vehicle_flags", SLE_OBJECT_ADDRESS(OrderBackup, vehicle_flags), SaveLoadVersion::BackupOrderState, SaveLoadVersion::ServiceIntervalPercent),
+		SaveLoad::Variable<VarFileType::U16>("vehicle_flags", SLE_OBJECT_ADDRESS(OrderBackup, vehicle_flags), SaveLoadVersion::ServiceIntervalPercent),
+		SaveLoad::Variable<VarFileType::U16>("orders", SLE_OBJECT_ADDRESS(OrderBackup, old_order_index), SaveLoadVersion::MinVersion, SaveLoadVersion::MoreCargoPackets),
+		SaveLoad::Variable<VarFileType::U32>("orders", SLE_OBJECT_ADDRESS(OrderBackup, old_order_index), SaveLoadVersion::MoreCargoPackets, SaveLoadVersion::OrdersOwnedByOrderlist),
+		SaveLoad::StructList<SlOrders<OrderBackup>>("orders", SaveLoadVersion::OrdersOwnedByOrderlist),
 	};
 
 	return _order_backup_desc;
 }
 
 struct BKORChunkHandler : ChunkHandler {
-	BKORChunkHandler() : ChunkHandler('BKOR', CH_TABLE) {}
+	BKORChunkHandler() : ChunkHandler("BKOR", ChunkType::Table) {}
 
 	void Save() const override
 	{
@@ -346,14 +347,14 @@ struct BKORChunkHandler : ChunkHandler {
 
 		while ((index = SlIterateArray()) != -1) {
 			/* set num_orders to 0 so it's a valid OrderList */
-			OrderBackup *ob = new (OrderBackupID(index)) OrderBackup();
+			OrderBackup *ob = OrderBackup::CreateAtIndex(OrderBackupID(index));
 			SlObject(ob, slt);
 		}
 	}
 
 	void FixPointers() const override
 	{
-		bool migrate_orders = IsSavegameVersionBefore(SLV_ORDERS_OWNED_BY_ORDERLIST);
+		bool migrate_orders = IsSavegameVersionBefore(SaveLoadVersion::OrdersOwnedByOrderlist);
 
 		for (OrderBackup *ob : OrderBackup::Iterate()) {
 			SlObject(ob, GetOrderBackupDescription());

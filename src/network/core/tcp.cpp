@@ -5,9 +5,7 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <https://www.gnu.org/licenses/old-licenses/gpl-2.0>.
  */
 
-/**
- * @file tcp.cpp Basic functions to receive and send TCP packets.
- */
+/** @file tcp.cpp Basic functions to receive and send TCP packets. */
 
 #include "../../stdafx.h"
 #include "../../debug.h"
@@ -16,6 +14,7 @@
 
 #include "../../safeguards.h"
 
+/** Close the socket. */
 NetworkTCPSocketHandler::~NetworkTCPSocketHandler()
 {
 	this->CloseSocket();
@@ -46,7 +45,7 @@ NetworkRecvStatus NetworkTCPSocketHandler::CloseConnection([[maybe_unused]] bool
 	this->packet_queue.clear();
 	this->packet_recv = nullptr;
 
-	return NETWORK_RECV_STATUS_OKAY;
+	return NetworkRecvStatus::Okay;
 }
 
 /**
@@ -76,28 +75,28 @@ void NetworkTCPSocketHandler::SendPacket(std::unique_ptr<Packet> &&packet)
 SendPacketsState NetworkTCPSocketHandler::SendPackets(bool closing_down)
 {
 	/* We can not write to this socket!! */
-	if (!this->writable) return SPS_NONE_SENT;
-	if (!this->IsConnected()) return SPS_CLOSED;
+	if (!this->writable) return SendPacketsState::NoneSent;
+	if (!this->IsConnected()) return SendPacketsState::Closed;
 
 	while (!this->packet_queue.empty()) {
 		Packet &p = *this->packet_queue.front();
-		ssize_t res = p.TransferOut(SocketSender{this->sock});
+		std::ptrdiff_t res = p.TransferOut(SocketSender{this->sock});
 		if (res == -1) {
 			NetworkError err = NetworkError::GetLast();
 			if (!err.WouldBlock()) {
 				/* Something went wrong.. close client! */
 				if (!closing_down) {
-					Debug(net, 0, "Send failed: {}", err.AsString());
+					Debug(Facility::Net, Severity::Critical, "Send failed: {}", err.AsString());
 					this->CloseConnection();
 				}
-				return SPS_CLOSED;
+				return SendPacketsState::Closed;
 			}
-			return SPS_PARTLY_SENT;
+			return SendPacketsState::PartlySent;
 		}
 		if (res == 0) {
 			/* Client/server has left us :( */
 			if (!closing_down) this->CloseConnection();
-			return SPS_CLOSED;
+			return SendPacketsState::Closed;
 		}
 
 		/* Is this packet sent? */
@@ -105,11 +104,11 @@ SendPacketsState NetworkTCPSocketHandler::SendPackets(bool closing_down)
 			/* Go to the next packet */
 			this->packet_queue.pop_front();
 		} else {
-			return SPS_PARTLY_SENT;
+			return SendPacketsState::PartlySent;
 		}
 	}
 
-	return SPS_ALL_SENT;
+	return SendPacketsState::AllSent;
 }
 
 /**
@@ -118,8 +117,6 @@ SendPacketsState NetworkTCPSocketHandler::SendPackets(bool closing_down)
  */
 std::unique_ptr<Packet> NetworkTCPSocketHandler::ReceivePacket()
 {
-	ssize_t res;
-
 	if (!this->IsConnected()) return nullptr;
 
 	if (this->packet_recv == nullptr) {
@@ -131,12 +128,12 @@ std::unique_ptr<Packet> NetworkTCPSocketHandler::ReceivePacket()
 	/* Read packet size */
 	if (!p.HasPacketSizeData()) {
 		while (p.RemainingBytesToTransfer() != 0) {
-			res = p.TransferIn(SocketReceiver{this->sock});
+			std::ptrdiff_t res = p.TransferIn(SocketReceiver{this->sock});
 			if (res == -1) {
 				NetworkError err = NetworkError::GetLast();
 				if (!err.WouldBlock()) {
 					/* Something went wrong... */
-					if (!err.IsConnectionReset()) Debug(net, 0, "Recv failed: {}", err.AsString());
+					if (!err.IsConnectionReset()) Debug(Facility::Net, Severity::Critical, "Recv failed: {}", err.AsString());
 					this->CloseConnection();
 					return nullptr;
 				}
@@ -159,12 +156,12 @@ std::unique_ptr<Packet> NetworkTCPSocketHandler::ReceivePacket()
 
 	/* Read rest of packet */
 	while (p.RemainingBytesToTransfer() != 0) {
-		res = p.TransferIn(SocketReceiver{this->sock});
+		std::ptrdiff_t res = p.TransferIn(SocketReceiver{this->sock});
 		if (res == -1) {
 			NetworkError err = NetworkError::GetLast();
 			if (!err.WouldBlock()) {
 				/* Something went wrong... */
-				if (!err.IsConnectionReset()) Debug(net, 0, "Recv failed: {}", err.AsString());
+				if (!err.IsConnectionReset()) Debug(Facility::Net, Severity::Critical, "Recv failed: {}", err.AsString());
 				this->CloseConnection();
 				return nullptr;
 			}
@@ -179,7 +176,7 @@ std::unique_ptr<Packet> NetworkTCPSocketHandler::ReceivePacket()
 	}
 
 	if (!p.PrepareToRead()) {
-		Debug(net, 0, "Invalid packet received (too small / decryption error)");
+		Debug(Facility::Net, Severity::Critical, "Invalid packet received (too small / decryption error)");
 		this->CloseConnection();
 		return nullptr;
 	}

@@ -25,12 +25,18 @@ static void GRFComment(ByteReader &buf)
 	if (!buf.HasData()) return;
 
 	std::string_view text = buf.ReadString();
-	GrfMsg(2, "GRFComment: {}", StrMakeValid(text));
+	GrfMsg(Severity::Warning, "GRFComment: {}", StrMakeValid(text));
 }
 
+/** @copybrief GrfActionHandler::FileScan */
 template <> void GrfActionHandler<0x0C>::FileScan(ByteReader &) { }
+/** @copybrief GrfActionHandler::SafetyScan */
 template <> void GrfActionHandler<0x0C>::SafetyScan(ByteReader &) { }
+/** @copybrief GrfActionHandler::LabelScan */
 template <> void GrfActionHandler<0x0C>::LabelScan(ByteReader &) { }
+/** @copydoc GrfActionHandler::Init */
 template <> void GrfActionHandler<0x0C>::Init(ByteReader &buf) { GRFComment(buf); }
+/** @copybrief GrfActionHandler::Reserve */
 template <> void GrfActionHandler<0x0C>::Reserve(ByteReader &) { }
+/** @copydoc GrfActionHandler::Activation */
 template <> void GrfActionHandler<0x0C>::Activation(ByteReader &buf) { GRFComment(buf); }

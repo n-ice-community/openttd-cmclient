@@ -11,17 +11,78 @@
 #include "debug.h"
 #include "town.h"
 #include "newgrf_town.h"
+#include "newgrf_cargo.h"
 #include "timer/timer_game_tick.h"
 
 #include "safeguards.h"
 
-template <typename Tproj>
-static uint16_t TownHistoryHelper(const Town *t, CargoLabel label, uint period, Tproj proj)
+/**
+ * Get cargo production/transport history for a town via cargo label.
+ * @param t Town to query.
+ * @param label Cargo label from callback.
+ * @param period Period to query.
+ * @param proj Projection to apply on the history data.
+ * @return The cargo quantity for the given period and projection, or 0 if invalid.
+ */
+static uint16_t TownProductionHistoryHelper(const Town *t, CargoLabel label, uint period, auto proj)
 {
 	auto it = t->GetCargoSupplied(GetCargoTypeByLabel(label));
 	if (it == std::end(t->supplied)) return 0;
 
 	return ClampTo<uint16_t>(std::invoke(proj, it->history[period]));
+}
+
+/**
+ * Get cargo production/transport history for a town via cargo translation table.
+ * @param t Town to query.
+ * @param parameter Cargo ID from callback.
+ * @param grffile GRF file to use for cargo translation.
+ * @param period Period to query.
+ * @param proj Projection to apply on the history data.
+ * @return The cargo quantity for the given period and projection, or 0 if invalid.
+ */
+static uint32_t TownProductionHistoryHelperCargoID(const Town *t, uint32_t parameter, const GRFFile *grffile, uint period, auto proj)
+{
+	CargoType cargo = GetCargoTranslation(parameter, grffile);
+	if (!IsValidCargoType(cargo)) return 0;
+
+	auto it = t->GetCargoSupplied(cargo);
+	if (it == std::end(t->supplied)) return 0;
+
+	return ClampTo<uint32_t>(std::invoke(proj, it->history[period]));
+}
+
+/**
+ * Get cargo acceptance history for a town via cargo translation table.
+ * @param t Town to query.
+ * @param parameter Cargo ID from callback.
+ * @param grffile GRF file to use for cargo translation.
+ * @param period Period to query.
+ * @param proj Projection to apply on the history data.
+ * @return The cargo quantity for the given period and projection, or 0 if invalid.
+ */
+static uint32_t TownAcceptanceHistoryHelperCargoID(const Town *t, uint32_t parameter, const GRFFile *grffile, uint period, auto proj)
+{
+	CargoType cargo = GetCargoTranslation(parameter, grffile);
+	if (!IsValidCargoType(cargo)) return 0;
+
+	auto it = t->GetCargoAccepted(cargo);
+	if (it == std::end(t->accepted)) return 0;
+
+	return ClampTo<uint32_t>(std::invoke(proj, it->history[period]));
+}
+
+/**
+ * Get information about a nearby tile.
+ * @param parameter Pair of coordinates from callback.
+ * @param tile TileIndex from which the callback was initiated.
+ * @param grf_version8 True, if we are dealing with a new NewGRF which uses GRF version >= 8.
+ * @return a construction of bits obeying the newgrf format.
+ */
+static uint32_t GetNearbyTileInformation(uint8_t parameter, TileIndex tile, bool grf_version8)
+{
+	tile = GetNearbyTile(parameter, tile);
+	return GetNearbyTileInformation(tile, grf_version8);
 }
 
 /* virtual */ uint32_t TownScopeResolver::GetVariable(uint8_t variable, [[maybe_unused]] uint32_t parameter, bool &available) const
@@ -41,11 +102,30 @@ static uint16_t TownHistoryHelper(const Town *t, CargoLabel label, uint period, 
 		/* Town index */
 		case 0x41: return this->t->index.base();
 
+		/* Additional town information: (for now just) road layout */
+		case 0x42: return to_underlying(this->t->layout);
+
+		/* Number of nearby stations */
+		case 0x43: return ClampTo<uint16_t>(this->t->stations_near.size());
+
+		/* Land info for nearby tiles. */
+		case 0x60: return GetNearbyTileInformation(parameter, this->t->xy, this->ro.grffile->grf_version >= 8);
+
+		/* Recent cargo production and transport, by cargo label */
+		case 0x61: return TownProductionHistoryHelperCargoID(this->t, parameter, this->ro.grffile, THIS_MONTH, &Town::SuppliedHistory::production);
+		case 0x62: return TownProductionHistoryHelperCargoID(this->t, parameter, this->ro.grffile, THIS_MONTH, &Town::SuppliedHistory::transported);
+		case 0x63: return TownProductionHistoryHelperCargoID(this->t, parameter, this->ro.grffile, LAST_MONTH, &Town::SuppliedHistory::production);
+		case 0x64: return TownProductionHistoryHelperCargoID(this->t, parameter, this->ro.grffile, LAST_MONTH, &Town::SuppliedHistory::transported);
+
+		/* Recent cargo acceptance, by cargo label */
+		case 0x65: return TownAcceptanceHistoryHelperCargoID(this->t, parameter, this->ro.grffile, THIS_MONTH, &Town::AcceptedHistory::accepted);
+		case 0x66: return TownAcceptanceHistoryHelperCargoID(this->t, parameter, this->ro.grffile, LAST_MONTH, &Town::AcceptedHistory::accepted);
+
 		/* Get a variable from the persistent storage */
 		case 0x7C: {
 			/* Check the persistent storage for the GrfID stored in register 100h. */
-			uint32_t grfid = static_cast<uint32_t>(this->ro.GetRegister(0x100));
-			if (grfid == 0xFFFFFFFF) {
+			GrfID grfid = UnflattenNewGRFLabel<GrfID>(this->ro.GetRegister(0x100));
+			if (grfid == INVALID_GRFID) {
 				if (this->ro.grffile == nullptr) return 0;
 				grfid = this->ro.grffile->grfid;
 			}
@@ -75,57 +155,57 @@ static uint16_t TownHistoryHelper(const Town *t, CargoLabel label, uint period, 
 		case 0x9B: return GB(ClampTo<uint16_t>(this->t->cache.squared_town_zone_radius[to_underlying(HouseZone::TownInnerSuburb)]), 8, 8);
 		case 0x9C: return ClampTo<uint16_t>(this->t->cache.squared_town_zone_radius[to_underlying(HouseZone::TownCentre)]);
 		case 0x9D: return GB(ClampTo<uint16_t>(this->t->cache.squared_town_zone_radius[to_underlying(HouseZone::TownCentre)]), 8, 8);
-		case 0x9E: return this->t->ratings[0];
-		case 0x9F: return GB(this->t->ratings[0], 8, 8);
-		case 0xA0: return this->t->ratings[1];
-		case 0xA1: return GB(this->t->ratings[1], 8, 8);
-		case 0xA2: return this->t->ratings[2];
-		case 0xA3: return GB(this->t->ratings[2], 8, 8);
-		case 0xA4: return this->t->ratings[3];
-		case 0xA5: return GB(this->t->ratings[3], 8, 8);
-		case 0xA6: return this->t->ratings[4];
-		case 0xA7: return GB(this->t->ratings[4], 8, 8);
-		case 0xA8: return this->t->ratings[5];
-		case 0xA9: return GB(this->t->ratings[5], 8, 8);
-		case 0xAA: return this->t->ratings[6];
-		case 0xAB: return GB(this->t->ratings[6], 8, 8);
-		case 0xAC: return this->t->ratings[7];
-		case 0xAD: return GB(this->t->ratings[7], 8, 8);
+		case 0x9E: return this->t->ratings[CompanyID{0}];
+		case 0x9F: return GB(this->t->ratings[CompanyID{0}], 8, 8);
+		case 0xA0: return this->t->ratings[CompanyID{1}];
+		case 0xA1: return GB(this->t->ratings[CompanyID{1}], 8, 8);
+		case 0xA2: return this->t->ratings[CompanyID{2}];
+		case 0xA3: return GB(this->t->ratings[CompanyID{2}], 8, 8);
+		case 0xA4: return this->t->ratings[CompanyID{3}];
+		case 0xA5: return GB(this->t->ratings[CompanyID{3}], 8, 8);
+		case 0xA6: return this->t->ratings[CompanyID{4}];
+		case 0xA7: return GB(this->t->ratings[CompanyID{4}], 8, 8);
+		case 0xA8: return this->t->ratings[CompanyID{5}];
+		case 0xA9: return GB(this->t->ratings[CompanyID{5}], 8, 8);
+		case 0xAA: return this->t->ratings[CompanyID{6}];
+		case 0xAB: return GB(this->t->ratings[CompanyID{6}], 8, 8);
+		case 0xAC: return this->t->ratings[CompanyID{7}];
+		case 0xAD: return GB(this->t->ratings[CompanyID{7}], 8, 8);
 		case 0xAE: return this->t->have_ratings.base();
 		case 0xB2: return this->t->statues.base();
 		case 0xB6: return ClampTo<uint16_t>(this->t->cache.num_houses);
 		case 0xB9: return this->t->growth_rate / Ticks::TOWN_GROWTH_TICKS;
-		case 0xBA: return TownHistoryHelper(this->t, CT_PASSENGERS, THIS_MONTH, &Town::SuppliedHistory::production);
-		case 0xBB: return TownHistoryHelper(this->t, CT_PASSENGERS, THIS_MONTH, &Town::SuppliedHistory::production) >> 8;
-		case 0xBC: return TownHistoryHelper(this->t, CT_MAIL, THIS_MONTH, &Town::SuppliedHistory::production);
-		case 0xBD: return TownHistoryHelper(this->t, CT_MAIL, THIS_MONTH, &Town::SuppliedHistory::production) >> 8;
-		case 0xBE: return TownHistoryHelper(this->t, CT_PASSENGERS, THIS_MONTH, &Town::SuppliedHistory::transported);
-		case 0xBF: return TownHistoryHelper(this->t, CT_PASSENGERS, THIS_MONTH, &Town::SuppliedHistory::transported) >> 8;
-		case 0xC0: return TownHistoryHelper(this->t, CT_MAIL, THIS_MONTH, &Town::SuppliedHistory::transported);
-		case 0xC1: return TownHistoryHelper(this->t, CT_MAIL, THIS_MONTH, &Town::SuppliedHistory::transported) >> 8;
-		case 0xC2: return TownHistoryHelper(this->t, CT_PASSENGERS, LAST_MONTH, &Town::SuppliedHistory::production);
-		case 0xC3: return TownHistoryHelper(this->t, CT_PASSENGERS, LAST_MONTH, &Town::SuppliedHistory::production) >> 8;
-		case 0xC4: return TownHistoryHelper(this->t, CT_MAIL, LAST_MONTH, &Town::SuppliedHistory::production);
-		case 0xC5: return TownHistoryHelper(this->t, CT_MAIL, LAST_MONTH, &Town::SuppliedHistory::production) >> 8;
-		case 0xC6: return TownHistoryHelper(this->t, CT_PASSENGERS, LAST_MONTH, &Town::SuppliedHistory::transported);
-		case 0xC7: return TownHistoryHelper(this->t, CT_PASSENGERS, LAST_MONTH, &Town::SuppliedHistory::transported) >> 8;
-		case 0xC8: return TownHistoryHelper(this->t, CT_MAIL, LAST_MONTH, &Town::SuppliedHistory::transported);
-		case 0xC9: return TownHistoryHelper(this->t, CT_MAIL, LAST_MONTH, &Town::SuppliedHistory::transported) >> 8;
+		case 0xBA: return TownProductionHistoryHelper(this->t, CT_PASSENGERS, THIS_MONTH, &Town::SuppliedHistory::production);
+		case 0xBB: return TownProductionHistoryHelper(this->t, CT_PASSENGERS, THIS_MONTH, &Town::SuppliedHistory::production) >> 8;
+		case 0xBC: return TownProductionHistoryHelper(this->t, CT_MAIL, THIS_MONTH, &Town::SuppliedHistory::production);
+		case 0xBD: return TownProductionHistoryHelper(this->t, CT_MAIL, THIS_MONTH, &Town::SuppliedHistory::production) >> 8;
+		case 0xBE: return TownProductionHistoryHelper(this->t, CT_PASSENGERS, THIS_MONTH, &Town::SuppliedHistory::transported);
+		case 0xBF: return TownProductionHistoryHelper(this->t, CT_PASSENGERS, THIS_MONTH, &Town::SuppliedHistory::transported) >> 8;
+		case 0xC0: return TownProductionHistoryHelper(this->t, CT_MAIL, THIS_MONTH, &Town::SuppliedHistory::transported);
+		case 0xC1: return TownProductionHistoryHelper(this->t, CT_MAIL, THIS_MONTH, &Town::SuppliedHistory::transported) >> 8;
+		case 0xC2: return TownProductionHistoryHelper(this->t, CT_PASSENGERS, LAST_MONTH, &Town::SuppliedHistory::production);
+		case 0xC3: return TownProductionHistoryHelper(this->t, CT_PASSENGERS, LAST_MONTH, &Town::SuppliedHistory::production) >> 8;
+		case 0xC4: return TownProductionHistoryHelper(this->t, CT_MAIL, LAST_MONTH, &Town::SuppliedHistory::production);
+		case 0xC5: return TownProductionHistoryHelper(this->t, CT_MAIL, LAST_MONTH, &Town::SuppliedHistory::production) >> 8;
+		case 0xC6: return TownProductionHistoryHelper(this->t, CT_PASSENGERS, LAST_MONTH, &Town::SuppliedHistory::transported);
+		case 0xC7: return TownProductionHistoryHelper(this->t, CT_PASSENGERS, LAST_MONTH, &Town::SuppliedHistory::transported) >> 8;
+		case 0xC8: return TownProductionHistoryHelper(this->t, CT_MAIL, LAST_MONTH, &Town::SuppliedHistory::transported);
+		case 0xC9: return TownProductionHistoryHelper(this->t, CT_MAIL, LAST_MONTH, &Town::SuppliedHistory::transported) >> 8;
 		case 0xCA: return this->t->GetPercentTransported(GetCargoTypeByLabel(CT_PASSENGERS));
 		case 0xCB: return this->t->GetPercentTransported(GetCargoTypeByLabel(CT_MAIL));
-		case 0xCC: return this->t->received[TAE_FOOD].new_act;
-		case 0xCD: return GB(this->t->received[TAE_FOOD].new_act, 8, 8);
-		case 0xCE: return this->t->received[TAE_WATER].new_act;
-		case 0xCF: return GB(this->t->received[TAE_WATER].new_act, 8, 8);
-		case 0xD0: return this->t->received[TAE_FOOD].old_act;
-		case 0xD1: return GB(this->t->received[TAE_FOOD].old_act, 8, 8);
-		case 0xD2: return this->t->received[TAE_WATER].old_act;
-		case 0xD3: return GB(this->t->received[TAE_WATER].old_act, 8, 8);
+		case 0xCC: return this->t->received[TownAcceptanceEffect::Food].new_act;
+		case 0xCD: return GB(this->t->received[TownAcceptanceEffect::Food].new_act, 8, 8);
+		case 0xCE: return this->t->received[TownAcceptanceEffect::Water].new_act;
+		case 0xCF: return GB(this->t->received[TownAcceptanceEffect::Water].new_act, 8, 8);
+		case 0xD0: return this->t->received[TownAcceptanceEffect::Food].old_act;
+		case 0xD1: return GB(this->t->received[TownAcceptanceEffect::Food].old_act, 8, 8);
+		case 0xD2: return this->t->received[TownAcceptanceEffect::Water].old_act;
+		case 0xD3: return GB(this->t->received[TownAcceptanceEffect::Water].old_act, 8, 8);
 		case 0xD4: return this->t->road_build_months;
 		case 0xD5: return this->t->fund_buildings_months;
 	}
 
-	Debug(grf, 1, "Unhandled town variable 0x{:X}", variable);
+	this->ro.UnhandledVariable(variable);
 
 	available = false;
 	return UINT_MAX;
@@ -140,10 +220,10 @@ static uint16_t TownHistoryHelper(const Town *t, CargoLabel label, uint period, 
 	if (this->ro.grffile == nullptr) return;
 
 	/* Check the persistent storage for the GrfID stored in register 100h. */
-	uint32_t grfid = static_cast<uint32_t>(this->ro.GetRegister(0x100));
+	GrfID grfid = UnflattenNewGRFLabel<GrfID>(this->ro.GetRegister(0x100));
 
 	/* A NewGRF can only write in the persistent storage associated to its own GRFID. */
-	if (grfid == 0xFFFFFFFF) grfid = this->ro.grffile->grfid;
+	if (grfid == INVALID_GRFID) grfid = this->ro.grffile->grfid;
 	if (grfid != this->ro.grffile->grfid) return;
 
 	/* Check if the storage exists. */
@@ -156,7 +236,7 @@ static uint16_t TownHistoryHelper(const Town *t, CargoLabel label, uint period, 
 
 	/* Create a new storage. */
 	assert(PersistentStorage::CanAllocateItem());
-	PersistentStorage *psa = new PersistentStorage(grfid, GSF_FAKE_TOWNS, this->t->xy);
+	PersistentStorage *psa = PersistentStorage::Create(grfid, GrfSpecFeature::FakeTowns, this->t->xy);
 	psa->StoreValue(pos, value);
 	t->psa_list.push_back(psa);
 }

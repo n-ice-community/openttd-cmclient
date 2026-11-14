@@ -36,9 +36,13 @@
 
 #include "../safeguards.h"
 
-static FVideoDriver_SDL_OpenGL iFVideoDriver_SDL_OpenGL;
+static FVideoDriver_SDL_OpenGL iFVideoDriver_SDL_OpenGL; ///< The OpenGL SDL video driver.
 
-/** Platform-specific callback to get an OpenGL function pointer. */
+/**
+ * Platform-specific callback to get an OpenGL function pointer.
+ * @param proc The name of the function.
+ * @return The function pointer, or \c nullptr when it could not be found.
+ */
 static OGLProc GetOGLProcAddressCallback(const char *proc)
 {
 	return reinterpret_cast<OGLProc>(SDL_GL_GetProcAddress(proc));
@@ -86,6 +90,9 @@ void VideoDriver_SDL_OpenGL::Stop()
 	this->VideoDriver_SDL_Base::Stop();
 }
 
+/**
+ * Destroy and release the OpenGL context.
+ */
 void VideoDriver_SDL_OpenGL::DestroyContext()
 {
 	OpenGLBackend::Destroy();
@@ -101,6 +108,10 @@ void VideoDriver_SDL_OpenGL::ToggleVsync(bool vsync)
 	SDL_GL_SetSwapInterval(vsync);
 }
 
+/**
+ * Allocate the OpenGL context.
+ * @return Optional with an error message upon failure.
+ */
 std::optional<std::string_view> VideoDriver_SDL_OpenGL::AllocateContext()
 {
 	SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
@@ -110,7 +121,7 @@ std::optional<std::string_view> VideoDriver_SDL_OpenGL::AllocateContext()
 	SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
-	if (_debug_driver_level >= 8) {
+	if (IsVisibleSeverity(Facility::Driver, Severity::Trace2)) {
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
 	}
 
@@ -169,7 +180,7 @@ void VideoDriver_SDL_OpenGL::ReleaseVideoPointer()
 
 void VideoDriver_SDL_OpenGL::Paint()
 {
-	PerformanceMeasurer framerate(PFE_VIDEO);
+	PerformanceMeasurer framerate(PerformanceElement::Video);
 
 	if (this->local_palette.count_dirty != 0) {
 		Blitter *blitter = BlitterFactory::GetCurrentBlitter();

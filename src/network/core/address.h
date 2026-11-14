@@ -5,15 +5,13 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <https://www.gnu.org/licenses/old-licenses/gpl-2.0>.
  */
 
-/** @file core/address.h Wrapper for network addresses. */
+/** @file address.h Wrapper for network addresses. */
 
 #ifndef NETWORK_CORE_ADDRESS_H
 #define NETWORK_CORE_ADDRESS_H
 
 #include "os_abstraction.h"
-#include "config.h"
 #include "../../company_type.h"
-#include "../../string_func.h"
 
 
 class NetworkAddress;
@@ -151,6 +149,7 @@ public:
 	/**
 	 * Compare the address of this class with the address of another.
 	 * @param address the other address.
+	 * @return The std::strong_ordering of the comparison.
 	 */
 	auto operator <=>(NetworkAddress &address)
 	{
@@ -171,9 +170,9 @@ public:
  *
  * Sorting will prefer entries at the top of this list above ones at the bottom.
  */
-enum ServerAddressType : uint8_t {
-	SERVER_ADDRESS_DIRECT,      ///< Server-address is based on an hostname:port.
-	SERVER_ADDRESS_INVITE_CODE, ///< Server-address is based on an invite code.
+enum class ServerAddressType : uint8_t {
+	Direct, ///< Server-address is based on an hostname:port.
+	InviteCode, ///< Server-address is based on an invite code.
 };
 
 /**

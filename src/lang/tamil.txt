@@ -1133,9 +1133,9 @@ STR_RIVERS_MODERATE                                             :நடுத்
 STR_RIVERS_LOT                                                  :பல
 
 ###length 3
-STR_DISASTER_NONE                                               :ஒன்றுமில்லை
-STR_DISASTER_REDUCED                                            :குறைக்கப்பட்ட
-STR_DISASTER_NORMAL                                             :இயல்பான
+STR_BREAKDOWNS_NONE                                             :ஒன்றுமில்லை
+STR_BREAKDOWNS_REDUCED                                          :குறைக்கப்பட்ட
+STR_BREAKDOWNS_NORMAL                                           :இயல்பான
 
 ###length 4
 STR_SUBSIDY_X1_5                                                :x1.5
@@ -1262,8 +1262,8 @@ STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HELPTEXT                  :கட்டு
 
 STR_CONFIG_SETTING_RECESSIONS                                   :பொருளதாரத் தேக்கங்கள்: {STRING}
 
-STR_CONFIG_SETTING_TRAIN_REVERSING                              :நிலையங்களில் இரயில்களை திருப்புவதை அனுமதிக்காதே: {STRING}
-STR_CONFIG_SETTING_TRAIN_REVERSING_HELPTEXT                     :இயக்கப்பட்டால், தலைகீழாக மாறும்போது, அடுத்த இலக்குக்கு குறுகிய பாதை இருந்தாலும், ரயில்கள் டெர்மினஸ் அல்லாத நிலையங்களில் தலைகீழாக மாறாது
+
+###length 3
 
 STR_CONFIG_SETTING_DISASTERS                                    :பேரழிவுகள்: {STRING}
 
@@ -1424,6 +1424,8 @@ STR_CONFIG_SETTING_MINUTES_PER_YEAR_FROZEN                      :0 (நாட்
 
 STR_CONFIG_SETTING_CARGO_SCALE_VALUE                            :{NUM}%
 
+###setting-zero-is-special
+
 STR_CONFIG_SETTING_AUTORENEW_VEHICLE                            :வாகனங்கள் காலாவதியானால் தானாக மாற்றியமை: {STRING}
 STR_CONFIG_SETTING_AUTORENEW_VEHICLE_HELPTEXT                   :செயலாக்க செய்யப்பட்டால், வாகனங்கள் காலாவதியாவதற்கு முன்னால் தானாக மாற்றியமைக்கப்படும்
 
@@ -1476,6 +1478,8 @@ STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_VERY_SMOOTH             :மிகவு
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_SMOOTH                  :மென்மையான
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_ROUGH                   :கரடுமுரடான
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_VERY_ROUGH              :மிகவும் கரடுமுரடான
+
+###length 4
 
 STR_CONFIG_SETTING_VARIETY                                      :பலவகை பரவல்: {STRING}
 
@@ -1607,11 +1611,7 @@ STR_CONFIG_SETTING_TIMETABLE_SHOW_ARRIVAL_DEPARTURE_HELPTEXT    :எதிர்
 
 STR_CONFIG_SETTING_QUICKGOTO                                    :வாகன கட்டளைகளை விரிவாக உருவாக்கவும்: {STRING}
 
-STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE                            :இயல்புநிலை இரயில் வகை (புதிய ஆட்ட துவக்கம்/பழைய ஆட்டத்தின் ஏற்றம்): {STRING}
 ###length 3
-STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_FIRST                      :முதலில் கிடைக்கும்
-STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_LAST                       :கடைசியில் கிடைக்கும்
-STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_MOST_USED                  :அதிகமாக பயன்படுத்தியவை
 
 STR_CONFIG_SETTING_SHOW_TRACK_RESERVATION                       :ஒதுக்கீடு செய்யப்பட்ட தடங்களைக் காட்டவும்: {STRING}
 
@@ -1698,6 +1698,7 @@ STR_CONFIG_SETTING_NOSERVICE_HELPTEXT                           :இயக்க
 STR_CONFIG_SETTING_STATION_LENGTH_LOADING_PENALTY               :நிலையத்தை விட நீளமான ரயில்களில் சரக்குகளை ஏற்றினால் ஏற்றும் வேக அபராதம்: {STRING}
 
 STR_CONFIG_SETTING_WAGONSPEEDLIMITS                             :பெட்டி வேக கட்டுப்பாட்டினை செயல்படுத்தவும்: {STRING}
+
 
 STR_CONFIG_SETTING_DISABLE_ELRAILS                              :மின்சார இரயில்களை அனுமதிக்காதே: {STRING}
 STR_CONFIG_SETTING_DISABLE_ELRAILS_HELPTEXT                     :இந்த அமைப்பை இயக்குவதால், மின்சார இயந்திரங்கள் இயங்குவதற்கான தடங்களை மின்மயமாக்குவதற்கான தேவையை முடக்குகிறது
@@ -1967,7 +1968,7 @@ STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :{WHITE}... அ�
 STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE}... அடிப்படை ஒளித் தொகுப்பு '{STRING}' தவிர்கப்பட்டது: கிடைக்கவில்லை
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... அடிப்படை இசைத் தொகுப்பு '{STRING}' தவிர்கப்பட்டது: கிடைக்கவில்லை
 
-# Video initalization errors
+# Video initialization errors
 STR_VIDEO_DRIVER_ERROR                                          :{WHITE}வீடியோ அமைப்புகளில் பிழை...
 STR_VIDEO_DRIVER_ERROR_NO_HARDWARE_ACCELERATION                 :{WHITE}... இணைவொத்த GPU கிடைக்கவில்லை. வன்பொருள் முடுக்கம் செயலிழக்கப்பட்டுள்ளது
 
@@ -2209,15 +2210,13 @@ STR_NETWORK_CONNECTING_WAITING                                  :{BLACK}{NUM} cl
 STR_NETWORK_CONNECTING_DOWNLOADING_1                            :{BLACK}{BYTES} இதுவரை பதிவிறக்கியது
 STR_NETWORK_CONNECTING_DOWNLOADING_2                            :{BLACK}{BYTES} / {BYTES} இதுவரை பதிவிறக்கியது
 
-###length 8
+###length 6
 STR_NETWORK_CONNECTING_1                                        :{BLACK}(1/6) இணைக்கப்படுகிறது...
 STR_NETWORK_CONNECTING_2                                        :{BLACK}(2/6) அனுமதிக்கப்படுகிறது...
 STR_NETWORK_CONNECTING_3                                        :{BLACK}(3/6) காத்திருக்கிறது...
 STR_NETWORK_CONNECTING_4                                        :{BLACK}(4/6) வரைபடம் பதிவிறக்கமாகிறது...
 STR_NETWORK_CONNECTING_5                                        :{BLACK}(5/6) தகவல் பரிசீலிக்கப்படுகின்றது...
 STR_NETWORK_CONNECTING_6                                        :{BLACK}(6/6) பதிவு செய்யப்படுகிறது...
-STR_NETWORK_CONNECTING_SPECIAL_1                                :{BLACK}ஆட்டத்தின் விவரங்கள் பெறப்படுகின்றது...
-STR_NETWORK_CONNECTING_SPECIAL_2                                :{BLACK}நிறுவனத்தின் விவரம் சேகரிக்கப்படுகிறது...
 
 STR_NETWORK_CONNECTION_DISCONNECT                               :{BLACK}இணைப்பை துண்டி
 
@@ -2543,6 +2542,8 @@ STR_STATION_BUILD_DRAG_DROP_TOOLTIP                             :{BLACK}இழ�
 
 
 
+
+
 STR_STATION_CLASS_DFLT                                          :இயல்பிருப்பு
 STR_STATION_CLASS_DFLT_STATION                                  :இயல்பிருப்பு நிலையம்
 STR_STATION_CLASS_DFLT_ROADSTOP                                 :இயல்பிருப்பு சாலை நிறுத்தம்
@@ -2739,11 +2740,7 @@ STR_FUND_INDUSTRY_REMOVE_ALL_INDUSTRIES_QUERY                   :{YELLOW}நீ�
 # Industry cargoes window
 STR_INDUSTRY_CARGOES_INDUSTRY_CAPTION                           :{WHITE}{STRING} தொழிற்சாலையிற்கான தொழிற்சாலைத் தொடர்
 STR_INDUSTRY_CARGOES_CARGO_CAPTION                              :{WHITE}{STRING} சரக்கிற்கான தொழிற்சாலைத் தொடர்
-STR_INDUSTRY_CARGOES_PRODUCERS                                  :{WHITE}தயாரிக்கும் தொழிற்சாலைகள்
-STR_INDUSTRY_CARGOES_CUSTOMERS                                  :{WHITE}ஏற்றுக்கொள்ளும் தொழிற்சாலைகள்
 STR_INDUSTRY_CARGOES_HOUSES                                     :{WHITE}வீடுகள்
-STR_INDUSTRY_CARGOES_INDUSTRY_TOOLTIP                           :{BLACK}நிறுவனத்தினைச் சொடுக்கினால் அதனது விற்பனையாளர்கள் மற்றும் வாங்குவோர் விவரங்கள் காட்டப்படும்
-STR_INDUSTRY_CARGOES_CARGO_TOOLTIP                              :{BLACK}{STRING}{}சரக்கினைச் சொடுக்கினால் அதனது விற்பனையாளர்கள் மற்றும் வாங்குவோர் விவரங்கள் காட்டப்படும்
 STR_INDUSTRY_DISPLAY_CHAIN                                      :{BLACK}தொழிற்சாலையிற்கான இணைப்புகளைக் காட்டு
 STR_INDUSTRY_DISPLAY_CHAIN_TOOLTIP                              :{BLACK}சரக்குகளை தரும் மற்றும் வாங்கும் நிறுவனங்களைக் காட்டு
 STR_INDUSTRY_CARGOES_NOTIFY_SMALLMAP                            :{BLACK}சிறுபடத்திற்கான இணைப்பு
@@ -3317,6 +3314,7 @@ STR_GOALS_PROGRESS                                              :{ORANGE}{STRING
 STR_GOALS_PROGRESS_COMPLETE                                     :{GREEN}{STRING}
 
 # Goal question window
+###length 4
 STR_GOAL_QUESTION_CAPTION_QUESTION                              :{BLACK}கேள்வி
 STR_GOAL_QUESTION_CAPTION_INFORMATION                           :{BLACK}தகவல்
 STR_GOAL_QUESTION_CAPTION_WARNING                               :{BLACK}எச்சரிக்கை
@@ -3699,6 +3697,8 @@ STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}அத�
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}தூரம்: {GOLD}{COMMA} கட்டங்கள்
 STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}விமான வகை: {GOLD}{STRING}
 
+# Vehicle sort details
+
 ###length 3
 STR_CARGO_TYPE_FILTER_ALL                                       :அனைத்து சரக்கு வகைகள்
 STR_CARGO_TYPE_FILTER_FREIGHT                                   :சரக்கு
@@ -3846,6 +3846,7 @@ STR_DEPOT_SELL_CONFIRMATION_TEXT                                :{YELLOW}நீ�
 
 # Engine preview window
 STR_ENGINE_PREVIEW_CAPTION                                      :{WHITE}வாகன உற்பத்தியாலரிடமிருந்து ஓர் தகவல்
+
 
 STR_ENGINE_PREVIEW_RAILROAD_LOCOMOTIVE                          :இரயில்வே வாகனம்
 STR_ENGINE_PREVIEW_ELRAIL_LOCOMOTIVE                            :மின்சார இரயில்
@@ -4003,12 +4004,9 @@ STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE                  :{BLACK}எட�
 
 STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR                     :{BLACK}இந்த வருட இலாபம்: {LTBLUE}{CURRENCY_LONG} (சென்ற வருடம்: {CURRENCY_LONG})
 STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR_MIN_PERFORMANCE     :{BLACK}இந்த வருட இலாபம்: {LTBLUE}{CURRENCY_LONG} (சென்ற வருடம்: {CURRENCY_LONG}) {BLACK}கு. திறன்: {LTBLUE}{POWER_TO_WEIGHT}
-STR_VEHICLE_INFO_RELIABILITY_BREAKDOWNS                         :{BLACK}நம்பகத்தன்மை: {LTBLUE}{COMMA}%  {BLACK}கடைசிப் பராமரிப்பிற்குப் பின் ஏற்ப்பட்ட பழுதுகள்: {LTBLUE}{COMMA}
 
 STR_VEHICLE_INFO_BUILT_VALUE                                    :{LTBLUE}{ENGINE} {BLACK}கட்டப்பட்டது: {LTBLUE}{NUM}{BLACK} மதிப்பு: {LTBLUE}{CURRENCY_LONG}
-STR_VEHICLE_INFO_NO_CAPACITY                                    :{BLACK}கொள்ளளவு: {LTBLUE}ஒன்றுமில்லை{STRING}
 STR_VEHICLE_INFO_CAPACITY                                       :{BLACK}கொள்ளளவு: {LTBLUE}{CARGO_LONG}{STRING}
-STR_VEHICLE_INFO_CAPACITY_MULT                                  :{BLACK}கொள்ளளவு: {LTBLUE}{CARGO_LONG}{STRING} (x{NUM})
 STR_VEHICLE_INFO_CAPACITY_CAPACITY                              :{BLACK}கொள்ளளவு: {LTBLUE}{CARGO_LONG}, {CARGO_LONG}{STRING}
 
 STR_VEHICLE_INFO_FEEDER_CARGO_VALUE                             :{BLACK}இடமாற்றம் வரவுகள்: {LTBLUE}{CURRENCY_LONG}
@@ -4035,22 +4033,18 @@ STR_QUERY_RENAME_AIRCRAFT_CAPTION                               :{WHITE}வி�
 STR_VEHICLE_DETAILS_TRAIN_ENGINE_BUILT_AND_VALUE                :{LTBLUE}{ENGINE}{BLACK}   கட்டப்பட்டது: {LTBLUE}{NUM}{BLACK} மதிப்பு: {LTBLUE}{CURRENCY_LONG}
 STR_VEHICLE_DETAILS_TRAIN_WAGON_VALUE                           :{LTBLUE}{ENGINE}{BLACK}   மதிப்பு: {LTBLUE}{CURRENCY_LONG}
 
+
 STR_VEHICLE_DETAILS_TRAIN_TOTAL_CAPACITY_TEXT                   :{BLACK}Tஇரயிலின் மொத்த சரக்குக் கொள்ளளவு:
 STR_VEHICLE_DETAILS_TRAIN_TOTAL_CAPACITY                        :{LTBLUE}- {CARGO_LONG} ({CARGO_SHORT})
-STR_VEHICLE_DETAILS_TRAIN_TOTAL_CAPACITY_MULT                   :{LTBLUE}- {CARGO_LONG} ({CARGO_SHORT}) (x{NUM})
+
 
 STR_VEHICLE_DETAILS_CARGO_EMPTY                                 :{LTBLUE}காலி
 STR_VEHICLE_DETAILS_CARGO_FROM                                  :{LTBLUE}{CARGO_LONG} {STATION} -இலிருந்து
-STR_VEHICLE_DETAILS_CARGO_FROM_MULT                             :{LTBLUE}{CARGO_LONG} {STATION}-இலிருந்து (x{NUM})
 
 STR_VEHICLE_DETAIL_TAB_CARGO                                    :{BLACK}சரக்கு
 STR_VEHICLE_DETAILS_TRAIN_CARGO_TOOLTIP                         :{BLACK}ஏற்றப்பட்டுள்ள சரக்குகள் பற்றிய விவரங்களை காட்டு
 STR_VEHICLE_DETAIL_TAB_INFORMATION                              :{BLACK}தகவல்
 STR_VEHICLE_DETAILS_TRAIN_INFORMATION_TOOLTIP                   :{BLACK}இரயிலின் வாகனங்கள் பற்றிய விவரங்களை காட்டு
-STR_VEHICLE_DETAIL_TAB_CAPACITIES                               :{BLACK}கொள்ளளவுகள்
-STR_VEHICLE_DETAILS_TRAIN_CAPACITIES_TOOLTIP                    :{BLACK}ஒவ்வொரு வாகனத்தின் கொள்ளளவினை காட்டு
-STR_VEHICLE_DETAIL_TAB_TOTAL_CARGO                              :{BLACK}மொத்த சரக்கு
-STR_VEHICLE_DETAILS_TRAIN_TOTAL_CARGO_TOOLTIP                   :{BLACK}இரயிலின் மொத்தக் கொள்ளளவினைக் காட்டு, சரக்கு வகைப்படி பிரித்தவாறு
 
 STR_VEHICLE_DETAILS_TRAIN_ARTICULATED_RV_CAPACITY               :{BLACK}கொள்ளளவு: {LTBLUE}{STRING}
 
@@ -4128,7 +4122,7 @@ STR_ORDER_HANGAR_ACTION_TOOLTIP                                 :{BLACK}இந�
 STR_ORDER_CONDITIONAL_VARIABLE_TOOLTIP                          :{BLACK}அடிப்படை ஜம்பிங் செய்ய வாகனத் தரவு
 
 # Conditional order variables, must follow order of OrderConditionVariable enum
-###length 8
+###length 9
 STR_ORDER_CONDITIONAL_LOAD_PERCENTAGE                           :சுமை அளவு
 STR_ORDER_CONDITIONAL_RELIABILITY                               :நம்பகத்தன்மை
 STR_ORDER_CONDITIONAL_MAX_SPEED                                 :அதிகபட்ச வேகம்
@@ -4510,7 +4504,6 @@ STR_ERROR_CAN_T_GENERATE_TOWN                                   :{WHITE}எந�
 STR_ERROR_CAN_T_RENAME_TOWN                                     :{WHITE}நகரத்தின் பெயரினை மாற்ற இயலாது...
 STR_ERROR_CAN_T_FOUND_TOWN_HERE                                 :{WHITE}நகரத்தினை இங்கே நிறுவ இயலாது...
 STR_ERROR_CAN_T_EXPAND_TOWN                                     :{WHITE}நகரத்தினை விரிவாக்க இயலாது...
-STR_ERROR_TOO_CLOSE_TO_EDGE_OF_MAP_SUB                          :{WHITE}... படத்தின் எல்லைக்கு மிக அருகாமையில் உள்ளது
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_TOWN                             :{WHITE}... மற்றொரு நகரத்திற்கு மிகவும் அருகாமையில் உள்ளது
 STR_ERROR_TOO_MANY_TOWNS                                        :{WHITE}... மிகவும் அதிகமான நகரங்கள்
 STR_ERROR_NO_SPACE_FOR_TOWN                                     :{WHITE}... படத்தில் வேறு வெற்றுஇடம் இல்லை
@@ -4819,7 +4812,7 @@ STR_ERROR_CAN_T_SHARE_ORDER_VEHICLE_LIST                        :{WHITE}... எ�
 
 STR_ERROR_CAN_T_SHARE_ORDER_LIST                                :{WHITE}இந்த கட்டளைப் பட்டியலை பகிர முடியாது...
 STR_ERROR_CAN_T_STOP_SHARING_ORDER_LIST                         :{WHITE}கட்டளைப் பட்டியலினை பகிர்வதை நிறுத்த இயலாது...
-STR_ERROR_CAN_T_COPY_ORDER_LIST                                 :{WHITE}கட்டளைப் பட்டியலை பிரதி செய்ய இயலாது...
+STR_ERROR_CAN_T_COPY_ORDER_LIST                                 :கட்டளைப் பட்டியலை பிரதி செய்ய இயலாது...
 STR_ERROR_TOO_FAR_FROM_PREVIOUS_DESTINATION                     :{WHITE}... முந்தைய இடத்திலிருந்து நெடுந்தூரம் உள்ளது
 STR_ERROR_AIRCRAFT_NOT_ENOUGH_RANGE                             :{WHITE}... விமானத்தால் அதிக தூரம் பறக்க இயலாது
 

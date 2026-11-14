@@ -16,8 +16,7 @@
 #include "../network/network_server.h"
 #include "../network/network_internal.h"
 #include "../company_func.h"
-#include "../fileio_func.h"
-#include "../timer/timer_game_calendar.h"
+#include "../timer/timer_game_economy.h"
 #endif /* RANDOM_DEBUG */
 
 #if defined(_WIN32)
@@ -71,8 +70,8 @@ void SetRandomSeed(uint32_t seed)
 #ifdef RANDOM_DEBUG
 uint32_t Random(const std::source_location location)
 {
-	if (_networking && (!_network_server || (NetworkClientSocket::IsValidID(0) && NetworkClientSocket::Get(0)->status != NetworkClientSocket::STATUS_INACTIVE))) {
-		Debug(random, 0, "{:08x}; {:02x}; {:04x}; {:02x}; {}:{}", TimerGameEconomy::date, TimerGameEconomy::date_fract, _frame_counter, _current_company, location.file_name(), location.line());
+	if (_networking && (!_network_server || (NetworkClientSocket::IsValidID(0) && NetworkClientSocket::Get(0)->status != NetworkClientSocket::ClientStatus::Inactive))) {
+		Debug(Facility::Random, Severity::Critical, "{:08x}; {:02x}; {:04x}; {:02x}; {}:{}", TimerGameEconomy::date, TimerGameEconomy::date_fract, _frame_counter, _current_company, location.file_name(), location.line());
 	}
 
 	return _random.Next();
@@ -120,9 +119,9 @@ void RandomBytesWithFallback(std::span<uint8_t> buf)
 #	warning "No cryptographically-strong random generator available; using a fallback instead"
 #endif
 
-	static bool warned_once = false;
-	Debug(misc, warned_once ? 1 : 0, "Cryptographically-strong random generator unavailable; using fallback");
-	warned_once = true;
+	static Severity severity = Severity::Critical;
+	Debug(Facility::Misc, severity, "Cryptographically-strong random generator unavailable; using fallback");
+	severity = Severity::Error;
 
 	for (uint i = 0; i < buf.size(); i++) {
 		buf[i] = static_cast<uint8_t>(InteractiveRandom());

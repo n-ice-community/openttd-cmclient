@@ -10,7 +10,6 @@
 #include "stdafx.h"
 #include "core/backup_type.hpp"
 #include "fileio_func.h"
-#include "fontcache.h"
 #include "gfx_type.h"
 #include "gfx_func.h"
 #include "string_func.h"
@@ -42,43 +41,43 @@
 /** Widgets for the textfile window. */
 static constexpr std::initializer_list<NWidgetPart> _nested_textfile_widgets = {
 	NWidget(NWID_HORIZONTAL),
-		NWidget(WWT_CLOSEBOX, COLOUR_MAUVE),
-		NWidget(WWT_PUSHARROWBTN, COLOUR_MAUVE, WID_TF_NAVBACK), SetFill(0, 1), SetMinimalSize(15, 1), SetArrowWidgetTypeTip(AWV_DECREASE, STR_TEXTFILE_NAVBACK_TOOLTIP),
-		NWidget(WWT_PUSHARROWBTN, COLOUR_MAUVE, WID_TF_NAVFORWARD), SetFill(0, 1), SetMinimalSize(15, 1), SetArrowWidgetTypeTip(AWV_INCREASE, STR_TEXTFILE_NAVFORWARD_TOOLTIP),
-		NWidget(WWT_CAPTION, COLOUR_MAUVE, WID_TF_CAPTION), SetToolTip(STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
-		NWidget(WWT_TEXTBTN, COLOUR_MAUVE, WID_TF_WRAPTEXT), SetStringTip(STR_TEXTFILE_WRAP_TEXT, STR_TEXTFILE_WRAP_TEXT_TOOLTIP),
-		NWidget(WWT_DEFSIZEBOX, COLOUR_MAUVE),
+		NWidget(WWT_CLOSEBOX, Colours::Mauve),
+		NWidget(WWT_PUSHARROWBTN, Colours::Mauve, WID_TF_NAVBACK), SetFill(0, 1), SetMinimalSize(15, 1), SetArrowWidgetTypeTip(ArrowWidgetType::Decrease, STR_TEXTFILE_NAVBACK_TOOLTIP),
+		NWidget(WWT_PUSHARROWBTN, Colours::Mauve, WID_TF_NAVFORWARD), SetFill(0, 1), SetMinimalSize(15, 1), SetArrowWidgetTypeTip(ArrowWidgetType::Increase, STR_TEXTFILE_NAVFORWARD_TOOLTIP),
+		NWidget(WWT_CAPTION, Colours::Mauve, WID_TF_CAPTION), SetToolTip(STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_TEXTBTN, Colours::Mauve, WID_TF_WRAPTEXT), SetStringTip(STR_TEXTFILE_WRAP_TEXT, STR_TEXTFILE_WRAP_TEXT_TOOLTIP),
+		NWidget(WWT_DEFSIZEBOX, Colours::Mauve),
 	EndContainer(),
-	NWidget(NWID_SELECTION, INVALID_COLOUR, WID_TF_SEL_JUMPLIST),
-		NWidget(WWT_PANEL, COLOUR_MAUVE),
+	NWidget(NWID_SELECTION, Colours::Invalid, WID_TF_SEL_JUMPLIST),
+		NWidget(WWT_PANEL, Colours::Mauve),
 			NWidget(NWID_HORIZONTAL), SetPIP(WidgetDimensions::unscaled.frametext.left, 0, WidgetDimensions::unscaled.frametext.right),
-				/* As this widget can be toggled, it needs to be a multiplier of FS_MONO. So add a spacer that ensures this. */
-				NWidget(NWID_SPACER), SetMinimalSize(1, 0), SetMinimalTextLines(2, 0, FS_MONO),
+				/* As this widget can be toggled, it needs to be a multiplier of FontSize::Monospace. So add a spacer that ensures this. */
+				NWidget(NWID_SPACER), SetMinimalSize(1, 0), SetMinimalTextLines(2, 0, FontSize::Monospace),
 				NWidget(NWID_VERTICAL),
 					NWidget(NWID_SPACER), SetFill(1, 1), SetResize(1, 0),
-					NWidget(WWT_DROPDOWN, COLOUR_MAUVE, WID_TF_JUMPLIST), SetStringTip(STR_TEXTFILE_JUMPLIST, STR_TEXTFILE_JUMPLIST_TOOLTIP), SetFill(1, 0), SetResize(1, 0),
+					NWidget(WWT_DROPDOWN, Colours::Mauve, WID_TF_JUMPLIST), SetStringTip(STR_TEXTFILE_JUMPLIST, STR_TEXTFILE_JUMPLIST_TOOLTIP), SetFill(1, 0), SetResize(1, 0),
 					NWidget(NWID_SPACER), SetFill(1, 1), SetResize(1, 0),
 				EndContainer(),
 			EndContainer(),
 		EndContainer(),
 	EndContainer(),
 	NWidget(NWID_HORIZONTAL),
-		NWidget(WWT_PANEL, COLOUR_MAUVE, WID_TF_BACKGROUND), SetMinimalSize(200, 125), SetResize(1, 12), SetScrollbar(WID_TF_VSCROLLBAR),
+		NWidget(WWT_PANEL, Colours::Mauve, WID_TF_BACKGROUND), SetMinimalSize(200, 125), SetResize(1, 12), SetScrollbar(WID_TF_VSCROLLBAR),
 		EndContainer(),
 		NWidget(NWID_VERTICAL),
-			NWidget(NWID_VSCROLLBAR, COLOUR_MAUVE, WID_TF_VSCROLLBAR),
+			NWidget(NWID_VSCROLLBAR, Colours::Mauve, WID_TF_VSCROLLBAR),
 		EndContainer(),
 	EndContainer(),
 	NWidget(NWID_HORIZONTAL),
-		NWidget(NWID_HSCROLLBAR, COLOUR_MAUVE, WID_TF_HSCROLLBAR),
-		NWidget(WWT_RESIZEBOX, COLOUR_MAUVE),
+		NWidget(NWID_HSCROLLBAR, Colours::Mauve, WID_TF_HSCROLLBAR),
+		NWidget(WWT_RESIZEBOX, Colours::Mauve),
 	EndContainer(),
 };
 
 /** Window definition for the textfile window */
 static WindowDesc _textfile_desc(
-	WDP_CENTER, "textfile", 630, 460,
-	WC_TEXTFILE, WC_NONE,
+	WindowPosition::Center, "textfile", 630, 460,
+	WindowClass::Textfile, WindowClass::None,
 	{},
 	_nested_textfile_widgets
 );
@@ -95,7 +94,7 @@ void TextfileWindow::ConstructWindow()
 	this->CreateNestedTree();
 	this->vscroll = this->GetScrollbar(WID_TF_VSCROLLBAR);
 	this->hscroll = this->GetScrollbar(WID_TF_HSCROLLBAR);
-	this->GetWidget<NWidgetCore>(WID_TF_CAPTION)->SetStringTip(STR_TEXTFILE_README_CAPTION + this->file_type, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS);
+	this->GetWidget<NWidgetCore>(WID_TF_CAPTION)->SetStringTip(STR_TEXTFILE_README_CAPTION + to_underlying(this->file_type), STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS);
 	this->GetWidget<NWidgetStacked>(WID_TF_SEL_JUMPLIST)->SetDisplayedPlane(SZSP_HORIZONTAL);
 	this->FinishInitNested(this->file_type);
 
@@ -123,8 +122,8 @@ void TextfileWindow::ReflowContent()
 {
 	switch (widget) {
 		case WID_TF_BACKGROUND:
-			resize.width = GetCharacterHeight(FS_MONO); // Width is not available here as the font may not be loaded yet.
-			fill.height = resize.height = GetCharacterHeight(FS_MONO);
+			resize.width = GetCharacterHeight(FontSize::Monospace); // Width is not available here as the font may not be loaded yet.
+			fill.height = resize.height = GetCharacterHeight(FontSize::Monospace);
 
 			size.height = 4 * resize.height + WidgetDimensions::scaled.frametext.Vertical(); // At least 4 lines are visible.
 			size.width = std::max(200u, size.width); // At least 200 pixels wide.
@@ -286,7 +285,7 @@ const TextfileWindow::Hyperlink *TextfileWindow::GetHyperlink(Point pt) const
 	if (this->links.empty()) return nullptr;
 
 	/* Which line was clicked. */
-	const int clicked_row = this->GetRowFromWidget(pt.y, WID_TF_BACKGROUND, WidgetDimensions::scaled.frametext.top, GetCharacterHeight(FS_MONO)) + this->GetScrollbar(WID_TF_VSCROLLBAR)->GetPosition();
+	const int clicked_row = this->GetRowFromWidget(pt.y, WID_TF_BACKGROUND, WidgetDimensions::scaled.frametext.top, GetCharacterHeight(FontSize::Monospace)) + this->GetScrollbar(WID_TF_VSCROLLBAR)->GetPosition();
 
 	int visible_line = 0;
 	auto it = std::ranges::find_if(this->lines, [&visible_line, clicked_row](const Line &l) {
@@ -297,7 +296,7 @@ const TextfileWindow::Hyperlink *TextfileWindow::GetHyperlink(Point pt) const
 
 	size_t line_index = it - this->lines.cbegin();
 	size_t subline = clicked_row - (visible_line - it->num_lines);
-	Debug(misc, 4, "TextfileWindow check hyperlink: clicked_row={}, line_index={}, line.top={}, subline={}", clicked_row, line_index, visible_line - it->num_lines, subline);
+	Debug(Facility::Misc, Severity::Info, "TextfileWindow check hyperlink: clicked_row={}, line_index={}, line.top={}, subline={}", clicked_row, line_index, visible_line - it->num_lines, subline);
 
 	/* Find hyperlinks in this line. */
 	std::vector<const Hyperlink *> found_links;
@@ -308,17 +307,17 @@ const TextfileWindow::Hyperlink *TextfileWindow::GetHyperlink(Point pt) const
 
 	/* Build line layout to figure out character position that was clicked. */
 	const Line &line = this->lines[line_index];
-	Layouter layout(line.text, line.wrapped_width == 0 ? INT32_MAX : line.wrapped_width, FS_MONO);
+	Layouter layout(line.text, line.wrapped_width == 0 ? INT32_MAX : line.wrapped_width, FontSize::Monospace);
 	assert(subline < layout.size());
 	ptrdiff_t char_index = layout.GetCharAtPosition(pt.x - WidgetDimensions::scaled.frametext.left, subline);
 	if (char_index < 0) return nullptr;
-	Debug(misc, 4, "TextfileWindow check hyperlink click: line={}, subline={}, char_index={}", line_index, subline, char_index);
+	Debug(Facility::Misc, Severity::Info, "TextfileWindow check hyperlink click: line={}, subline={}, char_index={}", line_index, subline, char_index);
 
 	/* Found character index in line, check if any links are at that position. */
 	for (const Hyperlink *link : found_links) {
-		Debug(misc, 4, "Checking link from char {} to {}", link->begin, link->end);
+		Debug(Facility::Misc, Severity::Info, "Checking link from char {} to {}", link->begin, link->end);
 		if (static_cast<size_t>(char_index) >= link->begin && static_cast<size_t>(char_index) < link->end) {
-			Debug(misc, 4, "Returning link with destination: {}", link->destination);
+			Debug(Facility::Misc, Severity::Info, "Returning link with destination: {}", link->destination);
 			return link;
 		}
 	}
@@ -366,7 +365,7 @@ void TextfileWindow::NavigateHistory(int delta)
 	if (this->history[this->history_pos].filepath != this->filepath) {
 		this->filepath = this->history[this->history_pos].filepath;
 		this->filename = this->filepath.substr(this->filepath.find_last_of(PATHSEP) + 1);
-		this->LoadTextfile(this->filepath, NO_DIRECTORY);
+		this->LoadTextfile(this->filepath, Subdirectory::None);
 	}
 
 	this->SetWidgetDisabledState(WID_TF_NAVFORWARD, this->history_pos + 1 >= this->history.size());
@@ -445,7 +444,7 @@ void TextfileWindow::NavigateToFile(std::string newfile, size_t line)
 
 	/* Paste the two together and check file exists. */
 	newpath = newpath + newfile;
-	if (!FioCheckFileExists(newpath, NO_DIRECTORY)) return;
+	if (!FioCheckFileExists(newpath, Subdirectory::None)) return;
 
 	/* Update history. */
 	this->AppendHistory(newpath);
@@ -454,7 +453,7 @@ void TextfileWindow::NavigateToFile(std::string newfile, size_t line)
 	this->filepath = newpath;
 	this->filename = newpath.substr(newpath.find_last_of(PATHSEP) + 1);
 
-	this->LoadTextfile(this->filepath, NO_DIRECTORY);
+	this->LoadTextfile(this->filepath, Subdirectory::None);
 
 	this->GetScrollbar(WID_TF_HSCROLLBAR)->SetPosition(0);
 	this->GetScrollbar(WID_TF_VSCROLLBAR)->SetPosition(0);
@@ -495,7 +494,7 @@ void TextfileWindow::AfterLoadMarkdown()
 		/* All lines beginning with # are headings. */
 		if (!line.text.empty() && line.text[0] == '#') {
 			this->jumplist.push_back(line_index);
-			this->lines[line_index].colour = TC_GOLD;
+			this->lines[line_index].colour = TextColour::Gold;
 			this->link_anchors.emplace_back(line_index, 0, 0, MakeAnchorSlug(line.text));
 		}
 	}
@@ -553,7 +552,7 @@ void TextfileWindow::AfterLoadMarkdown()
 		Rect fr = r.Shrink(WidgetDimensions::scaled.captiontext).WithHeight(WidgetDimensions::scaled.vsep_normal, true);
 		size_t remaining = std::distance(this->reflow_iter, this->reflow_end);
 		fr = fr.WithWidth(static_cast<int>(remaining * fr.Width() / std::size(this->lines)), _current_text_dir != TD_RTL);
-		GfxFillRect(fr, PC_WHITE, FILLRECT_CHECKER);
+		GfxFillRect(fr, PC_WHITE, FillRectMode::Checker);
 	}
 
 	if (widget != WID_TF_BACKGROUND) return;
@@ -566,7 +565,7 @@ void TextfileWindow::AfterLoadMarkdown()
 
 	/* Draw content (now coordinates given to DrawString* are local to the new clipping region). */
 	fr = fr.Translate(-fr.left, -fr.top);
-	int line_height = GetCharacterHeight(FS_MONO);
+	int line_height = GetCharacterHeight(FontSize::Monospace);
 
 	if (!this->IsTextWrapped()) fr = ScrollRect(fr, *this->hscroll, this->resize.step_width);
 
@@ -582,9 +581,9 @@ void TextfileWindow::AfterLoadMarkdown()
 		int y_offset = (top - pos) * line_height;
 		if (line.wrapped_width != 0) {
 			Rect tr = fr.WithWidth(line.wrapped_width, _current_text_dir == TD_RTL);
-			DrawStringMultiLineWithClipping(tr.left, tr.right, y_offset, y_offset + line.num_lines * line_height, line.text, line.colour, SA_TOP | SA_LEFT, false, FS_MONO);
+			DrawStringMultiLineWithClipping(tr.left, tr.right, y_offset, y_offset + line.num_lines * line_height, line.text, line.colour, {AlignmentH::Start, AlignmentV::Top}, false, FontSize::Monospace);
 		} else {
-			DrawString(fr.left, fr.right, y_offset, line.text, line.colour, SA_TOP | SA_LEFT, false, FS_MONO);
+			DrawString(fr.left, fr.right, y_offset, line.text, line.colour, {AlignmentH::Start, AlignmentV::Top}, false, FontSize::Monospace);
 		}
 	}
 }
@@ -647,12 +646,12 @@ TextfileWindow::ReflowState TextfileWindow::ContinueReflow()
 		int old_lines = line.num_lines;
 		if (wrapped) {
 			if (line.wrapped_width != window_width) {
-				line.num_lines = GetStringHeight(line.text, window_width, FS_MONO) / GetCharacterHeight(FS_MONO);
+				line.num_lines = GetStringHeight(line.text, window_width, FontSize::Monospace) / GetCharacterHeight(FontSize::Monospace);
 				line.wrapped_width = window_width;
 			}
 		} else {
 			if (line.max_width == -1) {
-				line.max_width = GetStringBoundingBox(line.text, FS_MONO).width;
+				line.max_width = GetStringBoundingBox(line.text, FontSize::Monospace).width;
 				this->max_width = std::max(this->max_width, line.max_width);
 			}
 			line.num_lines = 1;
@@ -744,7 +743,7 @@ bool TextfileWindow::IsTextWrapped() const
 
 /* virtual */ FontSize TextfileWindow::DefaultSize()
 {
-	return FS_MONO;
+	return FontSize::Monospace;
 }
 
 /* virtual */ std::optional<std::string_view> TextfileWindow::NextString()
@@ -847,6 +846,8 @@ static std::vector<char> Xunzip(std::span<char> input)
 
 /**
  * Loads the textfile text from file and setup #lines.
+ * @param textfile The filename of the file to load.
+ * @param dir The sub directory to find the file in.
  */
 /* virtual */ void TextfileWindow::LoadTextfile(const std::string &textfile, Subdirectory dir)
 {
@@ -923,7 +924,7 @@ void TextfileWindow::LoadText(std::string_view buf)
 	this->AfterLoadText();
 	this->ReflowContent();
 
-	CheckForMissingGlyphs(this);
+	CheckForMissingGlyphs(FontSize::Monospace, this);
 
 	/* The font may have changed when searching for glyphs, so ensure widget sizes are updated just in case. */
 	this->ReInit();
@@ -938,15 +939,14 @@ void TextfileWindow::LoadText(std::string_view buf)
  */
 std::optional<std::string> GetTextfile(TextfileType type, Subdirectory dir, std::string_view filename)
 {
-	static const std::string_view prefixes[] = {
+	static const EnumIndexArray<std::string_view, TextfileType, TextfileType::ContentEnd> prefixes = {
 		"readme",
 		"changelog",
 		"license",
 	};
-	static_assert(lengthof(prefixes) == TFT_CONTENT_END);
 
 	/* Only the generic text file types allowed for this function */
-	if (type >= TFT_CONTENT_END) return std::nullopt;
+	if (type >= TextfileType::ContentEnd) return std::nullopt;
 
 	std::string_view prefix = prefixes[type];
 

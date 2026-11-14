@@ -5,7 +5,7 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <https://www.gnu.org/licenses/old-licenses/gpl-2.0>.
  */
 
- /** @file random_access_file.cpp Actual implementation of the RandomAccessFile class. */
+/** @file random_access_file.cpp Actual implementation of the RandomAccessFile class. */
 
 #include "stdafx.h"
 #include "random_access_file_type.h"
@@ -93,7 +93,7 @@ void RandomAccessFile::SeekTo(size_t pos, int mode)
 
 	this->pos = pos;
 	if (fseek(*this->file_handle, this->pos, SEEK_SET) < 0) {
-		Debug(misc, 0, "Seeking in {} failed", this->filename);
+		Debug(Facility::Misc, Severity::Critical, "Seeking in {} failed", this->filename);
 	}
 
 	/* Reset the buffer, so the next ReadByte will read bytes from the file. */

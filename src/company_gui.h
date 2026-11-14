@@ -11,10 +11,10 @@
 #define COMPANY_GUI_H
 
 #include "company_type.h"
-#include "group.h"
+#include "group_type.h"
 #include "gfx_type.h"
 
-TextColour GetDrawStringCompanyColour(CompanyID company);
+ExtendedTextColour GetDrawStringCompanyColour(CompanyID company);
 void DrawCompanyIcon(CompanyID c, int x, int y);
 
 void ShowCompanyLiveryWindow(CompanyID company, GroupID group);

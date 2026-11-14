@@ -22,12 +22,14 @@ enum class QueryStringFlag : uint8_t {
 	EnableMove, ///< enable the 'Move' button
 };
 
+/** Bitset of \c QueryStringFlag elements. */
 using QueryStringFlags = EnumBitSet<QueryStringFlag, uint8_t>;
 
 /** Callback procedure for the ShowQuery method. */
 typedef void QueryCallbackProc(Window*, bool);
 
 void ShowQueryString(std::string_view str, StringID caption, uint max_len, Window *parent, CharSetFilter afilter, QueryStringFlags flags);
+void UpdateQueryStringDefault(std::string_view str);
 void ShowQuery(EncodedString &&caption, EncodedString &&message, Window *w, QueryCallbackProc *callback, bool focus = false);
 
 /** The number of 'characters' on the on-screen keyboard. */

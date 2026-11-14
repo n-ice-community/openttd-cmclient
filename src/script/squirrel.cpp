@@ -30,6 +30,8 @@
  */
 
 struct ScriptAllocator {
+	friend class Squirrel;
+
 private:
 	std::allocator<uint8_t> allocator;
 	size_t allocated_size = 0; ///< Sum of allocated data size
@@ -158,6 +160,7 @@ public:
 		if (this->allocation_limit == 0) this->allocation_limit = SAFE_LIMIT; // in case the setting is somehow zero
 	}
 
+	/** Ensure the allocations have already been released. */
 	~ScriptAllocator()
 	{
 #ifdef SCRIPT_DEBUG_ALLOCATIONS
@@ -188,7 +191,7 @@ void Squirrel::CompileError(HSQUIRRELVM vm, std::string_view desc, std::string_v
 	engine->crashed = true;
 	SQPrintFunc *func = engine->print_func;
 	if (func == nullptr) {
-		Debug(misc, 0, "[Squirrel] Compile error: {}", msg);
+		Debug(Facility::Misc, Severity::Critical, "[Squirrel] Compile error: {}", msg);
 	} else {
 		(*func)(true, msg);
 	}
@@ -253,11 +256,11 @@ void Squirrel::PrintFunc(HSQUIRRELVM vm, std::string_view s)
 	}
 }
 
-void Squirrel::AddMethod(std::string_view method_name, SQFUNCTION proc, std::string_view params, void *userdata, int size)
+void Squirrel::AddMethod(std::string_view method_name, SQFUNCTION proc, std::string_view params, void *userdata, int size, bool suspendable)
 {
 	ScriptAllocatorScope alloc_scope(this);
 
-	sq_pushstring(this->vm, method_name);
+	sq_pushstring(this->vm, fmt::format("{1}{0}{1}", method_name, suspendable ? "@" : ""));
 
 	if (size != 0) {
 		void *ptr = sq_newuserdata(vm, size);
@@ -268,6 +271,24 @@ void Squirrel::AddMethod(std::string_view method_name, SQFUNCTION proc, std::str
 	if (!params.empty()) sq_setparamscheck(this->vm, params.size(), params);
 	sq_setnativeclosurename(this->vm, -1, method_name);
 	sq_newslot(this->vm, -3, SQFalse);
+
+	if (suspendable) {
+		std::string squirrel_script = fmt::format(
+			"function {0}(...)\n"
+			"{{\n"
+			"    local args = [this];\n"
+			"    for(local i = 0; i < vargc; i++) args.push(vargv[i]);\n"
+			"    while(this[\"@{0}@\"].acall(args)); \n"
+			"}}\n"
+			"return {0};\n", method_name);
+
+		sq_pushstring(this->vm, method_name);
+		if (SQ_FAILED(sq_compilebuffer(this->vm, squirrel_script, method_name, SQTrue))) NOT_REACHED();
+		sq_pushroottable(this->vm);
+		if (SQ_FAILED(sq_call(this->vm, 1, SQTrue, SQTrue))) NOT_REACHED();
+		sq_remove(this->vm, -2);
+		sq_newslot(this->vm, -3, SQFalse);
+	}
 }
 
 void Squirrel::AddConst(std::string_view var_name, SQInteger value)
@@ -305,8 +326,8 @@ void Squirrel::AddClassBegin(std::string_view class_name, std::string_view paren
 	sq_pushstring(this->vm, class_name);
 	sq_pushstring(this->vm, parent_class);
 	if (SQ_FAILED(sq_get(this->vm, -3))) {
-		Debug(misc, 0, "[squirrel] Failed to initialize class '{}' based on parent class '{}'", class_name, parent_class);
-		Debug(misc, 0, "[squirrel] Make sure that '{}' exists before trying to define '{}'", parent_class, class_name);
+		Debug(Facility::Misc, Severity::Critical, "[squirrel] Failed to initialize class '{}' based on parent class '{}'", class_name, parent_class);
+		Debug(Facility::Misc, Severity::Critical, "[squirrel] Make sure that '{}' exists before trying to define '{}'", parent_class, class_name);
 		return;
 	}
 	sq_newclass(this->vm, SQTrue);
@@ -318,6 +339,21 @@ void Squirrel::AddClassEnd()
 
 	sq_newslot(vm, -3, SQFalse);
 	sq_pop(vm, 1);
+}
+
+void Squirrel::AddScopedEnumBegin(std::string_view enum_name)
+{
+	ScriptAllocatorScope alloc_scope(this);
+
+	sq_pushstring(this->vm, enum_name);
+	sq_newclass(this->vm, SQFalse);
+}
+
+void Squirrel::AddScopedEnumEnd()
+{
+	ScriptAllocatorScope alloc_scope(this);
+
+	sq_newslot(vm, -3, SQFalse);
 }
 
 bool Squirrel::MethodExists(HSQOBJECT instance, std::string_view method_name)
@@ -390,7 +426,7 @@ bool Squirrel::CallMethod(HSQOBJECT instance, std::string_view method_name, HSQO
 	/* Find the function-name inside the script */
 	sq_pushstring(this->vm, method_name);
 	if (SQ_FAILED(sq_get(this->vm, -2))) {
-		Debug(misc, 0, "[squirrel] Could not find '{}' in the class", method_name);
+		Debug(Facility::Misc, Severity::Critical, "[squirrel] Could not find '{}' in the class", method_name);
 		sq_settop(this->vm, top);
 		return false;
 	}
@@ -454,14 +490,14 @@ bool Squirrel::CallBoolMethod(HSQOBJECT instance, std::string_view method_name, 
 	}
 
 	if (SQ_FAILED(sq_get(vm, -2))) {
-		Debug(misc, 0, "[squirrel] Failed to find class by the name '{}{}'", prepend_API_name ? engine->GetAPIName() : "", class_name);
+		Debug(Facility::Misc, Severity::Critical, "[squirrel] Failed to find class by the name '{}{}'", prepend_API_name ? engine->GetAPIName() : "", class_name);
 		sq_settop(vm, oldtop);
 		return false;
 	}
 
 	/* Create the instance */
 	if (SQ_FAILED(sq_createinstance(vm, -1))) {
-		Debug(misc, 0, "[squirrel] Failed to create instance for class '{}{}'", prepend_API_name ? engine->GetAPIName() : "", class_name);
+		Debug(Facility::Misc, Severity::Critical, "[squirrel] Failed to create instance for class '{}{}'", prepend_API_name ? engine->GetAPIName() : "", class_name);
 		sq_settop(vm, oldtop);
 		return false;
 	}
@@ -525,7 +561,7 @@ void Squirrel::Initialize()
 
 	/* Handle compile-errors ourself, so we can display it nicely */
 	sq_setcompilererrorhandler(this->vm, &Squirrel::CompileError);
-	sq_notifyallexceptions(this->vm, _debug_script_level > 5);
+	sq_notifyallexceptions(this->vm, IsVisibleSeverity(Facility::Script, Severity::Debug2));
 	/* Set a good print-function */
 	sq_setprintfunc(this->vm, &Squirrel::PrintFunc);
 	/* Handle runtime-errors ourself, so we can display it nicely */
@@ -626,11 +662,11 @@ SQRESULT Squirrel::LoadFile(HSQUIRRELVM vm, const std::string &filename, SQBool 
 	std::optional<FileHandle> file = std::nullopt;
 	size_t size;
 	if (this->GetAPIName().starts_with("AI")) {
-		file = FioFOpenFile(filename, "rb", AI_DIR, &size);
-		if (!file.has_value()) file = FioFOpenFile(filename, "rb", AI_LIBRARY_DIR, &size);
+		file = FioFOpenFile(filename, "rb", Subdirectory::Ai, &size);
+		if (!file.has_value()) file = FioFOpenFile(filename, "rb", Subdirectory::AiLibrary, &size);
 	} else if (this->GetAPIName().starts_with("GS")) {
-		file = FioFOpenFile(filename, "rb", GAME_DIR, &size);
-		if (!file.has_value()) file = FioFOpenFile(filename, "rb", GAME_LIBRARY_DIR, &size);
+		file = FioFOpenFile(filename, "rb", Subdirectory::Gs, &size);
+		if (!file.has_value()) file = FioFOpenFile(filename, "rb", Subdirectory::GsLibrary, &size);
 	} else {
 		NOT_REACHED();
 	}
@@ -706,7 +742,7 @@ bool Squirrel::LoadScript(HSQUIRRELVM vm, const std::string &script, bool in_roo
 	}
 
 	vm->_ops_till_suspend = ops_left;
-	Debug(misc, 0, "[squirrel] Failed to compile '{}'", script);
+	Debug(Facility::Misc, Severity::Critical, "[squirrel] Failed to compile '{}'", script);
 	return false;
 }
 
@@ -715,6 +751,7 @@ bool Squirrel::LoadScript(const std::string &script)
 	return LoadScript(this->vm, script);
 }
 
+/** Clean up the Squirrel virtual machine state. */
 Squirrel::~Squirrel()
 {
 	this->Uninitialize();
@@ -795,4 +832,15 @@ bool Squirrel::CanSuspend()
 SQInteger Squirrel::GetOpsTillSuspend()
 {
 	return this->vm->_ops_till_suspend;
+}
+
+void Squirrel::IncreaseAllocatedSize(size_t bytes)
+{
+	_squirrel_allocator->CheckAllocationAllowed(bytes);
+	_squirrel_allocator->allocated_size += bytes;
+}
+
+void Squirrel::DecreaseAllocatedSize(size_t bytes)
+{
+	_squirrel_allocator->allocated_size -= bytes;
 }

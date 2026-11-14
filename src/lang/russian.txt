@@ -508,7 +508,7 @@ STR_GOTO_ORDER_VIEW                                             :{BLACK}Марш
 STR_GOTO_ORDER_VIEW_TOOLTIP                                     :{BLACK}Показать общий маршрут этой группы транспорта
 
 # Tooltips for the main toolbar
-###length 31
+###length 33
 STR_TOOLBAR_TOOLTIP_PAUSE_GAME                                  :{BLACK}Пауза
 STR_TOOLBAR_TOOLTIP_FORWARD                                     :{BLACK}Ускорить игру
 STR_TOOLBAR_TOOLTIP_OPTIONS                                     :{BLACK}Настройки
@@ -654,6 +654,7 @@ STR_AIRCRAFT_MENU_AIRPORT_CONSTRUCTION                          :Строите�
 STR_LANDSCAPING_MENU_LANDSCAPING                                :Ландшафт
 STR_LANDSCAPING_MENU_PLANT_TREES                                :Высадка деревьев
 STR_LANDSCAPING_MENU_PLACE_SIGN                                 :Поставить метку
+STR_LANDSCAPING_MENU_PLACE_OBJECT                               :Разместить объект
 
 # Music menu
 STR_TOOLBAR_SOUND_MUSIC                                         :Звук/музыка
@@ -666,6 +667,7 @@ STR_NEWS_MENU_DELETE_ALL_MESSAGES                               :Удалить 
 # About menu
 STR_ABOUT_MENU_LAND_BLOCK_INFO                                  :Информация об участке земли
 STR_ABOUT_MENU_HELP                                             :Помощь и документация
+STR_ABOUT_MENU_ENTER_SCREENSAVER_MODE                           :Режим сохранения экрана
 STR_ABOUT_MENU_TOGGLE_CONSOLE                                   :Консоль
 STR_ABOUT_MENU_AI_DEBUG                                         :Отладка ИИ / скриптов
 STR_ABOUT_MENU_SCREENSHOT                                       :Снимок экрана
@@ -771,7 +773,6 @@ STR_GRAPH_LAST_24_MONTHS                                        :{TINY_FONT}{BLA
 STR_GRAPH_LAST_24_QUARTERS                                      :{TINY_FONT}{BLACK}6 лет (поквартально)
 STR_GRAPH_LAST_24_YEARS                                         :{TINY_FONT}{BLACK}24 года
 
-STR_GRAPH_TOGGLE_RANGE                                          :Включить/отключить отображение графика
 STR_GRAPH_SELECT_SCALE                                          :Сменить горизонтальный масштаб графика
 
 STR_GRAPH_CARGO_PAYMENT_RATES_CAPTION                           :{WHITE}Оплата за перевозку грузов
@@ -787,13 +788,21 @@ STR_GRAPH_CARGO_PAYMENT_CARGO                                   :{TINY_FONT}{BLA
 
 STR_GRAPH_INDUSTRY_CAPTION                                      :{WHITE}{INDUSTRY} - Продукция
 STR_GRAPH_INDUSTRY_RANGE_PRODUCED                               :Произведено
+STR_GRAPH_INDUSTRY_RANGE_PRODUCED_TOOLTIP                       :Переключить отображение графика грузов, произведённых на предприятии
 STR_GRAPH_INDUSTRY_RANGE_TRANSPORTED                            :Перевезено
+STR_GRAPH_INDUSTRY_RANGE_TRANSPORTED_TOOLTIP                    :Переключить отображение графика перевезённых грузов, произведённых на предприятии
 STR_GRAPH_INDUSTRY_RANGE_DELIVERED                              :Доставлено
+STR_GRAPH_INDUSTRY_RANGE_DELIVERED_TOOLTIP                      :Переключить отображение графика грузов, доставленных на предприятие
 STR_GRAPH_INDUSTRY_RANGE_WAITING                                :В ожидании
+STR_GRAPH_INDUSTRY_RANGE_WAITING_TOOLTIP                        :Переключить отображение графика грузов, ожидающих погрузки
 
 STR_GRAPH_TOWN_CARGO_CAPTION                                    :{WHITE}{TOWN} - Пассажиры и грузы
-STR_GRAPH_TOWN_RANGE_PRODUCED                                   :Запрос
+STR_GRAPH_TOWN_RANGE_PRODUCED                                   :Произведено
+STR_GRAPH_TOWN_RANGE_PRODUCED_TOOLTIP                           :Переключить отображение графика грузов, произведённых в городе
 STR_GRAPH_TOWN_RANGE_TRANSPORTED                                :Перевезено
+STR_GRAPH_TOWN_RANGE_TRANSPORTED_TOOLTIP                        :Переключить отображение графика перевезённых грузов, произведённых в городе
+STR_GRAPH_TOWN_RANGE_DELIVERED                                  :Доставлено
+STR_GRAPH_TOWN_RANGE_DELIVERED_TOOLTIP                          :Переключить отображение графика грузов, доставленных в город
 
 STR_GRAPH_PERFORMANCE_DETAIL_TOOLTIP                            :{BLACK}Показать составляющие части рейтинга
 
@@ -1289,8 +1298,8 @@ STR_GAME_OPTIONS_SOCIAL_PLUGIN_STATE_INVALID_SIGNATURE          :{RED}Недей
 
 STR_BASESET_STATUS                                              :{STRING} {RED}({NUM} отсутствующи{P й х х}/повреждённы{P й х х} файл{P "" а ов})
 
-STR_ERROR_RESOLUTION_LIST_FAILED                                :{WHITE}Не удалось получить список поддерживаемых разрешений экрана
-STR_ERROR_FULLSCREEN_FAILED                                     :{WHITE}Сбой полноэкранного режима
+STR_ERROR_RESOLUTION_LIST_FAILED                                :Не удалось получить список поддерживаемых разрешений экрана
+STR_ERROR_FULLSCREEN_FAILED                                     :Сбой полноэкранного режима
 
 # Custom currency window
 
@@ -1361,9 +1370,9 @@ STR_RIVERS_MODERATE                                             :Среднее
 STR_RIVERS_LOT                                                  :Большое
 
 ###length 3
-STR_DISASTER_NONE                                               :нет
-STR_DISASTER_REDUCED                                            :сниженная
-STR_DISASTER_NORMAL                                             :обычная
+STR_BREAKDOWNS_NONE                                             :нет
+STR_BREAKDOWNS_REDUCED                                          :сниженная
+STR_BREAKDOWNS_NORMAL                                           :обычная
 
 ###length 4
 STR_SUBSIDY_X1_5                                                :x1,5
@@ -1505,8 +1514,13 @@ STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HIGH                      :Высокая
 STR_CONFIG_SETTING_RECESSIONS                                   :Экономические кризисы: {STRING}
 STR_CONFIG_SETTING_RECESSIONS_HELPTEXT                          :Если эта настройка включена, в игре иногда происходят экономические кризисы. В это время объёмы производства значительно снижаются (и возвращаются к прежнему уровню, когда спад заканчивается).
 
-STR_CONFIG_SETTING_TRAIN_REVERSING                              :Запретить разворот поездов на станциях: {STRING}
-STR_CONFIG_SETTING_TRAIN_REVERSING_HELPTEXT                     :Если включено, поезда не будут разворачиваться на проходных станциях, даже если это позволит сократить путь к следующему пункту назначения
+STR_CONFIG_SETTING_TRAIN_FLIP_REVERSE                           :Разрешить разворот поездов: {STRING}
+STR_CONFIG_SETTING_TRAIN_FLIP_REVERSE_HELPTEXT                  :Укажите, можно ли составам поездов разворачиваться для изменения направления движения. "Везде" - значит, можно в любом месте. "В конце пути" - составы не будут разворачиваться на станциях, если могут продолжить движение вперёд. "Нет" - поезда не будут разворачиваться, но смогут ехать назад со сниженной скоростью, если в хвосте состава нет локомотива.
+
+###length 3
+STR_CONFIG_SETTING_TRAIN_FLIP_REVERSE_ALL                       :везде
+STR_CONFIG_SETTING_TRAIN_FLIP_REVERSE_END_OF_LINE_ONLY          :в конце пути
+STR_CONFIG_SETTING_TRAIN_FLIP_REVERSE_NONE                      :нет
 
 STR_CONFIG_SETTING_DISASTERS                                    :Катастрофы: {STRING}
 STR_CONFIG_SETTING_DISASTERS_HELPTEXT                           :Включение/отключение катастроф, которые могут время от времени блокировать или уничтожать транспортные средства или инфраструктуру
@@ -1519,7 +1533,7 @@ STR_CONFIG_SETTING_MAP_HEIGHT_LIMIT_HELPTEXT                    :Установ�
 STR_CONFIG_SETTING_MAP_HEIGHT_LIMIT_VALUE                       :{NUM}
 ###setting-zero-is-special
 STR_CONFIG_SETTING_MAP_HEIGHT_LIMIT_AUTO                        :(автовыбор)
-STR_CONFIG_SETTING_TOO_HIGH_MOUNTAIN                            :{WHITE}Невозможно изменить максимальную высоту. На карте есть горы выше этого значения.
+STR_CONFIG_SETTING_TOO_HIGH_MOUNTAIN                            :Невозможно изменить максимальную высоту. На карте есть горы выше этого значения.
 
 STR_CONFIG_SETTING_AUTOSLOPE                                    :Разрешить изм. ландшафта под зданиями, дорогами и т. д. (автоспуски): {STRING}
 STR_CONFIG_SETTING_AUTOSLOPE_HELPTEXT                           :Разрешить изменение ландшафта под домами и дорогами, не требуя их сноса
@@ -1657,7 +1671,7 @@ STR_CONFIG_SETTING_STOP_ON_TOWN_ROAD                            :Позволя�
 STR_CONFIG_SETTING_STOP_ON_TOWN_ROAD_HELPTEXT                   :Разрешить компаниям строить сквозные остановки на дорогах, построенных за счёт городского бюджета
 STR_CONFIG_SETTING_STOP_ON_COMPETITOR_ROAD                      :Разрешить строить остановки на дорогах конкурентов: {STRING}
 STR_CONFIG_SETTING_STOP_ON_COMPETITOR_ROAD_HELPTEXT             :Разрешить компаниям строить сквозные остановки на дорогах, принадлежащих другим транспортным компаниям
-STR_CONFIG_SETTING_DYNAMIC_ENGINES_EXISTING_VEHICLES            :{WHITE}Изменение этого параметра невозможно, если в игре есть транспортные средства.
+STR_CONFIG_SETTING_DYNAMIC_ENGINES_EXISTING_VEHICLES            :Изменение этого параметра невозможно, если в игре есть транспортные средства
 
 STR_CONFIG_SETTING_INFRASTRUCTURE_MAINTENANCE                   :Обслуживание инфраструктуры: {STRING}
 STR_CONFIG_SETTING_INFRASTRUCTURE_MAINTENANCE_HELPTEXT          :Включает затраты на содержание инфраструктуры. Стоимость непропорционально увеличивается с ростом транспортной сети, оказывая, таким образом, большее влияние на крупные компании, чем на малые.
@@ -1711,6 +1725,12 @@ STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE                         :Множите�
 STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE_HELPTEXT                :Умножить производительность предприятий на указанное значение.
 STR_CONFIG_SETTING_CARGO_SCALE_VALUE                            :{NUM}%
 
+STR_CONFIG_SETTING_CARGO_AGING_RATE                             :Множитель скорости снижения оплаты грузоперевозок: {STRING}
+STR_CONFIG_SETTING_CARGO_AGING_RATE_HELPTEXT                    :Настройка скорости снижения цены груза, находящегося в пути
+STR_CONFIG_SETTING_CARGO_AGING_RATE_VALUE                       :{NUM}%
+###setting-zero-is-special
+STR_CONFIG_SETTING_CARGO_AGING_RATE_ZERO                        :без снижения
+
 STR_CONFIG_SETTING_AUTORENEW_VEHICLE                            :Автозамена изношенного транспорта: {STRING}
 STR_CONFIG_SETTING_AUTORENEW_VEHICLE_HELPTEXT                   :Включает автоматическую замену устаревших транспортных средств
 
@@ -1752,7 +1772,7 @@ STR_CONFIG_SETTING_LAND_GENERATOR_HELPTEXT                      :Оригина�
 STR_CONFIG_SETTING_LAND_GENERATOR_ORIGINAL                      :Оригинальный
 STR_CONFIG_SETTING_LAND_GENERATOR_TERRA_GENESIS                 :TerraGenesis
 
-STR_CONFIG_SETTING_TERRAIN_TYPE                                 :Тип ландшафта: {STRING}
+STR_CONFIG_SETTING_TERRAIN_TYPE                                 :Предустановленная высота: {STRING}
 STR_CONFIG_SETTING_TERRAIN_TYPE_HELPTEXT                        :Укажите высоту гор и холмов на карте
 
 STR_CONFIG_SETTING_INDUSTRY_DENSITY                             :Количество предприятий: {STRING}
@@ -1780,6 +1800,14 @@ STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_SMOOTH                  :Гладкий
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_ROUGH                   :Грубый
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_VERY_ROUGH              :Очень грубый
 
+STR_CONFIG_SETTING_AVERAGE_HEIGHT                               :Средняя высота: {STRING}
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_HELPTEXT                      :Выберите среднюю высоту ландшафта. «Автоматически» установит высоту в зависимости от выбранного типа карты: «Низины» для субтропического, «Среднюю» для умеренного и игрушечного, «Плато» для субарктического.
+###length 4
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_AUTO                          :Автоматически
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_LOWLANDS                      :Низины
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_NORMAL                        :Средняя
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_PLATEAUS                      :Плато
+
 STR_CONFIG_SETTING_VARIETY                                      :Разнообразие ландшафта: {STRING}
 STR_CONFIG_SETTING_VARIETY_HELPTEXT                             :Определяет наличие на карте как горных, так и равнинных областей. Чем выше разнообразие, тем выше разница в высоте между этими зонами.
 
@@ -1794,7 +1822,7 @@ STR_CONFIG_SETTING_TREE_PLACER_ORIGINAL                         :Оригина�
 STR_CONFIG_SETTING_TREE_PLACER_IMPROVED                         :Улучшенный
 
 STR_CONFIG_SETTING_ROAD_SIDE                                    :Движение автотранспорта: {STRING}
-STR_CONFIG_SETTING_ROAD_SIDE_HELPTEXT                           :Выберите сторону дороги, по которой движется автотранспорт
+STR_CONFIG_SETTING_ROAD_SIDE_HELPTEXT                           :Выберите сторону дороги, по которой движется автотранспорт.{}Это также может повлиять на расстановку светофоров.{}При изменении этой настройки игру, возможно, придётся перезапустить для полного и корректного применения для всех транспортных средств.
 
 ###length 2
 STR_CONFIG_SETTING_ROAD_SIDE_LEFT                               :Левостороннее
@@ -1808,8 +1836,8 @@ STR_CONFIG_SETTING_HEIGHTMAP_ROTATION_CLOCKWISE                 :По часов
 
 STR_CONFIG_SETTING_SE_FLAT_WORLD_HEIGHT                         :Уровень высоты для карт с плоским рельефом: {STRING}
 ###length 2
-STR_CONFIG_SETTING_EDGES_NOT_EMPTY                              :{WHITE}Как минимум одно поле в северном углу карты не пустое
-STR_CONFIG_SETTING_EDGES_NOT_WATER                              :{WHITE}Как минимум одно поле у края карты - суша
+STR_CONFIG_SETTING_EDGES_NOT_EMPTY                              :Как минимум одно поле в северном углу карты не пустое
+STR_CONFIG_SETTING_EDGES_NOT_WATER                              :Как минимум одно поле у края карты - суша
 
 STR_CONFIG_SETTING_STATION_SPREAD                               :Максимальный размер станции: {STRING}
 STR_CONFIG_SETTING_STATION_SPREAD_HELPTEXT                      :Максимальный размер области, которую может занимать станция или её составные части.{}Имейте в виду, что большие значения замедляют игру.
@@ -1938,12 +1966,12 @@ STR_CONFIG_SETTING_TIMETABLE_SHOW_ARRIVAL_DEPARTURE_HELPTEXT    :Показыв�
 STR_CONFIG_SETTING_QUICKGOTO                                    :Быстрое создание заданий транспорта: {STRING}
 STR_CONFIG_SETTING_QUICKGOTO_HELPTEXT                           :Открывать окно маршрута с нажатой кнопкой «Следовать»
 
-STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE                            :Тип ж/д путей по умолчанию (после старта/загрузки): {STRING}
-STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_HELPTEXT                   :Тип железнодорожных путей, выбираемый по умолчанию после старта или загрузки игры.{}«Первые доступные» - самый старый тип рельсов.{}«Последние доступные» - самый новый тип.{}«Наиболее используемые» - тип рельсов, наиболее широко используемых в игре.
+STR_CONFIG_SETTING_DEFAULT_RAIL_ROAD_TYPE                       :Тип трамваев, ж/д и автодорог по умолчанию: {STRING}
+STR_CONFIG_SETTING_DEFAULT_RAIL_ROAD_TYPE_HELPTEXT              :Тип автомобильных и железных дорог, а также трамваев, выбранных по умолчанию после начала или загрузки игры. «Первые доступные» - выбор самых первых типов; «Последние доступные» - выбор самых новых; «Самые используемые» - выбор типов, наиболее используемых в данный момент.
 ###length 3
-STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_FIRST                      :первые доступные
-STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_LAST                       :последние доступные
-STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_MOST_USED                  :наиболее используемые
+STR_CONFIG_SETTING_DEFAULT_RAIL_ROAD_TYPE_FIRST                 :Первые доступные
+STR_CONFIG_SETTING_DEFAULT_RAIL_ROAD_TYPE_LAST                  :Последние доступные
+STR_CONFIG_SETTING_DEFAULT_RAIL_ROAD_TYPE_MOST_USED             :Самые используемые
 
 STR_CONFIG_SETTING_SHOW_TRACK_RESERVATION                       :Показывать зарезервированные пути: {STRING}
 STR_CONFIG_SETTING_SHOW_TRACK_RESERVATION_HELPTEXT              :Подсвечивать зарезервированные пути для решения проблем на путях с маршрутными сигналами
@@ -2049,6 +2077,9 @@ STR_CONFIG_SETTING_STATION_LENGTH_LOADING_PENALTY_HELPTEXT      :При вклю
 
 STR_CONFIG_SETTING_WAGONSPEEDLIMITS                             :Учитывать ограничение скорости у вагонов: {STRING}
 STR_CONFIG_SETTING_WAGONSPEEDLIMITS_HELPTEXT                    :При наличии в составе вагонов с ограничением скорости учитывать это ограничение при определении максимальной скорости состава
+
+STR_CONFIG_SETTING_AIRCRAFT_RANGE                               :Ограничение дальности воздушных судов: {STRING}
+STR_CONFIG_SETTING_AIRCRAFT_RANGE_HELPTEXT                      :При включении - модули NewGRF смогут ограничивать максимальную дальность воздушных судов.
 
 STR_CONFIG_SETTING_DISABLE_ELRAILS                              :Не требовать электрификации железной дороги: {STRING}
 STR_CONFIG_SETTING_DISABLE_ELRAILS_HELPTEXT                     :При включении этой настройки электровозы смогут ездить по неэлектрифицированной железной дороге
@@ -2244,6 +2275,8 @@ STR_CONFIG_SETTING_LARGER_TOWNS_VALUE                           :1 из {COMMA}
 STR_CONFIG_SETTING_LARGER_TOWNS_DISABLED                        :нет
 STR_CONFIG_SETTING_CITY_SIZE_MULTIPLIER                         :Стартовый множитель размера мегаполисов: {STRING}
 STR_CONFIG_SETTING_CITY_SIZE_MULTIPLIER_HELPTEXT                :Средний размер мегаполисов по сравнению с остальными городами в начале игры
+STR_CONFIG_SETTING_TOWN_MIN_DISTANCE                            :Минимальное расстояние между городами: {STRING}
+STR_CONFIG_SETTING_TOWN_MIN_DISTANCE_HELPTEXT                   :Минимальное расстояние, которое должно соблюдаться между городами при создании карты, а также при основании города в случайном месте
 
 STR_CONFIG_SETTING_LINKGRAPH_RECALC_INTERVAL                    :Интервал обновления графа распределения: {STRING}
 STR_CONFIG_SETTING_LINKGRAPH_RECALC_INTERVAL_HELPTEXT           :Интервалы между перерасчётами графов распределения грузов. Каждый перерасчёт обновляет один компонент графа. То есть, по истечении указанного здесь времени будет обновлён не весь граф, а только один из его компонентов. Чем ниже значение, тем выше нагрузка на процессор. Чем выше значение, тем дольше не будет работать распределение грузов на новых маршрутах.
@@ -2354,27 +2387,27 @@ STR_CONFIG_SETTING_REVERSE_AT_SIGNALS_HELPTEXT                  :Разреши�
 STR_CONFIG_SETTING_QUERY_CAPTION                                :{WHITE}Изменить значение
 
 # Config errors
-STR_CONFIG_ERROR                                                :{WHITE}Ошибка в файле конфигурации...
-STR_CONFIG_ERROR_ARRAY                                          :{WHITE}... ошибка в массиве «{STRING}»
-STR_CONFIG_ERROR_INVALID_VALUE                                  :{WHITE}... неверное значение «{STRING}» параметра «{STRING}»
-STR_CONFIG_ERROR_TRAILING_CHARACTERS                            :{WHITE}... лишние символы после «{STRING}»
-STR_CONFIG_ERROR_DUPLICATE_GRFID                                :{WHITE}... NewGRF «{STRING}» игнорируется: у него такой же идентификатор NewGRF, как и у «{STRING}»
-STR_CONFIG_ERROR_INVALID_GRF                                    :{WHITE}... игнорируется неверный NewGRF «{STRING}»: {STRING}
+STR_CONFIG_ERROR                                                :Ошибка в файле конфигурации...
+STR_CONFIG_ERROR_ARRAY                                          :ошибка в массиве «{STRING}»
+STR_CONFIG_ERROR_INVALID_VALUE                                  :неверное значение «{STRING}» параметра «{STRING}»
+STR_CONFIG_ERROR_TRAILING_CHARACTERS                            :лишние символы после «{STRING}»
+STR_CONFIG_ERROR_DUPLICATE_GRFID                                :модуль NewGRF «{STRING}» игнорируется: его идентификатор NewGRF дублируется с «{STRING}»
+STR_CONFIG_ERROR_INVALID_GRF                                    :игнорируется неверный NewGRF «{STRING}»: {STRING}
 STR_CONFIG_ERROR_INVALID_GRF_NOT_FOUND                          :не найден
 STR_CONFIG_ERROR_INVALID_GRF_UNSAFE                             :использование в качестве статического небезопасно
 STR_CONFIG_ERROR_INVALID_GRF_SYSTEM                             :системный NewGRF
 STR_CONFIG_ERROR_INVALID_GRF_INCOMPATIBLE                       :несовместим с данной версией OpenTTD
 STR_CONFIG_ERROR_INVALID_GRF_UNKNOWN                            :неизвестный
-STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_LEVEL             :{WHITE}... уровень сжатия «{STRING}» неверный
-STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_ALGORITHM         :{WHITE}... алгоритм сохранения «{STRING}» недоступен. Будет использоваться «{STRING}»
-STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :{WHITE}... графический пакет «{STRING}» не найден
-STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE}... звуковой пакет «{STRING}» не найден
-STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... музыкальный пакет «{STRING}» не найден
+STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_LEVEL             :неверно указан уровень сжатия: «{STRING}»
+STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_ALGORITHM         :алгоритм сохранения «{STRING}» недоступен. Будет использоваться «{STRING}».
+STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :графический пакет «{STRING}» не найден
+STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :звуковой пакет «{STRING}» не найден
+STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :музыкальный пакет «{STRING}» не найден
 
-# Video initalization errors
-STR_VIDEO_DRIVER_ERROR                                          :{WHITE}Ошибка в настройках графики...
-STR_VIDEO_DRIVER_ERROR_NO_HARDWARE_ACCELERATION                 :{WHITE}... не найдено подходящего графического процессора. Аппаратное ускорение отключено.
-STR_VIDEO_DRIVER_ERROR_HARDWARE_ACCELERATION_CRASH              :{WHITE}... драйвер видеокарты вызвал критическую ошибку. Аппаратное ускорение отключено.
+# Video initialization errors
+STR_VIDEO_DRIVER_ERROR                                          :Ошибка в настройках графики...
+STR_VIDEO_DRIVER_ERROR_NO_HARDWARE_ACCELERATION                 :не найдено подходящего графического процессора. Аппаратное ускорение отключено.
+STR_VIDEO_DRIVER_ERROR_HARDWARE_ACCELERATION_CRASH              :Драйвер видеокарты вызвал критическую ошибку. Аппаратное ускорение отключено.
 
 # Intro window
 STR_INTRO_CAPTION                                               :{WHITE}OpenTTD
@@ -2511,15 +2544,15 @@ STR_FACE_SIMPLE                                                 :{BLACK}Прос
 STR_FACE_SIMPLE_TOOLTIP                                         :{BLACK}Простое создание внешности
 STR_FACE_LOAD                                                   :{BLACK}Загрузить
 STR_FACE_LOAD_TOOLTIP                                           :{BLACK}Загрузить внешность
-STR_FACE_LOAD_DONE                                              :{WHITE}Ваша внешность загружена из файла конфигурации.
+STR_FACE_LOAD_DONE                                              :Ваша внешность загружена из файла конфигурации
 STR_FACE_FACECODE                                               :{BLACK}Числовой код
 STR_FACE_FACECODE_TOOLTIP                                       :{BLACK}Отобразить/изменить числовой код внешности президента компании
 STR_FACE_FACECODE_CAPTION                                       :{WHITE}Отобразить/изменить числовой код внешности президента компании
-STR_FACE_FACECODE_SET                                           :{WHITE}Числовой код нового лица установлен.
-STR_FACE_FACECODE_ERR                                           :{WHITE}Невозможно изменить внешность: значение должно быть целым числом в диапазоне от 0 до 4{NBSP}294{NBSP}967{NBSP}295
+STR_FACE_FACECODE_SET                                           :Числовой код новой внешности установлен
+STR_FACE_FACECODE_ERR                                           :Невозможно изменить внешность: код должен состоять из правильной метки и числа
 STR_FACE_SAVE                                                   :{BLACK}Сохранить
 STR_FACE_SAVE_TOOLTIP                                           :{BLACK}Сохранить внешность
-STR_FACE_SAVE_DONE                                              :{WHITE}Внешность сохранена в файле конфигурации.
+STR_FACE_SAVE_DONE                                              :Внешность сохранена в файл конфигурации
 STR_FACE_SETTING_TOGGLE                                         :{STRING} {ORANGE}{STRING}
 STR_FACE_SETTING_NUMERIC                                        :{STRING} {ORANGE}{NUM} / {NUM}
 STR_FACE_YES                                                    :Да
@@ -2629,15 +2662,13 @@ STR_NETWORK_CONNECTING_WAITING                                  :{BLACK}Гото
 STR_NETWORK_CONNECTING_DOWNLOADING_1                            :{BLACK}{BYTES} загружено
 STR_NETWORK_CONNECTING_DOWNLOADING_2                            :{BLACK}Загружено {BYTES} / {BYTES}
 
-###length 8
+###length 6
 STR_NETWORK_CONNECTING_1                                        :{BLACK}(1/6) Соединение...
 STR_NETWORK_CONNECTING_2                                        :{BLACK}(2/6) Авторизация...
 STR_NETWORK_CONNECTING_3                                        :{BLACK}(3/6) Ожидание...
 STR_NETWORK_CONNECTING_4                                        :{BLACK}(4/6) Загрузка карты...
 STR_NETWORK_CONNECTING_5                                        :{BLACK}(5/6) Обработка...
 STR_NETWORK_CONNECTING_6                                        :{BLACK}(6/6) Регистрация...
-STR_NETWORK_CONNECTING_SPECIAL_1                                :{BLACK}Получение информации об игре...
-STR_NETWORK_CONNECTING_SPECIAL_2                                :{BLACK}Получение информации о компаниях...
 
 STR_NETWORK_CONNECTION_DISCONNECT                               :{BLACK}Отключиться
 
@@ -2691,6 +2722,8 @@ STR_NETWORK_CLIENT_LIST_SERVER_CONNECTION_TYPE_TURN             :{BLACK}Чере
 STR_NETWORK_CLIENT_LIST_ADMIN_CLIENT_KICK                       :Отключить
 STR_NETWORK_CLIENT_LIST_ADMIN_CLIENT_BAN                        :Заблокировать
 STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_RESET                     :Удалить
+STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_ALLOW_ANY                 :Разрешить подключение любых клиентов
+STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_ALLOW_LISTED              :Разрешить подключение только указанных клиентов
 
 STR_NETWORK_CLIENT_LIST_ASK_CAPTION                             :{WHITE}Подтверждение действия
 STR_NETWORK_CLIENT_LIST_ASK_CLIENT_KICK                         :{YELLOW}Отключить игрока «{STRING}»?
@@ -2731,33 +2764,33 @@ STR_NETWORK_CHAT_EXTERNAL                                       :[{STRING}] {STR
 STR_NETWORK_CHAT_OSKTITLE                                       :{BLACK}Введите текст для сетевого сообщения
 
 # Network messages
-STR_NETWORK_ERROR_NOTAVAILABLE                                  :{WHITE}Не найдены сетевые устройства
-STR_NETWORK_ERROR_NOCONNECTION                                  :{WHITE}Время ожидания ответа от сервера истекло. Возможно, сервер отклонил запрос.
-STR_NETWORK_ERROR_NEWGRF_MISMATCH                               :{WHITE}Невозможно присоединиться из-за несоответствия NewGRF
-STR_NETWORK_ERROR_DESYNC                                        :{WHITE}Синхронизация сетевой игры не удалась
-STR_NETWORK_ERROR_LOSTCONNECTION                                :{WHITE}Соединение сетевой игры потеряно
-STR_NETWORK_ERROR_SAVEGAMEERROR                                 :{WHITE}Не удалось загрузить сохранение
-STR_NETWORK_ERROR_SERVER_START                                  :{WHITE}Не удалось запустить сервер
-STR_NETWORK_ERROR_SERVER_ERROR                                  :{WHITE}Произошла ошибка протокола, и соединение было закрыто
-STR_NETWORK_ERROR_BAD_PLAYER_NAME                               :{WHITE}Не указано имя игрока. Его можно ввести в верхней части окна «Сетевая игра».
-STR_NETWORK_ERROR_BAD_SERVER_NAME                               :{WHITE}Не указано имя сервера. Его можно ввести в верхней части окна «Сетевая игра».
-STR_NETWORK_ERROR_WRONG_REVISION                                :{WHITE}Версия этого клиента не совместима с версией сервера
-STR_NETWORK_ERROR_WRONG_PASSWORD                                :{WHITE}Неверный пароль
-STR_NETWORK_ERROR_NOT_ON_ALLOW_LIST                             :{WHITE}Ваш клиент отсутствует в списке разрешённых
-STR_NETWORK_ERROR_SERVER_FULL                                   :{WHITE}Сервер переполнен
-STR_NETWORK_ERROR_SERVER_BANNED                                 :{WHITE}Вас заблокировали на этом сервере
-STR_NETWORK_ERROR_KICKED                                        :{WHITE}Вас отключили от игры
-STR_NETWORK_ERROR_KICK_MESSAGE                                  :{WHITE}Причина: {STRING}
-STR_NETWORK_ERROR_CHEATER                                       :{WHITE}Чит-коды не разрешены на этом сервере
-STR_NETWORK_ERROR_TOO_MANY_COMMANDS                             :{WHITE}Вы посылали на сервер слишком много команд
-STR_NETWORK_ERROR_TIMEOUT_PASSWORD                              :{WHITE}Вы не успели ввести пароль
-STR_NETWORK_ERROR_TIMEOUT_COMPUTER                              :{WHITE}Ваш компьютер работает слишком медленно и не поспевает за сервером
-STR_NETWORK_ERROR_TIMEOUT_MAP                                   :{WHITE}Ваш компьютер тратит много времени на загрузку карты
-STR_NETWORK_ERROR_TIMEOUT_JOIN                                  :{WHITE}Ваш компьютер тратит много времени на подключение к серверу
-STR_NETWORK_ERROR_INVALID_CLIENT_NAME                           :{WHITE}Неверно указано имя игрока
+STR_NETWORK_ERROR_NOTAVAILABLE                                  :Не найдены сетевые устройства
+STR_NETWORK_ERROR_NOCONNECTION                                  :Время ожидания ответа от сервера истекло. Возможно, сервер отклонил запрос.
+STR_NETWORK_ERROR_NEWGRF_MISMATCH                               :Невозможно присоединиться из-за несоответствия установленных модулей NewGRF
+STR_NETWORK_ERROR_DESYNC                                        :Синхронизация сетевой игры не удалась
+STR_NETWORK_ERROR_LOSTCONNECTION                                :Соединение сетевой игры потеряно
+STR_NETWORK_ERROR_SAVEGAMEERROR                                 :Не удалось загрузить сохранённую игру
+STR_NETWORK_ERROR_SERVER_START                                  :Не удалось запустить сервер
+STR_NETWORK_ERROR_SERVER_ERROR                                  :Произошла ошибка протокола, и соединение было закрыто
+STR_NETWORK_ERROR_BAD_PLAYER_NAME                               :Не указано имя игрока. Его можно ввести в верхней части окна «Сетевая игра».
+STR_NETWORK_ERROR_BAD_SERVER_NAME                               :Не указано имя сервера. Его можно ввести в верхней части окна «Сетевая игра».
+STR_NETWORK_ERROR_WRONG_REVISION                                :Версия этого клиента не совместима с версией сервера
+STR_NETWORK_ERROR_WRONG_PASSWORD                                :Неверный пароль
+STR_NETWORK_ERROR_NOT_ON_ALLOW_LIST                             :Ваш клиент отсутствует в списке разрешённых
+STR_NETWORK_ERROR_SERVER_FULL                                   :Сервер переполнен
+STR_NETWORK_ERROR_SERVER_BANNED                                 :Вас заблокировали на этом сервере
+STR_NETWORK_ERROR_KICKED                                        :Вас отключили от игры
+STR_NETWORK_ERROR_KICK_MESSAGE                                  :Причина: {STRING}
+STR_NETWORK_ERROR_CHEATER                                       :Чит-коды не разрешены на этом сервере
+STR_NETWORK_ERROR_TOO_MANY_COMMANDS                             :Вы посылали на сервер слишком много команд
+STR_NETWORK_ERROR_TIMEOUT_PASSWORD                              :Вы не успели ввести пароль
+STR_NETWORK_ERROR_TIMEOUT_COMPUTER                              :Ваш компьютер работает слишком медленно и не поспевает за сервером
+STR_NETWORK_ERROR_TIMEOUT_MAP                                   :Ваш компьютер не смог загрузить карту
+STR_NETWORK_ERROR_TIMEOUT_JOIN                                  :Ваш компьютер так и не смог подключиться к серверу
+STR_NETWORK_ERROR_INVALID_CLIENT_NAME                           :Неверно указано имя игрока
 
-STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION_CAPTION            :{WHITE}Подключение утеряно
-STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION                    :{WHITE}В течение {NUM} секунд{P ы "" ""} от сервера не поступало никаких данных
+STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION_CAPTION            :Возможно, подключение утеряно
+STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION                    :В течение {NUM} секунд{P ы "" ""} от сервера не поступало никаких данных
 
 ###length 23
 STR_NETWORK_ERROR_CLIENT_GENERAL                                :общая ошибка
@@ -2810,14 +2843,14 @@ STR_NETWORK_MESSAGE_CLIENT_COMPANY_NEW                          :*** {STRING} о
 STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {STRING} покинул игру ({STRING})
 STR_NETWORK_MESSAGE_NAME_CHANGE                                 :*** {STRING} сменил(а) имя на {STRING}
 STR_NETWORK_MESSAGE_GIVE_MONEY                                  :*** Компания «{0:STRING}» передала «{2:STRING}» {1:CURRENCY_LONG}
-STR_NETWORK_MESSAGE_SERVER_SHUTDOWN                             :{WHITE}Сервер закрыл сессию
-STR_NETWORK_MESSAGE_SERVER_REBOOT                               :{WHITE}Сервер перезапускается...{}{}Пожалуйста, подождите...
+STR_NETWORK_MESSAGE_SERVER_SHUTDOWN                             :Сервер закрыл сессию
+STR_NETWORK_MESSAGE_SERVER_REBOOT                               :Сервер перезапускается...{}{}Пожалуйста, подождите...
 STR_NETWORK_MESSAGE_KICKED                                      :*** {STRING} был исключён из игры. Причина: ({STRING})
 
-STR_NETWORK_ERROR_COORDINATOR_REGISTRATION_FAILED               :{WHITE}Не удалось зарегистрировать сервер
-STR_NETWORK_ERROR_COORDINATOR_REUSE_OF_INVITE_CODE              :{WHITE}В сети есть ещё один сервер с таким же кодом приглашения. Переключаюсь в режим локального сервера.
-STR_NETWORK_ERROR_COORDINATOR_ISOLATED                          :{WHITE}Клиентские подключения к вашему серверу запрещены
-STR_NETWORK_ERROR_COORDINATOR_ISOLATED_DETAIL                   :{WHITE}Другие игроки не смогут подключиться к вашему серверу
+STR_NETWORK_ERROR_COORDINATOR_REGISTRATION_FAILED               :Не удалось зарегистрировать сервер
+STR_NETWORK_ERROR_COORDINATOR_REUSE_OF_INVITE_CODE              :В сети есть ещё один сервер с таким же кодом приглашения. Переключаюсь в режим локального сервера.
+STR_NETWORK_ERROR_COORDINATOR_ISOLATED                          :Удалённые подключения к вашему серверу запрещены
+STR_NETWORK_ERROR_COORDINATOR_ISOLATED_DETAIL                   :Другие игроки не смогут подключиться к вашему серверу
 
 # Content downloading window
 STR_CONTENT_TITLE                                               :{WHITE}Онлайн-контент
@@ -2861,8 +2894,8 @@ STR_CONTENT_DETAIL_FILESIZE                                     :{SILVER}Раз�
 STR_CONTENT_DETAIL_SELECTED_BECAUSE_OF                          :{SILVER}Выбрано вместе с {WHITE}{STRING}
 STR_CONTENT_DETAIL_DEPENDENCIES                                 :{SILVER}Зависимости: {WHITE}{STRING}
 STR_CONTENT_DETAIL_TAGS                                         :{SILVER}Теги: {WHITE}{STRING}
-STR_CONTENT_NO_ZLIB                                             :{WHITE}OpenTTD скомпилирован без поддержки библиотеки «zlib»...
-STR_CONTENT_NO_ZLIB_SUB                                         :{WHITE}... загрузка контента невозможна!
+STR_CONTENT_NO_ZLIB                                             :OpenTTD скомпилирован без поддержки библиотеки «zlib»...
+STR_CONTENT_NO_ZLIB_SUB                                         :загрузка контента невозможна!
 
 # Order of these is important!
 STR_CONTENT_TYPE_BASE_GRAPHICS                                  :{G=m}Осн. графика
@@ -2896,10 +2929,10 @@ STR_CONTENT_DOWNLOAD_COMPLETE                                   :{WHITE}Загр
 STR_CONTENT_DOWNLOAD_PROGRESS_SIZE                              :{WHITE}{BYTES} из {BYTES} загружено ({NUM}%)
 
 # Content downloading error messages
-STR_CONTENT_ERROR_COULD_NOT_CONNECT                             :{WHITE}Не удалось соединиться с сервером контента...
-STR_CONTENT_ERROR_COULD_NOT_DOWNLOAD                            :{WHITE}Ошибка загрузки...
-STR_CONTENT_ERROR_COULD_NOT_DOWNLOAD_FILE_NOT_WRITABLE          :{WHITE}... невозможно записать файл
-STR_CONTENT_ERROR_COULD_NOT_EXTRACT                             :{WHITE}Не удалось распаковать скачанный файл
+STR_CONTENT_ERROR_COULD_NOT_CONNECT                             :Не удалось соединиться с сервером контента...
+STR_CONTENT_ERROR_COULD_NOT_DOWNLOAD                            :Ошибка загрузки...
+STR_CONTENT_ERROR_COULD_NOT_DOWNLOAD_FILE_NOT_WRITABLE          :невозможно записать файл
+STR_CONTENT_ERROR_COULD_NOT_EXTRACT                             :Не удалось распаковать скачанный файл
 
 STR_MISSING_GRAPHICS_SET_CAPTION                                :{WHITE}Отсутствует графический пакет
 STR_MISSING_GRAPHICS_SET_MESSAGE                                :{BLACK}Для запуска OpenTTD требуется графический пакет. Скачать и установить его?
@@ -3022,18 +3055,38 @@ STR_PICKER_PREVIEW_SHRINK_TOOLTIP                               :Уменьши�
 STR_PICKER_PREVIEW_EXPAND                                       :+
 STR_PICKER_PREVIEW_EXPAND_TOOLTIP                               :Увеличить высоту изображений предпросмотра. Ctrl+щелчок - до максимума.
 
-STR_PICKER_STATION_CLASS_TOOLTIP                                :Выберите тип станций для отображения
+STR_PICKER_DEFAULT_COLLECTION                                   :По умолчанию
+STR_PICKER_SELECT_COLLECTION_TOOLTIP                            :Выберите коллекцию
+STR_PICKER_COLLECTION_ADD                                       :Создать
+STR_PICKER_COLLECTION_ADD_TOOLTIP                               :Создать новую коллекцию
+STR_PICKER_COLLECTION_RENAME                                    :Переименовать
+STR_PICKER_COLLECTION_RENAME_TOOLTIP                            :Переименовать коллекцию
+STR_PICKER_COLLECTION_DELETE                                    :Удалить
+STR_PICKER_COLLECTION_DELETE_TOOLTIP                            :Удалить коллекцию
+
+STR_PICKER_COLLECTION_RENAME_QUERY                              :Переименовать эту коллекцию
+STR_PICKER_COLLECTION_DELETE_QUERY                              :Удалить коллекцию
+STR_PICKER_COLLECTION_DELETE_QUERY_TEXT                         :{YELLOW}Удалить эту коллекцию?
+STR_PICKER_COLLECTION_DELETE_QUERY_DISABLED_TEXT                :{YELLOW}Вы уверены, что хотите удалить эту коллекцию? В ней содержатся объекты из отключённых модулей NewGRF!
+
+STR_PICKER_STATION_CLASS_TOOLTIP                                :Выберите тип станций для отображения. Ctrl+щелчок для добавления в сохранённые или удаления.
 STR_PICKER_STATION_TYPE_TOOLTIP                                 :Выберите станцию для строительства. Ctrl+щелчок добавит её в «избранное» или удалит.
-STR_PICKER_WAYPOINT_CLASS_TOOLTIP                               :Выберите тип маршрутных точек для отображения
+STR_PICKER_STATION_COLLECTION_TOOLTIP                           :Выберите коллекцию станций для отображения
+STR_PICKER_WAYPOINT_CLASS_TOOLTIP                               :Выберите тип маршрутных точек для отображения. Ctrl+щелчок для добавления в сохранённые или удаления.
 STR_PICKER_WAYPOINT_TYPE_TOOLTIP                                :Выберите маршрутную точку для строительства. Ctrl+щелчок добавит её в «избранное» или удалит.
-STR_PICKER_ROADSTOP_BUS_CLASS_TOOLTIP                           :Выберите тип остановок для отображения
+STR_PICKER_WAYPOINT_COLLECTION_TOOLTIP                          :Выберите коллекцию маршрутных точек для отображения
+STR_PICKER_ROADSTOP_BUS_CLASS_TOOLTIP                           :Выберите тип остановок для отображения. Ctrl+щелчок для добавления в сохранённые или удаления.
 STR_PICKER_ROADSTOP_BUS_TYPE_TOOLTIP                            :Выберите остановку для строительства. Ctrl+щелчок добавит её в «избранное» или удалит.
-STR_PICKER_ROADSTOP_TRUCK_CLASS_TOOLTIP                         :Выберите тип грузовых терминалов для отображения
+STR_PICKER_ROADSTOP_BUS_COLLECTION_TOOLTIP                      :Выберите коллекцию автобусных остановок для отображения
+STR_PICKER_ROADSTOP_TRUCK_CLASS_TOOLTIP                         :Выберите тип грузовых терминалов для отображения. Ctrl+щелчок для добавления в сохранённые или удаления.
 STR_PICKER_ROADSTOP_TRUCK_TYPE_TOOLTIP                          :Выберите грузовой терминал для строительства. Ctrl+щелчок добавит его в «избранное» или удалит.
-STR_PICKER_OBJECT_CLASS_TOOLTIP                                 :Выберите тип объектов для отображения
+STR_PICKER_ROADSTOP_TRUCK_COLLECTION_TOOLTIP                    :Выберите коллекцию грузовых терминалов для отображения
+STR_PICKER_OBJECT_CLASS_TOOLTIP                                 :Выберите тип объектов для отображения. Ctrl+щелчок для добавления в сохранённые или удаления.
 STR_PICKER_OBJECT_TYPE_TOOLTIP                                  :Выберите объект для строительства. Ctrl+щелчок добавит его в «избранное» или удалит. Ctrl+перетаскивание - выбор диагональной области. При нажатом Shift - оценка стоимости строительства.
-STR_PICKER_HOUSE_CLASS_TOOLTIP                                  :Выберите городскую зону для отображения соответствующих строений
+STR_PICKER_OBJECT_COLLECTION_TOOLTIP                            :Выберите коллекцию объектов для отображения
+STR_PICKER_HOUSE_CLASS_TOOLTIP                                  :Выберите городскую зону для отображения соответствующих строений. Ctrl+щелчок для добавления в сохранённые или удаления.
 STR_PICKER_HOUSE_TYPE_TOOLTIP                                   :Выберите здание для строительства. Ctrl+щелчок добавит его в «избранное» или удалит.
+STR_PICKER_HOUSE_COLLECTION_TOOLTIP                             :Выберите коллекцию домов для отображения
 
 STR_HOUSE_PICKER_CAPTION                                        :Выбор типов зданий
 STR_HOUSE_PICKER_NAME                                           :{BLACK}Здание: {GOLD}{STRING}
@@ -3226,10 +3279,13 @@ STR_TREES_MODE_FOREST_LG_TOOLTIP                                :{BLACK}Созд
 
 # Land generation window (SE)
 STR_TERRAFORM_TOOLBAR_LAND_GENERATION_CAPTION                   :{WHITE}Генератор карты
-STR_TERRAFORM_TOOLTIP_PLACE_ROCKY_AREAS_ON_LANDSCAPE            :{BLACK}Разместить скалы на карте
+STR_TERRAFORM_TOOLTIP_PLACE_ROCKY_AREAS_ON_LANDSCAPE            :{BLACK}Разместить скалы на карте.{}Ctrl+щелчок убирает скалы.
+STR_TERRAFORM_TOOLTIP_PLACE_ROUGH_AREAS_ON_LANDSCAPE            :{BLACK}Разместить неровности на карте.{}Ctrl+щелчок - убрать неровности.
 STR_TERRAFORM_TOOLTIP_DEFINE_DESERT_AREA                        :{BLACK}Указать область, занимаемую пустыней.{}Ctrl+щелчок убирает песок.
 STR_TERRAFORM_TOOLTIP_INCREASE_SIZE_OF_LAND_AREA                :{BLACK}Увеличить площадь изменения рельефа
 STR_TERRAFORM_TOOLTIP_DECREASE_SIZE_OF_LAND_AREA                :{BLACK}Уменьшить площадь изменения рельефа
+STR_TERRAFORM_TOOLTIP_LOWER_A_CORNER_OF_LAND                    :{BLACK}Опустить уровень поверхности земли. Если площадь области изменения рельефа 1x1, то щелчок+перетаскивание опускает выбранный угол и прямоугольную область на новую высоту. При нажатом Ctrl - выбор диагональной области. При нажатом Shift - оценка стоимости работ.
+STR_TERRAFORM_TOOLTIP_RAISE_A_CORNER_OF_LAND                    :{BLACK}Поднять уровень поверхности земли. Если площадь области изменения рельефа 1x1, то щелчок+перетаскивание поднимает выбранный угол и прямоугольную область на новую высоту. При нажатом Ctrl - выбор диагональной области. При нажатом Shift - оценка стоимости работ.
 STR_TERRAFORM_TOOLTIP_GENERATE_RANDOM_LAND                      :{BLACK}Создать случайную карту
 STR_TERRAFORM_SE_NEW_WORLD                                      :{BLACK}Создать новый сценарий
 STR_TERRAFORM_RESET_LANDSCAPE                                   :{BLACK}Сбросить карту
@@ -3297,21 +3353,20 @@ STR_FUND_INDUSTRY_REMOVE_ALL_INDUSTRIES_CAPTION                 :{WHITE}Убра
 STR_FUND_INDUSTRY_REMOVE_ALL_INDUSTRIES_QUERY                   :{YELLOW}Убрать все предприятия с карты?
 
 # Industry cargoes window
-STR_INDUSTRY_CARGOES_INDUSTRY_CAPTION                           :{WHITE}Производственная цепочка - {STRING}
-STR_INDUSTRY_CARGOES_CARGO_CAPTION                              :{WHITE}Цепочка грузоперевозок - {STRING}
-STR_INDUSTRY_CARGOES_PRODUCERS                                  :{WHITE}Производители
-STR_INDUSTRY_CARGOES_CUSTOMERS                                  :{WHITE}Потребители
-STR_INDUSTRY_CARGOES_HOUSES                                     :{WHITE}Городские здания
-STR_INDUSTRY_CARGOES_INDUSTRY_TOOLTIP                           :{BLACK}Щелчок по предприятию покажет его поставщиков и потребителей
-STR_INDUSTRY_CARGOES_CARGO_TOOLTIP                              :{BLACK}{STRING}{}Щелчок по типу груза покажет его производителей и потребителей
-STR_INDUSTRY_DISPLAY_CHAIN                                      :{BLACK}Показать связи
-STR_INDUSTRY_DISPLAY_CHAIN_TOOLTIP                              :{BLACK}Показать производителей сырья и потребителей продукции этого предприятия
-STR_INDUSTRY_CARGOES_NOTIFY_SMALLMAP                            :{BLACK}Показать на карте
-STR_INDUSTRY_CARGOES_NOTIFY_SMALLMAP_TOOLTIP                    :{BLACK}Показать на карте выбранные предприятия
-STR_INDUSTRY_CARGOES_SELECT_CARGO                               :{BLACK}Выберите груз
-STR_INDUSTRY_CARGOES_SELECT_CARGO_TOOLTIP                       :{BLACK}Выберите груз для отображения
-STR_INDUSTRY_CARGOES_SELECT_INDUSTRY                            :{BLACK}Выберите предприятие
-STR_INDUSTRY_CARGOES_SELECT_INDUSTRY_TOOLTIP                    :{BLACK}Выберите предприятие для отображения
+STR_INDUSTRY_CARGOES_INDUSTRY_CAPTION                           :Производственная цепочка - {STRING}
+STR_INDUSTRY_CARGOES_CARGO_CAPTION                              :Цепочка грузоперевозок - {STRING}
+STR_INDUSTRY_CARGOES_SOURCES                                    :Пункты отправки
+STR_INDUSTRY_CARGOES_DESTINATIONS                               :Пункты назначения
+STR_INDUSTRY_CARGOES_HOUSES                                     :Городские здания
+STR_INDUSTRY_CARGOES_ACCEPTS_PRODUCES_TOOLTIP                   :{STRING}{}Принимает: {CARGO_LIST}{}Производит: {CARGO_LIST}
+STR_INDUSTRY_DISPLAY_CHAIN                                      :Показать связи
+STR_INDUSTRY_DISPLAY_CHAIN_TOOLTIP                              :Показать производителей сырья и потребителей продукции этого предприятия
+STR_INDUSTRY_CARGOES_NOTIFY_SMALLMAP                            :Показать на карте
+STR_INDUSTRY_CARGOES_NOTIFY_SMALLMAP_TOOLTIP                    :Показать на карте выбранные предприятия
+STR_INDUSTRY_CARGOES_SELECT_CARGO                               :Выберите груз
+STR_INDUSTRY_CARGOES_SELECT_CARGO_TOOLTIP                       :Выберите груз для отображения
+STR_INDUSTRY_CARGOES_SELECT_INDUSTRY                            :Выберите предприятие
+STR_INDUSTRY_CARGOES_SELECT_INDUSTRY_TOOLTIP                    :Выберите предприятие для отображения
 
 # Land area window
 STR_LAND_AREA_INFORMATION_CAPTION                               :{WHITE}Информация о территории
@@ -3410,6 +3465,8 @@ STR_LAI_WATER_DESCRIPTION_LOCK                                  :Шлюз
 STR_LAI_WATER_DESCRIPTION_RIVER                                 :Река
 STR_LAI_WATER_DESCRIPTION_COAST_OR_RIVERBANK                    :Морской или речной берег
 STR_LAI_WATER_DESCRIPTION_SHIP_DEPOT                            :Верфь
+STR_LAI_WATER_DESCRIPTION_WATER_ROCKS                           :Камни
+STR_LAI_WATER_DESCRIPTION_COAST_ROCKS                           :Каменистый берег
 
 # Industries come directly from their industry names
 
@@ -3523,6 +3580,9 @@ STR_SAVELOAD_LOAD_BUTTON                                        :{BLACK}Загр
 STR_SAVELOAD_LOAD_TOOLTIP                                       :{BLACK}Загрузить выбранную игру
 STR_SAVELOAD_LOAD_HEIGHTMAP_TOOLTIP                             :{BLACK}Загрузить выбранную карту высот
 STR_SAVELOAD_LOAD_TOWN_DATA_TOOLTIP                             :{BLACK}Загрузка выбранного файла для создания городов
+STR_SAVELOAD_NEW_DIRECTORY_BUTTON                               :{BLACK}Новый каталог
+STR_SAVELOAD_NEW_DIRECTORY_TOOLTIP                              :{BLACK}Создать новый каталог в указанном месте
+STR_SAVELOAD_NEW_DIRECTORY_QUERY_CAPTION                        :{WHITE}Укажите имя нового каталога
 STR_SAVELOAD_DETAIL_CAPTION                                     :{BLACK}Информация об игре
 STR_SAVELOAD_DETAIL_NOT_AVAILABLE                               :{BLACK}Нет информации.
 STR_SAVELOAD_DETAIL_COMPANY_INDEX                               :{SILVER}{COMMA}: {WHITE}{STRING}
@@ -3562,7 +3622,8 @@ STR_MAPGEN_DESERT_COVERAGE                                      :{BLACK}Песч
 STR_MAPGEN_DESERT_COVERAGE_UP_TOOLTIP                           :{BLACK}Увеличить площадь песчаного покрытия на 10%
 STR_MAPGEN_DESERT_COVERAGE_DOWN_TOOLTIP                         :{BLACK}Уменьшить площадь песчаного покрытия на 10%
 STR_MAPGEN_DESERT_COVERAGE_TEXT                                 :{BLACK}{NUM}%
-STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Тип ландшафта:
+STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Максимальная высота:
+STR_MAPGEN_AVERAGE_HEIGHT                                       :{BLACK}Средняя высота:
 STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Количество водоёмов:
 STR_MAPGEN_SEA_LEVEL_TOOLTIP                                    :{BLACK}Выберите количество морей и озёр на карте
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Количество рек:
@@ -3666,12 +3727,12 @@ STR_GENERATION_PREPARING_TILELOOP                               :{BLACK}Подг
 STR_GENERATION_PREPARING_SCRIPT                                 :{BLACK}Выполняется скрипт
 STR_GENERATION_PREPARING_GAME                                   :{BLACK}Подготовка игры
 
-STR_TOWN_DATA_ERROR_LOAD_FAILED                                 :{WHITE}Не удалось загрузить данные для создания городов
-STR_TOWN_DATA_ERROR_JSON_FORMATTED_INCORRECTLY                  :{WHITE}Некорректный формат файла JSON
-STR_TOWN_DATA_ERROR_TOWN_FORMATTED_INCORRECTLY                  :{WHITE}Неверно указаны параметры города {STRING}
-STR_TOWN_DATA_ERROR_BAD_COORDINATE                              :{WHITE}Координаты {STRING} указаны неверно. Значения должны быть в диапазоне от 0 до 1. Они указывают положение города относительно размеров карты высот.
+STR_TOWN_DATA_ERROR_LOAD_FAILED                                 :Не удалось загрузить данные для создания городов
+STR_TOWN_DATA_ERROR_JSON_FORMATTED_INCORRECTLY                  :Некорректный формат файла JSON
+STR_TOWN_DATA_ERROR_TOWN_FORMATTED_INCORRECTLY                  :Некорректный формат данных {STRING}
+STR_TOWN_DATA_ERROR_BAD_COORDINATE                              :Координаты {STRING} указаны неверно. Значения должны быть в диапазоне от 0 до 1. Они указывают положение города относительно размеров карты высот.
 
-STR_TOWN_DATA_ERROR_FAILED_TO_FOUND_TOWN                        :{WHITE}Для размещения {NUM} город{P а ов ов} не нашлось подходящего места. Вместо этого на карте по предполагаемым координатам поставлены метки.
+STR_TOWN_DATA_ERROR_FAILED_TO_FOUND_TOWN                        :Для размещения {NUM} город{P а ов ов} не нашлось подходящего места. Вместо этого на карте по предполагаемым координатам поставлен{P а ы ы} метк{P а и и}.
 
 # NewGRF settings
 STR_NEWGRF_SETTINGS_CAPTION                                     :{WHITE}Настройки NewGRF
@@ -3789,8 +3850,8 @@ STR_NEWGRF_ERROR_MSG_INFO                                       :{SILVER}{STRING
 STR_NEWGRF_ERROR_MSG_WARNING                                    :{RED}Внимание: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_ERROR                                      :{RED}Ошибка: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_FATAL                                      :{RED}Критическая ошибка: {SILVER}{STRING}
-STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}В модуле NewGRF «{STRING}» произошла критическая ошибка:{}{STRING}
-STR_NEWGRF_ERROR_POPUP                                          :{WHITE}В модуле NewGRF «{STRING}» произошла ошибка:{}{STRING}
+STR_NEWGRF_ERROR_FATAL_POPUP                                    :В модуле NewGRF «{STRING}» произошла критическая ошибка:{}{STRING}
+STR_NEWGRF_ERROR_POPUP                                          :В модуле NewGRF «{STRING}» произошла ошибка:{}{STRING}
 STR_NEWGRF_ERROR_VERSION_NUMBER                                 :{1:STRING} не будет работать с версией TTDPatch, сообщенной OpenTTD.
 STR_NEWGRF_ERROR_DOS_OR_WINDOWS                                 :Файл {1:STRING} требует TTD версии {2:STRING}
 STR_NEWGRF_ERROR_UNSET_SWITCH                                   :{1:STRING} предполагается использовать совместно с {2:STRING}
@@ -3817,12 +3878,12 @@ STR_NEWGRF_ERROR_INDPROD_CALLBACK                               :Неверна�
 STR_NEWGRF_POPUP_CAUTION_CAPTION                                :{WHITE}Осторожно!
 STR_NEWGRF_CONFIRMATION_TEXT                                    :{YELLOW}Вы собираетесь внести изменения в запущенную игру. Это может привести к нестабильной работе или к аварийному завершению OpenTTD. В этом случае не надо присылать отчёты об ошибках.{}Вы действительно хотите это сделать?
 
-STR_NEWGRF_DUPLICATE_GRFID                                      :{WHITE}Невозможно добавить файл: дублируются NewGRF ID
+STR_NEWGRF_DUPLICATE_GRFID                                      :Невозможно добавить файл: дублируются идентификаторы NewGRF
 STR_NEWGRF_COMPATIBLE_LOADED                                    :{ORANGE}Соответствующий файл не найден (загружен совместимый NewGRF)
-STR_NEWGRF_TOO_MANY_NEWGRFS                                     :{WHITE}Не удалось добавить файл: слишком много модулей NewGRF
+STR_NEWGRF_TOO_MANY_NEWGRFS                                     :Не удалось добавить файл: слишком много модулей NewGRF
 
-STR_NEWGRF_COMPATIBLE_LOAD_WARNING                              :{WHITE}Вместо отсутствующих файлов загружены совместимые модули NewGRF
-STR_NEWGRF_DISABLED_WARNING                                     :{WHITE}Отсутствующие файлы NewGRF были отключены
+STR_NEWGRF_COMPATIBLE_LOAD_WARNING                              :Вместо отсутствующих файлов загружены совместимые модули NewGRF
+STR_NEWGRF_DISABLED_WARNING                                     :Отсутствующие файлы NewGRF были отключены
 STR_NEWGRF_UNPAUSE_WARNING_TITLE                                :{YELLOW}Отсутствующие файлы NewGRF
 STR_NEWGRF_UNPAUSE_WARNING                                      :{WHITE}Снятие с паузы может привести к ошибке OpenTTD.{}Вы хотите запустить игру?
 
@@ -3834,17 +3895,17 @@ STR_NEWGRF_LIST_COMPATIBLE                                      :{YELLOW}Най�
 STR_NEWGRF_LIST_MISSING                                         :{RED}Файлы отсутствуют
 
 # NewGRF 'it's broken' warnings
-STR_NEWGRF_BROKEN                                               :{WHITE}Модуль NewGRF «{0:STRING}» может привести к рассинхронизации и/или к аварийному завершению игры.
-STR_NEWGRF_BROKEN_POWERED_WAGON                                 :{WHITE}Он изменил состояние вагона-локомотива «{1:ENGINE}» за пределами депо
-STR_NEWGRF_BROKEN_VEHICLE_LENGTH                                :{WHITE}Он изменил длину состава «{1:ENGINE}», находящегося вне депо
-STR_NEWGRF_BROKEN_CAPACITY                                      :{WHITE}Он изменил ёмкость ТС «{1:ENGINE}» за пределами депо или без задания на переоборудование
-STR_BROKEN_VEHICLE_LENGTH                                       :{WHITE}Поезд «{VEHICLE}», принадлежащий «{COMPANY}», имеет неправильную длину. Вероятно, это вызвано ошибками в одном из модулей NewGRF. Игра может рассинхронизироваться или вылететь.
+STR_NEWGRF_BROKEN                                               :Модуль NewGRF «{0:STRING}» может привести к рассинхронизации и/или к аварийному завершению игры
+STR_NEWGRF_BROKEN_POWERED_WAGON                                 :Он изменил состояние вагона-локомотива «{1:ENGINE}» за пределами депо
+STR_NEWGRF_BROKEN_VEHICLE_LENGTH                                :Он изменил длину состава «{1:ENGINE}» за пределами депо
+STR_NEWGRF_BROKEN_CAPACITY                                      :Он изменил ёмкость ТС «{1:ENGINE}» за пределами депо или без задания на переоборудование
+STR_BROKEN_VEHICLE_LENGTH                                       :Поезд «{VEHICLE}», принадлежащий «{COMPANY}», имеет неправильную длину. Вероятно, это вызвано ошибками в одном из модулей NewGRF. Игра может рассинхронизироваться или вылететь.
 
-STR_NEWGRF_BUGGY                                                :{WHITE}Модуль NewGRF «{0:STRING}» предоставляет неверную информацию.
-STR_NEWGRF_BUGGY_ARTICULATED_CARGO                              :{WHITE}Информация о вместимости/переоборудовании для локомотива «{1:ENGINE}» до и после покупки различается. Это может помешать функции автообновления/автозамены корректно произвести переоборудование.
-STR_NEWGRF_BUGGY_ENDLESS_PRODUCTION_CALLBACK                    :{WHITE}Модуль «{1:STRING}» вызвал бесконечный цикл
-STR_NEWGRF_BUGGY_UNKNOWN_CALLBACK_RESULT                        :{WHITE}Функция обратного вызова {1:HEX} вернула непонятный/неверный результат {2:HEX}
-STR_NEWGRF_BUGGY_INVALID_CARGO_PRODUCTION_CALLBACK              :{WHITE}Модуль «{1:STRING}» вернул неверный тип груза по адресу {2:HEX}
+STR_NEWGRF_BUGGY                                                :Модуль NewGRF «{0:STRING}» предоставляет неверную информацию
+STR_NEWGRF_BUGGY_ARTICULATED_CARGO                              :Информация о вместимости/переоборудовании для локомотива «{1:ENGINE}» до и после покупки различается. Это может помешать функции автообновления/автозамены корректно произвести переоборудование.
+STR_NEWGRF_BUGGY_ENDLESS_PRODUCTION_CALLBACK                    :Модуль «{1:STRING}» вызвал бесконечный цикл
+STR_NEWGRF_BUGGY_UNKNOWN_CALLBACK_RESULT                        :Функция обратного вызова {1:HEX} вернула непонятный/неверный результат {2:HEX}
+STR_NEWGRF_BUGGY_INVALID_CARGO_PRODUCTION_CALLBACK              :Модуль «{1:STRING}» вернул неверный тип груза по адресу {2:HEX}
 
 # 'User removed essential NewGRFs'-placeholders for stuff without specs
 STR_NEWGRF_INVALID_CARGO                                        :<неизвестный груз>
@@ -3871,6 +3932,7 @@ STR_EDIT_SIGN_CAPTION                                           :{WHITE}Изме
 STR_EDIT_SIGN_LOCATION_TOOLTIP                                  :{BLACK}Показать метку в основном окне. Ctrl+щелчок - показать в дополнительном окне.
 STR_EDIT_SIGN_NEXT_SIGN_TOOLTIP                                 :{BLACK}К следующей табличке
 STR_EDIT_SIGN_PREVIOUS_SIGN_TOOLTIP                             :{BLACK}К предыдущей табличке
+STR_EDIT_SIGN_TEXT_COLOUR_TOOLTIP                               :{BLACK}Цвет текста табличек
 
 STR_EDIT_SIGN_SIGN_OSKTITLE                                     :{BLACK}Введите название таблички
 
@@ -3964,6 +4026,7 @@ STR_GOALS_PROGRESS_COMPLETE                                     :{GREEN}{STRING}
 STR_GOALS_TOOLTIP_CLICK_ON_SERVICE_TO_CENTER                    :{BLACK}Щёлкните по задаче, чтобы показать предприятие/город/место. Ctrl+щелчок показывает в новом окне.
 
 # Goal question window
+###length 4
 STR_GOAL_QUESTION_CAPTION_QUESTION                              :{BLACK}Вопрос
 STR_GOAL_QUESTION_CAPTION_INFORMATION                           :{BLACK}Информация
 STR_GOAL_QUESTION_CAPTION_WARNING                               :{BLACK}Предупреждение
@@ -4377,6 +4440,19 @@ STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Даль
 STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}Тип возд. судна: {GOLD}{STRING}
 STR_PURCHASE_INFO_RAILTYPES                                     :{BLACK}Типы рельсов: {GOLD}{STRING}
 
+# Vehicle sort details
+STR_PURCHASE_SORT_DETAILS_COST                                  :{CURRENCY_LONG}
+STR_PURCHASE_SORT_DETAILS_SPEED                                 :{VELOCITY}
+STR_PURCHASE_SORT_DETAILS_POWER                                 :{POWER}
+STR_PURCHASE_SORT_DETAILS_MAX_TE                                :{FORCE}
+STR_PURCHASE_SORT_DETAILS_INTRO_DATE                            :{NUM}
+STR_PURCHASE_SORT_DETAILS_RUNNINGCOST_YEAR                      :{CURRENCY_LONG}/год
+STR_PURCHASE_SORT_DETAILS_RUNNINGCOST_PERIOD                    :{CURRENCY_LONG}/период
+STR_PURCHASE_SORT_DETAILS_RELIABILITY                           :{COMMA}%
+STR_PURCHASE_SORT_DETAILS_POWER_VS_RUNNING_COST                 :{DECIMAL}
+STR_PURCHASE_SORT_DETAILS_AIRCRAFT_RANGE                        :{COMMA} клет{P ка ки ок}
+STR_PURCHASE_SORT_DETAILS_CAPACITY                              :{COMMA}
+
 ###length 3
 STR_CARGO_TYPE_FILTER_ALL                                       :Все типы грузов
 STR_CARGO_TYPE_FILTER_FREIGHT                                   :Груз
@@ -4536,7 +4612,15 @@ STR_DEPOT_SELL_CONFIRMATION_TEXT                                :{YELLOW}Вес�
 
 # Engine preview window
 STR_ENGINE_PREVIEW_CAPTION                                      :{WHITE}Сообщение от производителя транспортных средств
+STR_ENGINE_PREVIEW_CAPTION_COUNT                                :{WHITE}Сообщение от производителя транспортных средств ({COMMA} из {COMMA})
 STR_ENGINE_PREVIEW_MESSAGE                                      :{GOLD}Мы разработали новую модель {STRING.gen}. Заинтересованы ли вы в его годовом эксклюзивном использовании для проверки перед запуском в серийное производство?
+
+STR_ENGINE_PREVIEW_PREVIOUS                                     :Назад
+STR_ENGINE_PREVIEW_PREVIOUS_TOOLTIP                             :К предыдущей модели транспортного средства
+STR_ENGINE_PREVIEW_NEXT                                         :Вперёд
+STR_ENGINE_PREVIEW_NEXT_TOOLTIP                                 :К следующей модели транспортного средства
+STR_ENGINE_PREVIEW_ENGINE_LIST                                  :{COMMA}: {ENGINE}
+STR_ENGINE_PREVIEW_ENGINE_LIST_TOOLTIP                          :Перейти к новой модели транспортного средства
 
 STR_ENGINE_PREVIEW_RAILROAD_LOCOMOTIVE                          :ж/д локомотив
 STR_ENGINE_PREVIEW_RAILROAD_LOCOMOTIVE.gen                      :ж/д локомотива
@@ -4711,8 +4795,8 @@ STR_VEHICLE_DETAILS_ROAD_VEHICLE_RENAME                         :{BLACK}Пере
 STR_VEHICLE_DETAILS_SHIP_RENAME                                 :{BLACK}Переименовать судно
 STR_VEHICLE_DETAILS_AIRCRAFT_RENAME                             :{BLACK}Переименовать воздушное судно
 
-STR_VEHICLE_INFO_AGE                                            :{COMMA} {P год года лет} ({COMMA})
-STR_VEHICLE_INFO_AGE_RED                                        :{RED}{COMMA} {P год года лет} ({COMMA})
+STR_VEHICLE_INFO_AGE                                            :{COMMA} {P год года лет} / {COMMA} {P года лет лет}
+STR_VEHICLE_INFO_AGE_RED                                        :{RED}{COMMA} {P год года лет} / {COMMA} {P года лет лет}
 STR_VEHICLE_INFO_AGE_RUNNING_COST_YR                            :{BLACK}Возраст: {LTBLUE}{STRING}{BLACK} Стоимость обслуживания: {LTBLUE}{CURRENCY_LONG}/год
 STR_VEHICLE_INFO_AGE_RUNNING_COST_PERIOD                        :{BLACK}Возраст: {LTBLUE}{STRING}{BLACK} Стоимость обслуживания: {LTBLUE}{CURRENCY_LONG}/цикл
 
@@ -4726,12 +4810,10 @@ STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR                     :{BLACK}Приб
 STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR_MIN_PERFORMANCE     :{BLACK}Прибыль в текущем году: {LTBLUE}{CURRENCY_LONG} (в прошлом: {CURRENCY_LONG}) {BLACK}Мин. удельная мощн.: {LTBLUE}{POWER_TO_WEIGHT}
 STR_VEHICLE_INFO_PROFIT_THIS_PERIOD_LAST_PERIOD                 :{BLACK}Прибыль в текущем цикле: {LTBLUE}{CURRENCY_LONG} (в прошлом: {CURRENCY_LONG})
 STR_VEHICLE_INFO_PROFIT_THIS_PERIOD_LAST_PERIOD_MIN_PERFORMANCE :{BLACK}Прибыль в текущем цикле: {LTBLUE}{CURRENCY_LONG} (в прошлом: {CURRENCY_LONG}) {BLACK}Мин. удельная мощн.: {LTBLUE}{POWER_TO_WEIGHT}
-STR_VEHICLE_INFO_RELIABILITY_BREAKDOWNS                         :{BLACK}Надёжность: {LTBLUE}{COMMA}% {BLACK}Поломок после ТО: {LTBLUE}{COMMA}
+STR_VEHICLE_INFO_RELIABILITY_BREAKDOWNS                         :{BLACK}Надёжность: {LTBLUE}{COMMA}% (макс. {COMMA}%) {BLACK}Поломок после ТО: {LTBLUE}{COMMA}
 
 STR_VEHICLE_INFO_BUILT_VALUE                                    :{LTBLUE}{ENGINE} {BLACK}Построен в {LTBLUE}{NUM} г.{BLACK} Стоимость: {LTBLUE}{CURRENCY_LONG}
-STR_VEHICLE_INFO_NO_CAPACITY                                    :{BLACK}Ёмкость: {LTBLUE}отсутствует{STRING}
 STR_VEHICLE_INFO_CAPACITY                                       :{BLACK}Ёмкость: {LTBLUE}{CARGO_LONG}{STRING}
-STR_VEHICLE_INFO_CAPACITY_MULT                                  :{BLACK}Ёмкость: {LTBLUE}{CARGO_LONG}{STRING} (×{NUM})
 STR_VEHICLE_INFO_CAPACITY_CAPACITY                              :{BLACK}Ёмкость: {LTBLUE}{CARGO_LONG}, {CARGO_LONG}{STRING}
 
 STR_VEHICLE_INFO_FEEDER_CARGO_VALUE                             :{BLACK}Выручка перевозки: {LTBLUE}{CURRENCY_LONG}
@@ -4764,22 +4846,23 @@ STR_QUERY_RENAME_AIRCRAFT_CAPTION                               :{WHITE}Назв
 STR_VEHICLE_DETAILS_TRAIN_ENGINE_BUILT_AND_VALUE                :{LTBLUE}{ENGINE}{BLACK} Построен в {LTBLUE}{NUM} г. {BLACK}Стоимость: {LTBLUE}{CURRENCY_LONG}
 STR_VEHICLE_DETAILS_TRAIN_WAGON_VALUE                           :{LTBLUE}{ENGINE}{BLACK} Стоимость: {LTBLUE}{CURRENCY_LONG}
 
+STR_VEHICLE_DETAILS_TRAIN_LENGTH                                :{BLACK}Длина состава: {LTBLUE}{DECIMAL} пол{P е я ей}
+
 STR_VEHICLE_DETAILS_TRAIN_TOTAL_CAPACITY_TEXT                   :{BLACK}Общая загруженность состава:
 STR_VEHICLE_DETAILS_TRAIN_TOTAL_CAPACITY                        :{LTBLUE}{CARGO_LONG} (Всего: {CARGO_SHORT})
-STR_VEHICLE_DETAILS_TRAIN_TOTAL_CAPACITY_MULT                   :{LTBLUE}{CARGO_LONG} ({CARGO_SHORT}) (×{NUM})
+
+STR_VEHICLE_DETAILS_TRAIN_CARGO_EMPTY                           :{LTBLUE}Пустой ({CARGO_LONG}){STRING}
+STR_VEHICLE_DETAILS_TRAIN_CARGO_FROM                            :{LTBLUE}{CARGO_LONG} ({CARGO_SHORT}) из {STATION}{STRING}
 
 STR_VEHICLE_DETAILS_CARGO_EMPTY                                 :{LTBLUE}Пусто
 STR_VEHICLE_DETAILS_CARGO_FROM                                  :{LTBLUE}{CARGO_LONG} из {STATION}
-STR_VEHICLE_DETAILS_CARGO_FROM_MULT                             :{LTBLUE}{CARGO_LONG} из {STATION} (×{NUM})
 
 STR_VEHICLE_DETAIL_TAB_CARGO                                    :{BLACK}Груз
 STR_VEHICLE_DETAILS_TRAIN_CARGO_TOOLTIP                         :{BLACK}Показать сведения о перевозимых грузах
 STR_VEHICLE_DETAIL_TAB_INFORMATION                              :{BLACK}Информация
 STR_VEHICLE_DETAILS_TRAIN_INFORMATION_TOOLTIP                   :{BLACK}Показать сведения о вагонах
-STR_VEHICLE_DETAIL_TAB_CAPACITIES                               :{BLACK}Вместимость
-STR_VEHICLE_DETAILS_TRAIN_CAPACITIES_TOOLTIP                    :{BLACK}Показать вместимость вагонов
-STR_VEHICLE_DETAIL_TAB_TOTAL_CARGO                              :{BLACK}Общий груз
-STR_VEHICLE_DETAILS_TRAIN_TOTAL_CARGO_TOOLTIP                   :{BLACK}Показать общую вместимость поезда по типам грузов
+STR_VEHICLE_DETAIL_TAB_TOTALS                                   :{BLACK}Всего
+STR_VEHICLE_DETAILS_TRAIN_TOTALS_TOOLTIP                        :{BLACK}Показать груз, вместимость и длину состава
 
 STR_VEHICLE_DETAILS_TRAIN_ARTICULATED_RV_CAPACITY               :{BLACK}Ёмкость: {LTBLUE}{STRING}
 
@@ -4833,12 +4916,12 @@ STR_ORDER_TOGGLE_FULL_LOAD                                      :{BLACK}Полн
 STR_ORDER_DROP_LOAD_IF_POSSIBLE                                 :Погрузить, если доступно
 STR_ORDER_DROP_FULL_LOAD_ALL                                    :Полная загрузка всего груза
 STR_ORDER_DROP_FULL_LOAD_ANY                                    :Полная загрузка любым грузом
-STR_ORDER_DROP_NO_LOADING                                       :Не грузиться
+STR_ORDER_DROP_NO_LOADING                                       :Не загружаться
 STR_ORDER_TOOLTIP_FULL_LOAD                                     :{BLACK}Изменить способ погрузки на указанной станции
 
 STR_ORDER_TOGGLE_UNLOAD                                         :{BLACK}Выгрузить всё
 STR_ORDER_DROP_UNLOAD_IF_ACCEPTED                               :Разгрузиться, если груз принимается
-STR_ORDER_DROP_UNLOAD                                           :Выгрузить всё
+STR_ORDER_DROP_UNLOAD                                           :Принудительно выгрузить всё
 STR_ORDER_DROP_TRANSFER                                         :Передать
 STR_ORDER_DROP_NO_UNLOADING                                     :Не разгружаться
 STR_ORDER_TOOLTIP_UNLOAD                                        :{BLACK}Изменить способ разгрузки на указанной станции
@@ -4863,10 +4946,10 @@ STR_ORDER_SHIP_DEPOT_ACTION_TOOLTIP                             :{BLACK}Выбе
 STR_ORDER_HANGAR_ACTION_TOOLTIP                                 :{BLACK}Выберите действие, которое нужно выполнить в этом ангаре
 ###next-name-looks-similar
 
-STR_ORDER_CONDITIONAL_VARIABLE_TOOLTIP                          :{BLACK}Параметр транспорта для сравнения
+STR_ORDER_CONDITIONAL_VARIABLE_TOOLTIP                          :{BLACK}Значение состояния транспортного средства, в зависимости от которого принимать решение
 
 # Conditional order variables, must follow order of OrderConditionVariable enum
-###length 8
+###length 9
 STR_ORDER_CONDITIONAL_LOAD_PERCENTAGE                           :Загрузка (%)
 STR_ORDER_CONDITIONAL_RELIABILITY                               :Надёжность
 STR_ORDER_CONDITIONAL_MAX_SPEED                                 :Максимальная скорость
@@ -4875,6 +4958,7 @@ STR_ORDER_CONDITIONAL_REQUIRES_SERVICE                          :Требует�
 STR_ORDER_CONDITIONAL_UNCONDITIONALLY                           :Всегда
 STR_ORDER_CONDITIONAL_REMAINING_LIFETIME                        :Оставшийся срок службы (лет)
 STR_ORDER_CONDITIONAL_MAX_RELIABILITY                           :Максимальная надёжность
+STR_ORDER_CONDITIONAL_DRIVING_BACKWARDS                         :Медленно движется назад
 ###next-name-looks-similar
 
 STR_ORDER_CONDITIONAL_COMPARATOR_TOOLTIP                        :{BLACK}Условие перехода
@@ -4894,6 +4978,7 @@ STR_ORDERS_SKIP_BUTTON                                          :{BLACK}Проп
 STR_ORDERS_SKIP_TOOLTIP                                         :{BLACK}Перейти к следующему заданию. Ctrl+щелчок - перейти к выделенному заданию.
 
 STR_ORDERS_DELETE_BUTTON                                        :{BLACK}Удалить
+STR_ORDERS_DELETE_ALL_BUTTON                                    :{BLACK}Удалить все
 STR_ORDERS_DELETE_TOOLTIP                                       :{BLACK}Удалить выделенное задание
 STR_ORDERS_DELETE_ALL_TOOLTIP                                   :{BLACK}Удалить все задания
 STR_ORDERS_STOP_SHARING_BUTTON                                  :{BLACK}Индивидуальный список
@@ -5075,7 +5160,7 @@ STR_AI_GAME_SCRIPT                                              :{BLACK}Игро
 STR_AI_GAME_SCRIPT_TOOLTIP                                      :{BLACK}Просмотр журнала игрового сценария. Ctrl+щелчок откроет в новом окне.
 
 STR_ERROR_AI_NO_AI_FOUND                                        :Не найдено подходящих модулей ИИ, поэтому конкуренты ничего делать не будут.{}Вы можете скачать модули ИИ через систему онлайн-контента.
-STR_ERROR_AI_PLEASE_REPORT_CRASH                                :{WHITE}Один из запущенных ИИ / скриптов завершил свою работу аварийно. Пожалуйста, сообщите об этом автору скрипта, приложив снимок окна отладки.
+STR_ERROR_AI_PLEASE_REPORT_CRASH                                :Один из запущенных ИИ / скриптов аварийно завершил свою работу. Пожалуйста, сообщите об этом автору скрипта, приложив снимок окна отладки.
 STR_ERROR_AI_DEBUG_SERVER_ONLY                                  :{YELLOW}Окно отладки ИИ / скрипта доступно только для сервера
 
 # AI configuration window
@@ -5171,12 +5256,17 @@ STR_MESSAGE_ESTIMATED_COST                                      :{WHITE}Пред
 STR_MESSAGE_ESTIMATED_INCOME                                    :{WHITE}Предполагаемый доход: {CURRENCY_LONG}
 
 # Saveload messages
-STR_ERROR_SAVE_STILL_IN_PROGRESS                                :{WHITE}Идёт сохранение;{}пожалуйста, дождитесь завершения!
-STR_ERROR_AUTOSAVE_FAILED                                       :{WHITE}Ошибка автосохранения
+STR_ERROR_SAVE_STILL_IN_PROGRESS                                :Идёт сохранение;{}пожалуйста, дождитесь завершения!
+STR_ERROR_AUTOSAVE_FAILED                                       :Автоматическое сохранение не удалось
 STR_ERROR_UNABLE_TO_READ_DRIVE                                  :{BLACK}Не удалось прочитать диск
-STR_ERROR_GAME_SAVE_FAILED                                      :{WHITE}Невозможно сохранить игру...
-STR_ERROR_UNABLE_TO_DELETE_FILE                                 :{WHITE}Невозможно удалить файл
-STR_ERROR_GAME_LOAD_FAILED                                      :{WHITE}Невозможно загрузить игру...
+STR_ERROR_GAME_SAVE_FAILED                                      :Невозможно сохранить игру...
+STR_ERROR_UNABLE_TO_DELETE_FILE                                 :Невозможно удалить файл
+STR_ERROR_CANNOT_CREATE_DIRECTORY                               :Каталог не может быть создан...
+STR_ERROR_DIRECTORY_NAME_IN_USE                                 :Каталог или файл с таким именем уже существует.
+STR_ERROR_DIRECTORY_ILLEGAL_NAME                                :Имя каталога не должно содержать специальные символы.
+STR_ERROR_DIRECTORY_LEADING_DOT                                 :Имя каталога не должно начинаться с точки.
+STR_ERROR_DIRECTORY_PERMISSION_DENIED                           :У вас нет разрешений для создания этого каталога.
+STR_ERROR_GAME_LOAD_FAILED                                      :Невозможно загрузить игру...
 STR_GAME_SAVELOAD_ERROR_BROKEN_INTERNAL_ERROR                   :Внутренняя ошибка: {STRING}
 STR_GAME_SAVELOAD_ERROR_BROKEN_SAVEGAME                         :Файл повреждён - {STRING}
 STR_GAME_SAVELOAD_ERROR_TOO_NEW_SAVEGAME                        :Сохранение сделано в более новой версии
@@ -5188,18 +5278,18 @@ STR_GAME_SAVELOAD_NOT_AVAILABLE                                 :<недосту
 STR_WARNING_LOADGAME_REMOVED_TRAMS                              :{WHITE}Игра была сохранена в версии без поддержки трамваев. Все трамваи удалены.
 
 # Map generation messages
-STR_ERROR_COULD_NOT_CREATE_TOWN                                 :{WHITE}Создание карты прекращено.{}{}Нет доступных мест для размещения городов.
-STR_ERROR_NO_TOWN_IN_SCENARIO                                   :{WHITE}... в этом сценарии нет городов
+STR_ERROR_COULD_NOT_CREATE_TOWN                                 :Создание карты прекращено.{}{}Нет доступных мест для размещения городов.
+STR_ERROR_NO_TOWN_IN_SCENARIO                                   :в этом сценарии нет городов
 
-STR_ERROR_PNGMAP                                                :{WHITE}Не удалось загрузить ландшафт из PNG...
-STR_ERROR_PNGMAP_FILE_NOT_FOUND                                 :{WHITE}... файл не найден.
-STR_ERROR_PNGMAP_IMAGE_TYPE                                     :{WHITE}... не удалось преобразовать изображение. Поддерживаются только 8-битные и 24-битные PNG.
-STR_ERROR_PNGMAP_MISC                                           :{WHITE}... что-то пошло не так. Возможно, файл повреждён.
+STR_ERROR_PNGMAP                                                :Не удалось загрузить ландшафт из файла PNG...
+STR_ERROR_PNGMAP_FILE_NOT_FOUND                                 :файл не найден
+STR_ERROR_PNGMAP_IMAGE_TYPE                                     :не удалось преобразовать изображение. Поддерживаются только 8-битные и 24-битные файлы PNG.
+STR_ERROR_PNGMAP_MISC                                           :что-то пошло не так. Возможно, файл повреждён.
 
-STR_ERROR_BMPMAP                                                :{WHITE}Не удалось загрузить ландшафт из BMP...
-STR_ERROR_BMPMAP_IMAGE_TYPE                                     :{WHITE}... невозможно преобразовать изображение
+STR_ERROR_BMPMAP                                                :Не удалось загрузить ландшафт из файла BMP...
+STR_ERROR_BMPMAP_IMAGE_TYPE                                     :не удалось преобразовать тип изображения
 
-STR_ERROR_HEIGHTMAP_TOO_LARGE                                   :{WHITE}... изображение слишком большое
+STR_ERROR_HEIGHTMAP_TOO_LARGE                                   :изображение слишком большое
 
 STR_WARNING_HEIGHTMAP_SCALE_CAPTION                             :{WHITE}Выход за пределы доступных значений
 STR_WARNING_HEIGHTMAP_SCALE_MESSAGE                             :{YELLOW}Изменение размеров исходной карты до таких значений не рекомендуется. Продолжить?
@@ -5211,443 +5301,448 @@ STR_WARNING_FALLBACK_SOUNDSET                                   :{WHITE}Теку
 STR_WARNING_SCREENSHOT_SIZE_CAPTION                             :{WHITE}Огромный снимок экрана
 STR_WARNING_SCREENSHOT_SIZE_MESSAGE                             :{YELLOW}Снимок экрана будет иметь размер {COMMA}{NBSP}х{NBSP}{COMMA}{NBSP}пиксел{P ь я ей}. Его создание займёт некоторое время. Продолжить?
 
-STR_MESSAGE_HEIGHTMAP_SUCCESSFULLY                              :{WHITE}Карта высот успешно сохранена под именем «{STRING}». Максимальная высота - {NUM}.
-STR_MESSAGE_SCREENSHOT_SUCCESSFULLY                             :{WHITE}Снимок экрана сохранён под именем «{STRING}»
-STR_ERROR_SCREENSHOT_FAILED                                     :{WHITE}Не удалось сделать снимок экрана
+STR_MESSAGE_HEIGHTMAP_SUCCESSFULLY                              :Карта высот успешно сохранена под именем «{STRING}». Максимальная высота - {NUM}.
+STR_MESSAGE_SCREENSHOT_SUCCESSFULLY                             :Снимок экрана сохранён под именем «{STRING}»
+STR_ERROR_SCREENSHOT_FAILED                                     :Не удалось сделать снимок экрана
 
 # Error message titles
 STR_ERROR_MESSAGE_CAPTION                                       :{YELLOW}Сообщение
 STR_ERROR_MESSAGE_CAPTION_OTHER_COMPANY                         :{YELLOW}Сообщение от {COMPANY}
 
 # Generic construction errors
-STR_ERROR_OFF_EDGE_OF_MAP                                       :{WHITE}За краем карты
-STR_ERROR_TOO_CLOSE_TO_EDGE_OF_MAP                              :{WHITE}Слишком близко к краю карты
-STR_ERROR_NOT_ENOUGH_CASH_REQUIRES_CURRENCY                     :{WHITE}Недостаточно денег - требуется {CURRENCY_LONG}
-STR_ERROR_FLAT_LAND_REQUIRED                                    :{WHITE}Необходимо ровное место
-STR_ERROR_LAND_SLOPED_IN_WRONG_DIRECTION                        :{WHITE}Неверный уклон земли
-STR_ERROR_CAN_T_DO_THIS                                         :{WHITE}Это невозможно...
-STR_ERROR_BUILDING_MUST_BE_DEMOLISHED                           :{WHITE}Сначала снесите здания
-STR_ERROR_BUILDING_IS_PROTECTED                                 :{WHITE}... это здание защищено от изменений
-STR_ERROR_CAN_T_CLEAR_THIS_AREA                                 :{WHITE}Невозможно расчистить данный участок...
-STR_ERROR_SITE_UNSUITABLE                                       :{WHITE}... неподходящее место
-STR_ERROR_ALREADY_BUILT                                         :{WHITE}... уже построено
-STR_ERROR_OWNED_BY                                              :{WHITE}... принадлежит {STRING}
-STR_ERROR_AREA_IS_OWNED_BY_ANOTHER                              :{WHITE}... участок принадлежит другой компании
-STR_ERROR_TERRAFORM_LIMIT_REACHED                               :{WHITE}... достигнуто ограничение по изменению ландшафта
-STR_ERROR_CLEARING_LIMIT_REACHED                                :{WHITE}... достигнуто ограничение по количеству очищаемых клеток
-STR_ERROR_TREE_PLANT_LIMIT_REACHED                              :{WHITE}... достигнут лимит высадки деревьев
-STR_ERROR_NAME_MUST_BE_UNIQUE                                   :{WHITE}Имя должно быть уникальным
-STR_ERROR_GENERIC_OBJECT_IN_THE_WAY                             :{WHITE}{STRING} мешает
-STR_ERROR_NOT_ALLOWED_WHILE_PAUSED                              :{WHITE}Запрещено во время паузы
+STR_ERROR_OFF_EDGE_OF_MAP                                       :за краем карты
+STR_ERROR_TOO_CLOSE_TO_EDGE_OF_MAP                              :слишком близко к краю карты
+STR_ERROR_NOT_ENOUGH_CASH_REQUIRES_CURRENCY                     :недостаточно денег - требуется {CURRENCY_LONG}
+STR_ERROR_FLAT_LAND_REQUIRED                                    :необходимо ровное место
+STR_ERROR_LAND_SLOPED_IN_WRONG_DIRECTION                        :неверный уклон земли
+STR_ERROR_CAN_T_DO_THIS                                         :Это невозможно сделать...
+STR_ERROR_BUILDING_MUST_BE_DEMOLISHED                           :сначала нужно снести здание
+STR_ERROR_BUILDING_IS_PROTECTED                                 :это здание защищено от изменений
+STR_ERROR_CAN_T_CLEAR_THIS_AREA                                 :Невозможно расчистить данный участок...
+STR_ERROR_SITE_UNSUITABLE                                       :место неподходящее
+STR_ERROR_ALREADY_BUILT                                         :уже построено
+STR_ERROR_OWNED_BY                                              :принадлежит {STRING}
+STR_ERROR_AREA_IS_OWNED_BY_ANOTHER                              :участок принадлежит другой компании
+STR_ERROR_TERRAFORM_LIMIT_REACHED                               :достигнуто ограничение по изменению ландшафта
+STR_ERROR_CLEARING_LIMIT_REACHED                                :достигнуто ограничение по количеству очищаемых клеток
+STR_ERROR_TREE_PLANT_LIMIT_REACHED                              :достигнуто ограничение по высадке деревьев
+STR_ERROR_NAME_MUST_BE_UNIQUE                                   :имя должно быть уникальным
+STR_ERROR_GENERIC_OBJECT_IN_THE_WAY                             :мешает {STRING}
+STR_ERROR_NOT_ALLOWED_WHILE_PAUSED                              :запрещено во время паузы
 
 # Local authority errors
-STR_ERROR_LOCAL_AUTHORITY_REFUSES_TO_ALLOW_THIS                 :{WHITE}... администрация города {TOWN} запрещает вам это делать
-STR_ERROR_LOCAL_AUTHORITY_REFUSES_AIRPORT                       :{WHITE}Администрация г.{NBSP}{TOWN} запрещает постройку ещё одного аэропорта в городе
-STR_ERROR_LOCAL_AUTHORITY_REFUSES_NOISE                         :{WHITE}Администрация г.{NBSP}{TOWN} не разрешает строительство аэропорта из-за высокого уровня шума.
-STR_ERROR_BRIBE_FAILED                                          :{WHITE}Ваша попытка дать взятку была раскрыта следователем
+STR_ERROR_LOCAL_AUTHORITY_REFUSES_TO_ALLOW_THIS                 :администрация г.{NBSP}{TOWN} запрещает вам это делать
+STR_ERROR_LOCAL_AUTHORITY_REFUSES_AIRPORT                       :Администрация г.{NBSP}{TOWN} запрещает постройку ещё одного аэропорта в городе
+STR_ERROR_LOCAL_AUTHORITY_REFUSES_NOISE                         :Администрация г.{NBSP}{TOWN} не разрешает строительство аэропорта из-за высокого уровня шума.
+STR_ERROR_BRIBE_FAILED                                          :Ваша попытка дать взятку была раскрыта следователем
 
 # Levelling errors
-STR_ERROR_CAN_T_RAISE_LAND_HERE                                 :{WHITE}Здесь невозможно повысить уровень земли...
-STR_ERROR_CAN_T_LOWER_LAND_HERE                                 :{WHITE}Здесь невозможно понизить уровень земли...
-STR_ERROR_CAN_T_LEVEL_LAND_HERE                                 :{WHITE}Здесь невозможно выровнять землю...
-STR_ERROR_EXCAVATION_WOULD_DAMAGE                               :{WHITE}Земляные работы повредят туннель
-STR_ERROR_ALREADY_AT_SEA_LEVEL                                  :{WHITE}Уже на уровне моря
-STR_ERROR_TOO_HIGH                                              :{WHITE}Слишком высоко
-STR_ERROR_ALREADY_LEVELLED                                      :{WHITE}... уже ровно
-STR_ERROR_BRIDGE_TOO_HIGH_AFTER_LOWER_LAND                      :{WHITE}После этого высота моста будет недопустимо большой.
+STR_ERROR_CAN_T_RAISE_LAND_HERE                                 :Здесь невозможно поднять уровень земли...
+STR_ERROR_CAN_T_LOWER_LAND_HERE                                 :Здесь невозможно понизить уровень земли...
+STR_ERROR_CAN_T_LEVEL_LAND_HERE                                 :Здесь невозможно выровнять землю...
+STR_ERROR_EXCAVATION_WOULD_DAMAGE                               :земляные работы повредят туннель
+STR_ERROR_ALREADY_AT_SEA_LEVEL                                  :уже на уровне моря
+STR_ERROR_TOO_HIGH                                              :слишком высоко
+STR_ERROR_ALREADY_LEVELLED                                      :уже выровнено
+STR_ERROR_BRIDGE_TOO_HIGH_AFTER_LOWER_LAND                      :после этого высота моста будет недопустимо большой
+STR_ERROR_MUST_DEMOLISH_RIVER_FIRST                             :сначала нужно засыпать реку
 
 # Company related errors
-STR_ERROR_CAN_T_CHANGE_COMPANY_NAME                             :{WHITE}Невозможно изменить название компании...
-STR_ERROR_CAN_T_CHANGE_PRESIDENT                                :{WHITE}Невозможно изменить имя директора...
+STR_ERROR_CAN_T_CHANGE_COMPANY_NAME                             :Невозможно изменить название компании...
+STR_ERROR_CAN_T_CHANGE_PRESIDENT                                :Невозможно изменить имя директора...
 
-STR_ERROR_MAXIMUM_PERMITTED_LOAN                                :{WHITE}... максимально допустимая сумма кредита - {CURRENCY_LONG}
-STR_ERROR_CAN_T_BORROW_ANY_MORE_MONEY                           :{WHITE}Невозможно занять больше денег...
-STR_ERROR_LOAN_ALREADY_REPAID                                   :{WHITE}... кредит полностью погашен.
-STR_ERROR_CURRENCY_REQUIRED                                     :{WHITE}... требуется {CURRENCY_LONG}
-STR_ERROR_CAN_T_REPAY_LOAN                                      :{WHITE}Невозможно выплатить сумму...
-STR_ERROR_INSUFFICIENT_FUNDS                                    :{WHITE}Невозможно отдать занятые у банка деньги...
-STR_ERROR_CAN_T_GIVE_MONEY                                      :{WHITE}Невозможно передать деньги этой компании...
-STR_ERROR_CAN_T_BUY_COMPANY                                     :{WHITE}Невозможно приобрести компанию...
-STR_ERROR_CAN_T_BUILD_COMPANY_HEADQUARTERS                      :{WHITE}Невозможно построить штаб-квартиру компании...
+STR_ERROR_MAXIMUM_PERMITTED_LOAN                                :максимально допустимая сумма кредита - {CURRENCY_LONG}
+STR_ERROR_CAN_T_BORROW_ANY_MORE_MONEY                           :Невозможно занять больше денег...
+STR_ERROR_LOAN_ALREADY_REPAID                                   :кредит полностью погашен
+STR_ERROR_CURRENCY_REQUIRED                                     :требуется {CURRENCY_LONG}
+STR_ERROR_CAN_T_REPAY_LOAN                                      :Невозможно произвести выплату...
+STR_ERROR_INSUFFICIENT_FUNDS                                    :Невозможно отдать занятые у банка деньги...
+STR_ERROR_CAN_T_GIVE_MONEY                                      :Невозможно передать деньги этой компании...
+STR_ERROR_CAN_T_BUY_COMPANY                                     :Невозможно приобрести компанию...
+STR_ERROR_CAN_T_BUILD_COMPANY_HEADQUARTERS                      :Невозможно построить штаб-квартиру компании...
 
 # Town related errors
-STR_ERROR_CAN_T_GENERATE_TOWN                                   :{WHITE}Невозможно построить города...
-STR_ERROR_CAN_T_RENAME_TOWN                                     :{WHITE}Невозможно переименовать город...
-STR_ERROR_CAN_T_FOUND_TOWN_HERE                                 :{WHITE}Здесь невозможно построить город...
-STR_ERROR_CAN_T_EXPAND_TOWN                                     :{WHITE}Невозможно расширить город...
-STR_ERROR_TOO_CLOSE_TO_EDGE_OF_MAP_SUB                          :{WHITE}... слишком близко к краю карты
-STR_ERROR_TOO_CLOSE_TO_ANOTHER_TOWN                             :{WHITE}... слишком близко к другому городу
-STR_ERROR_TOO_MANY_TOWNS                                        :{WHITE}... слишком много городов
-STR_ERROR_NO_SPACE_FOR_TOWN                                     :{WHITE}... на карте нет места
-STR_ERROR_ROAD_WORKS_IN_PROGRESS                                :{WHITE}Идут дорожные работы...
-STR_ERROR_TOWN_CAN_T_DELETE                                     :{WHITE}Невозможно снести город.{}{}К нему относится станция или депо, либо невозможно очистить одну из занимаемых им клеток.
-STR_ERROR_STATUE_NO_SUITABLE_PLACE                              :{WHITE}... в центре города нет места для статуи
-STR_ERROR_CAN_T_BUILD_HOUSE                                     :{WHITE}Невозможно поставить дом...
+STR_ERROR_CAN_T_GENERATE_TOWN                                   :Невозможно построить города...
+STR_ERROR_CAN_T_RENAME_TOWN                                     :Невозможно переименовать город...
+STR_ERROR_CAN_T_FOUND_TOWN_HERE                                 :Здесь невозможно основать город...
+STR_ERROR_CAN_T_EXPAND_TOWN                                     :Невозможно расширить город...
+STR_ERROR_TOO_CLOSE_TO_ANOTHER_TOWN                             :слишком близко к другому городу
+STR_ERROR_TOO_MANY_TOWNS                                        :слишком много городов
+STR_ERROR_NO_SPACE_FOR_TOWN                                     :на карте нет места
+STR_ERROR_ROAD_WORKS_IN_PROGRESS                                :идут дорожные работы
+STR_ERROR_TOWN_CAN_T_DELETE                                     :Невозможно снести этот город.{}{}К нему относится станция или депо, либо невозможно очистить одну из занимаемых им клеток.
+STR_ERROR_STATUE_NO_SUITABLE_PLACE                              :в центре города нет подходящего места для статуи
+STR_ERROR_CAN_T_BUILD_HOUSE                                     :Невозможно поставить дом...
 
 # Industry related errors
-STR_ERROR_TOO_MANY_INDUSTRIES                                   :{WHITE}... слишком много предприятий
-STR_ERROR_CAN_T_GENERATE_INDUSTRIES                             :{WHITE}Невозможно создать предприятия...
-STR_ERROR_CAN_T_BUILD_HERE                                      :{WHITE}Здесь нельзя построить {STRING.acc}...
-STR_ERROR_CAN_T_CONSTRUCT_THIS_INDUSTRY                         :{WHITE}Построить это предприятие невозможно...
-STR_ERROR_CAN_T_PROSPECT_INDUSTRY                               :{WHITE}Не удалось разведать месторождение...
-STR_ERROR_INDUSTRY_TOO_CLOSE                                    :{WHITE}... слишком близко к другому предприятию
-STR_ERROR_MUST_FOUND_TOWN_FIRST                                 :{WHITE}... сначала постройте город
-STR_ERROR_ONLY_ONE_ALLOWED_PER_TOWN                             :{WHITE}... такой объект уже есть в городе
-STR_ERROR_CAN_ONLY_BE_BUILT_IN_TOWNS_WITH_POPULATION_OF_1200    :{WHITE}... можно построить в городах с населением не менее 1200 жителей
-STR_ERROR_CAN_ONLY_BE_BUILT_IN_RAINFOREST                       :{WHITE}... можно строить только в тропиках
-STR_ERROR_CAN_ONLY_BE_BUILT_IN_DESERT                           :{WHITE}... можно строить только в пустыне
-STR_ERROR_CAN_ONLY_BE_BUILT_IN_TOWNS                            :{WHITE}... можно строить только в городах (на месте домов)
-STR_ERROR_CAN_ONLY_BE_BUILT_NEAR_TOWN_CENTER                    :{WHITE}... можно строить только около центра города
-STR_ERROR_CAN_ONLY_BE_BUILT_IN_LOW_AREAS                        :{WHITE}... можно строить только в низинах
-STR_ERROR_CAN_ONLY_BE_POSITIONED                                :{WHITE}... может находиться только у края карты
-STR_ERROR_FOREST_CAN_ONLY_BE_PLANTED                            :{WHITE}... лес можно сажать только выше линии снега
-STR_ERROR_CAN_ONLY_BE_BUILT_ABOVE_SNOW_LINE                     :{WHITE}... можно строить только выше снеговой линии
-STR_ERROR_CAN_ONLY_BE_BUILT_BELOW_SNOW_LINE                     :{WHITE}... можно строить только ниже снеговой линии
+STR_ERROR_TOO_MANY_INDUSTRIES                                   :слишком много предприятий
+STR_ERROR_CAN_T_GENERATE_INDUSTRIES                             :Невозможно создать предприятия...
+STR_ERROR_CAN_T_BUILD_HERE                                      :Здесь нельзя построить {STRING.acc}...
+STR_ERROR_CAN_T_CONSTRUCT_THIS_INDUSTRY                         :Построить это предприятие невозможно...
+STR_ERROR_CAN_T_PROSPECT_INDUSTRY                               :Не удалось разведать месторождение...
+STR_ERROR_INDUSTRY_TOO_CLOSE                                    :слишком близко к другому предприятию
+STR_ERROR_MUST_FOUND_TOWN_FIRST                                 :сначала нужно основать город
+STR_ERROR_ONLY_ONE_ALLOWED_PER_TOWN                             :такой объект уже есть в городе
+STR_ERROR_CAN_ONLY_BE_BUILT_IN_TOWNS_WITH_POPULATION_OF_1200    :можно строить в городах с населением не менее 1200 жителей
+STR_ERROR_CAN_ONLY_BE_BUILT_IN_RAINFOREST                       :можно строить только в тропиках
+STR_ERROR_CAN_ONLY_BE_BUILT_IN_DESERT                           :можно строить только в пустыне
+STR_ERROR_CAN_ONLY_BE_BUILT_IN_TOWNS                            :можно строить только в городах (на месте домов)
+STR_ERROR_CAN_ONLY_BE_BUILT_NEAR_TOWN_CENTER                    :можно строить только недалеко от центра города
+STR_ERROR_CAN_ONLY_BE_BUILT_IN_LOW_AREAS                        :можно строить только в низинах
+STR_ERROR_CAN_ONLY_BE_POSITIONED                                :может находиться только у края карты
+STR_ERROR_FOREST_CAN_ONLY_BE_PLANTED                            :лес можно сажать только выше линии снеговой линии
+STR_ERROR_CAN_ONLY_BE_BUILT_ABOVE_SNOW_LINE                     :можно строить только выше снеговой линии
+STR_ERROR_CAN_ONLY_BE_BUILT_BELOW_SNOW_LINE                     :можно строить только ниже снеговой линии
 
-STR_ERROR_PROSPECTING_WAS_UNLUCKY                               :{WHITE}Геологоразведка не принесла результатов; попробуйте снова.
-STR_ERROR_NO_SUITABLE_PLACES_FOR_PROSPECTING                    :{WHITE}Нет подходящего места для геологоразведки.
-STR_ERROR_NO_SUITABLE_PLACES_FOR_INDUSTRIES                     :{WHITE}Нет подходящего места для {STRING.gen}
-STR_ERROR_NO_SUITABLE_PLACES_FOR_INDUSTRIES_EXPLANATION         :{WHITE}Измените настройки создания карты для получения более подходящей карты
+STR_ERROR_PROSPECTING_WAS_UNLUCKY                               :геологоразведка не принесла результатов; попробуйте снова.
+STR_ERROR_NO_SUITABLE_PLACES_FOR_PROSPECTING                    :нет подходящего места для проведения геологоразведки
+STR_ERROR_NO_SUITABLE_PLACES_FOR_INDUSTRIES                     :Нет подходящего места для {STRING.gen}
+STR_ERROR_NO_SUITABLE_PLACES_FOR_INDUSTRIES_EXPLANATION         :Измените настройки создания карты для получения более подходящей карты
 
 # Station construction related errors
-STR_ERROR_CAN_T_BUILD_RAILROAD_STATION                          :{WHITE}Здесь невозможно построить станцию...
-STR_ERROR_CAN_T_BUILD_BUS_STATION                               :{WHITE}Здесь невозможно построить остановку...
-STR_ERROR_CAN_T_BUILD_TRUCK_STATION                             :{WHITE}Невозможно построить грузовой терминал...
-STR_ERROR_CAN_T_BUILD_PASSENGER_TRAM_STATION                    :{WHITE}Невозможно построить пассажирскую трамвайную остановку...
-STR_ERROR_CAN_T_BUILD_CARGO_TRAM_STATION                        :{WHITE}Невозможно построить грузовую трамвайную остановку...
-STR_ERROR_CAN_T_BUILD_DOCK_HERE                                 :{WHITE}Здесь невозможно построить пристань...
-STR_ERROR_CAN_T_BUILD_AIRPORT_HERE                              :{WHITE}Здесь невозможно построить аэропорт...
+STR_ERROR_CAN_T_BUILD_RAILROAD_STATION                          :Здесь невозможно построить железнодорожную станцию...
+STR_ERROR_CAN_T_BUILD_BUS_STATION                               :Здесь невозможно построить остановку...
+STR_ERROR_CAN_T_BUILD_TRUCK_STATION                             :Невозможно построить грузовой терминал...
+STR_ERROR_CAN_T_BUILD_PASSENGER_TRAM_STATION                    :Невозможно построить трамвайную остановку...
+STR_ERROR_CAN_T_BUILD_CARGO_TRAM_STATION                        :Невозможно построить грузовую трамвайную станцию...
+STR_ERROR_CAN_T_BUILD_DOCK_HERE                                 :Здесь невозможно построить пристань...
+STR_ERROR_CAN_T_BUILD_AIRPORT_HERE                              :Здесь невозможно построить аэропорт...
 
-STR_ERROR_ADJOINS_MORE_THAN_ONE_EXISTING                        :{WHITE}Примыкает к нескольким станциям
-STR_ERROR_STATION_TOO_SPREAD_OUT                                :{WHITE}... станция слишком большая
-STR_ERROR_STATION_DISALLOWED_NUMBER_TRACKS                      :{WHITE}... станции с таким количеством путей не поддерживаются
-STR_ERROR_STATION_DISALLOWED_LENGTH                             :{WHITE}... станции такой длины не поддерживаются
-STR_ERROR_TOO_MANY_STATIONS_LOADING                             :{WHITE}Слишком много станций и остановок
-STR_ERROR_TOO_MANY_STATION_SPECS                                :{WHITE}Слишком большая ж/д станция
-STR_ERROR_TOO_MANY_BUS_STOPS                                    :{WHITE}Слишком много автобусных остановок
-STR_ERROR_TOO_MANY_TRUCK_STOPS                                  :{WHITE}Слишком много грузовых терминалов
-STR_ERROR_TOO_CLOSE_TO_ANOTHER_DOCK                             :{WHITE}Слишком близко к другой пристани
-STR_ERROR_TOO_CLOSE_TO_ANOTHER_AIRPORT                          :{WHITE}Слишком близко к другому аэропорту
-STR_ERROR_CAN_T_RENAME_STATION                                  :{WHITE}Невозможно переименовать станцию...
-STR_ERROR_CAN_T_MOVE_STATION_NAME                               :{WHITE}Невозможно переместить метку станции...
-STR_ERROR_DRIVE_THROUGH_ON_TOWN_ROAD                            :{WHITE}... эта дорога принадлежит городу
-STR_ERROR_DRIVE_THROUGH_DIRECTION                               :{WHITE}... неверное направление дороги
-STR_ERROR_DRIVE_THROUGH_CORNER                                  :{WHITE}... на проходных остановках нельзя делать повороты
-STR_ERROR_DRIVE_THROUGH_JUNCTION                                :{WHITE}... на проходных остановках нельзя делать перекрёстки
+STR_ERROR_ADJOINS_MORE_THAN_ONE_EXISTING                        :примыкает к нескольким станциям
+STR_ERROR_STATION_TOO_SPREAD_OUT                                :станция слишком большая
+STR_ERROR_STATION_DISALLOWED_NUMBER_TRACKS                      :станции с таким количеством путей не поддерживаются
+STR_ERROR_STATION_DISALLOWED_LENGTH                             :станции такой длины не поддерживаются
+STR_ERROR_TOO_MANY_STATIONS_LOADING                             :слишком много станций и остановок
+STR_ERROR_TOO_MANY_STATION_SPECS                                :железнодорожная станция слишком большая
+STR_ERROR_TOO_MANY_BUS_STOPS                                    :слишком много автобусных остановок
+STR_ERROR_TOO_MANY_TRUCK_STOPS                                  :слишком много грузовых терминалов
+STR_ERROR_TOO_CLOSE_TO_ANOTHER_DOCK                             :слишком близко к другой пристани
+STR_ERROR_TOO_CLOSE_TO_ANOTHER_AIRPORT                          :слишком близко к другому аэропорту
+STR_ERROR_CAN_T_RENAME_STATION                                  :Невозможно переименовать станцию...
+STR_ERROR_CAN_T_MOVE_STATION_NAME                               :Невозможно переместить метку станции...
+STR_ERROR_DRIVE_THROUGH_ON_TOWN_ROAD                            :этот участок дороги принадлежит городу
+STR_ERROR_DRIVE_THROUGH_DIRECTION                               :неверное направление дороги
+STR_ERROR_DRIVE_THROUGH_CORNER                                  :на сквозных остановках нельзя делать повороты
+STR_ERROR_DRIVE_THROUGH_JUNCTION                                :на сквозных остановках нельзя делать перекрёстки
 
 # Station destruction related errors
-STR_ERROR_CAN_T_REMOVE_PART_OF_STATION                          :{WHITE}Невозможно удалить часть станции...
-STR_ERROR_MUST_REMOVE_RAILWAY_STATION_FIRST                     :{WHITE}Сначала удалите ж/д станцию
-STR_ERROR_CAN_T_REMOVE_BUS_STATION                              :{WHITE}Невозможно удалить автобусную остановку...
-STR_ERROR_CAN_T_REMOVE_TRUCK_STATION                            :{WHITE}Невозможно удалить грузовой терминал...
-STR_ERROR_CAN_T_REMOVE_PASSENGER_TRAM_STATION                   :{WHITE}Невозможно удалить пассажирскую трамвайную остановку...
-STR_ERROR_CAN_T_REMOVE_CARGO_TRAM_STATION                       :{WHITE}Невозможно удалить грузовую трамвайную остановку...
-STR_ERROR_MUST_REMOVE_ROAD_STOP_FIRST                           :{WHITE}Сначала удалите остановку
-STR_ERROR_THERE_IS_NO_STATION                                   :{WHITE}... здесь нет станции
+STR_ERROR_CAN_T_REMOVE_PART_OF_STATION                          :Невозможно удалить часть станции...
+STR_ERROR_MUST_REMOVE_RAILWAY_STATION_FIRST                     :сначала нужно снести железнодорожную станцию
+STR_ERROR_CAN_T_REMOVE_BUS_STATION                              :Невозможно снести автобусную остановку...
+STR_ERROR_CAN_T_REMOVE_TRUCK_STATION                            :Невозможно снести грузовой терминал...
+STR_ERROR_CAN_T_REMOVE_PASSENGER_TRAM_STATION                   :Невозможно снести трамвайную остановку...
+STR_ERROR_CAN_T_REMOVE_CARGO_TRAM_STATION                       :Невозможно снести грузовой трамвайный терминал...
+STR_ERROR_MUST_REMOVE_ROAD_STOP_FIRST                           :сначала нужно снести остановку
+STR_ERROR_THERE_IS_NO_STATION                                   :здесь нет станции
 
-STR_ERROR_MUST_DEMOLISH_RAILROAD                                :{WHITE}Сначала снесите ж/д станцию
-STR_ERROR_MUST_DEMOLISH_BUS_STATION_FIRST                       :{WHITE}Сначала снесите автобусную остановку
-STR_ERROR_MUST_DEMOLISH_TRUCK_STATION_FIRST                     :{WHITE}Сначала снесите грузовой терминал
-STR_ERROR_MUST_DEMOLISH_PASSENGER_TRAM_STATION_FIRST            :{WHITE}Сначала снесите пассажирскую трамвайную остановку
-STR_ERROR_MUST_DEMOLISH_CARGO_TRAM_STATION_FIRST                :{WHITE}Сначала снесите грузовую трамвайную остановку
-STR_ERROR_MUST_DEMOLISH_DOCK_FIRST                              :{WHITE}Сначала снесите пристань
-STR_ERROR_MUST_DEMOLISH_AIRPORT_FIRST                           :{WHITE}Сначала снесите аэропорт
+STR_ERROR_MUST_DEMOLISH_RAILROAD                                :сначала нужно снести железнодорожную станцию
+STR_ERROR_MUST_DEMOLISH_BUS_STATION_FIRST                       :сначала нужно снести автобусную остановку
+STR_ERROR_MUST_DEMOLISH_TRUCK_STATION_FIRST                     :сначала нужно снести грузовой терминал
+STR_ERROR_MUST_DEMOLISH_PASSENGER_TRAM_STATION_FIRST            :сначала нужно снести трамвайную остановку
+STR_ERROR_MUST_DEMOLISH_CARGO_TRAM_STATION_FIRST                :сначала нужно снести грузовой трамвайный терминал
+STR_ERROR_MUST_DEMOLISH_DOCK_FIRST                              :сначала нужно снести пристань
+STR_ERROR_MUST_DEMOLISH_AIRPORT_FIRST                           :сначала нужно снести аэропорт
 
 # Waypoint related errors
-STR_ERROR_WAYPOINT_ADJOINS_MORE_THAN_ONE_EXISTING               :{WHITE}Примыкает к нескольким маршрутным точкам
-STR_ERROR_TOO_CLOSE_TO_ANOTHER_WAYPOINT                         :{WHITE}Слишком близко к другой маршрутной точке
+STR_ERROR_WAYPOINT_ADJOINS_MORE_THAN_ONE_EXISTING               :примыкает к нескольким маршрутным точкам
+STR_ERROR_TOO_CLOSE_TO_ANOTHER_WAYPOINT                         :слишком близко к другой маршрутной точке
 
-STR_ERROR_CAN_T_BUILD_RAIL_WAYPOINT                             :{WHITE}Здесь невозможно поставить маршрутную точку...
-STR_ERROR_CAN_T_BUILD_ROAD_WAYPOINT                             :{WHITE}Здесь невозможно поставить маршрутную точку...
-STR_ERROR_CAN_T_POSITION_BUOY_HERE                              :{WHITE}Не удалось установить здесь буй...
-STR_ERROR_CAN_T_CHANGE_WAYPOINT_NAME                            :{WHITE}Невозможно переименовать маршрутную точку...
-STR_ERROR_CAN_T_MOVE_WAYPOINT_NAME                              :{WHITE}Невозможно переместить метку маршрутной точки...
+STR_ERROR_CAN_T_BUILD_RAIL_WAYPOINT                             :Здесь невозможно поставить маршрутную точку...
+STR_ERROR_CAN_T_BUILD_ROAD_WAYPOINT                             :Здесь невозможно поставить маршрутную точку...
+STR_ERROR_CAN_T_POSITION_BUOY_HERE                              :Здесь невозможно установить буй...
+STR_ERROR_CAN_T_CHANGE_WAYPOINT_NAME                            :Невозможно переименовать маршрутную точку...
+STR_ERROR_CAN_T_MOVE_WAYPOINT_NAME                              :Невозможно переместить метку маршрутной точки...
 
-STR_ERROR_CAN_T_REMOVE_RAIL_WAYPOINT                            :{WHITE}Невозможно удалить маршрутную точку...
-STR_ERROR_CAN_T_REMOVE_ROAD_WAYPOINT                            :{WHITE}Невозможно удалить маршрутную точку...
-STR_ERROR_MUST_REMOVE_RAILWAYPOINT_FIRST                        :{WHITE}Сначала удалите маршрутную точку
-STR_ERROR_MUST_REMOVE_ROADWAYPOINT_FIRST                        :{WHITE}Сначала удалите маршрутную точку
-STR_ERROR_BUOY_IN_THE_WAY                                       :{WHITE}... буй мешает
-STR_ERROR_BUOY_IS_IN_USE                                        :{WHITE}... этот буй используется другой компанией!
+STR_ERROR_CAN_T_REMOVE_RAIL_WAYPOINT                            :Невозможно убрать маршрутную точку...
+STR_ERROR_CAN_T_REMOVE_ROAD_WAYPOINT                            :Невозможно убрать маршрутную точку...
+STR_ERROR_MUST_REMOVE_RAILWAYPOINT_FIRST                        :сначала нужно убрать маршрутную точку
+STR_ERROR_MUST_REMOVE_ROADWAYPOINT_FIRST                        :сначала нужно убрать маршрутную точку
+STR_ERROR_BUOY_IN_THE_WAY                                       :мешает буй
+STR_ERROR_BUOY_IS_IN_USE                                        :этот буй используется другой компанией!
 
 # Depot related errors
-STR_ERROR_CAN_T_BUILD_TRAIN_DEPOT                               :{WHITE}Здесь невозможно построить депо...
-STR_ERROR_CAN_T_BUILD_ROAD_DEPOT                                :{WHITE}Здесь невозможно построить гараж...
-STR_ERROR_CAN_T_BUILD_TRAM_DEPOT                                :{WHITE}Здесь невозможно построить трамвайное депо...
-STR_ERROR_CAN_T_BUILD_SHIP_DEPOT                                :{WHITE}Здесь невозможно построить док...
+STR_ERROR_CAN_T_BUILD_TRAIN_DEPOT                               :Здесь невозможно построить депо...
+STR_ERROR_CAN_T_BUILD_ROAD_DEPOT                                :Здесь невозможно построить гараж...
+STR_ERROR_CAN_T_BUILD_TRAM_DEPOT                                :Здесь невозможно построить трамвайное депо...
+STR_ERROR_CAN_T_BUILD_SHIP_DEPOT                                :Здесь невозможно построить док...
 
-STR_ERROR_CAN_T_RENAME_DEPOT                                    :{WHITE}Не удалось переименовать депо...
+STR_ERROR_CAN_T_RENAME_DEPOT                                    :Невозможно переименовать депо...
 
-STR_ERROR_TRAIN_MUST_BE_STOPPED_INSIDE_DEPOT                    :{WHITE}... должен быть остановлен в депо
-STR_ERROR_ROAD_VEHICLE_MUST_BE_STOPPED_INSIDE_DEPOT             :{WHITE}... должен быть остановлен в гараже
-STR_ERROR_SHIP_MUST_BE_STOPPED_INSIDE_DEPOT                     :{WHITE}... должен быть остановлен в доке
-STR_ERROR_AIRCRAFT_MUST_BE_STOPPED_INSIDE_HANGAR                :{WHITE}... должен быть остановлен в ангаре
+STR_ERROR_TRAIN_MUST_BE_STOPPED_INSIDE_DEPOT                    :должен стоять в депо
+STR_ERROR_ROAD_VEHICLE_MUST_BE_STOPPED_INSIDE_DEPOT             :должен стоять в гараже
+STR_ERROR_SHIP_MUST_BE_STOPPED_INSIDE_DEPOT                     :должен стоять в доке
+STR_ERROR_AIRCRAFT_MUST_BE_STOPPED_INSIDE_HANGAR                :должно стоять в ангаре
 
-STR_ERROR_TRAINS_CAN_ONLY_BE_ALTERED_INSIDE_A_DEPOT             :{WHITE}Состав можно изменять только в депо
-STR_ERROR_TRAIN_TOO_LONG                                        :{WHITE}Поезд слишком длинный
-STR_ERROR_CAN_T_REVERSE_DIRECTION_RAIL_VEHICLE                  :{WHITE}Не удалось развернуть поезд...
-STR_ERROR_CAN_T_REVERSE_DIRECTION_RAIL_VEHICLE_MULTIPLE_UNITS   :{WHITE}... состоит из нескольких элементов
-STR_ERROR_INCOMPATIBLE_RAIL_TYPES                               :Несовместимые типы рельсов
+STR_ERROR_TRAINS_CAN_ONLY_BE_ALTERED_INSIDE_A_DEPOT             :Вносить изменения в состав можно только для поездов, стоящих в депо
+STR_ERROR_TRAIN_TOO_LONG                                        :состав слишком длинный
+STR_ERROR_CAN_T_REVERSE_DIRECTION_RAIL_VEHICLE                  :Не удалось развернуть поезд...
+STR_ERROR_CAN_T_REVERSE_DIRECTION_RAIL_VEHICLE_MULTIPLE_UNITS   :состоит из нескольких элементов
+STR_ERROR_INCOMPATIBLE_RAIL_TYPES                               :несовместимые типы рельсов
 
-STR_ERROR_CAN_T_MOVE_VEHICLE                                    :{WHITE}Невозможно переместить транспортное средство...
-STR_ERROR_REAR_ENGINE_FOLLOW_FRONT                              :{WHITE}Тыловой локомотив всегда следует за его передней частью
-STR_ERROR_UNABLE_TO_FIND_ROUTE_TO                               :{WHITE}Невозможно найти маршрут к депо
-STR_ERROR_UNABLE_TO_FIND_LOCAL_DEPOT                            :{WHITE}Невозможно найти гараж
+STR_ERROR_CAN_T_MOVE_VEHICLE                                    :Невозможно переместить транспортное средство...
+STR_ERROR_REAR_ENGINE_FOLLOW_FRONT                              :тыловой локомотив всегда следует за передней частью
+STR_ERROR_UNABLE_TO_FIND_ROUTE_TO                               :невозможно найти маршрут к депо
+STR_ERROR_UNABLE_TO_FIND_LOCAL_DEPOT                            :невозможно найти гараж
+STR_ERROR_UNABLE_TO_FIND_LOCAL_HANGAR                           :невозможно найти ангар
 
-STR_ERROR_DEPOT_WRONG_DEPOT_TYPE                                :Неверный тип депо
+STR_ERROR_DEPOT_WRONG_DEPOT_TYPE                                :неверный тип депо
 
 # Depot unbunching related errors
-STR_ERROR_UNBUNCHING_ONLY_ONE_ALLOWED                           :{WHITE}... допускается только одно задание с распределением по маршруту
-STR_ERROR_UNBUNCHING_NO_FULL_LOAD                               :{WHITE}... нельзя ждать полной загрузки, если в списке заданий есть «распределение»
-STR_ERROR_UNBUNCHING_NO_UNBUNCHING_FULL_LOAD                    :{WHITE}... нельзя равномерно распределить по маршруту транспортные средства с заданиями ожидания полной погрузки
-STR_ERROR_UNBUNCHING_NO_CONDITIONAL                             :{WHITE}... нельзя использовать условные задания, если в списке заданий есть «распределение»
-STR_ERROR_UNBUNCHING_NO_UNBUNCHING_CONDITIONAL                  :{WHITE}... нельзя равномерно распределить по маршруту транспортные средства с условными заданиями
+STR_ERROR_UNBUNCHING_ONLY_ONE_ALLOWED                           :допускается только одно задание с распределением по маршруту
+STR_ERROR_UNBUNCHING_NO_FULL_LOAD                               :нельзя ждать полной загрузки, если в списке заданий есть «распределение»
+STR_ERROR_UNBUNCHING_NO_UNBUNCHING_FULL_LOAD                    :нельзя равномерно распределить по маршруту транспортные средства, ожидающие полной загрузки
+STR_ERROR_UNBUNCHING_NO_CONDITIONAL                             :нельзя использовать условные задания, если в списке заданий есть «распределение»
+STR_ERROR_UNBUNCHING_NO_UNBUNCHING_CONDITIONAL                  :нельзя равномерно распределить по маршруту транспортные средства с условными заданиями
 
 # Autoreplace related errors
-STR_ERROR_TRAIN_TOO_LONG_AFTER_REPLACEMENT                      :{WHITE}ТС «{VEHICLE}» слишком длинное после замены
-STR_ERROR_AUTOREPLACE_NOTHING_TO_DO                             :{WHITE}Правила автозамены/обновления не были применены
+STR_ERROR_TRAIN_TOO_LONG_AFTER_REPLACEMENT                      :{WHITE}ТС «{VEHICLE}» стало слишком длинным после замены
+STR_ERROR_AUTOREPLACE_NOTHING_TO_DO                             :Правила автозамены/обновления не были применены
 STR_ERROR_AUTOREPLACE_MONEY_LIMIT                               :(недостаточно денег)
-STR_ERROR_AUTOREPLACE_INCOMPATIBLE_CARGO                        :{WHITE}Новое транспортное средство не может возить {STRING.acc}
-STR_ERROR_AUTOREPLACE_INCOMPATIBLE_REFIT                        :{WHITE}Ошибка в {NUM}-м пункте расписания: нельзя переоборудовать ТС
+STR_ERROR_AUTOREPLACE_INCOMPATIBLE_CARGO                        :Новое транспортное средство не может возить {STRING.acc}
+STR_ERROR_AUTOREPLACE_INCOMPATIBLE_REFIT                        :Ошибка в {NUM}-м пункте расписания: новое транспортное средство нельзя переоборудовать
 
 # Rail construction errors
-STR_ERROR_IMPOSSIBLE_TRACK_COMBINATION                          :{WHITE}Недопустимая комбинация путей
-STR_ERROR_MUST_REMOVE_SIGNALS_FIRST                             :{WHITE}Сначала удалите сигналы
-STR_ERROR_NO_SUITABLE_RAILROAD_TRACK                            :{WHITE}Нет подходящих рельсов
-STR_ERROR_MUST_REMOVE_RAILROAD_TRACK                            :{WHITE}Сначала удалите рельсы
-STR_ERROR_CROSSING_ON_ONEWAY_ROAD                               :{WHITE}Дорога односторонняя или заблокирована
-STR_ERROR_CROSSING_DISALLOWED_RAIL                              :{WHITE}Через этот вид рельсов запрещено строить переезды
-STR_ERROR_CROSSING_DISALLOWED_ROAD                              :{WHITE}Пересечение дорог такого типа недопустимо
-STR_ERROR_CAN_T_BUILD_SIGNALS_HERE                              :{WHITE}Здесь невозможно поставить сигнал...
-STR_ERROR_CAN_T_BUILD_RAILROAD_TRACK                            :{WHITE}Здесь невозможно проложить рельсы...
-STR_ERROR_CAN_T_REMOVE_RAILROAD_TRACK                           :{WHITE}Не удалось удалить рельсы...
-STR_ERROR_CAN_T_REMOVE_SIGNALS_FROM                             :{WHITE}Не удалось удалить сигнал...
-STR_ERROR_SIGNAL_CAN_T_CONVERT_SIGNALS_HERE                     :{WHITE}Невозможно преобразовать здесь сигнал...
-STR_ERROR_THERE_IS_NO_RAILROAD_TRACK                            :{WHITE}... здесь нет железной дороги
-STR_ERROR_THERE_ARE_NO_SIGNALS                                  :{WHITE}... сигналы отсутствуют
+STR_ERROR_IMPOSSIBLE_TRACK_COMBINATION                          :недопустимая комбинация путей
+STR_ERROR_MUST_REMOVE_SIGNALS_FIRST                             :сначала нужно убрать сигналы
+STR_ERROR_NO_SUITABLE_RAILROAD_TRACK                            :нет подходящих типов рельсов
+STR_ERROR_MUST_REMOVE_RAILROAD_TRACK                            :сначала нужно убрать рельсы
+STR_ERROR_CROSSING_ON_ONEWAY_ROAD                               :дорога односторонняя или заблокирована
+STR_ERROR_CROSSING_DISALLOWED_RAIL                              :Через рельсы этого типа запрещено строить переезды
+STR_ERROR_CROSSING_DISALLOWED_ROAD                              :дороги этого типа не подходят для строительства переездов
+STR_ERROR_CAN_T_BUILD_SIGNALS_HERE                              :Здесь невозможно поставить сигнал...
+STR_ERROR_CAN_T_BUILD_RAILROAD_TRACK                            :Здесь невозможно проложить рельсы...
+STR_ERROR_CAN_T_REMOVE_RAILROAD_TRACK                           :Не удалось убрать рельсы...
+STR_ERROR_CAN_T_REMOVE_SIGNALS_FROM                             :Не удалось убрать сигнал...
+STR_ERROR_SIGNAL_CAN_T_CONVERT_SIGNALS_HERE                     :Невозможно преобразовать сигналы...
+STR_ERROR_THERE_IS_NO_RAILROAD_TRACK                            :здесь нет железной дороги
+STR_ERROR_THERE_ARE_NO_SIGNALS                                  :сигналы отсутствуют
 
-STR_ERROR_CAN_T_CONVERT_RAIL                                    :{WHITE}Здесь невозможно преобразовать тип рельсов...
+STR_ERROR_CAN_T_CONVERT_RAIL                                    :Здесь невозможно преобразовать тип рельсов...
 
 # Road construction errors
-STR_ERROR_MUST_REMOVE_ROAD_FIRST                                :{WHITE}Сначала удалите дорогу
-STR_ERROR_ONEWAY_ROADS_CAN_T_HAVE_JUNCTION                      :{WHITE}... односторонние дороги не могут иметь такое пересечение
-STR_ERROR_CAN_T_BUILD_ROAD_HERE                                 :{WHITE}Здесь невозможно построить дорогу...
-STR_ERROR_CAN_T_BUILD_TRAMWAY_HERE                              :{WHITE}Здесь невозможно проложить трамвайные пути...
-STR_ERROR_CAN_T_REMOVE_ROAD_FROM                                :{WHITE}Не удалось удалить дорогу...
-STR_ERROR_CAN_T_REMOVE_TRAMWAY_FROM                             :{WHITE}Не удалось удалить трамвайные пути...
-STR_ERROR_THERE_IS_NO_ROAD                                      :{WHITE}... здесь нет дороги
-STR_ERROR_THERE_IS_NO_TRAMWAY                                   :{WHITE}... здесь нет трамвайных путей
-STR_ERROR_CAN_T_CONVERT_ROAD                                    :{WHITE}Здесь невозможно изменить тип дорожного полотна...
-STR_ERROR_CAN_T_CONVERT_TRAMWAY                                 :{WHITE}Невозможно сменить тип трамвайных рельсов...
-STR_ERROR_NO_SUITABLE_ROAD                                      :{WHITE}Нет подходящего дорожного полотна
-STR_ERROR_NO_SUITABLE_TRAMWAY                                   :{WHITE}Нет подходящих трамвайных путей
+STR_ERROR_MUST_REMOVE_ROAD_FIRST                                :сначала нужно убрать дорогу
+STR_ERROR_ONEWAY_ROADS_CAN_T_HAVE_JUNCTION                      :односторонние дороги не могут иметь такое пересечение
+STR_ERROR_CAN_T_BUILD_ROAD_HERE                                 :Здесь невозможно построить дорогу...
+STR_ERROR_CAN_T_BUILD_TRAMWAY_HERE                              :Здесь невозможно проложить трамвайные пути...
+STR_ERROR_CAN_T_REMOVE_ROAD_FROM                                :Не удалось убрать дорогу...
+STR_ERROR_CAN_T_REMOVE_TRAMWAY_FROM                             :Не удалось убрать трамвайные пути...
+STR_ERROR_THERE_IS_NO_ROAD                                      :здесь нет дороги
+STR_ERROR_THERE_IS_NO_TRAMWAY                                   :здесь нет трамвайных путей
+STR_ERROR_CAN_T_CONVERT_ROAD                                    :Здесь невозможно изменить тип дорожного полотна...
+STR_ERROR_CAN_T_CONVERT_TRAMWAY                                 :Здесь невозможно сменить тип трамвайных рельсов...
+STR_ERROR_NO_SUITABLE_ROAD                                      :нет подходящего дорожного полотна
+STR_ERROR_NO_SUITABLE_TRAMWAY                                   :нет подходящих типов трамвайных путей
 
 # Waterway construction errors
-STR_ERROR_CAN_T_BUILD_CANALS                                    :{WHITE}Здесь невозможно построить канал...
-STR_ERROR_CAN_T_BUILD_LOCKS                                     :{WHITE}Здесь невозможно построить шлюз...
-STR_ERROR_CAN_T_PLACE_RIVERS                                    :{WHITE}Здесь невозможно расположить реку...
-STR_ERROR_MUST_BE_BUILT_ON_WATER                                :{WHITE}... нужно строить в воде
-STR_ERROR_CAN_T_BUILD_ON_WATER                                  :{WHITE}... нельзя строить в воде
-STR_ERROR_CAN_T_BUILD_ON_SEA                                    :{WHITE}... нельзя строить в открытом море
-STR_ERROR_CAN_T_BUILD_ON_CANAL                                  :{WHITE}... нельзя строить на канале
-STR_ERROR_CAN_T_BUILD_ON_RIVER                                  :{WHITE}... нельзя строить на реке
-STR_ERROR_MUST_DEMOLISH_CANAL_FIRST                             :{WHITE}Сначала снесите канал
-STR_ERROR_CAN_T_BUILD_AQUEDUCT_HERE                             :{WHITE}Здесь невозможно построить акведук...
+STR_ERROR_CAN_T_BUILD_CANALS                                    :Здесь невозможно построить канал...
+STR_ERROR_CAN_T_BUILD_LOCKS                                     :Здесь невозможно построить шлюз...
+STR_ERROR_CAN_T_PLACE_RIVERS                                    :Здесь невозможно расположить реку...
+STR_ERROR_MUST_BE_BUILT_ON_WATER                                :нужно строить в воде
+STR_ERROR_CAN_T_BUILD_ON_WATER                                  :нельзя строить в воде
+STR_ERROR_CAN_T_BUILD_ON_SEA                                    :нельзя строить в открытом море
+STR_ERROR_CAN_T_BUILD_ON_CANAL                                  :нельзя строить на канале
+STR_ERROR_CAN_T_BUILD_ON_RIVER                                  :нельзя строить на реке
+STR_ERROR_MUST_DEMOLISH_CANAL_FIRST                             :сначала нужно убрать канал
+STR_ERROR_CAN_T_BUILD_AQUEDUCT_HERE                             :Здесь невозможно построить акведук...
 
 # Tree related errors
-STR_ERROR_TREE_ALREADY_HERE                                     :{WHITE}... уже есть дерево
-STR_ERROR_TREE_WRONG_TERRAIN_FOR_TREE_TYPE                      :{WHITE}... эти деревья здесь не растут
-STR_ERROR_CAN_T_PLANT_TREE_HERE                                 :{WHITE}Невозможно высадить деревья...
+STR_ERROR_TREE_ALREADY_HERE                                     :здесь уже есть дерево
+STR_ERROR_TREE_WRONG_TERRAIN_FOR_TREE_TYPE                      :эти деревья здесь не растут
+STR_ERROR_CAN_T_PLANT_TREE_HERE                                 :Здесь невозможно высадить деревья...
 
 # Bridge related errors
-STR_ERROR_CAN_T_BUILD_BRIDGE_HERE                               :{WHITE}Здесь невозможно построить мост...
-STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST                            :{WHITE}Сначала снесите мост
-STR_ERROR_CAN_T_START_AND_END_ON                                :{WHITE}Не может начинаться и заканчиваться в той же точке
-STR_ERROR_BRIDGEHEADS_NOT_SAME_HEIGHT                           :{WHITE}Опоры моста должны быть на одном уровне
-STR_ERROR_BRIDGE_TOO_LOW_FOR_TERRAIN                            :{WHITE}Слишком низкий мост
-STR_ERROR_BRIDGE_TOO_HIGH_FOR_TERRAIN                           :{WHITE}Мосты такой высоты строить нельзя.
-STR_ERROR_START_AND_END_MUST_BE_IN                              :{WHITE}Начало и конец должны быть на одной линии
-STR_ERROR_ENDS_OF_BRIDGE_MUST_BOTH                              :{WHITE}... оба конца моста должны опираться на землю
-STR_ERROR_BRIDGE_TOO_LONG                                       :{WHITE}... мост слишком длинный
-STR_ERROR_BRIDGE_THROUGH_MAP_BORDER                             :{WHITE}Мост выходит за пределы карты
-STR_ERROR_BRIDGE_TOO_LOW_FOR_STATION                            :{WHITE}Высота моста - {HEIGHT}, этого недостаточно для станции
-STR_ERROR_BRIDGE_TOO_LOW_FOR_ROADSTOP                           :{WHITE}Высота моста - {HEIGHT}, этого недостаточно для остановки
-STR_ERROR_BRIDGE_TOO_LOW_FOR_DOCK                               :{WHITE}Высота моста - {HEIGHT}, этого недостаточно для пристани
-STR_ERROR_BRIDGE_TOO_LOW_FOR_BUOY                               :{WHITE}Высота моста - {HEIGHT}, этого недостаточно для буя
-STR_ERROR_BRIDGE_TOO_LOW_FOR_RAIL_WAYPOINT                      :{WHITE}Высота моста - {HEIGHT}, этого недостаточно для маршрутной точки
-STR_ERROR_BRIDGE_TOO_LOW_FOR_ROAD_WAYPOINT                      :{WHITE}Высота моста - {HEIGHT}, этого недостаточно для маршрутной точки
-STR_ERROR_BRIDGE_TOO_LOW_FOR_LOCK                               :{WHITE}Высота моста - {HEIGHT}, этого недостаточно для шлюза
+STR_ERROR_CAN_T_BUILD_BRIDGE_HERE                               :Здесь невозможно построить мост...
+STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST                            :сначала нужно снести мост
+STR_ERROR_CAN_T_START_AND_END_ON                                :не может начинаться и заканчиваться в той же точке
+STR_ERROR_BRIDGEHEADS_NOT_SAME_HEIGHT                           :опоры моста должны быть на одном уровне
+STR_ERROR_BRIDGE_TOO_LOW_FOR_TERRAIN                            :мост слишком низкий
+STR_ERROR_BRIDGE_TOO_HIGH_FOR_TERRAIN                           :Мосты такой высоты строить нельзя
+STR_ERROR_START_AND_END_MUST_BE_IN                              :Начало и конец должны быть на одной линии
+STR_ERROR_ENDS_OF_BRIDGE_MUST_BOTH                              :оба конца моста должны опираться на землю
+STR_ERROR_BRIDGE_TOO_LONG                                       :мост слишком длинный
+STR_ERROR_BRIDGE_THROUGH_MAP_BORDER                             :мост выходит за пределы карты
+STR_ERROR_BRIDGE_TOO_LOW_FOR_STATION                            :высота моста - {HEIGHT}, этого недостаточно для станции
+STR_ERROR_BRIDGE_TOO_LOW_FOR_ROADSTOP                           :высота моста - {HEIGHT}, этого недостаточно для остановки
+STR_ERROR_BRIDGE_TOO_LOW_FOR_DOCK                               :высота моста - {HEIGHT}, этого недостаточно для пристани
+STR_ERROR_BRIDGE_TOO_LOW_FOR_BUOY                               :высота моста - {HEIGHT}, этого недостаточно для буя
+STR_ERROR_BRIDGE_TOO_LOW_FOR_RAIL_WAYPOINT                      :высота моста - {HEIGHT}, этого недостаточно для маршрутной точки
+STR_ERROR_BRIDGE_TOO_LOW_FOR_ROAD_WAYPOINT                      :высота моста - {HEIGHT}, этого недостаточно для маршрутной точки
+STR_ERROR_BRIDGE_TOO_LOW_FOR_LOCK                               :высота моста - {HEIGHT}, этого недостаточно для шлюза
+STR_ERROR_BRIDGE_TOO_LOW_FOR_TRAIN_DEPOT                        :депо не поместится под мостом с высотой {HEIGHT}
+STR_ERROR_BRIDGE_TOO_LOW_FOR_ROADVEH_DEPOT                      :гараж не поместится под мостом с высотой {HEIGHT}
+STR_ERROR_BRIDGE_TOO_LOW_FOR_SHIP_DEPOT                         :док не поместится под мостом с высотой {HEIGHT}
+STR_ERROR_BRIDGE_TOO_LOW_FOR_OBJECT                             :объект не поместится под мостом с высотой {HEIGHT}
 
 # Tunnel related errors
-STR_ERROR_CAN_T_BUILD_TUNNEL_HERE                               :{WHITE}Здесь невозможно построить туннель...
-STR_ERROR_SITE_UNSUITABLE_FOR_TUNNEL                            :{WHITE}Неподходящее место для строительства туннеля
-STR_ERROR_MUST_DEMOLISH_TUNNEL_FIRST                            :{WHITE}Сначала снесите туннель
-STR_ERROR_ANOTHER_TUNNEL_IN_THE_WAY                             :{WHITE}Туннели не могут пересекаться
-STR_ERROR_TUNNEL_THROUGH_MAP_BORDER                             :{WHITE}Туннель заканчивается за пределами карты
-STR_ERROR_UNABLE_TO_EXCAVATE_LAND                               :{WHITE}Невозможно поднять/опустить землю для другого конца туннеля
-STR_ERROR_TUNNEL_TOO_LONG                                       :{WHITE}... туннель слишком длинный
+STR_ERROR_CAN_T_BUILD_TUNNEL_HERE                               :Здесь невозможно построить туннель...
+STR_ERROR_SITE_UNSUITABLE_FOR_TUNNEL                            :место не подходит для строительства въезда в туннель
+STR_ERROR_MUST_DEMOLISH_TUNNEL_FIRST                            :сначала нужно снести туннель
+STR_ERROR_ANOTHER_TUNNEL_IN_THE_WAY                             :туннели не могут пересекаться
+STR_ERROR_TUNNEL_THROUGH_MAP_BORDER                             :туннель выходит за пределы карты
+STR_ERROR_UNABLE_TO_EXCAVATE_LAND                               :невозможно выровнять склон у другого конца туннеля
+STR_ERROR_TUNNEL_TOO_LONG                                       :туннель слишком длинный
 
 # Object related errors
-STR_ERROR_TOO_MANY_OBJECTS                                      :{WHITE}... слишком много объектов
-STR_ERROR_CAN_T_BUILD_OBJECT                                    :{WHITE}Невозможно построить объект...
-STR_ERROR_OBJECT_IN_THE_WAY                                     :{WHITE}Объект мешает
-STR_ERROR_COMPANY_HEADQUARTERS_IN                               :{WHITE}... штаб-квартира компании мешает
-STR_ERROR_CAN_T_PURCHASE_THIS_LAND                              :{WHITE}Невозможно купить эту землю...
-STR_ERROR_YOU_ALREADY_OWN_IT                                    :{WHITE}... вы и так уже владеете этим!
-STR_ERROR_BUILD_OBJECT_LIMIT_REACHED                            :{WHITE}... достигнуто максимальное количество объектов
+STR_ERROR_TOO_MANY_OBJECTS                                      :слишком много объектов
+STR_ERROR_CAN_T_BUILD_OBJECT                                    :Невозможно построить объект...
+STR_ERROR_OBJECT_IN_THE_WAY                                     :мешает объект
+STR_ERROR_COMPANY_HEADQUARTERS_IN                               :мешает штаб-квартира компании
+STR_ERROR_CAN_T_PURCHASE_THIS_LAND                              :Невозможно приобрести этот участок земли...
+STR_ERROR_YOU_ALREADY_OWN_IT                                    :вы и так уже владеете этим!
+STR_ERROR_BUILD_OBJECT_LIMIT_REACHED                            :достигнуто максимальное количество объектов
 
 # Group related errors
-STR_ERROR_GROUP_CAN_T_CREATE                                    :{WHITE}Невозможно создать группу...
-STR_ERROR_GROUP_CAN_T_DELETE                                    :{WHITE}Невозможно удалить группу...
-STR_ERROR_GROUP_CAN_T_RENAME                                    :{WHITE}Невозможно переименовать группу...
-STR_ERROR_GROUP_CAN_T_SET_PARENT                                :{WHITE}Невозможно установить корректное вложение групп...
-STR_ERROR_GROUP_CAN_T_SET_PARENT_RECURSION                      :{WHITE}... кольцевые зависимости в иерархии групп недопустимы
-STR_ERROR_GROUP_CAN_T_REMOVE_ALL_VEHICLES                       :{WHITE}Невозможно удалить весь транспорт из группы...
-STR_ERROR_GROUP_CAN_T_ADD_VEHICLE                               :{WHITE}Невозможно добавить транспорт в группу...
-STR_ERROR_GROUP_CAN_T_ADD_SHARED_VEHICLE                        :{WHITE}Невозможно добавить транспорт с общим маршрутом в группу...
+STR_ERROR_GROUP_CAN_T_CREATE                                    :Невозможно создать группу...
+STR_ERROR_GROUP_CAN_T_DELETE                                    :Невозможно удалить эту группу...
+STR_ERROR_GROUP_CAN_T_RENAME                                    :Невозможно переименовать группу...
+STR_ERROR_GROUP_CAN_T_SET_PARENT                                :Невозможно установить корректное вложение групп...
+STR_ERROR_GROUP_CAN_T_SET_PARENT_RECURSION                      :кольцевые зависимости в иерархии групп недопустимы
+STR_ERROR_GROUP_CAN_T_REMOVE_ALL_VEHICLES                       :Невозможно убрать все транспортные средства из этой группы...
+STR_ERROR_GROUP_CAN_T_ADD_VEHICLE                               :Невозможно добавить транспортное средство в группу...
+STR_ERROR_GROUP_CAN_T_ADD_SHARED_VEHICLE                        :Невозможно добавить транспорт с общим маршрутом в группу...
 
 # Generic vehicle errors
 
 ###length VEHICLE_TYPES
-STR_ERROR_TRAIN_IN_THE_WAY                                      :{WHITE}Поезд мешает
-STR_ERROR_ROAD_VEHICLE_IN_THE_WAY                               :{WHITE}Автомобиль мешает
-STR_ERROR_SHIP_IN_THE_WAY                                       :{WHITE}Судно мешает
-STR_ERROR_AIRCRAFT_IN_THE_WAY                                   :{WHITE}Воздушное судно мешает
+STR_ERROR_TRAIN_IN_THE_WAY                                      :мешает поезд
+STR_ERROR_ROAD_VEHICLE_IN_THE_WAY                               :мешает автомобиль
+STR_ERROR_SHIP_IN_THE_WAY                                       :мешает судно
+STR_ERROR_AIRCRAFT_IN_THE_WAY                                   :мешает воздушное судно
 
 ###length VEHICLE_TYPES
-STR_ERROR_RAIL_VEHICLE_NOT_AVAILABLE                            :{WHITE}Локомотив и/или вагон недоступен
-STR_ERROR_ROAD_VEHICLE_NOT_AVAILABLE                            :{WHITE}Автотранспорт недоступен
-STR_ERROR_SHIP_NOT_AVAILABLE                                    :{WHITE}Судно недоступно
-STR_ERROR_AIRCRAFT_NOT_AVAILABLE                                :{WHITE}Авиатранспорт недоступен
+STR_ERROR_RAIL_VEHICLE_NOT_AVAILABLE                            :локомотив/вагон недоступен
+STR_ERROR_ROAD_VEHICLE_NOT_AVAILABLE                            :автомобиль недоступен
+STR_ERROR_SHIP_NOT_AVAILABLE                                    :судно недоступно
+STR_ERROR_AIRCRAFT_NOT_AVAILABLE                                :воздушное судно недоступно
 
 ###length VEHICLE_TYPES
-STR_ERROR_CAN_T_REFIT_TRAIN                                     :{WHITE}Невозможно переоборудовать поезд...
-STR_ERROR_CAN_T_REFIT_ROAD_VEHICLE                              :{WHITE}Невозможно переоборудовать автомобиль...
-STR_ERROR_CAN_T_REFIT_SHIP                                      :{WHITE}Невозможно переоборудовать судно...
-STR_ERROR_CAN_T_REFIT_AIRCRAFT                                  :{WHITE}Невозможно переоборудовать самолёт...
+STR_ERROR_CAN_T_REFIT_TRAIN                                     :Невозможно переоборудовать поезд...
+STR_ERROR_CAN_T_REFIT_ROAD_VEHICLE                              :Невозможно переоборудовать автомобиль...
+STR_ERROR_CAN_T_REFIT_SHIP                                      :Невозможно переоборудовать судно...
+STR_ERROR_CAN_T_REFIT_AIRCRAFT                                  :Невозможно переоборудовать воздушное судно...
 
 ###length VEHICLE_TYPES
-STR_ERROR_CAN_T_RENAME_TRAIN                                    :{WHITE}Невозможно переименовать поезд...
-STR_ERROR_CAN_T_RENAME_ROAD_VEHICLE                             :{WHITE}Невозможно переименовать автомобиль...
-STR_ERROR_CAN_T_RENAME_SHIP                                     :{WHITE}Невозможно переименовать судно...
-STR_ERROR_CAN_T_RENAME_AIRCRAFT                                 :{WHITE}Невозможно переименовать воздушное судно...
+STR_ERROR_CAN_T_RENAME_TRAIN                                    :Невозможно переименовать поезд...
+STR_ERROR_CAN_T_RENAME_ROAD_VEHICLE                             :Невозможно переименовать автомобиль...
+STR_ERROR_CAN_T_RENAME_SHIP                                     :Невозможно переименовать судно...
+STR_ERROR_CAN_T_RENAME_AIRCRAFT                                 :Невозможно переименовать воздушное судно...
 
 ###length VEHICLE_TYPES
-STR_ERROR_CAN_T_STOP_START_TRAIN                                :{WHITE}Невозможно остановить/запустить поезд...
-STR_ERROR_CAN_T_STOP_START_ROAD_VEHICLE                         :{WHITE}Невозможно остановить/запустить автомобиль...
-STR_ERROR_CAN_T_STOP_START_SHIP                                 :{WHITE}Невозможно остановить/запустить судно...
-STR_ERROR_CAN_T_STOP_START_AIRCRAFT                             :{WHITE}Невозможно остановить/запустить авиатранспорт...
+STR_ERROR_CAN_T_STOP_START_TRAIN                                :Невозможно остановить/запустить поезд...
+STR_ERROR_CAN_T_STOP_START_ROAD_VEHICLE                         :Невозможно остановить/запустить автомобиль...
+STR_ERROR_CAN_T_STOP_START_SHIP                                 :Невозможно остановить/запустить судно...
+STR_ERROR_CAN_T_STOP_START_AIRCRAFT                             :Невозможно остановить/запустить воздушное судно...
 
 ###length VEHICLE_TYPES
-STR_ERROR_CAN_T_SEND_TRAIN_TO_DEPOT                             :{WHITE}Невозможно отправить поезд в депо...
-STR_ERROR_CAN_T_SEND_ROAD_VEHICLE_TO_DEPOT                      :{WHITE}Невозможно отправить автомобиль в гараж...
-STR_ERROR_CAN_T_SEND_SHIP_TO_DEPOT                              :{WHITE}Невозможно отправить судно в док...
-STR_ERROR_CAN_T_SEND_AIRCRAFT_TO_HANGAR                         :{WHITE}Невозможно отправить самолёт в ангар...
+STR_ERROR_CAN_T_SEND_TRAIN_TO_DEPOT                             :Невозможно отправить поезд в депо...
+STR_ERROR_CAN_T_SEND_ROAD_VEHICLE_TO_DEPOT                      :Невозможно отправить автомобиль в гараж...
+STR_ERROR_CAN_T_SEND_SHIP_TO_DEPOT                              :Невозможно отправить судно в док...
+STR_ERROR_CAN_T_SEND_AIRCRAFT_TO_HANGAR                         :Невозможно отправить воздушное судно в ангар...
 
 ###length VEHICLE_TYPES
-STR_ERROR_CAN_T_BUY_TRAIN                                       :{WHITE}Невозможно купить ж/д транспорт...
-STR_ERROR_CAN_T_BUY_ROAD_VEHICLE                                :{WHITE}Невозможно купить автомобиль...
-STR_ERROR_CAN_T_BUY_SHIP                                        :{WHITE}Невозможно купить судно...
-STR_ERROR_CAN_T_BUY_AIRCRAFT                                    :{WHITE}Невозможно купить воздушное судно...
+STR_ERROR_CAN_T_BUY_TRAIN                                       :Невозможно купить железнодорожный транспорт...
+STR_ERROR_CAN_T_BUY_ROAD_VEHICLE                                :Невозможно купить автомобиль...
+STR_ERROR_CAN_T_BUY_SHIP                                        :Невозможно купить судно...
+STR_ERROR_CAN_T_BUY_AIRCRAFT                                    :Невозможно купить воздушное судно...
 
 ###length VEHICLE_TYPES
-STR_ERROR_CAN_T_RENAME_TRAIN_TYPE                               :{WHITE}Невозможно изменить название модели поезда...
-STR_ERROR_CAN_T_RENAME_ROAD_VEHICLE_TYPE                        :{WHITE}Невозможно изменить название модели автомобиля...
-STR_ERROR_CAN_T_RENAME_SHIP_TYPE                                :{WHITE}Невозможно изменить название модели судна...
-STR_ERROR_CAN_T_RENAME_AIRCRAFT_TYPE                            :{WHITE}Невозможно изменить название модели возд. судна...
+STR_ERROR_CAN_T_RENAME_TRAIN_TYPE                               :Невозможно изменить наименование модели локомотива/вагона...
+STR_ERROR_CAN_T_RENAME_ROAD_VEHICLE_TYPE                        :Невозможно изменить наименование модели автомобиля...
+STR_ERROR_CAN_T_RENAME_SHIP_TYPE                                :Невозможно изменить наименование модели судна...
+STR_ERROR_CAN_T_RENAME_AIRCRAFT_TYPE                            :Невозможно изменить наименование модели воздушного судна...
 
 ###length VEHICLE_TYPES
-STR_ERROR_CAN_T_SELL_TRAIN                                      :{WHITE}Невозможно продать поезд...
-STR_ERROR_CAN_T_SELL_ROAD_VEHICLE                               :{WHITE}Невозможно продать автомобиль...
-STR_ERROR_CAN_T_SELL_SHIP                                       :{WHITE}Невозможно продать судно...
-STR_ERROR_CAN_T_SELL_AIRCRAFT                                   :{WHITE}Невозможно продать воздушное судно...
+STR_ERROR_CAN_T_SELL_TRAIN                                      :Невозможно продать поезд...
+STR_ERROR_CAN_T_SELL_ROAD_VEHICLE                               :Невозможно продать автомобиль...
+STR_ERROR_CAN_T_SELL_SHIP                                       :Невозможно продать судно...
+STR_ERROR_CAN_T_SELL_AIRCRAFT                                   :Невозможно продать воздушное судно...
 
 ###length VEHICLE_TYPES
-STR_ERROR_CAN_T_SELL_ALL_TRAIN                                  :{WHITE}Невозможно продать весь железнодорожный транспорт...
-STR_ERROR_CAN_T_SELL_ALL_ROAD_VEHICLE                           :{WHITE}Невозможно продать все автомобили...
-STR_ERROR_CAN_T_SELL_ALL_SHIP                                   :{WHITE}Невозможно продать все суда...
-STR_ERROR_CAN_T_SELL_ALL_AIRCRAFT                               :{WHITE}Невозможно продать все воздушные суда...
+STR_ERROR_CAN_T_SELL_ALL_TRAIN                                  :Невозможно продать весь железнодорожный транспорт...
+STR_ERROR_CAN_T_SELL_ALL_ROAD_VEHICLE                           :Невозможно продать все автомобили...
+STR_ERROR_CAN_T_SELL_ALL_SHIP                                   :Невозможно продать все суда...
+STR_ERROR_CAN_T_SELL_ALL_AIRCRAFT                               :Невозможно продать все воздушные суда...
 
 ###length VEHICLE_TYPES
-STR_ERROR_CAN_T_AUTOREPLACE_TRAIN                               :{WHITE}Невозможно произвести автозамену железнодорожного транспорта...
-STR_ERROR_CAN_T_AUTOREPLACE_ROAD_VEHICLE                        :{WHITE}Невозможно произвести автозамену автомобилей...
-STR_ERROR_CAN_T_AUTOREPLACE_SHIP                                :{WHITE}Невозможно произвести автозамену судов...
-STR_ERROR_CAN_T_AUTOREPLACE_AIRCRAFT                            :{WHITE}Невозможно произвести автозамену воздушных судов...
+STR_ERROR_CAN_T_AUTOREPLACE_TRAIN                               :Невозможно произвести автозамену железнодорожного транспорта...
+STR_ERROR_CAN_T_AUTOREPLACE_ROAD_VEHICLE                        :Невозможно произвести автозамену автомобилей...
+STR_ERROR_CAN_T_AUTOREPLACE_SHIP                                :Невозможно произвести автозамену судов...
+STR_ERROR_CAN_T_AUTOREPLACE_AIRCRAFT                            :Невозможно произвести автозамену воздушных судов...
 
-STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}Слишком много транспорта в игре
-STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}Невозможно изменить частоту технического обслуживания...
+STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :в игре слишком много транспортных средств
+STR_ERROR_CAN_T_CHANGE_SERVICING                                :Невозможно изменить частоту технического обслуживания...
 
-STR_ERROR_VEHICLE_IS_DESTROYED                                  :{WHITE}... транспортное средство уничтожено
+STR_ERROR_VEHICLE_IS_DESTROYED                                  :транспортное средство уничтожено
 
-STR_ERROR_CAN_T_CLONE_VEHICLE_LIST                              :{WHITE}... не все транспортные средства идентичны друг другу
+STR_ERROR_CAN_T_CLONE_VEHICLE_LIST                              :не все транспортные средства идентичны друг другу
 
-STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL                          :{WHITE}Все транспортные средства будут недоступны
-STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL_EXPLANATION              :{WHITE}Измените конфигурацию модуля NewGRF
-STR_ERROR_NO_VEHICLES_AVAILABLE_YET                             :{WHITE}Нет доступных транспортных средств
-STR_ERROR_NO_VEHICLES_AVAILABLE_YET_EXPLANATION                 :{WHITE}Установите дату начала игры не ранее {DATE_SHORT} или установите модуль NewGRF, добавляющий транспортные средства, использовавшиеся в это время.
+STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL                          :Доступных транспортных средств не будет
+STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL_EXPLANATION              :Измените настройки модуля NewGRF
+STR_ERROR_NO_VEHICLES_AVAILABLE_YET                             :Доступных транспортных средств пока ещё нет
+STR_ERROR_NO_VEHICLES_AVAILABLE_YET_EXPLANATION                 :Установите дату начала игры не ранее {DATE_SHORT} или установите модуль NewGRF, добавляющий транспортные средства, использовавшиеся в это время.
 
-STR_ERROR_NO_TOWN_ROADTYPES_AVAILABLE_AT_ALL                    :{WHITE}Отсутствуют типы дорог, которые могла бы прокладывать городская администрация
-STR_ERROR_NO_TOWN_ROADTYPES_AVAILABLE_AT_ALL_EXPLANATION        :{WHITE}Измените конфигурацию установленных модулей NewGRF
-STR_ERROR_NO_TOWN_ROADTYPES_AVAILABLE_YET                       :{WHITE}Пока что отсутствуют типы дорог, которые могла бы прокладывать городская администрация
-STR_ERROR_NO_TOWN_ROADTYPES_AVAILABLE_YET_EXPLANATION           :{WHITE}Установите дату начала игры не ранее {DATE_SHORT} или установите модуль NewGRF, добавляющий типы дорог, которые будут доступны для строительства на выбранную вами дату.
+STR_ERROR_NO_TOWN_ROADTYPES_AVAILABLE_AT_ALL                    :Отсутствуют типы дорог, которые могла бы прокладывать городская администрация
+STR_ERROR_NO_TOWN_ROADTYPES_AVAILABLE_AT_ALL_EXPLANATION        :Измените настройки установленных модулей NewGRF
+STR_ERROR_NO_TOWN_ROADTYPES_AVAILABLE_YET                       :Пока что отсутствуют типы дорог, которые могла бы прокладывать городская администрация
+STR_ERROR_NO_TOWN_ROADTYPES_AVAILABLE_YET_EXPLANATION           :Установите дату начала игры не ранее {DATE_SHORT} или установите модуль NewGRF, добавляющий типы дорог, доступные для строительства на выбранную вами дату.
 
 # Specific vehicle errors
-STR_ERROR_CAN_T_MAKE_TRAIN_PASS_SIGNAL                          :{WHITE}Невозможно игнорировать светофор. Опасно...
-STR_ERROR_CAN_T_REVERSE_DIRECTION_TRAIN                         :{WHITE}Невозможно развернуть поезд...
-STR_ERROR_TRAIN_START_NO_POWER                                  :У поезда нет тяги
+STR_ERROR_CAN_T_MAKE_TRAIN_PASS_SIGNAL                          :Невозможно игнорировать сигнал светофора. Опасно!
+STR_ERROR_CAN_T_REVERSE_DIRECTION_TRAIN                         :Невозможно развернуть поезд...
+STR_ERROR_TRAIN_START_NO_POWER                                  :у поезда нет тяги
 
-STR_ERROR_CAN_T_MAKE_ROAD_VEHICLE_TURN                          :{WHITE}Невозможно развернуть автомобиль...
+STR_ERROR_CAN_T_MAKE_ROAD_VEHICLE_TURN                          :Невозможно развернуть автомобиль...
 
-STR_ERROR_AIRCRAFT_IS_IN_FLIGHT                                 :{WHITE}Самолёт в воздухе
+STR_ERROR_AIRCRAFT_IS_IN_FLIGHT                                 :воздушное судно в полёте
 
 # Order related errors
-STR_ERROR_NO_MORE_SPACE_FOR_ORDERS                              :{WHITE}Список заданий заполнен
-STR_ERROR_TOO_MANY_ORDERS                                       :{WHITE}Слишком много заданий
-STR_ERROR_CAN_T_INSERT_NEW_ORDER                                :{WHITE}Невозможно вставить новое задание...
-STR_ERROR_CAN_T_DELETE_THIS_ORDER                               :{WHITE}Невозможно удалить это задание...
-STR_ERROR_CAN_T_MODIFY_THIS_ORDER                               :{WHITE}Невозможно изменить это задание...
-STR_ERROR_CAN_T_MOVE_THIS_ORDER                                 :{WHITE}Невозможно переместить это задание...
-STR_ERROR_CAN_T_SKIP_ORDER                                      :{WHITE}Невозможно пропустить текущее задание...
-STR_ERROR_CAN_T_SKIP_TO_ORDER                                   :{WHITE}Невозможно перейти к выделенному заданию...
-STR_ERROR_CAN_T_COPY_SHARE_ORDER                                :{WHITE}... ТС не может достигнуть всех станций
-STR_ERROR_CAN_T_ADD_ORDER                                       :{WHITE}... ТС не может достигнуть этой станции
-STR_ERROR_CAN_T_ADD_ORDER_SHARED                                :{WHITE}... ТС с общим маршрутом не может достигнуть этой станции
-STR_ERROR_CAN_T_COPY_ORDER_VEHICLE_LIST                         :{WHITE}... не у всех ТС одинаковый маршрут
-STR_ERROR_CAN_T_SHARE_ORDER_VEHICLE_LIST                        :{WHITE}... не у всех ТС одинаковый общий маршрут
+STR_ERROR_NO_MORE_SPACE_FOR_ORDERS                              :список заданий заполнен
+STR_ERROR_TOO_MANY_ORDERS                                       :слишком много заданий
+STR_ERROR_CAN_T_INSERT_NEW_ORDER                                :Невозможно вставить новое задание...
+STR_ERROR_CAN_T_DELETE_THIS_ORDER                               :Невозможно удалить это задание...
+STR_ERROR_CAN_T_MODIFY_THIS_ORDER                               :Невозможно изменить это задание...
+STR_ERROR_CAN_T_MOVE_THIS_ORDER                                 :Невозможно переместить это задание...
+STR_ERROR_CAN_T_SKIP_ORDER                                      :Невозможно пропустить текущее задание...
+STR_ERROR_CAN_T_SKIP_TO_ORDER                                   :Невозможно перейти к выделенному заданию...
+STR_ERROR_CAN_T_COPY_SHARE_ORDER                                :транспортное средство не сможет достигнуть всех станций
+STR_ERROR_CAN_T_ADD_ORDER                                       :транспортное средство не сможет достигнуть этой станции
+STR_ERROR_CAN_T_ADD_ORDER_SHARED                                :транспортное средство с общим маршрутом не сможет достигнуть этой станции
+STR_ERROR_CAN_T_COPY_ORDER_VEHICLE_LIST                         :не у всех транспортных средств одинаковый маршрут
+STR_ERROR_CAN_T_SHARE_ORDER_VEHICLE_LIST                        :не у всех транспортных средств одинаковый общий маршрут
 
-STR_ERROR_CAN_T_SHARE_ORDER_LIST                                :{WHITE}Невозможно использовать общий маршрут...
-STR_ERROR_CAN_T_STOP_SHARING_ORDER_LIST                         :{WHITE}Невозможно создать индивидуальный маршрут...
-STR_ERROR_CAN_T_COPY_ORDER_LIST                                 :{WHITE}Невозможно скопировать маршрут...
-STR_ERROR_TOO_FAR_FROM_PREVIOUS_DESTINATION                     :{WHITE}... слишком далеко от предыдущей точки
-STR_ERROR_AIRCRAFT_NOT_ENOUGH_RANGE                             :{WHITE}... дальность полёта воздушного судна недостаточна
+STR_ERROR_CAN_T_SHARE_ORDER_LIST                                :Невозможно использовать общий маршрут...
+STR_ERROR_CAN_T_STOP_SHARING_ORDER_LIST                         :Невозможно прекратить использование общего маршрута...
+STR_ERROR_CAN_T_COPY_ORDER_LIST                                 :Невозможно скопировать маршрут...
+STR_ERROR_TOO_FAR_FROM_PREVIOUS_DESTINATION                     :слишком далеко от предыдущего пункта назначения
+STR_ERROR_AIRCRAFT_NOT_ENOUGH_RANGE                             :дальность полёта воздушного судна недостаточна
 
 # Extra messages which go on the third line of errors, explaining why orders failed
-STR_ERROR_NO_RAIL_STATION                                       :{WHITE}Железнодорожные станции отсутствуют
-STR_ERROR_NO_BUS_STATION                                        :{WHITE}Автобусные остановки отсутствуют
-STR_ERROR_NO_TRUCK_STATION                                      :{WHITE}Грузовые терминалы отсутствуют
-STR_ERROR_NO_DOCK                                               :{WHITE}Пристани отсутствуют
-STR_ERROR_NO_AIRPORT                                            :{WHITE}Аэропорты и вертолётные площадки отсутствуют
-STR_ERROR_NO_STOP_COMPATIBLE_ROAD_TYPE                          :{WHITE}Отсутствуют остановки с подходящим типом дороги
-STR_ERROR_NO_STOP_COMPATIBLE_TRAM_TYPE                          :{WHITE}Отсутствуют остановки с подходящим типом трамвайных путей
-STR_ERROR_NO_STOP_ARTICULATED_VEHICLE                           :{WHITE}Отсутствуют остановки, способные обслуживать сочленённые транспортные средства.{}Для такого транспорта требуются сквозные остановки; оконечные не подходят.
-STR_ERROR_AIRPORT_NO_PLANES                                     :{WHITE}Этот самолёт не может приземлиться на вертолётной площадке
-STR_ERROR_AIRPORT_NO_HELICOPTERS                                :{WHITE}Этот вертолёт не может приземлиться в данном аэропорту
-STR_ERROR_NO_RAIL_WAYPOINT                                      :{WHITE}Маршрутные точки отсутствуют
-STR_ERROR_NO_ROAD_WAYPOINT                                      :{WHITE}Маршрутные точки отсутствуют
-STR_ERROR_NO_BUOY                                               :{WHITE}Буи отсутствуют
+STR_ERROR_NO_RAIL_STATION                                       :Железнодорожные станции отсутствуют
+STR_ERROR_NO_BUS_STATION                                        :Автобусные остановки отсутствуют
+STR_ERROR_NO_TRUCK_STATION                                      :Грузовые терминалы отсутствуют
+STR_ERROR_NO_DOCK                                               :Пристани отсутствуют
+STR_ERROR_NO_AIRPORT                                            :Аэропорты и вертолётные площадки отсутствуют
+STR_ERROR_NO_STOP_COMPATIBLE_ROAD_TYPE                          :Отсутствуют остановки с подходящим типом дороги
+STR_ERROR_NO_STOP_COMPATIBLE_TRAM_TYPE                          :Отсутствуют остановки с подходящим типом трамвайных путей
+STR_ERROR_NO_STOP_ARTICULATED_VEHICLE                           :Отсутствуют остановки, способные обслуживать сочленённые транспортные средства.{}Для такого транспорта требуются сквозные остановки; оконечные не подходят.
+STR_ERROR_AIRPORT_NO_PLANES                                     :Этот самолёт не может приземлиться на вертолётной площадке
+STR_ERROR_AIRPORT_NO_HELICOPTERS                                :Этот вертолёт не может приземлиться в данном аэропорту
+STR_ERROR_NO_RAIL_WAYPOINT                                      :Маршрутные точки отсутствуют
+STR_ERROR_NO_ROAD_WAYPOINT                                      :Маршрутные точки отсутствуют
+STR_ERROR_NO_BUOY                                               :Буи отсутствуют
 
 # Timetable related errors
-STR_ERROR_CAN_T_TIMETABLE_VEHICLE                               :{WHITE}Не удалось составить график движения для этого транспорта...
-STR_ERROR_TIMETABLE_ONLY_WAIT_AT_STATIONS                       :{WHITE}Транспортное средство может ожидать только на станции
-STR_ERROR_TIMETABLE_NOT_STOPPING_HERE                           :{WHITE}Это транспортное средство не останавливается на этой станции
-STR_ERROR_TIMETABLE_INCOMPLETE                                  :{WHITE}... график движения неполный
-STR_ERROR_TIMETABLE_NOT_STARTED                                 :{WHITE}... график движения не установлен
+STR_ERROR_CAN_T_TIMETABLE_VEHICLE                               :Не удалось составить график движения этого транспортного средства...
+STR_ERROR_TIMETABLE_ONLY_WAIT_AT_STATIONS                       :транспортные средства могут ожидать только на станциях
+STR_ERROR_TIMETABLE_NOT_STOPPING_HERE                           :Это транспортное средство не останавливается на этой станции
+STR_ERROR_TIMETABLE_INCOMPLETE                                  :график движения неполный
+STR_ERROR_TIMETABLE_NOT_STARTED                                 :график движения не установлен
 
 # Sign related errors
-STR_ERROR_TOO_MANY_SIGNS                                        :{WHITE}... слишком много табличек
-STR_ERROR_CAN_T_PLACE_SIGN_HERE                                 :{WHITE}Не удалось поставить табличку...
-STR_ERROR_CAN_T_CHANGE_SIGN_NAME                                :{WHITE}Не удалось изменить табличку...
-STR_ERROR_CAN_T_DELETE_SIGN                                     :{WHITE}Не удалось удалить табличку...
+STR_ERROR_TOO_MANY_SIGNS                                        :слишком много табличек
+STR_ERROR_CAN_T_PLACE_SIGN_HERE                                 :Не удалось поставить табличку...
+STR_ERROR_CAN_T_CHANGE_SIGN_NAME                                :Не удалось изменить табличку...
+STR_ERROR_CAN_T_DELETE_SIGN                                     :Невозможно убрать табличку...
 
 # Translatable comment for OpenTTD's desktop shortcut
 ###external 1
@@ -6229,7 +6324,8 @@ STR_LORRY                                                       :{BLACK}{LORRY}
 STR_PLANE                                                       :{BLACK}{PLANE}
 STR_SHIP                                                        :{BLACK}{SHIP}
 
-STR_TOOLBAR_RAILTYPE_VELOCITY                                   :{STRING} ({VELOCITY})
+STR_TOOLBAR_RAILTYPE_VELOCITY                                   :{STRING} {YELLOW}({VELOCITY})
+STR_TOOLBAR_ROADTYPE_VELOCITY                                   :{STRING} {YELLOW}({VELOCITY})
 
 STR_BADGE_NAME_LIST                                             :{STRING}: {GOLD}{STRING}
 STR_BADGE_CONFIG_MENU_TOOLTIP                                   :Открыть настройки значков
@@ -6239,7 +6335,6 @@ STR_BADGE_CONFIG_FILTERS                                        :{WHITE}Филь
 STR_BADGE_CONFIG_PREVIEW                                        :Предпросмотр
 STR_BADGE_CONFIG_NAME                                           :Название
 STR_BADGE_FILTER_ANY_LABEL                                      :Любой {STRING}
-STR_BADGE_FILTER_IS_LABEL										:{STRING} равен {STRING}
 
 
 ### ----------------- CityMania fork strings ------------------

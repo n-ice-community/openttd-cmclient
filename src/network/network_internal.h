@@ -10,13 +10,11 @@
 #ifndef NETWORK_INTERNAL_H
 #define NETWORK_INTERNAL_H
 
-#include "network_func.h"
 #include "core/tcp_coordinator.h"
 #include "core/tcp_game.h"
 
 #include "../command_type.h"
-#include "../command_func.h"
-#include "../misc/endian_buffer.hpp"
+#include "../gfx_type.h"
 #include "../strings_type.h"
 
 #ifdef RANDOM_DEBUG
@@ -38,19 +36,18 @@
 #define NETWORK_SEND_DOUBLE_SEED
 #endif /* RANDOM_DEBUG */
 
-typedef class ServerNetworkGameSocketHandler NetworkClientSocket;
+using NetworkClientSocket = class ServerNetworkGameSocketHandler; ///< @copydoc ServerNetworkGameSocketHandler
 
 /** Status of the clients during joining. */
-enum NetworkJoinStatus : uint8_t {
-	NETWORK_JOIN_STATUS_CONNECTING,
-	NETWORK_JOIN_STATUS_AUTHORIZING,
-	NETWORK_JOIN_STATUS_WAITING,
-	NETWORK_JOIN_STATUS_DOWNLOADING,
-	NETWORK_JOIN_STATUS_PROCESSING,
-	NETWORK_JOIN_STATUS_REGISTERING,
+enum class NetworkJoinStatus : uint8_t {
+	Connecting, ///< Opening the connection to the server.
+	Authorizing, ///< Starting authorizing the client to join the game and optionally company.
+	Waiting, ///< Waiting for other clients to finish downloading the map.
+	Downloading, ///< Downloading the map from the server.
+	Processing, ///< Loading the savegame.
+	Registering, ///< Creating a new company.
 
-	NETWORK_JOIN_STATUS_GETTING_COMPANY_INFO,
-	NETWORK_JOIN_STATUS_END,
+	End, ///< Sentinel for end-of-enumeration.
 };
 
 extern uint32_t _frame_counter_server; // The frame_counter of the server, if in network-mode
@@ -110,7 +107,7 @@ void NetworkSyncCommandQueue(NetworkClientSocket *cs);
 void NetworkReplaceCommandClientId(CommandPacket &cp, ClientID client_id);
 
 void ShowNetworkError(StringID error_string);
-void NetworkTextMessage(NetworkAction action, TextColour colour, bool self_send, std::string_view name, std::string_view str = {}, StringParameter &&data = {});
+void NetworkTextMessage(NetworkAction action, ExtendedTextColour colour, bool self_send, std::string_view name, std::string_view str = {}, StringParameter &&data = {});
 uint NetworkCalculateLag(const NetworkClientSocket *cs);
 StringID GetNetworkErrorMsg(NetworkErrorCode err);
 bool NetworkMakeClientNameUnique(std::string &new_name);

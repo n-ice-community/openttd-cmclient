@@ -5,7 +5,7 @@ if(NOT BINARY_NAME)
 endif()
 
 project(${BINARY_NAME}
-    VERSION 15.3
+    VERSION 16.0
     LANGUAGES CXX
 )
 
@@ -76,6 +76,10 @@ add_custom_target(find_version
                 -DREV_MAJOR=${PROJECT_VERSION_MAJOR}
                 -DREV_MINOR=${PROJECT_VERSION_MINOR}
                 -DWINDOWS=${WIN32}
+                -DDOXYGEN_WARN_FORMAT_LINE=${DOXYGEN_WARN_FORMAT_LINE}
+                -DDOXYGEN_WARN_FILE=${DOXYGEN_WARN_FILE}
+                -DDOXYGEN_GS_WARN_FILE=${DOXYGEN_GS_WARN_FILE}
+                -DDOXYGEN_AI_WARN_FILE=${DOXYGEN_AI_WARN_FILE}
                 -P "${CMAKE_SOURCE_DIR}/cmake/scripts/FindVersion.cmake"
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
         BYPRODUCTS ${GENERATED_SOURCE_FILES}
@@ -121,7 +125,6 @@ find_package(Threads REQUIRED)
 find_package(ZLIB)
 find_package(LibLZMA)
 find_package(LZO)
-find_package(ZSTD)
 find_package(PNG)
 
 if(WIN32 OR EMSCRIPTEN)
@@ -154,6 +157,7 @@ if(NOT OPTION_DEDICATED)
         endif()
     endif()
     find_package(OpusFile)
+    find_package(Soxr)
 endif()
 if(APPLE)
     enable_language(OBJCXX)
@@ -187,7 +191,7 @@ if(UNIX AND NOT APPLE AND NOT OPTION_DEDICATED)
     if(NOT SDL2_FOUND AND NOT ALLEGRO_FOUND)
         message(FATAL_ERROR "SDL2 or Allegro is required for this platform")
     endif()
-    if(HARFBUZZ_FOUND AND NOT ICU_i18n_FOUND)
+    if(HARFBUZZ_FOUND AND NOT ICU_I18N_FOUND)
         message(WARNING "HarfBuzz depends on ICU i18n to function; HarfBuzz will be disabled")
     endif()
     if(NOT HARFBUZZ_FOUND)
@@ -308,7 +312,6 @@ link_package(PNG TARGET PNG::PNG ENCOURAGED)
 link_package(ZLIB TARGET ZLIB::ZLIB ENCOURAGED)
 link_package(LIBLZMA TARGET LibLZMA::LibLZMA ENCOURAGED)
 link_package(LZO)
-link_package(ZSTD TARGET ZSTD::ZSTD ENCOURAGED)
 
 if(NOT WIN32 AND NOT EMSCRIPTEN)
     link_package(CURL ENCOURAGED)
@@ -326,9 +329,10 @@ if(NOT OPTION_DEDICATED)
     link_package(FREETYPE TARGET Freetype::Freetype)
     link_package(Fontconfig TARGET Fontconfig::Fontconfig)
     link_package(Harfbuzz TARGET harfbuzz::harfbuzz)
-    link_package(ICU_i18n)
-    link_package(ICU_uc)
+    link_package(ICU_I18N TARGET ICU::i18n)
+    link_package(ICU_UC TARGET ICU::uc)
     link_package(OpusFile TARGET OpusFile::opusfile)
+    link_package(Soxr TARGET Soxr::soxr)
 
     if(SDL2_FOUND AND OPENGL_FOUND AND UNIX)
         # SDL2 dynamically loads OpenGL if needed, so do not link to OpenGL when
@@ -369,7 +373,7 @@ if(EMSCRIPTEN)
     add_definitions(-s DISABLE_EXCEPTION_CATCHING=0)
 
     # Export functions to Javascript.
-    target_link_libraries(WASM::WASM INTERFACE "-s EXPORTED_FUNCTIONS='[\"_main\", \"_em_openttd_add_server\"]' -s EXPORTED_RUNTIME_METHODS='[\"cwrap\"]'")
+    target_link_libraries(WASM::WASM INTERFACE "-s EXPORTED_FUNCTIONS='[\"_main\", \"_em_openttd_add_server\"]' -s EXPORTED_RUNTIME_METHODS='[\"cwrap\", \"HEAPU8\"]'")
 
     # Preload all the files we generate during build.
     # As we do not compile with FreeType / FontConfig, we also have no way to

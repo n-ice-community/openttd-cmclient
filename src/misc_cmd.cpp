@@ -8,8 +8,8 @@
 /** @file misc_cmd.cpp Some misc functions that are better fitted in other files, but never got moved there... */
 
 #include "stdafx.h"
+#include "openttd.h"
 #include "command_func.h"
-#include "economy_func.h"
 #include "window_func.h"
 #include "textbuf_gui.h"
 #include "network/network.h"
@@ -20,8 +20,8 @@
 #include "company_base.h"
 #include "tile_map.h"
 #include "texteff.hpp"
-#include "core/backup_type.hpp"
 #include "misc_cmd.h"
+#include "video/video_driver.hpp"
 
 #include "table/strings.h"
 
@@ -70,7 +70,7 @@ CommandCost CmdIncreaseLoan(DoCommandFlags flags, LoanCommand cmd, Money amount)
 		InvalidateCompanyWindows(c);
 	}
 
-	return CommandCost(EXPENSES_OTHER);
+	return CommandCost(ExpensesType::Other);
 }
 
 /**
@@ -118,6 +118,7 @@ CommandCost CmdDecreaseLoan(DoCommandFlags flags, LoanCommand cmd, Money amount)
 
 /**
  * Sets the max loan amount of your company. Does not respect the global loan setting.
+ * @param flags Flags whether to test or execute this command.
  * @param company the company ID.
  * @param amount the new max loan amount, will be rounded down to the multitude of LOAN_INTERVAL. If set to COMPANY_MAX_LOAN_DEFAULT reset the max loan to default(global) value.
  * @return zero cost or an error
@@ -150,7 +151,7 @@ CommandCost CmdSetCompanyMaxLoan(DoCommandFlags flags, CompanyID company, Money 
 static void AskUnsafeUnpauseCallback(Window *, bool confirmed)
 {
 	if (confirmed) {
-		Command<CMD_PAUSE>::Post(PauseMode::Error, false);
+		Command<Commands::Pause>::Post(PauseMode::Error, false);
 	}
 }
 
@@ -204,10 +205,13 @@ CommandCost CmdPause(DoCommandFlags flags, PauseMode mode, bool pause)
 			}
 
 			NetworkHandlePauseChange(prev_mode, mode);
+
+			/* Screensaver should always be inhibited unless we're paused. */
+			VideoDriver::GetInstance()->SetScreensaverInhibited(_pause_mode.None());
 		}
 
-		SetWindowDirty(WC_STATUS_BAR, 0);
-		SetWindowDirty(WC_MAIN_TOOLBAR, 0);
+		SetWindowDirty(WindowClass::Statusbar, 0);
+		SetWindowDirty(WindowClass::MainToolbar, 0);
 	}
 	return CommandCost();
 }
@@ -219,7 +223,7 @@ CommandCost CmdPause(DoCommandFlags flags, PauseMode mode, bool pause)
  */
 CommandCost CmdMoneyCheat(DoCommandFlags, Money amount)
 {
-	return CommandCost(EXPENSES_OTHER, -amount);
+	return CommandCost(ExpensesType::Other, -amount);
 }
 
 /**
@@ -234,14 +238,12 @@ CommandCost CmdMoneyCheat(DoCommandFlags, Money amount)
 CommandCost CmdChangeBankBalance(DoCommandFlags flags, TileIndex tile, Money delta, CompanyID company, ExpensesType expenses_type)
 {
 	if (!Company::IsValidID(company)) return CMD_ERROR;
-	if (expenses_type >= EXPENSES_END) return CMD_ERROR;
+	if (expenses_type >= ExpensesType::End) return CMD_ERROR;
 	if (_current_company != OWNER_DEITY) return CMD_ERROR;
 
 	if (flags.Test(DoCommandFlag::Execute)) {
 		/* Change company bank balance of company. */
-		Backup<CompanyID> cur_company(_current_company, company);
-		SubtractMoneyFromCompany(CommandCost(expenses_type, -delta));
-		cur_company.Restore();
+		SubtractMoneyFromCompany(company, CommandCost(expenses_type, -delta));
 
 		if (tile != 0) {
 			ShowCostOrIncomeAnimation(TileX(tile) * TILE_SIZE, TileY(tile) * TILE_SIZE, GetTilePixelZ(tile), -delta);

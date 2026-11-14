@@ -5,7 +5,7 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <https://www.gnu.org/licenses/old-licenses/gpl-2.0>.
  */
 
-/** @file fileio_func.h Functions for Standard In/Out file operations */
+/** @file fileio_func.h Functions for standard in/out file operations. */
 
 #ifndef FILEIO_FUNC_H
 #define FILEIO_FUNC_H
@@ -36,9 +36,9 @@ extern std::vector<Searchpath> _valid_searchpaths;
 /** Helper for scanning for files with a given name */
 class FileScanner {
 protected:
-	Subdirectory subdir; ///< The current sub directory we are searching through
+	Subdirectory subdir{}; ///< The current sub directory we are searching through
 public:
-	/** Destruct the proper one... */
+	/** Ensure the destructor of the sub classes are called as well. */
 	virtual ~FileScanner() = default;
 
 	uint Scan(std::string_view extension, Subdirectory sd, bool tars = true, bool recursive = true);
@@ -67,6 +67,8 @@ public:
 		Scenario, ///< Scan for scenarios and heightmaps.
 		Game, ///< Scan for game scripts.
 	};
+
+	/** Bitset of \c Mode elements. */
 	using Modes = EnumBitSet<Mode, uint8_t>;
 
 	static constexpr Modes MODES_ALL = {Mode::Baseset, Mode::NewGRF, Mode::AI, Mode::Scenario, Mode::Game}; ///< Scan for everything.

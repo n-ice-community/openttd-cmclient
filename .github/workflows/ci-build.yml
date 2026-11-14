@@ -106,4 +106,8 @@ jobs:
 
     steps:
     - name: Check annotations
+<<<<<<< HEAD
       uses: OpenTTD/actions/annotation-check@v6
+=======
+      uses: OpenTTD/actions/annotation-check@v7
+>>>>>>> source/release/16

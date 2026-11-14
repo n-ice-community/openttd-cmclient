@@ -11,15 +11,15 @@
 #define STRINGS_TYPE_H
 
 #include "core/convertible_through_base.hpp"
+#include "core/enum_type.hpp"
 #include "core/strong_typedef_type.hpp"
 
 /**
  * Numeric value that represents a string, independent of the selected language.
  */
-typedef uint32_t StringID;
-static const StringID INVALID_STRING_ID = 0xFFFF; ///< Constant representing an invalid string (16bit in case it is used in savegames)
+using StringID = StrongType::Typedef<uint32_t, struct StringIDTag, StrongType::Compare, StrongType::Integer>;
+static constexpr StringID INVALID_STRING_ID{0xFFFF}; ///< Constant representing an invalid string (16bit in case it is used in savegames)
 static const int MAX_CHAR_LENGTH        = 4;      ///< Max. length of UTF-8 encoded unicode character
-static const uint MAX_LANG              = 0x7F;   ///< Maximum number of languages supported by the game, and the NewGRF specs
 
 /** Directions a text can go to */
 enum TextDirection : uint8_t {
@@ -58,19 +58,19 @@ static const uint TAB_SIZE_GAMESCRIPT = TAB_SIZE * 32;
 static const uint TAB_SIZE_NEWGRF     = TAB_SIZE * 256;
 
 /** The number of builtin generators for town names. */
-static constexpr uint32_t BUILTIN_TOWNNAME_GENERATOR_COUNT = 21;
+static constexpr uint16_t BUILTIN_TOWNNAME_GENERATOR_COUNT = 21;
 
 /** Special strings for town names. The town name is generated dynamically on request. */
-static constexpr StringID SPECSTR_TOWNNAME_START = 0x20C0;
-static constexpr StringID SPECSTR_TOWNNAME_END = SPECSTR_TOWNNAME_START + BUILTIN_TOWNNAME_GENERATOR_COUNT;
+static constexpr uint16_t SPECSTR_TOWNNAME_START = 0x20C0;
+static constexpr uint16_t SPECSTR_TOWNNAME_END = SPECSTR_TOWNNAME_START + BUILTIN_TOWNNAME_GENERATOR_COUNT;
 
 /** Special strings for company names on the form "TownName transport". */
-static constexpr StringID SPECSTR_COMPANY_NAME_START = 0x70EA;
-static constexpr StringID SPECSTR_COMPANY_NAME_END = SPECSTR_COMPANY_NAME_START + BUILTIN_TOWNNAME_GENERATOR_COUNT;
+static constexpr StringID SPECSTR_COMPANY_NAME_START{0x70EA};
+static constexpr StringID SPECSTR_COMPANY_NAME_END{SPECSTR_COMPANY_NAME_START + BUILTIN_TOWNNAME_GENERATOR_COUNT};
 
-static constexpr StringID SPECSTR_SILLY_NAME = 0x70E5; ///< Special string for silly company names.
-static constexpr StringID SPECSTR_ANDCO_NAME = 0x70E6; ///< Special string for Surname & Co company names.
-static constexpr StringID SPECSTR_PRESIDENT_NAME = 0x70E7; ///< Special string for the president's name.
+static constexpr StringID SPECSTR_SILLY_NAME{0x70E5}; ///< Special string for silly company names.
+static constexpr StringID SPECSTR_ANDCO_NAME{0x70E6}; ///< Special string for Surname & Co company names.
+static constexpr StringID SPECSTR_PRESIDENT_NAME{0x70E7}; ///< Special string for the president's name.
 
 using StringParameterData = std::variant<std::monostate, uint64_t, std::string>;
 
@@ -90,6 +90,14 @@ struct StringParameter {
 	inline StringParameter(const std::string &data) : data(data), type(0) {}
 
 	inline StringParameter(const ConvertibleThroughBase auto &data) : data(static_cast<uint64_t>(data.base())), type(0) {}
+
+	/**
+	 * Create a StringParameter from a scoped enum.
+	 * @tparam T the type of the scoped enum.
+	 * @param data the scoped enum value.
+	 */
+	template <typename T> requires is_scoped_enum_v<T>
+	inline StringParameter(const T &data) : data(static_cast<uint64_t>(to_underlying(data))), type(0) {}
 };
 
 /**

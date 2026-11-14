@@ -5,16 +5,12 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <https://www.gnu.org/licenses/old-licenses/gpl-2.0>.
  */
 
-/**
- * @file http.h Basic functions to send and receive HTTP packets.
- */
+/** @file http.h Basic functions to send and receive HTTP packets. */
 
 #ifndef NETWORK_CORE_HTTP_H
 #define NETWORK_CORE_HTTP_H
 
-#include "tcp.h"
-
-constexpr int HTTP_429_TOO_MANY_REQUESTS = 429;
+constexpr int HTTP_429_TOO_MANY_REQUESTS = 429; ///< HTTP error code for when the client is doing too many requests.
 
 /** Callback for when the HTTP handler has something to tell us. */
 struct HTTPCallback {
@@ -41,7 +37,7 @@ struct HTTPCallback {
 	 */
 	virtual bool IsCancelled() const = 0;
 
-	/** Silentium */
+	/** Ensure the destructor of the sub classes are called as well. */
 	virtual ~HTTPCallback() = default;
 };
 

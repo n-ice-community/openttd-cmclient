@@ -16,6 +16,7 @@
 #include "../rail.h"
 #include "../road.h"
 #include "../settings_type.h"
+#include "../string_func.h"
 #include "newgrf_bytereader.h"
 #include "newgrf_internal.h"
 
@@ -23,6 +24,21 @@
 
 /** 32 * 8 = 256 flags. Apparently TTDPatch uses this many.. */
 static std::array<uint32_t, 8> _ttdpatch_flags;
+
+/**
+ * Checks whether the train signals are on the same side as the road vehicles are driving.
+ * This is a flag that can be checked by NewGRFs (TTDPatchFlags bit 0x3B).
+ * @return \c true iff the road vehicles drive on the same side as signals are drawn.
+ */
+static bool IsSignalSideOnTrafficSide()
+{
+	switch (_settings_game.construction.train_signal_side) {
+		case TrainSignalSide::RoadVehicleDrivingSide: return true;
+		case TrainSignalSide::Left: return _settings_game.vehicle.road_side == RoadVehicleDrivingSide::Left;
+		case TrainSignalSide::Right: return _settings_game.vehicle.road_side == RoadVehicleDrivingSide::Right;
+		default: NOT_REACHED();
+	}
+}
 
 /** Initialize the TTDPatch flags */
 void InitializePatchFlags()
@@ -52,7 +68,7 @@ void InitializePatchFlags()
 	                   |                                                       (1U << 0x18)  // newrvs
 	                   |                                                       (1U << 0x19)  // newships
 	                   |                                                       (1U << 0x1A)  // newplanes
-	                   | ((_settings_game.construction.train_signal_side == 1 ? 1U : 0U) << 0x1B)  // signalsontrafficside
+	                   |                  ((IsSignalSideOnTrafficSide() ? 1U : 0U) << 0x1B)  // signalsontrafficside
 	                   |       ((_settings_game.vehicle.disable_elrails ? 0U : 1U) << 0x1C); // electrifiedrailway
 
 	_ttdpatch_flags[2] =                                                       (1U << 0x01)  // loadallgraphics - obsolete
@@ -125,9 +141,9 @@ uint32_t GetParamVal(uint8_t param, uint32_t *cond_val)
 		case 0x84: { // GRF loading stage
 			uint32_t res = 0;
 
-			if (_cur_gps.stage > GLS_INIT) SetBit(res, 0);
-			if (_cur_gps.stage == GLS_RESERVE) SetBit(res, 8);
-			if (_cur_gps.stage == GLS_ACTIVATION) SetBit(res, 9);
+			if (_cur_gps.stage > GrfLoadingStage::Init) SetBit(res, 0);
+			if (_cur_gps.stage == GrfLoadingStage::Reserve) SetBit(res, 8);
+			if (_cur_gps.stage == GrfLoadingStage::Activation) SetBit(res, 9);
 			return res;
 		}
 
@@ -152,7 +168,7 @@ uint32_t GetParamVal(uint8_t param, uint32_t *cond_val)
 			if (param < 0x80) return _cur_gps.grffile->GetParam(param);
 
 			/* In-game variable. */
-			GrfMsg(1, "Unsupported in-game variable 0x{:02X}", param);
+			GrfMsg(Severity::Error, "Unsupported in-game variable 0x{:02X}", param);
 			return UINT_MAX;
 	}
 }
@@ -190,11 +206,11 @@ static void SkipIf(ByteReader &buf)
 	}
 
 	if (param < 0x80 && std::size(_cur_gps.grffile->param) <= param) {
-		GrfMsg(7, "SkipIf: Param {} undefined, skipping test", param);
+		GrfMsg(Severity::Trace1, "SkipIf: Param {} undefined, skipping test", param);
 		return;
 	}
 
-	GrfMsg(7, "SkipIf: Test condtype {}, param 0x{:02X}, condval 0x{:08X}", condtype, param, cond_val);
+	GrfMsg(Severity::Trace1, "SkipIf: Test condtype {}, param 0x{:02X}, condval 0x{:08X}", condtype, param, cond_val);
 
 	/* condtypes that do not use 'param' are always valid.
 	 * condtypes that use 'param' are either not valid for param 0x88, or they are only valid for param 0x88.
@@ -202,40 +218,41 @@ static void SkipIf(ByteReader &buf)
 	if (condtype >= 0x0B) {
 		/* Tests that ignore 'param' */
 		switch (condtype) {
-			case 0x0B: result = !IsValidCargoType(GetCargoTypeByLabel(CargoLabel(std::byteswap(cond_val))));
+			case 0x0B: result = !IsValidCargoType(GetCargoTypeByLabel(UnflattenNewGRFLabel<CargoLabel>(cond_val)));
 				break;
-			case 0x0C: result = IsValidCargoType(GetCargoTypeByLabel(CargoLabel(std::byteswap(cond_val))));
+			case 0x0C: result = IsValidCargoType(GetCargoTypeByLabel(UnflattenNewGRFLabel<CargoLabel>(cond_val)));
 				break;
-			case 0x0D: result = GetRailTypeByLabel(std::byteswap(cond_val)) == INVALID_RAILTYPE;
+			case 0x0D: result = GetRailTypeByLabel(UnflattenNewGRFLabel<RailTypeLabel>(cond_val)) == INVALID_RAILTYPE;
 				break;
-			case 0x0E: result = GetRailTypeByLabel(std::byteswap(cond_val)) != INVALID_RAILTYPE;
+			case 0x0E: result = GetRailTypeByLabel(UnflattenNewGRFLabel<RailTypeLabel>(cond_val)) != INVALID_RAILTYPE;
 				break;
 			case 0x0F: {
-				RoadType rt = GetRoadTypeByLabel(std::byteswap(cond_val));
+				RoadType rt = GetRoadTypeByLabel(UnflattenNewGRFLabel<RoadTypeLabel>(cond_val));
 				result = rt == INVALID_ROADTYPE || !RoadTypeIsRoad(rt);
 				break;
 			}
 			case 0x10: {
-				RoadType rt = GetRoadTypeByLabel(std::byteswap(cond_val));
+				RoadType rt = GetRoadTypeByLabel(UnflattenNewGRFLabel<RoadTypeLabel>(cond_val));
 				result = rt != INVALID_ROADTYPE && RoadTypeIsRoad(rt);
 				break;
 			}
 			case 0x11: {
-				RoadType rt = GetRoadTypeByLabel(std::byteswap(cond_val));
+				RoadType rt = GetRoadTypeByLabel(UnflattenNewGRFLabel<RoadTypeLabel>(cond_val));
 				result = rt == INVALID_ROADTYPE || !RoadTypeIsTram(rt);
 				break;
 			}
 			case 0x12: {
-				RoadType rt = GetRoadTypeByLabel(std::byteswap(cond_val));
+				RoadType rt = GetRoadTypeByLabel(UnflattenNewGRFLabel<RoadTypeLabel>(cond_val));
 				result = rt != INVALID_ROADTYPE && RoadTypeIsTram(rt);
 				break;
 			}
-			default: GrfMsg(1, "SkipIf: Unsupported condition type {:02X}. Ignoring", condtype); return;
+			default: GrfMsg(Severity::Error, "SkipIf: Unsupported condition type {:02X}. Ignoring", condtype); return;
 		}
 	} else if (param == 0x88) {
 		/* GRF ID checks */
 
-		GRFConfig *c = GetGRFConfig(cond_val, mask);
+		GrfID grfid = UnflattenNewGRFLabel<GrfID>(cond_val);
+		GRFConfig *c = GetGRFConfig(grfid, std::byteswap(mask));
 
 		if (c != nullptr && c->flags.Test(GRFConfigFlag::Static) && !_cur_gps.grfconfig->flags.Test(GRFConfigFlag::Static) && _networking) {
 			DisableStaticNewGRFInfluencingNonStaticNewGRFs(*c);
@@ -243,34 +260,34 @@ static void SkipIf(ByteReader &buf)
 		}
 
 		if (condtype != 10 && c == nullptr) {
-			GrfMsg(7, "SkipIf: GRFID 0x{:08X} unknown, skipping test", std::byteswap(cond_val));
+			GrfMsg(Severity::Trace1, "SkipIf: GRFID {} unknown, skipping test", FormatArrayAsHex(grfid));
 			return;
 		}
 
 		switch (condtype) {
 			/* Tests 0x06 to 0x0A are only for param 0x88, GRFID checks */
 			case 0x06: // Is GRFID active?
-				result = c->status == GCS_ACTIVATED;
+				result = c->status == GRFStatus::Activated;
 				break;
 
 			case 0x07: // Is GRFID non-active?
-				result = c->status != GCS_ACTIVATED;
+				result = c->status != GRFStatus::Activated;
 				break;
 
 			case 0x08: // GRFID is not but will be active?
-				result = c->status == GCS_INITIALISED;
+				result = c->status == GRFStatus::Initialised;
 				break;
 
 			case 0x09: // GRFID is or will be active?
-				result = c->status == GCS_ACTIVATED || c->status == GCS_INITIALISED;
+				result = c->status == GRFStatus::Activated || c->status == GRFStatus::Initialised;
 				break;
 
 			case 0x0A: // GRFID is not nor will be active
 				/* This is the only condtype that doesn't get ignored if the GRFID is not found */
-				result = c == nullptr || c->status == GCS_DISABLED || c->status == GCS_NOT_FOUND;
+				result = c == nullptr || c->status == GRFStatus::Disabled || c->status == GRFStatus::NotFound;
 				break;
 
-			default: GrfMsg(1, "SkipIf: Unsupported GRF condition type {:02X}. Ignoring", condtype); return;
+			default: GrfMsg(Severity::Error, "SkipIf: Unsupported GRF condition type {:02X}. Ignoring", condtype); return;
 		}
 	} else {
 		/* Tests that use 'param' and are not GRF ID checks.  */
@@ -288,12 +305,12 @@ static void SkipIf(ByteReader &buf)
 				break;
 			case 0x05: result = (param_val & mask) > cond_val;
 				break;
-			default: GrfMsg(1, "SkipIf: Unsupported condition type {:02X}. Ignoring", condtype); return;
+			default: GrfMsg(Severity::Error, "SkipIf: Unsupported condition type {:02X}. Ignoring", condtype); return;
 		}
 	}
 
 	if (!result) {
-		GrfMsg(2, "SkipIf: Not skipping sprites, test was false");
+		GrfMsg(Severity::Warning, "SkipIf: Not skipping sprites, test was false");
 		return;
 	}
 
@@ -317,13 +334,13 @@ static void SkipIf(ByteReader &buf)
 	}
 
 	if (choice != nullptr) {
-		GrfMsg(2, "SkipIf: Jumping to label 0x{:X} at line {}, test was true", choice->label, choice->nfo_line);
+		GrfMsg(Severity::Warning, "SkipIf: Jumping to label 0x{:X} at line {}, test was true", choice->label, choice->nfo_line);
 		_cur_gps.file->SeekTo(choice->pos, SEEK_SET);
 		_cur_gps.nfo_line = choice->nfo_line;
 		return;
 	}
 
-	GrfMsg(2, "SkipIf: Skipping {} sprites, test was true", numsprites);
+	GrfMsg(Severity::Warning, "SkipIf: Skipping {} sprites, test was true", numsprites);
 	_cur_gps.skip_sprites = numsprites;
 	if (_cur_gps.skip_sprites == 0) {
 		/* Zero means there are no sprites to skip, so
@@ -332,22 +349,34 @@ static void SkipIf(ByteReader &buf)
 		_cur_gps.skip_sprites = -1;
 
 		/* If an action 8 hasn't been encountered yet, disable the grf. */
-		if (_cur_gps.grfconfig->status != (_cur_gps.stage < GLS_RESERVE ? GCS_INITIALISED : GCS_ACTIVATED)) {
+		if (_cur_gps.grfconfig->status != (_cur_gps.stage < GrfLoadingStage::Reserve ? GRFStatus::Initialised : GRFStatus::Activated)) {
 			DisableGrf();
 		}
 	}
 }
 
+/** @copybrief GrfActionHandler::FileScan */
 template <> void GrfActionHandler<0x07>::FileScan(ByteReader &) { }
+/** @copybrief GrfActionHandler::SafetyScan */
 template <> void GrfActionHandler<0x07>::SafetyScan(ByteReader &) { }
+/** @copybrief GrfActionHandler::LabelScan */
 template <> void GrfActionHandler<0x07>::LabelScan(ByteReader &) { }
+/** @copybrief GrfActionHandler::Init */
 template <> void GrfActionHandler<0x07>::Init(ByteReader &) { }
+/** @copydoc GrfActionHandler::Reserve */
 template <> void GrfActionHandler<0x07>::Reserve(ByteReader &buf) { SkipIf(buf); }
+/** @copydoc GrfActionHandler::Activation */
 template <> void GrfActionHandler<0x07>::Activation(ByteReader &buf) { SkipIf(buf); }
 
+/** @copybrief GrfActionHandler::FileScan */
 template <> void GrfActionHandler<0x09>::FileScan(ByteReader &) { }
+/** @copybrief GrfActionHandler::SafetyScan */
 template <> void GrfActionHandler<0x09>::SafetyScan(ByteReader &) { }
+/** @copybrief GrfActionHandler::LabelScan */
 template <> void GrfActionHandler<0x09>::LabelScan(ByteReader &) { }
+/** @copydoc GrfActionHandler::Init */
 template <> void GrfActionHandler<0x09>::Init(ByteReader &buf) { SkipIf(buf); }
+/** @copydoc GrfActionHandler::Reserve */
 template <> void GrfActionHandler<0x09>::Reserve(ByteReader &buf) { SkipIf(buf); }
+/** @copydoc GrfActionHandler::Activation */
 template <> void GrfActionHandler<0x09>::Activation(ByteReader &buf) { SkipIf(buf); }

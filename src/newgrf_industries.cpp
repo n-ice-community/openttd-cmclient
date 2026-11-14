@@ -38,7 +38,7 @@ IndustryTileOverrideManager _industile_mngr(NEW_INDUSTRYTILEOFFSET, NUM_INDUSTRY
  * @param grf_id The GRF of the local type.
  * @return The industry type in the global scope.
  */
-IndustryType MapNewGRFIndustryType(IndustryType grf_type, uint32_t grf_id)
+IndustryType MapNewGRFIndustryType(IndustryType grf_type, GrfID grf_id)
 {
 	if (grf_type == IT_INVALID) return IT_INVALID;
 	if (!HasBit(grf_type, 7)) return GB(grf_type, 0, 7);
@@ -54,7 +54,7 @@ IndustryType MapNewGRFIndustryType(IndustryType grf_type, uint32_t grf_id)
  * @param cur_grfid GRFID of the current callback chain
  * @return value encoded as per NFO specs
  */
-uint32_t GetIndustryIDAtOffset(TileIndex tile, const Industry *i, uint32_t cur_grfid)
+uint32_t GetIndustryIDAtOffset(TileIndex tile, const Industry *i, GrfID cur_grfid)
 {
 	if (!i->TileBelongsToIndustry(tile)) {
 		/* No industry and/or the tile does not have the same industry as the one we match it with */
@@ -128,12 +128,12 @@ static uint32_t GetCountAndDistanceOfClosestInstance(const ResolverObject &objec
 			break;
 
 		case 0xFFFFFFFF: // current grf
-			grf_id = GetIndustrySpec(current->type)->grf_prop.grfid;
+			grf_id = FlattenNewGRFLabel(GetIndustrySpec(current->type)->grf_prop.grfid);
 			[[fallthrough]];
 
 		default: // use the grfid specified in register 100h
 			SetBit(param_set_id, 7); // bit 7 means it is not an old type
-			industry_type = MapNewGRFIndustryType(param_set_id, grf_id);
+			industry_type = MapNewGRFIndustryType(param_set_id, UnflattenNewGRFLabel<GrfID>(grf_id));
 			break;
 	}
 
@@ -177,7 +177,7 @@ static uint32_t GetCountAndDistanceOfClosestInstance(const ResolverObject &objec
 			case 0x82: return this->industry->town->index.base();
 			case 0x83:
 			case 0x84:
-			case 0x85: Debug(grf, 0, "NewGRFs shouldn't be doing pointer magic"); break; // not supported
+			case 0x85: Debug(Facility::Grf, Severity::Critical, "NewGRFs shouldn't be doing pointer magic"); break; // not supported
 
 			/* Number of the layout */
 			case 0x86: return this->industry->selected_layout;
@@ -208,7 +208,7 @@ static uint32_t GetCountAndDistanceOfClosestInstance(const ResolverObject &objec
 	const IndustrySpec *indspec = GetIndustrySpec(this->type);
 
 	if (this->industry == nullptr) {
-		Debug(grf, 1, "Unhandled variable 0x{:X} (no available industry) in callback 0x{:x}", variable, this->ro.callback);
+		this->ro.UnhandledVariable(variable);
 
 		available = false;
 		return UINT_MAX;
@@ -247,7 +247,7 @@ static uint32_t GetCountAndDistanceOfClosestInstance(const ResolverObject &objec
 			const Company *c = Company::GetIfValid(this->industry->founder);
 			if (c != nullptr) {
 				is_ai = c->is_ai;
-				colours = c->GetCompanyRecolourOffset(LS_DEFAULT);
+				colours = c->GetCompanyRecolourOffset(LiveryScheme::Default);
 			}
 
 			return this->industry->founder.base() | (is_ai ? 0x10000 : 0) | (colours << 24);
@@ -364,7 +364,7 @@ static uint32_t GetCountAndDistanceOfClosestInstance(const ResolverObject &objec
 		case 0x82: return this->industry->town->index.base();
 		case 0x83:
 		case 0x84:
-		case 0x85: Debug(grf, 0, "NewGRFs shouldn't be doing pointer magic"); break; // not supported
+		case 0x85: Debug(Facility::Grf, Severity::Critical, "NewGRFs shouldn't be doing pointer magic"); break; // not supported
 		case 0x86: return this->industry->location.w;
 		case 0x87: return this->industry->location.h;// xy dimensions
 
@@ -406,14 +406,14 @@ static uint32_t GetCountAndDistanceOfClosestInstance(const ResolverObject &objec
 
 		case 0xA6: return indspec->grf_prop.local_id;
 		case 0xA7: return this->industry->founder.base();
-		case 0xA8: return this->industry->random_colour;
+		case 0xA8: return to_underlying(this->industry->random_colour);
 		case 0xA9: return ClampTo<uint8_t>(this->industry->last_prod_year - EconomyTime::ORIGINAL_BASE_YEAR);
 		case 0xAA: return this->industry->counter;
 		case 0xAB: return GB(this->industry->counter, 8, 8);
 		case 0xAC: return this->industry->was_cargo_delivered;
 
 		case 0xB0: return ClampTo<uint16_t>(this->industry->construction_date - CalendarTime::DAYS_TILL_ORIGINAL_BASE_YEAR); // Date when built since 1920 (in days)
-		case 0xB3: return this->industry->construction_type; // Construction type
+		case 0xB3: return to_underlying(this->industry->construction_type); // Construction type
 		case 0xB4: {
 			if (this->industry->accepted.empty()) return 0;
 			auto it = std::max_element(std::begin(this->industry->accepted), std::end(this->industry->accepted), [](const auto &a, const auto &b) { return a.last_accepted < b.last_accepted; });
@@ -421,7 +421,7 @@ static uint32_t GetCountAndDistanceOfClosestInstance(const ResolverObject &objec
 		}
 	}
 
-	Debug(grf, 1, "Unhandled industry variable 0x{:X}", variable);
+	this->ro.UnhandledVariable(variable);
 
 	available = false;
 	return UINT_MAX;
@@ -448,7 +448,7 @@ static uint32_t GetCountAndDistanceOfClosestInstance(const ResolverObject &objec
 		/* Create storage on first modification. */
 		const IndustrySpec *indsp = GetIndustrySpec(this->industry->type);
 		assert(PersistentStorage::CanAllocateItem());
-		this->industry->psa = new PersistentStorage(indsp->grf_prop.grfid, GSF_INDUSTRIES, this->industry->location.tile);
+		this->industry->psa = PersistentStorage::Create(indsp->grf_prop.grfid, GrfSpecFeature::Industries, this->industry->location.tile);
 	}
 
 	this->industry->psa->StoreValue(pos, value);
@@ -506,7 +506,7 @@ TownScopeResolver *IndustriesResolverObject::GetTown()
 
 GrfSpecFeature IndustriesResolverObject::GetFeature() const
 {
-	return GSF_INDUSTRIES;
+	return GrfSpecFeature::Industries;
 }
 
 uint32_t IndustriesResolverObject::GetDebugID() const
@@ -546,8 +546,7 @@ CommandCost CheckIfCallBackAllowsCreation(TileIndex tile, IndustryType type, siz
 {
 	const IndustrySpec *indspec = GetIndustrySpec(type);
 
-	Industry ind;
-	ind.index = IndustryID::Invalid();
+	Industry ind(IndustryID::Invalid());
 	ind.location.tile = tile;
 	ind.location.w = 0; // important to mark the industry invalid
 	ind.type = type;
@@ -557,7 +556,7 @@ CommandCost CheckIfCallBackAllowsCreation(TileIndex tile, IndustryType type, siz
 	ind.founder = founder;
 	ind.psa = nullptr;
 
-	IndustriesResolverObject object(tile, &ind, type, seed, CBID_INDUSTRY_LOCATION, 0, creation_type);
+	IndustriesResolverObject object(tile, &ind, type, seed, CBID_INDUSTRY_LOCATION, 0, to_underlying(creation_type));
 	std::array<int32_t, 16> regs100;
 	uint16_t result = object.ResolveCallback(regs100);
 
@@ -572,6 +571,7 @@ CommandCost CheckIfCallBackAllowsCreation(TileIndex tile, IndustryType type, siz
  * Check with callback #CBID_INDUSTRY_PROBABILITY whether the industry can be built.
  * @param type Industry type to check.
  * @param creation_type Reason to construct a new industry.
+ * @param default_prob The default probability if the NewGRF doesn't override it.
  * @return If the industry has no callback or allows building, \c true is returned. Otherwise, \c false is returned.
  */
 uint32_t GetIndustryProbabilityCallback(IndustryType type, IndustryAvailabilityCallType creation_type, uint32_t default_prob)
@@ -579,7 +579,7 @@ uint32_t GetIndustryProbabilityCallback(IndustryType type, IndustryAvailabilityC
 	const IndustrySpec *indspec = GetIndustrySpec(type);
 
 	if (indspec->callback_mask.Test(IndustryCallbackMask::Probability)) {
-		uint16_t res = GetIndustryCallback(CBID_INDUSTRY_PROBABILITY, 0, creation_type, nullptr, type, INVALID_TILE);
+		uint16_t res = GetIndustryCallback(CBID_INDUSTRY_PROBABILITY, 0, to_underlying(creation_type), nullptr, type, INVALID_TILE);
 		if (res != CALLBACK_FAILED) {
 			if (indspec->grf_prop.grffile->grf_version < 8) {
 				/* Disallow if result != 0 */
@@ -622,7 +622,7 @@ void IndustryProductionCallback(Industry *ind, int reason)
 			/* display error message */
 			ShowErrorMessage(GetEncodedString(STR_NEWGRF_BUGGY, spec->grf_prop.grffile->filename),
 				GetEncodedString(STR_NEWGRF_BUGGY_ENDLESS_PRODUCTION_CALLBACK, std::monostate{}, spec->name),
-				WL_WARNING);
+				WarningLevel::Warning);
 
 			/* abort the function early, this error isn't critical and will allow the game to continue to run */
 			break;
@@ -636,7 +636,7 @@ void IndustryProductionCallback(Industry *ind, int reason)
 			/* Result was marked invalid on load, display error message */
 			ShowErrorMessage(GetEncodedString(STR_NEWGRF_BUGGY, spec->grf_prop.grffile->filename),
 				GetEncodedString(STR_NEWGRF_BUGGY_INVALID_CARGO_PRODUCTION_CALLBACK, std::monostate{}, spec->name, ind->location.tile),
-				WL_WARNING);
+				WarningLevel::Warning);
 
 			/* abort the function early, this error isn't critical and will allow the game to continue to run */
 			break;
@@ -674,7 +674,7 @@ void IndustryProductionCallback(Industry *ind, int reason)
 		SB(object.callback_param2, 24, 8, again);
 	}
 
-	SetWindowDirty(WC_INDUSTRY_VIEW, ind->index);
+	SetWindowDirty(WindowClass::IndustryView, ind->index);
 }
 
 /**

@@ -861,6 +861,8 @@ STR_CONFIG_SETTING_REALISTIC                                    :Реален
 
 
 
+###length 3
+
 
 
 ###setting-zero-is-special
@@ -928,6 +930,8 @@ STR_CONFIG_SETTING_INFRASTRUCTURE_MAINTENANCE                   :Инфраст�
 ###setting-zero-is-special
 
 
+###setting-zero-is-special
+
 
 ###length 2
 
@@ -947,6 +951,8 @@ STR_CONFIG_SETTING_GRAPH_LINE_THICKNESS                         :Дебелин�
 
 
 
+
+###length 4
 
 ###length 4
 
@@ -1034,6 +1040,7 @@ STR_CONFIG_SETTING_SCRIPT_MAX_OPCODES                           :#ОПкодов
 ###length 3
 
 ###setting-zero-is-special
+
 
 
 
@@ -1156,7 +1163,7 @@ STR_CONFIG_ERROR_INVALID_GRF_UNKNOWN                            :непозна�
 STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_LEVEL             :{WHITE}... ниво на компресија '{STRING}' не е валидна
 STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_ALGORITHM         :{WHITE}... спаси играта формат '{STRING}' не е достапен. се врати на '{STRING}'
 
-# Video initalization errors
+# Video initialization errors
 
 # Intro window
 
@@ -1213,7 +1220,7 @@ STR_NETWORK_SERVER_LIST_MAP_SIZE_SHORT                          :{BLACK}{COMMA}x
 # Network connecting window
 
 
-###length 8
+###length 6
 
 
 
@@ -1305,6 +1312,8 @@ STR_RAIL_TOOLBAR_TOOLTIP_BUILD_AUTORAIL                         :{BLACK}Изгр
 
 
 
+
+
 # Signal window
 STR_BUILD_SIGNAL_ELECTRIC_ENTRY_TOOLTIP                         :{BLACK}Влез сигнализација (електрика){}Зелено е се додека има барем еден зелен излез-сигнал во продолжението на траката, во спротивно е црвено.
 STR_BUILD_SIGNAL_ELECTRIC_EXIT_TOOLTIP                          :{BLACK}Излез Сигнализација (електрика){}Се однесува на ист начин како блок-сигналот, но потребно е да ја има точната боја на влезен и комбо пресигнал.
@@ -1386,11 +1395,7 @@ STR_FUND_INDUSTRY_BUILD_NEW_INDUSTRY                            :{BLACK}Изгр
 # Industry cargoes window
 STR_INDUSTRY_CARGOES_INDUSTRY_CAPTION                           :{WHITE}Индустрија Верига за {STRING} индустрија
 STR_INDUSTRY_CARGOES_CARGO_CAPTION                              :{WHITE}Индустрија Верига за {STRING} товар
-STR_INDUSTRY_CARGOES_PRODUCERS                                  :{WHITE}Производство индустрии
-STR_INDUSTRY_CARGOES_CUSTOMERS                                  :{WHITE}Прифаќањето индустрии
 STR_INDUSTRY_CARGOES_HOUSES                                     :{WHITE}Имотот
-STR_INDUSTRY_CARGOES_INDUSTRY_TOOLTIP                           :{BLACK}Кликни на индустрија за да ја видите неговите добавувачи и клиенти
-STR_INDUSTRY_CARGOES_CARGO_TOOLTIP                              :{BLACK}{STRING}{}Кликни на товар да се види неговите добавувачи и клиенти
 STR_INDUSTRY_DISPLAY_CHAIN                                      :{BLACK}Прикажи синџир
 STR_INDUSTRY_DISPLAY_CHAIN_TOOLTIP                              :{BLACK}Прикажи карго снабдување и прифаќање на индустрии
 STR_INDUSTRY_CARGOES_NOTIFY_SMALLMAP                            :{BLACK}Линк кон мали сајтот
@@ -1578,6 +1583,7 @@ STR_GOALS_NONE                                                  :{ORANGE}- Ни�
 STR_GOALS_TOOLTIP_CLICK_ON_SERVICE_TO_CENTER                    :{BLACK}Кликнете на цел центар главниот приказ на индустријата / град / плочка. Ctrl + Кликнете отвора нов прозорец на индустријата / град / плочка Локација
 
 # Goal question window
+###length 4
 
 # Goal Question button list
 ###length 18
@@ -1708,6 +1714,8 @@ STR_BUY_VEHICLE_AIRCRAFT_CAPTION                                :Нов авио
 
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Опсег: {GOLD}{COMMA} плочки
 
+# Vehicle sort details
+
 ###length 3
 
 ###length VEHICLE_TYPES
@@ -1784,6 +1792,7 @@ STR_DEPOT_AIRCRAFT_LOCATION_TOOLTIP                             :{BLACK}Цент
 
 
 
+
 # Autoreplace window
 
 
@@ -1852,15 +1861,14 @@ STR_QUERY_RENAME_AIRCRAFT_CAPTION                               :{WHITE}Име �
 
 # Extra buttons for train details windows
 
+
 STR_VEHICLE_DETAILS_TRAIN_TOTAL_CAPACITY_TEXT                   :{BLACK}Вкупен капацитет на овој воз:
 STR_VEHICLE_DETAILS_TRAIN_TOTAL_CAPACITY                        :{LTBLUE}- {CARGO_LONG} ({CARGO_SHORT})
-STR_VEHICLE_DETAILS_TRAIN_TOTAL_CAPACITY_MULT                   :{LTBLUE}- {CARGO_LONG} ({CARGO_SHORT}) (x{NUM})
+
 
 
 STR_VEHICLE_DETAIL_TAB_CARGO                                    :{BLACK}Товар
 STR_VEHICLE_DETAIL_TAB_INFORMATION                              :{BLACK}Информација
-STR_VEHICLE_DETAIL_TAB_CAPACITIES                               :{BLACK}Капацитети
-STR_VEHICLE_DETAIL_TAB_TOTAL_CARGO                              :{BLACK}Вкупно Товар
 
 STR_VEHICLE_DETAILS_TRAIN_ARTICULATED_RV_CAPACITY               :{BLACK}Капацитет: {LTBLUE}{STRING}
 
@@ -1898,7 +1906,7 @@ STR_ORDER_INDEX                                                 :{COMMA}:{NBSP}
 
 
 # Conditional order variables, must follow order of OrderConditionVariable enum
-###length 8
+###length 9
 ###next-name-looks-similar
 
 
@@ -2028,7 +2036,6 @@ STR_ERROR_ALREADY_LEVELLED                                      :{WHITE}... ве
 STR_ERROR_CAN_T_GENERATE_TOWN                                   :{WHITE}Не може да се направи град
 STR_ERROR_CAN_T_FOUND_TOWN_HERE                                 :{WHITE}Овде не може да се изгради град...
 STR_ERROR_CAN_T_EXPAND_TOWN                                     :{WHITE}Не може да се прошири градот...
-STR_ERROR_TOO_CLOSE_TO_EDGE_OF_MAP_SUB                          :{WHITE}... премногу блиску до крајот на мапата
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_TOWN                             :{WHITE}... премногу блиску до друг град
 STR_ERROR_TOO_MANY_TOWNS                                        :{WHITE}... премногу градови
 STR_ERROR_STATUE_NO_SUITABLE_PLACE                              :{WHITE}... не постои такво место за статуа во центарот на градот

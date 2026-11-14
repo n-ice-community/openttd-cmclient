@@ -5,12 +5,11 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <https://www.gnu.org/licenses/old-licenses/gpl-2.0>.
  */
 
-/** @file saveload_internal.h Declaration of functions used in more save/load files */
+/** @file saveload_internal.h Declaration of functions used in more save/load files. */
 
 #ifndef SAVELOAD_INTERNAL_H
 #define SAVELOAD_INTERNAL_H
 
-#include "../company_manager_face.h"
 #include "../order_base.h"
 #include "../engine_type.h"
 #include "saveload.h"
@@ -44,7 +43,7 @@ void ConvertOldMultiheadToNew();
 void ConnectMultiheadedTrains();
 
 void ResetTempEngineData();
-Engine *GetTempDataEngine(EngineID index);
+Engine *GetTempDataEngine(EngineID index, VehicleType type = VehicleType::Invalid, uint16_t local_id = 0);
 void CopyTempEngineData();
 
 extern int32_t _saved_scrollpos_x;

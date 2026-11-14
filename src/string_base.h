@@ -5,10 +5,10 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <https://www.gnu.org/licenses/old-licenses/gpl-2.0>.
  */
 
+/** @file string_base.h Base types for interacting with strings. */
+
 #ifndef STRING_BASE_H
 #define STRING_BASE_H
-
-#include "string_type.h"
 
 /** Class for iterating over different kind of parts of a string. */
 class StringIterator {
@@ -28,6 +28,7 @@ public:
 	 */
 	static std::unique_ptr<StringIterator> Create();
 
+	/** Ensure the destructor of the sub classes are called as well. */
 	virtual ~StringIterator() = default;
 
 	/**
@@ -47,12 +48,14 @@ public:
 
 	/**
 	 * Advance the cursor by one iteration unit.
+	 * @param what The iteration unit to advance by.
 	 * @return New cursor position (in bytes) or #END if the cursor is already at the end of the string.
 	 */
 	virtual size_t Next(IterType what = ITER_CHARACTER) = 0;
 
 	/**
 	 * Move the cursor back by one iteration unit.
+	 * @param what The iteration unit to move by.
 	 * @return New cursor position (in bytes) or #END if the cursor is already at the start of the string.
 	 */
 	virtual size_t Prev(IterType what = ITER_CHARACTER) = 0;

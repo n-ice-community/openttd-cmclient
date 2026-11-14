@@ -5,14 +5,11 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <https://www.gnu.org/licenses/old-licenses/gpl-2.0>.
  */
 
-/**
- * @file tcp_listen.h Basic functions to listen for TCP connections.
- */
+/** @file tcp_listen.h Basic functions to listen for TCP connections. */
 
 #ifndef NETWORK_CORE_TCP_LISTEN_H
 #define NETWORK_CORE_TCP_LISTEN_H
 
-#include "tcp.h"
 #include "../network.h"
 #include "../network_func.h"
 #include "../network_internal.h"
@@ -22,16 +19,23 @@
 
 /**
  * Template for TCP listeners.
- * @param Tsocket      The class we create sockets for.
+ * @param Tsocket The class we create sockets for.
+ * @param EnumPacketType The enumeration type of the packet type.
  * @param Tfull_packet The packet type to return when we don't allow more sockets.
- * @param Tban_packet  The packet type to return when the client is banned.
+ * @param Tban_packet The packet type to return when the client is banned.
  */
-template <class Tsocket, PacketType Tfull_packet, PacketType Tban_packet>
+template <class Tsocket, typename EnumPacketType, EnumPacketType Tfull_packet, EnumPacketType Tban_packet>
 class TCPListenHandler {
 	/** List of sockets we listen on. */
 	static SocketList sockets;
 
 public:
+	/**
+	 * Check whether this client is allowed to connect, by both the banlist and maximum client count.
+	 * @param s The socket/network connection to the client.
+	 * @param address The address of the client.
+	 * @return \c true iff the client is allowed in.
+	 */
 	static bool ValidateClient(SOCKET s, NetworkAddress &address)
 	{
 		/* Check if the client is banned. */
@@ -40,10 +44,10 @@ public:
 				Packet p(nullptr, Tban_packet);
 				p.PrepareToSend();
 
-				Debug(net, 2, "[{}] Banned ip tried to join ({}), refused", Tsocket::GetName(), entry);
+				Debug(Facility::Net, Severity::Warning, "[{}] Banned ip tried to join ({}), refused", Tsocket::GetName(), entry);
 
 				if (p.TransferOut(SocketSender{s}) < 0) {
-					Debug(net, 0, "[{}] send failed: {}", Tsocket::GetName(), NetworkError::GetLast().AsString());
+					Debug(Facility::Net, Severity::Critical, "[{}] send failed: {}", Tsocket::GetName(), NetworkError::GetLast().AsString());
 				}
 				closesocket(s);
 				return false;
@@ -58,7 +62,7 @@ public:
 			p.PrepareToSend();
 
 			if (p.TransferOut(SocketSender{s}) < 0) {
-				Debug(net, 0, "[{}] send failed: {}", Tsocket::GetName(), NetworkError::GetLast().AsString());
+				Debug(Facility::Net, Severity::Critical, "[{}] send failed: {}", Tsocket::GetName(), NetworkError::GetLast().AsString());
 			}
 			closesocket(s);
 
@@ -86,7 +90,7 @@ public:
 			SetNonBlocking(s); // XXX error handling?
 
 			NetworkAddress address(sin, sin_len);
-			Debug(net, 3, "[{}] Client connected from {} on frame {}", Tsocket::GetName(), address.GetHostname(), _frame_counter);
+			Debug(Facility::Net, Severity::Notice, "[{}] Client connected from {} on frame {}", Tsocket::GetName(), address.GetHostname(), _frame_counter);
 
 			SetNoDelay(s); // XXX error handling?
 
@@ -153,7 +157,7 @@ public:
 		}
 
 		if (sockets.empty()) {
-			Debug(net, 0, "Could not start network: could not create listening socket");
+			Debug(Facility::Net, Severity::Critical, "Could not start network: could not create listening socket");
 			ShowNetworkError(STR_NETWORK_ERROR_SERVER_START);
 			return false;
 		}
@@ -168,10 +172,11 @@ public:
 			closesocket(s.first);
 		}
 		sockets.clear();
-		Debug(net, 5, "[{}] Closed listeners", Tsocket::GetName());
+		Debug(Facility::Net, Severity::Debug1, "[{}] Closed listeners", Tsocket::GetName());
 	}
 };
 
-template <class Tsocket, PacketType Tfull_packet, PacketType Tban_packet> SocketList TCPListenHandler<Tsocket, Tfull_packet, Tban_packet>::sockets;
+/** Instantiate the sockets. */
+template <class Tsocket, typename EnumPacketType, EnumPacketType Tfull_packet, EnumPacketType Tban_packet> SocketList TCPListenHandler<Tsocket, EnumPacketType, Tfull_packet, Tban_packet>::sockets;
 
 #endif /* NETWORK_CORE_TCP_LISTEN_H */

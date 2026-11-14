@@ -10,50 +10,31 @@
 #ifndef DEBUG_H
 #define DEBUG_H
 
-#include "cpu.h"
 #include <chrono>
+#include "debug_type.h"
+#include "core/enum_type.hpp"
 #include "core/format.hpp"
 
-/* Debugging messages policy:
- * These should be the severities used for direct Debug() calls
- * maximum debugging level should be 10 if really deep, deep
- * debugging is needed.
- * (there is room for exceptions, but you have to have a good cause):
- * 0   - errors or severe warnings
- * 1   - other non-fatal, non-severe warnings
- * 2   - crude progress indicator of functionality
- * 3   - important debugging messages (function entry)
- * 4   - debugging messages (crude loop status, etc.)
- * 5   - detailed debugging information
- * 6.. - extremely detailed spamming
+/**
+ * Test if debug severity is visible for the given facility.
+ * @param facility The debug facility.
+ * @param severity The debug severity.
+ * @return \c true iff the debug severity level for the facility is visible.
  */
+inline bool IsVisibleSeverity(Facility facility, Severity severity)
+{
+	extern EnumIndexArray<Severity, Facility, Facility::End> _debug_level;
+	return _debug_level[facility] >= severity;
+}
 
 /**
  * Output a line of debugging information.
- * @param category The category of debug information.
- * @param level The maximum debug level this message should be shown at. When the debug level for this category is set lower, then the message will not be shown.
+ * @param facility The debug facility.
+ * @param severity The maximum debug level this message should be shown at. When the debug level for this category is set lower, then the message will not be shown.
  * @param format_string The formatting string of the message.
  */
-#define Debug(category, level, format_string, ...) do { if ((level) == 0 || _debug_ ## category ## _level >= (level)) DebugPrint(#category, level, fmt::format(FMT_STRING(format_string) __VA_OPT__(,) __VA_ARGS__)); } while (false)
-void DebugPrint(std::string_view category, int level, std::string &&message);
-
-extern int _debug_driver_level;
-extern int _debug_grf_level;
-extern int _debug_map_level;
-extern int _debug_misc_level;
-extern int _debug_net_level;
-extern int _debug_sprite_level;
-extern int _debug_oldloader_level;
-extern int _debug_yapf_level;
-extern int _debug_fontcache_level;
-extern int _debug_script_level;
-extern int _debug_sl_level;
-extern int _debug_gamelog_level;
-extern int _debug_desync_level;
-extern int _debug_console_level;
-#ifdef RANDOM_DEBUG
-extern int _debug_random_level;
-#endif
+#define Debug(facility, severity, format_string, ...) do { if ((severity) == Severity::Critical || IsVisibleSeverity((facility), (severity))) DebugPrint(facility, severity, fmt::format(FMT_STRING(format_string) __VA_OPT__(,) __VA_ARGS__)); } while (false)
+void DebugPrint(Facility facility, Severity severity, std::string &&message);
 
 void DumpDebugFacilityNames(std::back_insert_iterator<std::string> &output_iterator);
 using SetDebugStringErrorFunc = void(std::string_view);
@@ -86,6 +67,7 @@ struct TicToc {
 			GetStates().push_back(this);
 		}
 
+		/** Remove ourselves from the thread local states. */
 		~State()
 		{
 			/* Container might be already destroyed. */
@@ -100,7 +82,7 @@ struct TicToc {
 
 		void OutputAndReset(const std::string_view prefix = "")
 		{
-			Debug(misc, 0, "[{}] [{}] {} calls in {} us [avg: {:.1f} us]", prefix, this->name, this->count, this->chrono_sum, this->chrono_sum / static_cast<double>(this->count));
+			Debug(Facility::Misc, Severity::Critical, "[{}] [{}] {} calls in {} us [avg: {:.1f} us]", prefix, this->name, this->count, this->chrono_sum, this->chrono_sum / static_cast<double>(this->count));
 			this->count = 0;
 			this->chrono_sum = 0;
 		}
@@ -111,6 +93,7 @@ struct TicToc {
 
 	inline TicToc(State &state) : state(state), chrono_start(std::chrono::high_resolution_clock::now()) { }
 
+	/** Update the state with the time since the constructor call. */
 	inline ~TicToc()
 	{
 		this->state.chrono_sum += (std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - this->chrono_start)).count();

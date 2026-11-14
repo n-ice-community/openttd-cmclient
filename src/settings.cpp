@@ -6,8 +6,8 @@
  */
 
 /**
- * @file settings.cpp
- * All actions handling saving and loading of the settings/configuration goes on in this file.
+ * @file settings.cpp All actions handling saving and loading of the settings/configuration goes on in this file.
+ *
  * The file consists of three parts:
  * <ol>
  * <li>Parsing the configuration file (openttd.cfg). This is achieved with the ini_ functions which
@@ -26,7 +26,7 @@
 #include "core/string_consumer.hpp"
 #include "settings_table.h"
 #include "debug.h"
-#include "currency.h"
+#include "currency_func.h"
 #include "network/network.h"
 #include "network/network_func.h"
 #include "network/core/config.h"
@@ -37,6 +37,7 @@
 #include "strings_func.h"
 #include "window_func.h"
 #include "company_func.h"
+#include "company_base.h"
 #include "rev.h"
 #include "error.h"
 #include "gamelog.h"
@@ -49,7 +50,6 @@
 #include "newgrf_badge_config.h"
 #include "base_media_base.h"
 #include "base_media_graphics.h"
-#include "fios.h"
 #include "fileio_func.h"
 #include "settings_cmd.h"
 
@@ -77,6 +77,7 @@ static ErrorList _settings_error_list; ///< Errors while loading minimal setting
  * - _company_settings
  * - _win32_settings
  * As such, they are not part of this list.
+ * @return The list of generic settings.
  */
 static auto &GenericSettingTables()
 {
@@ -101,6 +102,7 @@ static auto &GenericSettingTables()
 
 /**
  * List of all the private setting tables.
+ * @return The list of private settings.
  */
 static auto &PrivateSettingTables()
 {
@@ -112,6 +114,7 @@ static auto &PrivateSettingTables()
 
 /**
  * List of all the secrets setting tables.
+ * @return The list of secret settings.
  */
 static auto &SecretSettingTables()
 {
@@ -126,14 +129,16 @@ using SettingDescProcList = void(IniFile &ini, std::string_view grpname, StringL
 
 static bool IsSignedVarMemType(VarType vt)
 {
-	switch (GetVarMemType(vt)) {
-		case SLE_VAR_I8:
-		case SLE_VAR_I16:
-		case SLE_VAR_I32:
-		case SLE_VAR_I64:
+	switch (vt.mem) {
+		case VarMemType::I8:
+		case VarMemType::I16:
+		case VarMemType::I32:
+		case VarMemType::I64:
 			return true;
+
+		default:
+			return false;
 	}
-	return false;
 }
 
 /**
@@ -154,7 +159,7 @@ private:
 public:
 	ConfigIniFile(const std::string &filename) : IniFile(list_group_names)
 	{
-		this->LoadFromDisk(filename, NO_DIRECTORY);
+		this->LoadFromDisk(filename, Subdirectory::None);
 	}
 };
 
@@ -165,21 +170,44 @@ public:
  * when we have to load/remove it from the old versus reading it from the new
  * location. These versions assist with situations like that.
  */
-enum IniFileVersion : uint32_t {
-	IFV_0,                                                 ///< 0  All versions prior to introduction.
-	IFV_PRIVATE_SECRETS,                                   ///< 1  PR#9298  Moving of settings from openttd.cfg to private.cfg / secrets.cfg.
-	IFV_GAME_TYPE,                                         ///< 2  PR#9515  Convert server_advertise to server_game_type.
-	IFV_LINKGRAPH_SECONDS,                                 ///< 3  PR#10610 Store linkgraph update intervals in seconds instead of days.
-	IFV_NETWORK_PRIVATE_SETTINGS,                          ///< 4  PR#10762 Move use_relay_service to private settings.
+enum class IniFileVersion : uint16_t {
+	MinVersion, ///< IniFile Version: 0, All versions prior to introduction.
+	PrivateSecrets, ///< IniFile version: 1, GitHub pull request 9298\n  Moving of settings from openttd.cfg to private.cfg / secrets.cfg.
+	GameType, ///< IniFile version: 2, GitHub pull request 9515\n  Convert server_advertise to server_game_type.
+	LinkgraphSeconds, ///< IniFile version: 3, GitHub pull request 10610\n Store linkgraph update intervals in seconds instead of days.
+	NetworkPrivateSettings, ///< IniFile version: 4, GitHub pull request 10762\n Move use_relay_service to private settings.
 
-	IFV_AUTOSAVE_RENAME,                                   ///< 5  PR#11143 Renamed values of autosave to be in minutes.
-	IFV_RIGHT_CLICK_CLOSE,                                 ///< 6  PR#10204 Add alternative right click to close windows setting.
-	IFV_REMOVE_GENERATION_SEED,                            ///< 7  PR#11927 Remove "generation_seed" from configuration.
+	AutosaveRename, ///< IniFile version: 5, GitHub pull request 11143\n Renamed values of autosave to be in minutes.
+	RightClickClose, ///< IniFile version: 6, GitHub pull request 10204\n Add alternative right click to close windows setting.
+	RemoveGenerationSeed, ///< IniFile version: 7, GitHub pull request 11927\n Remove "generation_seed" from configuration.
+	DefaultRailRoad, ///< IniFile version: 8, GitHub pull request 15585\n Update default rail type setting to support road and tram tiles.
 
-	IFV_MAX_VERSION,       ///< Highest possible ini-file version.
+	MaxVersion, ///< Highest possible ini-file version.
 };
 
-const uint16_t INIFILE_VERSION = (IniFileVersion)(IFV_MAX_VERSION - 1); ///< Current ini-file version of OpenTTD.
+const IniFileVersion INIFILE_VERSION{to_underlying(IniFileVersion::MaxVersion) - 1}; ///< Current ini-file version of OpenTTD.
+
+/**
+ * Find whether a string was a valid int setting
+ *
+ * @param str the current value of the setting
+ * @param min the min value for the setting
+ * @param max the max value for the setting
+ * @return Either the parsed value, or nullopt if no value found within range.
+ */
+std::optional<int32_t> IntSettingDesc::ParseSingleValue(std::string_view str, int32_t min, uint32_t max)
+{
+	StringConsumer consumer{str};
+	/* The actual settings value might be int32 or uint32. Read as int64 and just cast away the high bits. */
+	auto value = consumer.TryReadIntegerBase<int64_t>(10);
+	/* check if it's an integer */
+	if (!value.has_value()) return std::nullopt;
+
+	if (value < min || value > max) {
+		return std::nullopt;
+	}
+	return value;
+}
 
 /**
  * Find the index value of a ONEofMANY type in a string
@@ -281,7 +309,7 @@ static std::optional<std::vector<uint32_t>> ParseIntList(std::string_view str)
  * @param type the type of elements the array holds (eg INT8, UINT16, etc.)
  * @return return true on success and false on error
  */
-static bool LoadIntList(std::optional<std::string_view> str, void *array, int nelems, VarType type)
+static bool LoadIntList(std::optional<std::string_view> str, void *array, int nelems, VarMemType type)
 {
 	size_t elem_size = SlVarSize(type);
 	std::byte *p = static_cast<std::byte *>(array);
@@ -301,13 +329,10 @@ static bool LoadIntList(std::optional<std::string_view> str, void *array, int ne
 }
 
 /**
- * Convert an integer-array (intlist) to a string representation. Each value
+ * Convert a list to a string representation. Each value
  * is separated by a comma or a space character
- * @param buf output buffer where the string-representation will be stored
- * @param last last item to write to in the output buffer
- * @param array pointer to the integer-arrays that is read from
- * @param nelems the number of elements the array holds.
- * @param type the type of elements the array holds (eg INT8, UINT16, etc.)
+ * @param object The object to read the list from.
+ * @return The string representation of the list.
  */
 std::string ListSettingDesc::FormatValue(const void *object) const
 {
@@ -316,14 +341,14 @@ std::string ListSettingDesc::FormatValue(const void *object) const
 	std::string result;
 	for (size_t i = 0; i != this->save.length; i++) {
 		int64_t v;
-		switch (GetVarMemType(this->save.conv)) {
-			case SLE_VAR_BL:
-			case SLE_VAR_I8:  v = *(const   int8_t *)p; p += 1; break;
-			case SLE_VAR_U8:  v = *(const  uint8_t *)p; p += 1; break;
-			case SLE_VAR_I16: v = *(const  int16_t *)p; p += 2; break;
-			case SLE_VAR_U16: v = *(const uint16_t *)p; p += 2; break;
-			case SLE_VAR_I32: v = *(const  int32_t *)p; p += 4; break;
-			case SLE_VAR_U32: v = *(const uint32_t *)p; p += 4; break;
+		switch (this->save.conv.mem) {
+			case VarMemType::Bool:
+			case VarMemType::I8:  v = *(const   int8_t *)p; p += 1; break;
+			case VarMemType::U8:  v = *(const  uint8_t *)p; p += 1; break;
+			case VarMemType::I16: v = *(const  int16_t *)p; p += 2; break;
+			case VarMemType::U16: v = *(const uint16_t *)p; p += 2; break;
+			case VarMemType::I32: v = *(const  int32_t *)p; p += 4; break;
+			case VarMemType::U32: v = *(const uint32_t *)p; p += 4; break;
 			default: NOT_REACHED();
 		}
 		if (i != 0) result += ',';
@@ -443,6 +468,7 @@ StringID IntSettingDesc::GetHelp() const
 /**
  * Get parameters for drawing the value of the setting.
  * @param value Setting value to set params for.
+ * @return The string parameters for formatting the value of this setting.
  */
 std::pair<StringParameter, StringParameter> IntSettingDesc::GetValueParams(int32_t value) const
 {
@@ -509,14 +535,14 @@ void IntSettingDesc::MakeValueValid(int32_t &val) const
 	 * supported. Unsigned 8 and 16-bit variables are safe since they fit into a signed
 	 * 32-bit variable
 	 * TODO: Support 64-bit settings/variables; requires 64 bit over command protocol! */
-	switch (GetVarMemType(this->save.conv)) {
-		case SLE_VAR_NULL: return;
-		case SLE_VAR_BL:
-		case SLE_VAR_I8:
-		case SLE_VAR_U8:
-		case SLE_VAR_I16:
-		case SLE_VAR_U16:
-		case SLE_VAR_I32: {
+	switch (this->save.conv.mem) {
+		case VarMemType::Null: return;
+		case VarMemType::Bool:
+		case VarMemType::I8:
+		case VarMemType::U8:
+		case VarMemType::I16:
+		case VarMemType::U16:
+		case VarMemType::I32: {
 			/* Override the minimum value. No value below this->min, except special value 0 */
 			if (!this->flags.Test(SettingFlag::GuiZeroIsSpecial) || val != 0) {
 				if (!this->flags.Test(SettingFlag::GuiDropdown)) {
@@ -529,7 +555,7 @@ void IntSettingDesc::MakeValueValid(int32_t &val) const
 			}
 			break;
 		}
-		case SLE_VAR_U32: {
+		case VarMemType::U32: {
 			/* Override the minimum value. No value below this->min, except special value 0 */
 			uint32_t uval = static_cast<uint32_t>(val);
 			if (!this->flags.Test(SettingFlag::GuiZeroIsSpecial) || uval != 0) {
@@ -544,8 +570,8 @@ void IntSettingDesc::MakeValueValid(int32_t &val) const
 			val = static_cast<int32_t>(uval);
 			return;
 		}
-		case SLE_VAR_I64:
-		case SLE_VAR_U64:
+		case VarMemType::I64:
+		case VarMemType::U64:
 		default: NOT_REACHED();
 	}
 }
@@ -558,7 +584,7 @@ void IntSettingDesc::MakeValueValid(int32_t &val) const
 void IntSettingDesc::Write(const void *object, int32_t val) const
 {
 	void *ptr = GetVariableAddress(object, this->save);
-	WriteValue(ptr, this->save.conv, (int64_t)val);
+	WriteValue(ptr, this->save.conv.mem, static_cast<int64_t>(val));
 }
 
 /**
@@ -569,7 +595,7 @@ void IntSettingDesc::Write(const void *object, int32_t val) const
 int32_t IntSettingDesc::Read(const void *object) const
 {
 	void *ptr = GetVariableAddress(object, this->save);
-	return (int32_t)ReadValue(ptr, this->save.conv);
+	return static_cast<int32_t>(ReadValue(ptr, this->save.conv.mem));
 }
 
 /**
@@ -682,20 +708,20 @@ void ListSettingDesc::ParseValue(const IniItem *item, void *object) const
 		str = this->def;
 	}
 	void *ptr = GetVariableAddress(object, this->save);
-	if (!LoadIntList(str, ptr, this->save.length, GetVarMemType(this->save.conv))) {
+	if (!LoadIntList(str, ptr, this->save.length, this->save.conv.mem)) {
 		_settings_error_list.emplace_back(
 			GetEncodedString(STR_CONFIG_ERROR),
 			GetEncodedString(STR_CONFIG_ERROR_ARRAY, this->GetName()));
 
 		/* Use default */
-		LoadIntList(this->def, ptr, this->save.length, GetVarMemType(this->save.conv));
+		LoadIntList(this->def, ptr, this->save.length, this->save.conv.mem);
 	}
 }
 
 /**
  * Save the values of settings to the inifile.
  * @param ini pointer to IniFile structure
- * @param sd read-only SettingDesc structure which contains the unmodified,
+ * @param settings_table read-only structure which contains the unmodified,
  *        loaded values of the configuration file and various information about it
  * @param grpname holds the name of the group (eg. [network]) where these will be saved
  * @param object pointer to the object been saved
@@ -773,27 +799,15 @@ void IntSettingDesc::ResetToDefault(void *object) const
 std::string StringSettingDesc::FormatValue(const void *object) const
 {
 	const std::string &str = this->Read(object);
-	switch (GetVarMemType(this->save.conv)) {
-		case SLE_VAR_STR: return str;
-
-		case SLE_VAR_STRQ:
-			if (str.empty()) {
-				return str;
-			}
-			return fmt::format("\"{}\"", str);
-
-		default: NOT_REACHED();
-	}
+	if (str.empty()) return str;
+	return fmt::format("\"{}\"", str);
 }
 
-bool StringSettingDesc::IsSameValue(const IniItem *item, void *object) const
+bool StringSettingDesc::IsSameValue(const IniItem *, void *) const
 {
-	/* The ini parsing removes the quotes, which are needed to retain the spaces in STRQs,
+	/* The ini parsing removes the quotes. To retain spaces, the string needs to be quoted,
 	 * so those values are always different in the parsed ini item than they should be. */
-	if (GetVarMemType(this->save.conv) == SLE_VAR_STRQ) return false;
-
-	const std::string &str = this->Read(object);
-	return item->value->compare(str) == 0;
+	return false;
 }
 
 bool StringSettingDesc::IsDefaultValue(void *object) const
@@ -897,12 +911,12 @@ bool SettingDesc::IsEditable(bool do_command) const
 {
 	if (!do_command && !this->flags.Test(SettingFlag::NoNetworkSync) && _networking && !_network_server && !this->flags.Test(SettingFlag::PerCompany)) return false;
 	if (do_command && this->flags.Test(SettingFlag::NoNetworkSync)) return false;
-	if (this->flags.Test(SettingFlag::NetworkOnly) && !_networking && _game_mode != GM_MENU) return false;
+	if (this->flags.Test(SettingFlag::NetworkOnly) && !_networking && _game_mode != GameMode::Menu) return false;
 	if (this->flags.Test(SettingFlag::NoNetwork) && _networking) return false;
 	if (this->flags.Test(SettingFlag::NewgameOnly) &&
-			(_game_mode == GM_NORMAL ||
-			(_game_mode == GM_EDITOR && !this->flags.Test(SettingFlag::SceneditToo)))) return false;
-	if (this->flags.Test(SettingFlag::SceneditOnly) && _game_mode != GM_EDITOR) return false;
+			(_game_mode == GameMode::Normal ||
+			(_game_mode == GameMode::Editor && !this->flags.Test(SettingFlag::SceneditToo)))) return false;
+	if (this->flags.Test(SettingFlag::SceneditOnly) && _game_mode != GameMode::Editor) return false;
 	return true;
 }
 
@@ -956,7 +970,7 @@ static void AILoadConfig(const IniFile &ini, std::string_view grpname)
 
 	/* Clean any configured AI */
 	for (CompanyID c = CompanyID::Begin(); c < MAX_COMPANIES; ++c) {
-		AIConfig::GetConfig(c, AIConfig::SSS_FORCE_NEWGAME)->Change(std::nullopt);
+		AIConfig::GetConfig(c, AIConfig::ScriptSettingSource::ForceNewGame)->Change(std::nullopt);
 	}
 
 	/* If no group exists, return */
@@ -964,12 +978,12 @@ static void AILoadConfig(const IniFile &ini, std::string_view grpname)
 
 	CompanyID c = CompanyID::Begin();
 	for (const IniItem &item : group->items) {
-		AIConfig *config = AIConfig::GetConfig(c, AIConfig::SSS_FORCE_NEWGAME);
+		AIConfig *config = AIConfig::GetConfig(c, AIConfig::ScriptSettingSource::ForceNewGame);
 
 		config->Change(item.name);
 		if (!config->HasScript()) {
 			if (item.name != "none") {
-				Debug(script, 0, "The AI by the name '{}' was no longer found, and removed from the list.", item.name);
+				Debug(Facility::Script, Severity::Critical, "The AI by the name '{}' was no longer found, and removed from the list.", item.name);
 				continue;
 			}
 		}
@@ -984,19 +998,19 @@ static void GameLoadConfig(const IniFile &ini, std::string_view grpname)
 	const IniGroup *group = ini.GetGroup(grpname);
 
 	/* Clean any configured GameScript */
-	GameConfig::GetConfig(GameConfig::SSS_FORCE_NEWGAME)->Change(std::nullopt);
+	GameConfig::GetConfig(GameConfig::ScriptSettingSource::ForceNewGame)->Change(std::nullopt);
 
 	/* If no group exists, return */
 	if (group == nullptr || group->items.empty()) return;
 
 	const IniItem &item = group->items.front();
 
-	GameConfig *config = GameConfig::GetConfig(AIConfig::SSS_FORCE_NEWGAME);
+	GameConfig *config = GameConfig::GetConfig(AIConfig::ScriptSettingSource::ForceNewGame);
 
 	config->Change(item.name);
 	if (!config->HasScript()) {
 		if (item.name != "none") {
-			Debug(script, 0, "The GameScript by the name '{}' was no longer found, and removed from the list.", item.name);
+			Debug(Facility::Script, Severity::Critical, "The GameScript by the name '{}' was no longer found, and removed from the list.", item.name);
 			return;
 		}
 	}
@@ -1005,6 +1019,7 @@ static void GameLoadConfig(const IniFile &ini, std::string_view grpname)
 
 /**
  * Load BaseGraphics set selection and configuration.
+ * @param ini The ini-file to read from.
  */
 static void GraphicsSetLoadConfig(IniFile &ini)
 {
@@ -1024,7 +1039,7 @@ static void GraphicsSetLoadConfig(IniFile &ini)
 			} else {
 				ShowErrorMessage(GetEncodedString(STR_CONFIG_ERROR),
 					GetEncodedString(STR_CONFIG_ERROR_INVALID_VALUE, *item->value, BaseGraphics::ini_data.name),
-					WL_CRITICAL);
+					WarningLevel::Critical);
 			}
 		}
 
@@ -1035,7 +1050,7 @@ static void GraphicsSetLoadConfig(IniFile &ini)
 			} else {
 				ShowErrorMessage(GetEncodedString(STR_CONFIG_ERROR),
 					GetEncodedString(STR_CONFIG_ERROR_INVALID_VALUE, *item->value, BaseGraphics::ini_data.name),
-					WL_CRITICAL);
+					WarningLevel::Critical);
 			}
 		}
 
@@ -1046,7 +1061,7 @@ static void GraphicsSetLoadConfig(IniFile &ini)
 			} else {
 				ShowErrorMessage(GetEncodedString(STR_CONFIG_ERROR),
 					GetEncodedString(STR_CONFIG_ERROR_ARRAY, BaseGraphics::ini_data.name),
-					WL_CRITICAL);
+					WarningLevel::Critical);
 			}
 		}
 	}
@@ -1057,6 +1072,7 @@ static void GraphicsSetLoadConfig(IniFile &ini)
  * @param ini       The configuration to read from.
  * @param grpname   Group name containing the configuration of the GRF.
  * @param is_static GRF is static.
+ * @return The list of loaded NewGRF configurations.
  */
 static GRFConfigList GRFLoadConfig(const IniFile &ini, std::string_view grpname, bool is_static)
 {
@@ -1069,7 +1085,7 @@ static GRFConfigList GRFLoadConfig(const IniFile &ini, std::string_view grpname,
 	for (const IniItem &item : group->items) {
 		std::unique_ptr<GRFConfig> c{};
 
-		std::array<uint8_t, 4> grfid_buf;
+		GrfID grfid;
 		MD5Hash md5sum;
 		std::string_view item_name = item.name;
 		bool has_md5sum = false;
@@ -1079,7 +1095,7 @@ static GRFConfigList GRFLoadConfig(const IniFile &ini, std::string_view grpname,
 		if (grfid_pos != std::string_view::npos) {
 			std::string_view grfid_str = item_name.substr(0, grfid_pos);
 
-			if (ConvertHexToBytes(grfid_str, grfid_buf)) {
+			if (ConvertHexToBytes(grfid_str, grfid)) {
 				item_name = item_name.substr(grfid_pos + 1);
 
 				auto md5sum_pos = item_name.find("|");
@@ -1090,13 +1106,12 @@ static GRFConfigList GRFLoadConfig(const IniFile &ini, std::string_view grpname,
 					if (has_md5sum) item_name = item_name.substr(md5sum_pos + 1);
 				}
 
-				uint32_t grfid = grfid_buf[0] | (grfid_buf[1] << 8) | (grfid_buf[2] << 16) | (grfid_buf[3] << 24);
 				if (has_md5sum) {
-					const GRFConfig *s = FindGRFConfig(grfid, FGCM_EXACT, &md5sum);
+					const GRFConfig *s = FindGRFConfig(grfid, FindGRFConfigMode::Exact, &md5sum);
 					if (s != nullptr) c = std::make_unique<GRFConfig>(*s);
 				}
-				if (c == nullptr && !FioCheckFileExists(std::string(item_name), NEWGRF_DIR)) {
-					const GRFConfig *s = FindGRFConfig(grfid, FGCM_NEWEST_VALID);
+				if (c == nullptr && !FioCheckFileExists(std::string(item_name), Subdirectory::NewGrf)) {
+					const GRFConfig *s = FindGRFConfig(grfid, FindGRFConfigMode::NewestValid);
 					if (s != nullptr) c = std::make_unique<GRFConfig>(*s);
 				}
 			}
@@ -1113,14 +1128,14 @@ static GRFConfigList GRFLoadConfig(const IniFile &ini, std::string_view grpname,
 			} else {
 				ShowErrorMessage(GetEncodedString(STR_CONFIG_ERROR),
 					GetEncodedString(STR_CONFIG_ERROR_ARRAY, filename),
-					WL_CRITICAL);
+					WarningLevel::Critical);
 			}
 		}
 
 		/* Check if item is valid */
 		if (!FillGRFDetails(*c, is_static) || c->flags.Test(GRFConfigFlag::Invalid)) {
 			StringID reason;
-			if (c->status == GCS_NOT_FOUND) {
+			if (c->status == GRFStatus::NotFound) {
 				reason = STR_CONFIG_ERROR_INVALID_GRF_NOT_FOUND;
 			} else if (c->flags.Test(GRFConfigFlag::Unsafe)) {
 				reason = STR_CONFIG_ERROR_INVALID_GRF_UNSAFE;
@@ -1134,7 +1149,7 @@ static GRFConfigList GRFLoadConfig(const IniFile &ini, std::string_view grpname,
 
 			ShowErrorMessage(GetEncodedString(STR_CONFIG_ERROR),
 				GetEncodedString(STR_CONFIG_ERROR_INVALID_GRF, filename.empty() ? item.name : filename, reason),
-				WL_CRITICAL);
+				WarningLevel::Critical);
 			continue;
 		}
 
@@ -1143,7 +1158,7 @@ static GRFConfigList GRFLoadConfig(const IniFile &ini, std::string_view grpname,
 		if (found != std::end(list)) {
 			ShowErrorMessage(GetEncodedString(STR_CONFIG_ERROR),
 				GetEncodedString(STR_CONFIG_ERROR_DUPLICATE_GRFID, c->filename, (*found)->filename),
-				WL_CRITICAL);
+				WarningLevel::Critical);
 			continue;
 		}
 
@@ -1153,7 +1168,7 @@ static GRFConfigList GRFLoadConfig(const IniFile &ini, std::string_view grpname,
 		} else if (++num_grfs > NETWORK_MAX_GRF_COUNT) {
 			/* Check we will not load more non-static NewGRFs than allowed. This could trigger issues for game servers. */
 			ShowErrorMessage(GetEncodedString(STR_CONFIG_ERROR),
-				GetEncodedString(STR_NEWGRF_ERROR_TOO_MANY_NEWGRFS_LOADED), WL_CRITICAL);
+				GetEncodedString(STR_NEWGRF_ERROR_TOO_MANY_NEWGRFS_LOADED), WarningLevel::Critical);
 			break;
 		}
 
@@ -1167,11 +1182,11 @@ static GRFConfigList GRFLoadConfig(const IniFile &ini, std::string_view grpname,
 static IniFileVersion LoadVersionFromConfig(const IniFile &ini)
 {
 	const IniGroup *group = ini.GetGroup("version");
-	if (group == nullptr) return IFV_0;
+	if (group == nullptr) return IniFileVersion::MinVersion;
 
 	auto version_number = group->GetItem("ini_version");
 	/* Older ini-file versions don't have this key yet. */
-	if (version_number == nullptr || !version_number->value.has_value()) return IFV_0;
+	if (version_number == nullptr || !version_number->value.has_value()) return IniFileVersion::MinVersion;
 
 	uint32_t version = 0;
 	std::from_chars(version_number->value->data(), version_number->value->data() + version_number->value->size(), version);
@@ -1185,7 +1200,7 @@ static void AISaveConfig(IniFile &ini, std::string_view grpname)
 	group.Clear();
 
 	for (CompanyID c = CompanyID::Begin(); c < MAX_COMPANIES; ++c) {
-		AIConfig *config = AIConfig::GetConfig(c, AIConfig::SSS_FORCE_NEWGAME);
+		AIConfig *config = AIConfig::GetConfig(c, AIConfig::ScriptSettingSource::ForceNewGame);
 		std::string name;
 		std::string value = config->SettingsToString();
 
@@ -1204,7 +1219,7 @@ static void GameSaveConfig(IniFile &ini, std::string_view grpname)
 	IniGroup &group = ini.GetOrCreateGroup(grpname);
 	group.Clear();
 
-	GameConfig *config = GameConfig::GetConfig(AIConfig::SSS_FORCE_NEWGAME);
+	GameConfig *config = GameConfig::GetConfig(AIConfig::ScriptSettingSource::ForceNewGame);
 	std::string name;
 	std::string value = config->SettingsToString();
 
@@ -1231,6 +1246,7 @@ static void SaveVersionInConfig(IniFile &ini)
 
 /**
  * Save BaseGraphics set selection and configuration.
+ * @param ini The ini-file to write to.
  */
 static void GraphicsSetSaveConfig(IniFile &ini)
 {
@@ -1257,7 +1273,7 @@ static void GRFSaveConfig(IniFile &ini, std::string_view grpname, const GRFConfi
 	group.Clear();
 
 	for (const auto &c : list) {
-		std::string key = fmt::format("{:08X}|{}|{}", std::byteswap(c->ident.grfid),
+		std::string key = fmt::format("{}|{}|{}", FormatArrayAsHex(c->ident.grfid),
 				FormatArrayAsHex(c->ident.md5sum), c->filename);
 		group.GetOrCreateItem(key).SetValue(GRFBuildParamList(*c));
 	}
@@ -1390,7 +1406,7 @@ void LoadFromConfig(bool startup)
 	}
 
 	/* Before the split of private/secrets, we have to look in the generic for these settings. */
-	if (generic_version < IFV_PRIVATE_SECRETS) {
+	if (generic_version < IniFileVersion::PrivateSecrets) {
 		HandleSettingDescs(generic_ini, generic_ini, generic_ini, IniLoadSettings, IniLoadSettingList, startup);
 	} else {
 		HandleSettingDescs(generic_ini, private_ini, secrets_ini, IniLoadSettings, IniLoadSettingList, startup);
@@ -1398,23 +1414,23 @@ void LoadFromConfig(bool startup)
 
 	/* Load basic settings only during bootstrap, load other settings not during bootstrap */
 	if (!startup) {
-		if (generic_version < IFV_LINKGRAPH_SECONDS) {
+		if (generic_version < IniFileVersion::LinkgraphSeconds) {
 			_settings_newgame.linkgraph.recalc_interval *= CalendarTime::SECONDS_PER_DAY;
 			_settings_newgame.linkgraph.recalc_time     *= CalendarTime::SECONDS_PER_DAY;
 		}
 
 		/* Move use_relay_service from generic_ini to private_ini. */
-		if (generic_version < IFV_NETWORK_PRIVATE_SETTINGS) {
+		if (generic_version < IniFileVersion::NetworkPrivateSettings) {
 			const IniGroup *network = generic_ini.GetGroup("network");
 			if (network != nullptr) {
 				const IniItem *use_relay_service = network->GetItem("use_relay_service");
 				if (use_relay_service != nullptr) {
 					if (use_relay_service->value == "never") {
-						_settings_client.network.use_relay_service = UseRelayService::URS_NEVER;
+						_settings_client.network.use_relay_service = UseRelayService::Never;
 					} else if (use_relay_service->value == "ask") {
-						_settings_client.network.use_relay_service = UseRelayService::URS_ASK;
+						_settings_client.network.use_relay_service = UseRelayService::Ask;
 					} else if (use_relay_service->value == "allow") {
-						_settings_client.network.use_relay_service = UseRelayService::URS_ALLOW;
+						_settings_client.network.use_relay_service = UseRelayService::Allow;
 					}
 				}
 			}
@@ -1422,12 +1438,12 @@ void LoadFromConfig(bool startup)
 
 		const IniItem *old_item;
 
-		if (generic_version < IFV_GAME_TYPE && IsConversionNeeded(generic_ini, "network", "server_advertise", "server_game_type", &old_item)) {
+		if (generic_version < IniFileVersion::GameType && IsConversionNeeded(generic_ini, "network", "server_advertise", "server_game_type", &old_item)) {
 			auto old_value = BoolSettingDesc::ParseSingleValue(*old_item->value);
-			_settings_client.network.server_game_type = old_value.value_or(false) ? SERVER_GAME_TYPE_PUBLIC : SERVER_GAME_TYPE_LOCAL;
+			_settings_client.network.server_game_type = old_value.value_or(false) ? ServerGameType::Public : ServerGameType::Local;
 		}
 
-		if (generic_version < IFV_AUTOSAVE_RENAME && IsConversionNeeded(generic_ini, "gui", "autosave", "autosave_interval", &old_item)) {
+		if (generic_version < IniFileVersion::AutosaveRename && IsConversionNeeded(generic_ini, "gui", "autosave", "autosave_interval", &old_item)) {
 			static constexpr std::initializer_list<std::string_view> _old_autosave_interval{"off"sv, "monthly"sv, "quarterly"sv, "half year"sv, "yearly"sv};
 			auto old_value = OneOfManySettingDesc::ParseSingleValue(*old_item->value, _old_autosave_interval).value_or(-1);
 
@@ -1442,9 +1458,14 @@ void LoadFromConfig(bool startup)
 		}
 
 		/* Persist the right click close option from older versions. */
-		if (generic_version < IFV_RIGHT_CLICK_CLOSE && IsConversionNeeded(generic_ini, "gui", "right_mouse_wnd_close", "right_click_wnd_close", &old_item)) {
+		if (generic_version < IniFileVersion::RightClickClose && IsConversionNeeded(generic_ini, "gui", "right_mouse_wnd_close", "right_click_wnd_close", &old_item)) {
 			auto old_value = BoolSettingDesc::ParseSingleValue(*old_item->value);
-			_settings_client.gui.right_click_wnd_close = old_value.value_or(false) ? RCC_YES : RCC_NO;
+			_settings_client.gui.right_click_wnd_close = old_value.value_or(false) ? RightClickClose::Yes : RightClickClose::No;
+		}
+
+		if (generic_version < IniFileVersion::DefaultRailRoad && IsConversionNeeded(generic_ini, "gui", "default_rail_type", "default_rail_road_type", &old_item)) {
+			auto old_value = IntSettingDesc::ParseSingleValue(*old_item->value, 0, 2);
+			_settings_client.gui.default_rail_road_type = static_cast<DefaultRailRoadType>(old_value.value_or(0));
 		}
 
 		_grfconfig_newgame = GRFLoadConfig(generic_ini, "newgrf", false);
@@ -1463,7 +1484,7 @@ void LoadFromConfig(bool startup)
 
 		/* Display scheduled errors */
 		ScheduleErrorMessage(_settings_error_list);
-		if (FindWindowById(WC_ERRMSG, 0) == nullptr) ShowFirstError();
+		if (FindWindowById(WindowClass::ErrorMessage, 0) == nullptr) ShowFirstError();
 	}
 }
 
@@ -1484,7 +1505,7 @@ void SaveToConfig()
 	if (IniGroup *group = private_ini.GetGroup("private"); group != nullptr) group->comment = "; This file possibly contains private information which can identify you as person.\n";
 	if (IniGroup *group = secrets_ini.GetGroup("secrets"); group != nullptr) group->comment = "; Do not share this file with others, not even if they claim to be technical support.\n; This file contains saved passwords and other secrets that should remain private to you!\n";
 
-	if (generic_version == IFV_0) {
+	if (generic_version == IniFileVersion::MinVersion) {
 		/* Remove some obsolete groups. These have all been loaded into other groups. */
 		generic_ini.RemoveGroup("patches");
 		generic_ini.RemoveGroup("yapf");
@@ -1504,7 +1525,7 @@ void SaveToConfig()
 		}
 	}
 
-	if (generic_version < IFV_REMOVE_GENERATION_SEED) {
+	if (generic_version < IniFileVersion::RemoveGenerationSeed) {
 		IniGroup *game_creation = generic_ini.GetGroup("game_creation");
 		if (game_creation != nullptr) {
 			game_creation->RemoveItem("generation_seed");
@@ -1512,7 +1533,7 @@ void SaveToConfig()
 	}
 
 	/* These variables are migrated from generic ini to private ini now. */
-	if (generic_version < IFV_NETWORK_PRIVATE_SETTINGS) {
+	if (generic_version < IniFileVersion::NetworkPrivateSettings) {
 		IniGroup *network = generic_ini.GetGroup("network");
 		if (network != nullptr) {
 			network->RemoveItem("use_relay_service");
@@ -1621,13 +1642,13 @@ void IntSettingDesc::ChangeValue(const void *object, int32_t newval) const
 	if (this->post_callback != nullptr) this->post_callback(newval);
 
 	if (this->flags.Test(SettingFlag::NoNetwork) || this->flags.Test(SettingFlag::Sandbox)) {
-		_gamelog.StartAction(GLAT_SETTING);
+		_gamelog.StartAction(GamelogActionType::Setting);
 		_gamelog.Setting(this->GetName(), oldval, newval);
 		_gamelog.StopAction();
 	}
 
-	SetWindowClassesDirty(WC_GAME_OPTIONS);
-	if (this->flags.Test(SettingFlag::Sandbox)) SetWindowClassesDirty(WC_CHEATS);
+	SetWindowClassesDirty(WindowClass::GameOptions);
+	if (this->flags.Test(SettingFlag::Sandbox)) SetWindowClassesDirty(WindowClass::Cheat);
 
 	if (_save_config) SaveToConfig();
 }
@@ -1676,6 +1697,7 @@ void GetSaveLoadFromSettingTable(SettingTable settings, std::vector<SaveLoad> &s
 /**
  * Create a single table with all settings that should be stored/loaded
  * in the savegame.
+ * @return The settings that are in save games.
  */
 SettingTable GetSaveLoadSettingTable()
 {
@@ -1812,17 +1834,17 @@ CommandCost CmdChangeCompanySetting(DoCommandFlags flags, const std::string &nam
 
 /**
  * Top function to save the new value of an element of the Settings struct
- * @param index offset in the SettingDesc array of the Settings struct which
- * identifies the setting member we want to change
+ * @param sd The SettingDesc we want to change.
  * @param value new value of the setting
  * @param force_newgame force the newgame settings
+ * @return \c true iff the setting was changed.
  */
 bool SetSettingValue(const IntSettingDesc *sd, int32_t value, bool force_newgame)
 {
 	const IntSettingDesc *setting = sd->AsIntSetting();
 	if (setting->flags.Test(SettingFlag::PerCompany)) {
-		if (Company::IsValidID(_local_company) && _game_mode != GM_MENU) {
-			return Command<CMD_CHANGE_COMPANY_SETTING>::Post(setting->GetName(), value);
+		if (Company::IsValidID(_local_company) && _game_mode != GameMode::Menu) {
+			return Command<Commands::ChangeCompanySetting>::Post(setting->GetName(), value);
 		}
 
 		setting->ChangeValue(&_settings_client.company, value);
@@ -1834,7 +1856,7 @@ bool SetSettingValue(const IntSettingDesc *sd, int32_t value, bool force_newgame
 	 * of settings because changing a company-based setting in a game also
 	 * changes its defaults. At least that is the convention we have chosen */
 	if (setting->flags.Test(SettingFlag::NoNetworkSync)) {
-		if (_game_mode != GM_MENU) {
+		if (_game_mode != GameMode::Menu) {
 			setting->ChangeValue(&_settings_newgame, value);
 		}
 		setting->ChangeValue(&GetGameSettings(), value);
@@ -1848,13 +1870,14 @@ bool SetSettingValue(const IntSettingDesc *sd, int32_t value, bool force_newgame
 
 	/* send non-company-based settings over the network */
 	if (!_networking || (_networking && _network_server)) {
-		return Command<CMD_CHANGE_SETTING>::Post(setting->GetName(), value);
+		return Command<Commands::ChangeSetting>::Post(setting->GetName(), value);
 	}
 	return false;
 }
 
 /**
  * Set the company settings for a new company to their default values.
+ * @param cid The company to reset the settings for.
  */
 void SetDefaultCompanySettings(CompanyID cid)
 {
@@ -1882,7 +1905,7 @@ void SyncCompanySettings()
 		 * that the rest of the clients do not know about, we need to circumvent the normal ::Post
 		 * local command validation and immediately send the command to the server.
 		 */
-		if (old_value != new_value) Command<CMD_CHANGE_COMPANY_SETTING>::SendNet(STR_NULL, _local_company, sd->GetName(), new_value);
+		if (old_value != new_value) Command<Commands::ChangeCompanySetting>::SendNet(STR_NULL, _local_company, sd->GetName(), new_value);
 	}
 }
 
@@ -1891,17 +1914,15 @@ void SyncCompanySettings()
  * @param sd the setting to change.
  * @param value the value to write
  * @param force_newgame force the newgame settings
+ * @return \c true iff the setting was changed.
  * @note Strings WILL NOT be synced over the network
  */
 bool SetSettingValue(const StringSettingDesc *sd, std::string_view value, bool force_newgame)
 {
 	assert(sd->flags.Test(SettingFlag::NoNetworkSync));
+	if (value == "(null)") value = {};
 
-	if (GetVarMemType(sd->save.conv) == SLE_VAR_STRQ && value == "(null)") {
-		value = {};
-	}
-
-	const void *object = (_game_mode == GM_MENU || force_newgame) ? &_settings_newgame : &_settings_game;
+	const void *object = (_game_mode == GameMode::Menu || force_newgame) ? &_settings_newgame : &_settings_game;
 	sd->AsStringSetting()->ChangeValue(object, std::string{value});
 	return true;
 }
@@ -1978,7 +1999,7 @@ void IConsoleGetSetting(std::string_view name, bool force_newgame)
 		return;
 	}
 
-	const void *object = (_game_mode == GM_MENU || force_newgame) ? &_settings_newgame : &_settings_game;
+	const void *object = (_game_mode == GameMode::Menu || force_newgame) ? &_settings_newgame : &_settings_game;
 
 	if (sd->IsStringSetting()) {
 		IConsolePrint(CC_INFO, "Current value for '{}' is '{}'.", sd->GetName(), sd->AsStringSetting()->Read(object));
@@ -2024,15 +2045,11 @@ void IConsoleListSettings(std::string_view prefilter)
 	IConsolePrint(CC_HELP, "Use 'setting' command to change a value.");
 }
 
-ScriptConfigSettings::ScriptConfigSettings()
-{
-	/* Instantiate here, because unique_ptr needs a complete type. */
-}
+/** Needs to be manually defined due to incomplete definition of types in the header. */
+ScriptConfigSettings::ScriptConfigSettings() = default;
 
-ScriptConfigSettings::~ScriptConfigSettings()
-{
-	/* Instantiate here, because unique_ptr needs a complete type. */
-}
+/** Needs to be manually defined due to incomplete definition of types in the header. */
+ScriptConfigSettings::~ScriptConfigSettings() = default;
 
 ScriptConfigSettings::ScriptConfigSettings(const ScriptConfigSettings &other)
 {

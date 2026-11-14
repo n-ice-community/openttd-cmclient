@@ -13,7 +13,6 @@
 #include "string_func.h"
 #include "strings_func.h"
 #include "core/utf8.hpp"
-#include "debug.h"
 
 #include "table/control_codes.h"
 
@@ -37,21 +36,6 @@
 /** Cache of ParagraphLayout lines. */
 std::unique_ptr<Layouter::LineCache> Layouter::linecache;
 
-/** Cache of Font instances. */
-Layouter::FontColourMap Layouter::fonts[FS_END];
-
-
-/**
- * Construct a new font.
- * @param size   The font size to use for this font.
- * @param colour The colour to draw this font in.
- */
-Font::Font(FontSize size, TextColour colour) :
-		fc(FontCache::Get(size)), colour(colour)
-{
-	assert(size < FS_END);
-}
-
 /**
  * Helper for getting a ParagraphLayouter of the given type.
  *
@@ -71,7 +55,7 @@ static inline void GetLayouter(Layouter::LineCacheItem &line, std::string_view s
 	const typename T::CharType *buffer_last = buff_begin + str.size() + 1;
 	typename T::CharType *buff = buff_begin;
 	FontMap &font_mapping = line.runs;
-	Font *f = Layouter::GetFont(state.fontsize, state.cur_colour);
+	Font f{state};
 
 	font_mapping.clear();
 
@@ -107,7 +91,7 @@ static inline void GetLayouter(Layouter::LineCacheItem &line, std::string_view s
 		if (font_mapping.empty() || font_mapping.back().first != buff - buff_begin) {
 			font_mapping.emplace_back(buff - buff_begin, f);
 		}
-		f = Layouter::GetFont(state.fontsize, state.cur_colour);
+		f = state;
 	}
 
 	/* Better safe than sorry. */
@@ -128,7 +112,7 @@ static inline void GetLayouter(Layouter::LineCacheItem &line, std::string_view s
  */
 Layouter::Layouter(std::string_view str, int maxw, FontSize fontsize) : string(str)
 {
-	FontState state(TC_INVALID, fontsize);
+	FontState state(fontsize, TextColour::Invalid);
 
 	while (true) {
 		auto line_length = str.find_first_of('\n');
@@ -217,6 +201,8 @@ Dimension Layouter::GetBounds()
 
 /**
  * Test whether a character is a non-printable formatting code
+ * @param ch The character to test.
+ * @return \c true iff it is a non-printable formatting code.
  */
 static bool IsConsumedFormattingCode(char32_t ch)
 {
@@ -268,7 +254,7 @@ ParagraphLayouter::Position Layouter::GetCharPosition(std::string_view::const_it
 
 	/* Scan all runs until we've found our code point index. */
 	size_t best_index = SIZE_MAX;
-	for (int run_index = 0; run_index < line->CountRuns(); run_index++) {
+	for (size_t run_index = 0; run_index < line->CountRuns(); run_index++) {
 		const ParagraphLayouter::VisualRun &run = line->GetVisualRun(run_index);
 		const auto &positions = run.GetPositions();
 		const auto &charmap = run.GetGlyphToCharMap();
@@ -306,13 +292,13 @@ ptrdiff_t Layouter::GetCharAtPosition(int x, size_t line_index) const
 
 	const auto &line = this->at(line_index);
 
-	for (int run_index = 0; run_index < line->CountRuns(); run_index++) {
+	for (size_t run_index = 0; run_index < line->CountRuns(); run_index++) {
 		const ParagraphLayouter::VisualRun &run = line->GetVisualRun(run_index);
 		const auto &glyphs = run.GetGlyphs();
 		const auto &positions = run.GetPositions();
 		const auto &charmap = run.GetGlyphToCharMap();
 
-		for (int i = 0; i < run.GetGlyphCount(); i++) {
+		for (size_t i = 0; i < run.GetGlyphCount(); i++) {
 			/* Not a valid glyph (empty). */
 			if (glyphs[i] == 0xFFFF) continue;
 

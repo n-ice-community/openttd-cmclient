@@ -11,9 +11,6 @@
 #define NEWGRF_SPRITEGROUP_H
 
 #include "core/pool_type.hpp"
-#include "town_type.h"
-#include "engine_type.h"
-#include "house_type.h"
 #include "industry_type.h"
 
 #include "newgrf_callbacks.h"
@@ -43,14 +40,23 @@ using SpriteGroupID = PoolID<uint32_t, struct SpriteGroupIDTag, 1U << 30, 0xFFFF
 using SpriteGroupPool = Pool<SpriteGroup, SpriteGroupID, 1024, PoolType::Data>;
 extern SpriteGroupPool _spritegroup_pool;
 
-/* Common wrapper for all the different sprite group types */
+/** Common wrapper for all the different sprite group types. */
 struct SpriteGroup : SpriteGroupPool::PoolItem<&_spritegroup_pool> {
 protected:
-	SpriteGroup() {} // Not `= default` as that resets PoolItem->index.
-	/** Base sprite group resolver */
+	/**
+	 * Create the SpriteGroup.
+	 * @param index Index of the sprite group within the pool.
+	 */
+	SpriteGroup(SpriteGroupID index) : SpriteGroupPool::PoolItem<&_spritegroup_pool>(index) {}
+	/**
+	 * Resolves a callback or rerandomisation callback to a NewGRF.
+	 * @param object Information needed to resolve the group.
+	 * @return The result of resolving this SpriteGroup.
+	 */
 	virtual ResolverResult Resolve(ResolverObject &object) const = 0;
 
 public:
+	/** Ensure the destructor of the sub classes are called as well. */
 	virtual ~SpriteGroup() = default;
 
 	uint32_t nfo_line = 0;
@@ -59,10 +65,37 @@ public:
 };
 
 
-/* 'Real' sprite groups contain a list of other result or callback sprite
- * groups. */
-struct RealSpriteGroup : SpriteGroup {
-	RealSpriteGroup() : SpriteGroup() {}
+/**
+ * Class defining some overloaded accessors so we don't have to cast SpriteGroups that often
+ */
+template <class T>
+struct SpecializedSpriteGroup : public SpriteGroup {
+	/**
+	 * Create the SpecializedSpriteGroup.
+	 * @param index Index of the sprite group within the pool.
+	 */
+	inline SpecializedSpriteGroup(SpriteGroupID index) : SpriteGroup(index) {}
+
+	/**
+	 * Creates a new T-object in the SpriteGroup pool.
+	 * @param args The arguments to the constructor.
+	 * @return The created object.
+	 */
+	template <typename... Targs>
+	static inline T *Create(Targs &&... args)
+	{
+		return SpriteGroup::Create<T>(std::forward<Targs&&>(args)...);
+	}
+};
+
+
+/** 'Real' sprite groups contain a list of other result or callback sprite groups. */
+struct RealSpriteGroup : SpecializedSpriteGroup<RealSpriteGroup> {
+	/**
+	 * Create the RealSpriteGroup.
+	 * @param index Index of the sprite group within the pool.
+	 */
+	RealSpriteGroup(SpriteGroupID index) : SpecializedSpriteGroup<RealSpriteGroup>(index) {}
 
 	/* Loaded = in motion, loading = not moving
 	 * Each group contains several spritesets, for various loading stages */
@@ -78,54 +111,54 @@ protected:
 	ResolverResult Resolve(ResolverObject &object) const override;
 };
 
-/* Shared by deterministic and random groups. */
-enum VarSpriteGroupScope : uint8_t {
-	VSG_BEGIN,
+/** Shared by deterministic and random groups. */
+enum class VarSpriteGroupScope : uint8_t {
+	Self, ///< Resolved object itself.
+	Parent, ///< Related object of the resolved one.
+	Relative, ///< Relative position (vehicles only).
 
-	VSG_SCOPE_SELF = VSG_BEGIN, ///< Resolved object itself
-	VSG_SCOPE_PARENT,           ///< Related object of the resolved one
-	VSG_SCOPE_RELATIVE,         ///< Relative position (vehicles only)
-
-	VSG_END
-};
-DECLARE_INCREMENT_DECREMENT_OPERATORS(VarSpriteGroupScope)
-
-enum DeterministicSpriteGroupSize : uint8_t {
-	DSG_SIZE_BYTE,
-	DSG_SIZE_WORD,
-	DSG_SIZE_DWORD,
+	End, ///< End marker.
 };
 
-enum DeterministicSpriteGroupAdjustType : uint8_t {
-	DSGA_TYPE_NONE,
-	DSGA_TYPE_DIV,
-	DSGA_TYPE_MOD,
+/** Deterministic sprite group variable size. */
+enum class DeterministicSpriteGroupSize : uint8_t {
+	Byte, ///< Treat variable as a Byte.
+	Word, ///< Treat variable as a Word.
+	DWord, ///< Treat variable as a DWord.
 };
 
-enum DeterministicSpriteGroupAdjustOperation : uint8_t {
-	DSGA_OP_ADD,  ///< a + b
-	DSGA_OP_SUB,  ///< a - b
-	DSGA_OP_SMIN, ///< (signed) min(a, b)
-	DSGA_OP_SMAX, ///< (signed) max(a, b)
-	DSGA_OP_UMIN, ///< (unsigned) min(a, b)
-	DSGA_OP_UMAX, ///< (unsigned) max(a, b)
-	DSGA_OP_SDIV, ///< (signed) a / b
-	DSGA_OP_SMOD, ///< (signed) a % b
-	DSGA_OP_UDIV, ///< (unsigned) a / b
-	DSGA_OP_UMOD, ///< (unsigned) a & b
-	DSGA_OP_MUL,  ///< a * b
-	DSGA_OP_AND,  ///< a & b
-	DSGA_OP_OR,   ///< a | b
-	DSGA_OP_XOR,  ///< a ^ b
-	DSGA_OP_STO,  ///< store a into temporary storage, indexed by b. return a
-	DSGA_OP_RST,  ///< return b
-	DSGA_OP_STOP, ///< store a into persistent storage, indexed by b, return a
-	DSGA_OP_ROR,  ///< rotate a b positions to the right
-	DSGA_OP_SCMP, ///< (signed) comparison (a < b -> 0, a == b = 1, a > b = 2)
-	DSGA_OP_UCMP, ///< (unsigned) comparison (a < b -> 0, a == b = 1, a > b = 2)
-	DSGA_OP_SHL,  ///< a << b
-	DSGA_OP_SHR,  ///< (unsigned) a >> b
-	DSGA_OP_SAR,  ///< (signed) a >> b
+/** Deterministic sprite group adjust type. */
+enum class DeterministicSpriteGroupAdjustType : uint8_t {
+	None, ///< No adjustment.
+	Div, ///< Apply divide adjustment to value.
+	Mod, ///< Apply modulus adjustment to value.
+};
+
+/** Deterministic sprite group adjust operation. */
+enum class DeterministicSpriteGroupAdjustOperation : uint8_t {
+	Add, ///< a + b
+	Sub, ///< a - b
+	SMin, ///< (signed) min(a, b)
+	SMax, ///< (signed) max(a, b)
+	UMin, ///< (unsigned) min(a, b)
+	UMax, ///< (unsigned) max(a, b)
+	SDiv, ///< (signed) a / b
+	SMod, ///< (signed) a % b
+	UDiv, ///< (unsigned) a / b
+	UMod, ///< (unsigned) a & b
+	Mul, ///< a * b
+	And, ///< a & b
+	Or, ///< a | b
+	Xor, ///< a ^ b
+	Sto, ///< store a into temporary storage, indexed by b. return a
+	Rst, ///< return b
+	Stop, ///< store a into persistent storage, indexed by b, return a
+	Ror, ///< rotate a b positions to the right
+	SCmp, ///< (signed) comparison (a < b -> 0, a == b = 1, a > b = 2)
+	UCmp, ///< (unsigned) comparison (a < b -> 0, a == b = 1, a > b = 2)
+	Shl, ///< a << b
+	Shr, ///< (unsigned) a >> b
+	Sar, ///< (signed) a >> b
 };
 
 
@@ -156,30 +189,31 @@ struct DeterministicSpriteGroupRange {
 };
 
 
-struct DeterministicSpriteGroup : SpriteGroup {
-	DeterministicSpriteGroup() : SpriteGroup() {}
+struct DeterministicSpriteGroup : SpecializedSpriteGroup<DeterministicSpriteGroup> {
+	DeterministicSpriteGroup(SpriteGroupID index) : SpecializedSpriteGroup<DeterministicSpriteGroup>(index) {}
 
 	VarSpriteGroupScope var_scope{};
 	DeterministicSpriteGroupSize size{};
 	std::vector<DeterministicSpriteGroupAdjust> adjusts{};
 	std::vector<DeterministicSpriteGroupRange> ranges{}; // Dynamically allocated
 
-	/* Dynamically allocated, this is the sole owner */
+	/** Dynamically allocated, this is the sole owner. */
 	DeterministicSpriteGroupResult default_result;
 
-	const SpriteGroup *error_group = nullptr; // was first range, before sorting ranges
+	const SpriteGroup *error_group = nullptr; ///< Was first range, before sorting ranges.
 
 protected:
 	ResolverResult Resolve(ResolverObject &object) const override;
 };
 
-enum RandomizedSpriteGroupCompareMode : uint8_t {
-	RSG_CMP_ANY,
-	RSG_CMP_ALL,
+/** Randomized sprite group comparisation mode. */
+enum class RandomizedSpriteGroupCompareMode : uint8_t {
+	Any, ///< Match if any bit is triggered.
+	All, ///< Match if all bits are triggered.
 };
 
-struct RandomizedSpriteGroup : SpriteGroup {
-	RandomizedSpriteGroup() : SpriteGroup() {}
+struct RandomizedSpriteGroup : SpecializedSpriteGroup<RandomizedSpriteGroup> {
+	RandomizedSpriteGroup(SpriteGroupID index) : SpecializedSpriteGroup<RandomizedSpriteGroup>(index) {}
 
 	VarSpriteGroupScope var_scope{};  ///< Take this object:
 
@@ -196,14 +230,14 @@ protected:
 };
 
 
-/* This contains a callback result. A failed callback has a value of
- * CALLBACK_FAILED */
-struct CallbackResultSpriteGroup : SpriteGroup {
+/** This contains a callback result. A failed callback has a value of %CALLBACK_FAILED. */
+struct CallbackResultSpriteGroup : SpecializedSpriteGroup<CallbackResultSpriteGroup> {
 	/**
 	 * Creates a spritegroup representing a callback result
+	 * @param index Unique (pool) identifier of the SpriteGroup.
 	 * @param value The value that was used to represent this callback result
 	 */
-	explicit CallbackResultSpriteGroup(CallbackResult value) : SpriteGroup(), result(value) {}
+	CallbackResultSpriteGroup(SpriteGroupID index, CallbackResult value) : SpecializedSpriteGroup<CallbackResultSpriteGroup>(index), result(value) {}
 
 	CallbackResult result = 0;
 
@@ -212,16 +246,15 @@ protected:
 };
 
 
-/* A result sprite group returns the first SpriteID and the number of
- * sprites in the set */
-struct ResultSpriteGroup : SpriteGroup {
+/** A result sprite group returns the first SpriteID and the number of sprites in the set. */
+struct ResultSpriteGroup : SpecializedSpriteGroup<ResultSpriteGroup> {
 	/**
 	 * Creates a spritegroup representing a sprite number result.
+	 * @param index Unique (pool) identifier of the SpriteGroup.
 	 * @param sprite The sprite number.
 	 * @param num_sprites The number of sprites per set.
-	 * @return A spritegroup representing the sprite number result.
 	 */
-	ResultSpriteGroup(SpriteID sprite, uint8_t num_sprites) : SpriteGroup(), num_sprites(num_sprites), sprite(sprite) {}
+	ResultSpriteGroup(SpriteGroupID index, SpriteID sprite, uint8_t num_sprites) : SpecializedSpriteGroup<ResultSpriteGroup>(index), num_sprites(num_sprites), sprite(sprite) {}
 
 	uint8_t num_sprites = 0;
 	SpriteID sprite = 0;
@@ -233,8 +266,8 @@ protected:
 /**
  * Action 2 sprite layout for houses, industry tiles, objects and airport tiles.
  */
-struct TileLayoutSpriteGroup : SpriteGroup {
-	TileLayoutSpriteGroup() : SpriteGroup() {}
+struct TileLayoutSpriteGroup : SpecializedSpriteGroup<TileLayoutSpriteGroup> {
+	TileLayoutSpriteGroup(SpriteGroupID index) : SpecializedSpriteGroup<TileLayoutSpriteGroup>(index) {}
 
 	NewGRFSpriteLayout dts{};
 
@@ -244,8 +277,8 @@ protected:
 	ResolverResult Resolve(ResolverObject &) const override { return this; }
 };
 
-struct IndustryProductionSpriteGroup : SpriteGroup {
-	IndustryProductionSpriteGroup() : SpriteGroup() {}
+struct IndustryProductionSpriteGroup : SpecializedSpriteGroup<IndustryProductionSpriteGroup> {
+	IndustryProductionSpriteGroup(SpriteGroupID index) : SpecializedSpriteGroup<IndustryProductionSpriteGroup>(index) {}
 
 	uint8_t version = 0; ///< Production callback version used, or 0xFF if marked invalid
 	uint8_t num_input = 0; ///< How many subtract_input values are valid
@@ -270,6 +303,7 @@ struct ScopeResolver {
 	ResolverObject &ro; ///< Surrounding resolver object.
 
 	ScopeResolver(ResolverObject &ro) : ro(ro) {}
+	/** Ensure the destructor of the sub classes are called as well. */
 	virtual ~ScopeResolver() = default;
 
 	virtual uint32_t GetRandomBits() const;
@@ -302,6 +336,7 @@ public:
 	{
 	}
 
+	/** Ensure the destructor of the sub classes are called as well. */
 	virtual ~ResolverObject() = default;
 
 	ResolverResult DoResolve()
@@ -347,7 +382,7 @@ protected:
 	uint32_t waiting_random_triggers = 0; ///< Waiting triggers to be used by any rerandomisation. (scope independent)
 	uint32_t used_random_triggers = 0; ///< Subset of cur_triggers, which actually triggered some rerandomisation. (scope independent)
 public:
-	std::array<uint32_t, VSG_END> reseed; ///< Collects bits to rerandomise while triggering triggers.
+	EnumIndexArray<uint32_t, VarSpriteGroupScope, VarSpriteGroupScope::End> reseed; ///< Collects bits to rerandomise while triggering triggers.
 
 	const GRFFile *grffile = nullptr; ///< GRFFile the resolved SpriteGroup belongs to
 	const SpriteGroup *root_spritegroup = nullptr; ///< Root SpriteGroup to use for resolving
@@ -398,10 +433,11 @@ public:
 
 	virtual const SpriteGroup *ResolveReal(const RealSpriteGroup &group) const;
 
-	virtual ScopeResolver *GetScope(VarSpriteGroupScope scope = VSG_SCOPE_SELF, uint8_t relative = 0);
+	virtual ScopeResolver *GetScope(VarSpriteGroupScope scope = VarSpriteGroupScope::Self, uint8_t relative = 0);
 
 	/**
 	 * Used by RandomizedSpriteGroup: Triggers for rerandomisation
+	 * @return The triggers waiting for randomisation.
 	 */
 	uint32_t GetWaitingRandomTriggers() const
 	{
@@ -410,6 +446,7 @@ public:
 
 	/**
 	 * Used by RandomizedSpriteGroup: Consume triggers.
+	 * @param triggers The triggers t0 set as having used random triggers.
 	 */
 	void AddUsedRandomTriggers(uint32_t triggers)
 	{
@@ -424,7 +461,7 @@ public:
 	uint32_t GetReseedSum() const
 	{
 		uint32_t sum = 0;
-		for (VarSpriteGroupScope vsg = VSG_BEGIN; vsg < VSG_END; vsg++) {
+		for (VarSpriteGroupScope vsg : EnumRange(VarSpriteGroupScope::End)) {
 			sum |= this->reseed[vsg];
 		}
 		return sum;
@@ -433,14 +470,18 @@ public:
 	/**
 	 * Get the feature number being resolved for.
 	 * This function is mainly intended for the callback profiling feature.
+	 * @return The feature.
 	 */
-	virtual GrfSpecFeature GetFeature() const { return GSF_INVALID; }
+	virtual GrfSpecFeature GetFeature() const { return GrfSpecFeature::Invalid; }
 	/**
 	 * Get an identifier for the item being resolved.
 	 * This function is mainly intended for the callback profiling feature,
 	 * and should return an identifier recognisable by the NewGRF developer.
+	 * @return The identifier.
 	 */
 	virtual uint32_t GetDebugID() const { return 0; }
+
+	void UnhandledVariable(uint8_t variable) const;
 };
 
 /**
@@ -453,6 +494,7 @@ struct SpecializedResolverObject : public ResolverObject {
 	/**
 	 * Set waiting triggers for rerandomisation.
 	 * This is scope independent, even though this is broken-by-design in most cases.
+	 * @param triggers The triggers to set waiting.
 	 */
 	void SetWaitingRandomTriggers(RandomTriggers triggers)
 	{
@@ -462,6 +504,7 @@ struct SpecializedResolverObject : public ResolverObject {
 	/**
 	 * Get the triggers, which were "consumed" by some rerandomisation.
 	 * This is scope independent, even though this is broken-by-design in most cases.
+	 * @return The triggers that have used random triggers.
 	 */
 	RandomTriggers GetUsedRandomTriggers() const
 	{

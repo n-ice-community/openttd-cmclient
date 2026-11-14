@@ -12,7 +12,6 @@
 #include "script_error.hpp"
 #include "../squirrel_helper.hpp"
 #include "../script_instance.hpp"
-#include "../../debug.h"
 
 #include "../../safeguards.h"
 
@@ -66,7 +65,7 @@ SQInteger ScriptPriorityQueue::Pop(HSQUIRRELVM vm)
 	return ret;
 }
 
-SQInteger ScriptPriorityQueue::Peek(HSQUIRRELVM vm)
+SQInteger ScriptPriorityQueue::Peek(HSQUIRRELVM vm) const
 {
 	if (this->IsEmpty()) {
 		ScriptObject::SetLastError(ScriptError::ERR_PRECONDITION_FAILED);
@@ -77,7 +76,7 @@ SQInteger ScriptPriorityQueue::Peek(HSQUIRRELVM vm)
 	return SQConvert::Return<HSQOBJECT>::Set(vm, this->queue.front().second);
 }
 
-SQInteger ScriptPriorityQueue::Exists(HSQUIRRELVM vm)
+SQInteger ScriptPriorityQueue::Exists(HSQUIRRELVM vm) const
 {
 	HSQOBJECT item;
 	sq_resetobject(&item);
@@ -95,12 +94,12 @@ SQInteger ScriptPriorityQueue::Clear(HSQUIRRELVM vm)
 	return 0;
 }
 
-bool ScriptPriorityQueue::IsEmpty()
+bool ScriptPriorityQueue::IsEmpty() const
 {
 	return this->queue.empty();
 }
 
-SQInteger ScriptPriorityQueue::Count()
+SQInteger ScriptPriorityQueue::Count() const
 {
 	return (SQInteger)this->queue.size();
 }

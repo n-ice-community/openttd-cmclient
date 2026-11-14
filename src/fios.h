@@ -5,12 +5,11 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <https://www.gnu.org/licenses/old-licenses/gpl-2.0>.
  */
 
-/** @file fios.h Declarations for savegames operations */
+/** @file fios.h Declarations for savegames operations. */
 
 #ifndef FIOS_H
 #define FIOS_H
 
-#include "gfx_type.h"
 #include "company_base.h"
 #include "newgrf_config.h"
 #include "gamelog.h"
@@ -23,6 +22,14 @@ enum SaveLoadInvalidateWindowData : uint8_t {
 	SLIWD_RESCAN_FILES,          ///< Rescan all files (when changed directory, ...)
 	SLIWD_SELECTION_CHANGES,     ///< File selection has changed (user click, ...)
 	SLIWD_FILTER_CHANGES,        ///< The filename filter has changed (via the editbox)
+};
+
+/** Outcome of a directory creation attempt. */
+enum class DirectoryCreateResult : uint8_t {
+	Success,            ///< Directory was created.
+	AlreadyExists,      ///< A file or directory with that name already exists.
+	PermissionDenied,   ///< The OS rejected the operation for permission reasons.
+	OtherError,         ///< Any other filesystem error.
 };
 
 using CompanyPropertiesMap = std::map<uint, std::unique_ptr<CompanyProperties>>;
@@ -45,7 +52,7 @@ struct LoadCheckData {
 	CompanyPropertiesMap companies{}; ///< Company information.
 
 	GRFConfigList grfconfig{}; ///< NewGrf configuration from save.
-	GRFListCompatibility grf_compatibility = GLC_NOT_FOUND; ///< Summary state of NewGrfs, whether missing files or only compatible found.
+	GRFListCompatibility grf_compatibility = GRFListCompatibility::NotFound; ///< Summary state of NewGrfs, whether missing files or only compatible found.
 
 	Gamelog gamelog{}; ///< Gamelog actions
 
@@ -80,7 +87,6 @@ struct FiosItem {
 	int64_t mtime;
 	EncodedString title;
 	std::string name;
-	bool operator< (const FiosItem &other) const;
 };
 
 /** List of file information. */
@@ -89,17 +95,9 @@ public:
 	void BuildFileList(AbstractFileType abstract_filetype, SaveLoadOperation fop, bool show_dirs);
 	const FiosItem *FindItem(std::string_view file);
 };
-
-enum SortingBits : uint8_t {
-	SORT_ASCENDING  = 0,
-	SORT_DESCENDING = 1,
-	SORT_BY_DATE    = 0,
-	SORT_BY_NAME    = 2
-};
-DECLARE_ENUM_AS_BIT_SET(SortingBits)
-
-/* Variables to display file lists */
-extern SortingBits _savegame_sort_order;
+bool FiosItemSorter(const FiosItem &a, const FiosItem &b);
+bool FiosItemNameSorter(const FiosItem &a, const FiosItem &b);
+bool FiosItemModificationDateSorter(const FiosItem &a, const FiosItem &b);
 
 void ShowSaveLoadDialog(AbstractFileType abstract_filetype, SaveLoadOperation fop);
 
@@ -114,6 +112,7 @@ std::string FiosGetCurrentPath();
 std::optional<uint64_t> FiosGetDiskFreeSpace(const std::string &path);
 std::string FiosMakeHeightmapName(std::string_view name);
 std::string FiosMakeSavegameName(std::string_view name);
+DirectoryCreateResult FiosCreateDirectory(std::string_view name);
 
 std::tuple<FiosType, std::string> FiosGetSavegameListCallback(SaveLoadOperation fop, std::string_view file, std::string_view ext);
 std::tuple<FiosType, std::string> FiosGetScenarioListCallback(SaveLoadOperation fop, std::string_view file, std::string_view ext);

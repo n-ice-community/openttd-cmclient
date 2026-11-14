@@ -6,22 +6,8 @@
  */
 
 /**
- * @file game_info.h Convert NetworkGameInfo to Packet and back.
- */
-
-#ifndef NETWORK_CORE_GAME_INFO_H
-#define NETWORK_CORE_GAME_INFO_H
-
-#include "config.h"
-#include "core.h"
-#include "../../newgrf_config.h"
-#include "../../timer/timer_game_calendar.h"
-#include "../../timer/timer_game_tick.h"
-#include "../../landscape_type.h"
-
-#include <unordered_map>
-
-/*
+ * @file network_game_info.h Convert NetworkGameInfo to Packet and back.
+ *
  * NetworkGameInfo has several revisions which we still need to support on the
  * wire. The table below shows the version and size for each field of the
  * serialized NetworkGameInfo.
@@ -83,12 +69,23 @@
  *   1+       1       whether the server is dedicated (0 = no, 1 = yes)
  */
 
+#ifndef NETWORK_CORE_GAME_INFO_H
+#define NETWORK_CORE_GAME_INFO_H
+
+#include "core.h"
+#include "../../newgrf_config.h"
+#include "../../timer/timer_game_calendar.h"
+#include "../../timer/timer_game_tick.h"
+#include "../../landscape_type.h"
+
+#include <unordered_map>
+
 /** The different types/ways a NewGRF can be serialized in the GameInfo since version 6. */
-enum NewGRFSerializationType {
-	NST_GRFID_MD5      = 0, ///< Unique GRF ID and MD5 checksum.
-	NST_GRFID_MD5_NAME = 1, ///< Unique GRF ID, MD5 checksum and name.
-	NST_LOOKUP_ID      = 2, ///< Unique ID into a lookup table that is sent before.
-	NST_END                 ///< The end of the list (period).
+enum class NewGRFSerializationType {
+	GrfIdMd5 = 0, ///< Unique GRF ID and MD5 checksum.
+	GrfIdMd5Name = 1, ///< Unique GRF ID, MD5 checksum and name.
+	LookupId = 2, ///< Unique ID into a lookup table that is sent before.
+	End ///< The end of the list (period).
 };
 
 /**
@@ -132,7 +129,7 @@ struct NamedGRFIdentifier {
 	GRFIdentifier ident; ///< The unique identifier of the NewGRF.
 	std::string name;    ///< The name of the NewGRF.
 };
-/** Lookup table for the GameInfo in case of #NST_LOOKUP_ID. */
+/** Lookup table for the GameInfo in case of #NewGRFSerializationType::LookupId. */
 typedef std::unordered_map<uint32_t, NamedGRFIdentifier> GameInfoNewGRFLookupTable;
 
 extern NetworkServerGameInfo _network_game_info;

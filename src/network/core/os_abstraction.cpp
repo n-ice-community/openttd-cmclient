@@ -11,14 +11,13 @@
  * The general idea is to have simple abstracting functions for things that
  * require different implementations for different environments.
  * In here the functions, and their documentation, are defined only once
- * and the implementation contains the #ifdefs to change the implementation.
+ * and the implementation contains the \#ifdefs to change the implementation.
  * Since Windows is usually different that is usually the first case, after
  * that the behaviour is usually Unix/BSD-like with occasional variation.
  */
 
 #include "../../stdafx.h"
 #include "os_abstraction.h"
-#include "../../string_func.h"
 #include "../../3rdparty/fmt/format.h"
 #include <mutex>
 

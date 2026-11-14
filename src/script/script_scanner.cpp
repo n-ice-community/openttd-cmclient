@@ -38,7 +38,7 @@ bool ScriptScanner::AddFile(const std::string &filename, size_t, const std::stri
 	try {
 		this->engine->LoadScript(filename);
 	} catch (Script_FatalError &e) {
-		Debug(script, 0, "Fatal error '{}' when trying to load the script '{}'.", e.GetErrorMessage(), filename);
+		Debug(Facility::Script, Severity::Critical, "Fatal error '{}' when trying to load the script '{}'.", e.GetErrorMessage(), filename);
 		return false;
 	}
 	return true;
@@ -60,11 +60,6 @@ void ScriptScanner::Initialize(std::string_view name)
 	this->RescanDir();
 
 	this->ResetEngine();
-}
-
-ScriptScanner::~ScriptScanner()
-{
-	this->Reset();
 }
 
 void ScriptScanner::RescanDir()
@@ -90,7 +85,7 @@ void ScriptScanner::RegisterScript(std::unique_ptr<ScriptInfo> &&info)
 
 	/* Check if GetShortName follows the rules */
 	if (info->GetShortName().size() != 4) {
-		Debug(script, 0, "The script '{}' returned a string from GetShortName() which is not four characters. Unable to load the script.", info->GetName());
+		Debug(Facility::Script, Severity::Critical, "The script '{}' returned a string from GetShortName() which is not four characters. Unable to load the script.", info->GetName());
 		return;
 	}
 
@@ -105,10 +100,10 @@ void ScriptScanner::RegisterScript(std::unique_ptr<ScriptInfo> &&info)
 			return;
 		}
 
-		Debug(script, 1, "Registering two scripts with the same name and version");
-		Debug(script, 1, "  1: {}", it->second->GetMainScript());
-		Debug(script, 1, "  2: {}", info->GetMainScript());
-		Debug(script, 1, "The first is taking precedence.");
+		Debug(Facility::Script, Severity::Error, "Registering two scripts with the same name and version");
+		Debug(Facility::Script, Severity::Error, "  1: {}", it->second->GetMainScript());
+		Debug(Facility::Script, Severity::Error, "  2: {}", info->GetMainScript());
+		Debug(Facility::Script, Severity::Error, "The first is taking precedence.");
 
 		return;
 	}
@@ -147,6 +142,7 @@ struct ScriptFileChecksumCreator : FileScanner {
 	/**
 	 * Initialise the md5sum to be all zeroes,
 	 * so we can easily xor the data.
+	 * @param dir The directory to look in.
 	 */
 	ScriptFileChecksumCreator(Subdirectory dir) : dir(dir) {}
 
@@ -183,6 +179,7 @@ struct ScriptFileChecksumCreator : FileScanner {
  * @param ci The information to compare to.
  * @param md5sum Whether to check the MD5 checksum.
  * @param info The script to get the shortname and md5 sum from.
+ * @param dir The directory to look in for scripts.
  * @return True iff they're the same.
  */
 static bool IsSameScript(const ContentInfo &ci, bool md5sum, const ScriptInfo &info, Subdirectory dir)

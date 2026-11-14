@@ -5,14 +5,15 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <https://www.gnu.org/licenses/old-licenses/gpl-2.0>.
  */
 
-/** @file crashlog_unix.cpp Unix crash log handler */
+/** @file crashlog_unix.cpp Unix crash log handler. */
 
 #include "../../stdafx.h"
+#include "../../core/format.hpp"
 #include "../../crashlog.h"
 #include "../../fileio_func.h"
 #include "../../string_func.h"
 #include "../../gamelog.h"
-#include "../../saveload/saveload.h"
+#include "../../saveload/saveload_func.h"
 
 #include <setjmp.h>
 #include <signal.h>
@@ -25,14 +26,6 @@
 
 #ifdef WITH_UNOFFICIAL_BREAKPAD
 #	include <client/linux/handler/exception_handler.h>
-#endif
-
-#if defined(__EMSCRIPTEN__)
-#	include <emscripten.h>
-/* We avoid abort(), as it is a SIGBART, and use _exit() instead. But emscripten doesn't know _exit(). */
-#	define _exit emscripten_force_exit
-#else
-#include <unistd.h>
 #endif
 
 #include "../../safeguards.h"
@@ -85,7 +78,7 @@ class CrashLogUnix : public CrashLog {
 	}
 #endif
 
-	/* virtual */ bool TryExecute(std::string_view section_name, std::function<bool()> &&func) override
+	bool TryExecute(std::string_view section_name, std::function<bool()> &&func) override
 	{
 		this->try_execute_active = true;
 
@@ -169,7 +162,7 @@ static void CDECL HandleInternalCrash([[maybe_unused]] int signum)
 {
 	if (CrashLogUnix::current == nullptr || !CrashLogUnix::current->try_execute_active) {
 		fmt::print("Something went seriously wrong when creating the crash log. Aborting.\n");
-		_exit(1);
+		std::_Exit(1);
 	}
 
 	longjmp(CrashLogUnix::current->internal_fault_jmp_buf, 1);
@@ -184,7 +177,7 @@ static void CDECL HandleCrash(int signum)
 {
 	if (CrashLogUnix::current != nullptr) {
 		CrashLog::AfterCrashLogCleanup();
-		_exit(2);
+		std::_Exit(2);
 	}
 
 	/* Capture crashing during the handling of a crash. */
@@ -195,14 +188,14 @@ static void CDECL HandleCrash(int signum)
 	if (_gamelog.TestEmergency()) {
 		fmt::print("A serious fault condition occurred in the game. The game will shut down.\n");
 		fmt::print("As you loaded an emergency savegame no crash information will be generated.\n");
-		_exit(3);
+		std::_Exit(3);
 	}
 
 	if (SaveloadCrashWithMissingNewGRFs()) {
 		fmt::print("A serious fault condition occurred in the game. The game will shut down.\n");
 		fmt::print("As you loaded an savegame for which you do not have the required NewGRFs\n");
 		fmt::print("no crash information will be generated.\n");
-		_exit(3);
+		std::_Exit(3);
 	}
 
 	CrashLogUnix *log = new CrashLogUnix(signum);
@@ -210,7 +203,7 @@ static void CDECL HandleCrash(int signum)
 	log->MakeCrashLog();
 
 	CrashLog::AfterCrashLogCleanup();
-	_exit(2);
+	std::_Exit(2);
 }
 
 /* static */ void CrashLog::InitialiseCrashLog()

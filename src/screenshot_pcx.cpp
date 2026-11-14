@@ -11,7 +11,7 @@
 #include "core/endian_func.hpp"
 #include "core/math_func.hpp"
 #include "debug.h"
-#include "fileio_func.h"
+#include "fileio_type.h"
 #include "screenshot_type.h"
 
 #include "safeguards.h"
@@ -48,7 +48,7 @@ public:
 		bool success;
 
 		if (pixelformat == 32) {
-			Debug(misc, 0, "Can't convert a 32bpp screenshot to PCX format. Please pick another format.");
+			Debug(Facility::Misc, Severity::Critical, "Can't convert a 32bpp screenshot to PCX format. Please pick another format.");
 			return false;
 		}
 		if (pixelformat != 8 || w == 0) return false;

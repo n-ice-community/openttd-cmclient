@@ -97,7 +97,7 @@ bool MusicDriver_ExtMidi::IsSongPlaying()
 
 void MusicDriver_ExtMidi::SetVolume(uint8_t)
 {
-	Debug(driver, 1, "extmidi: set volume not implemented");
+	Debug(Facility::Driver, Severity::Error, "extmidi: set volume not implemented");
 }
 
 void MusicDriver_ExtMidi::DoPlay()
@@ -117,11 +117,11 @@ void MusicDriver_ExtMidi::DoPlay()
 
 				execvp(parameters[0], parameters.data());
 			}
-			_exit(1);
+			std::_Exit(1);
 		}
 
 		case -1:
-			Debug(driver, 0, "extmidi: couldn't fork: {}", strerror(errno));
+			Debug(Facility::Driver, Severity::Critical, "extmidi: couldn't fork: {}", strerror(errno));
 			[[fallthrough]];
 
 		default:
@@ -162,7 +162,7 @@ void MusicDriver_ExtMidi::DoStop()
 
 	if (KillWait(this->pid, SIGTERM)) return;
 
-	Debug(driver, 0, "extmidi: gracefully stopping failed, trying the hard way");
+	Debug(Facility::Driver, Severity::Critical, "extmidi: gracefully stopping failed, trying the hard way");
 	/* Gracefully stopping failed. Do it the hard way
 	 * and wait till the process finally died. */
 	kill(this->pid, SIGKILL);

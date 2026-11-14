@@ -85,10 +85,11 @@ enum class OrderLoadType : uint8_t {
  * Non-stop order flags.
  */
 enum class OrderNonStopFlag : uint8_t {
-	NoIntermediate = 0, ///< The vehicle will not stop at any stations it passes except the destination, aka non-stop.
-	NoDestination = 1, ///< The vehicle will stop at any station it passes except the destination, aka via.
+	NonStop = 0, ///< The vehicle will not stop at any stations it passes except the destination, aka non-stop.
+	GoVia = 1, ///< The vehicle will stop at any station it passes except the destination, aka via.
 };
 
+/** Bitset of \c OrderNonStopFlag elements. */
 using OrderNonStopFlags = EnumBitSet<OrderNonStopFlag, uint8_t>;
 
 /**
@@ -98,7 +99,7 @@ enum class OrderStopLocation : uint8_t {
 	NearEnd = 0, ///< Stop at the near end of the platform
 	Middle = 1, ///< Stop at the middle of the platform
 	FarEnd = 2, ///< Stop at the far end of the platform
-	End,
+	End, ///< End marker.
 };
 
 /**
@@ -109,6 +110,7 @@ enum class OrderDepotTypeFlag : uint8_t {
 	PartOfOrders = 1, ///< This depot order is because of a regular order.
 };
 
+/** Bitset of \c OrderDepotTypeFlag elements. */
 using OrderDepotTypeFlags = EnumBitSet<OrderDepotTypeFlag, uint8_t>;
 
 /**
@@ -120,6 +122,7 @@ enum class OrderDepotActionFlag : uint8_t {
 	Unbunch = 2, ///< Service the vehicle and then unbunch it.
 };
 
+/** Bitset of \c OrderDepotActionFlag elements. */
 using OrderDepotActionFlags = EnumBitSet<OrderDepotActionFlag, uint8_t>;
 
 /**
@@ -134,7 +137,8 @@ enum class OrderConditionVariable : uint8_t {
 	Unconditionally = 5, ///< Always skip
 	RemainingLifetime = 6, ///< Skip based on the remaining lifetime
 	MaxReliability = 7, ///< Skip based on the maximum reliability
-	End,
+	DrivingBackwards = 8, ///< Skip when the train is driving backwards
+	End, ///< End marker.
 };
 
 /**
@@ -149,7 +153,7 @@ enum class OrderConditionComparator : uint8_t {
 	MoreThanOrEqual = 5, ///< Skip if the value is more or equal to the limit
 	IsTrue = 6, ///< Skip if the variable is true
 	IsFalse = 7, ///< Skip if the variable is false
-	End,
+	End, ///< End marker.
 };
 
 
@@ -177,7 +181,7 @@ enum class OrderDepotAction : uint8_t {
 	Service = 1, ///< Service only if needed
 	Stop = 2, ///< Go to the depot and stop there
 	Unbunch = 3, ///< Go to the depot and unbunch
-	End
+	End, ///< End marker.
 };
 
 /**

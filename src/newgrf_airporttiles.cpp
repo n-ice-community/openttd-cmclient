@@ -12,7 +12,6 @@
 #include "newgrf_airporttiles.h"
 #include "newgrf_badge.h"
 #include "newgrf_spritegroup.h"
-#include "newgrf_sound.h"
 #include "station_base.h"
 #include "water.h"
 #include "landscape.h"
@@ -20,7 +19,6 @@
 #include "town.h"
 #include "newgrf_animation_base.h"
 
-#include "table/strings.h"
 #include "table/airporttiles.h"
 
 #include "safeguards.h"
@@ -71,7 +69,7 @@ void AirportTileOverrideManager::SetEntitySpec(AirportTileSpec &&airpts)
 	StationGfx airpt_id = this->AddEntityID(airpts.grf_prop.local_id, airpts.grf_prop.grfid, airpts.grf_prop.subst_id);
 
 	if (airpt_id == this->invalid_id) {
-		GrfMsg(1, "AirportTile.SetEntitySpec: Too many airport tiles allocated. Ignoring.");
+		GrfMsg(Severity::Error, "AirportTile.SetEntitySpec: Too many airport tiles allocated. Ignoring.");
 		return;
 	}
 
@@ -86,7 +84,7 @@ void AirportTileOverrideManager::SetEntitySpec(AirportTileSpec &&airpts)
 		overridden_airpts->grf_prop.override_id = airpt_id;
 		overridden_airpts->enabled = false;
 		this->entity_overrides[i] = this->invalid_id;
-		this->grfid_overrides[i] = 0;
+		this->grfid_overrides[i] = {};
 	}
 }
 
@@ -112,7 +110,7 @@ StationGfx GetTranslatedAirportTileID(StationGfx gfx)
 static uint32_t GetNearbyAirportTileInformation(uint8_t parameter, TileIndex tile, StationID index, bool grf_version8)
 {
 	if (parameter != 0) tile = GetNearbyTile(parameter, tile); // only perform if it is required
-	bool is_same_airport = (IsTileType(tile, MP_STATION) && IsAirport(tile) && GetStationIndex(tile) == index);
+	bool is_same_airport = (IsTileType(tile, TileType::Station) && IsAirport(tile) && GetStationIndex(tile) == index);
 
 	return GetNearbyTileInformation(tile, grf_version8) | (is_same_airport ? 1 : 0) << 8;
 }
@@ -126,7 +124,7 @@ static uint32_t GetNearbyAirportTileInformation(uint8_t parameter, TileIndex til
  * @param cur_grfid GRFID of the current callback
  * @return value encoded as per NFO specs
  */
-static uint32_t GetAirportTileIDAtOffset(TileIndex tile, const Station *st, uint32_t cur_grfid)
+static uint32_t GetAirportTileIDAtOffset(TileIndex tile, const Station *st, GrfID cur_grfid)
 {
 	if (!st->TileBelongsToAirport(tile)) {
 		return 0xFFFF;
@@ -196,7 +194,7 @@ static uint32_t GetAirportTileIDAtOffset(TileIndex tile, const Station *st, uint
 		case 0x7A: return GetBadgeVariableResult(*this->ro.grffile, this->ats->badges, parameter);
 	}
 
-	Debug(grf, 1, "Unhandled airport tile variable 0x{:X}", variable);
+	this->ro.UnhandledVariable(variable);
 
 	available = false;
 	return UINT_MAX;
@@ -227,7 +225,7 @@ AirportTileResolverObject::AirportTileResolverObject(const AirportTileSpec *ats,
 
 GrfSpecFeature AirportTileResolverObject::GetFeature() const
 {
-	return GSF_AIRPORTTILES;
+	return GrfSpecFeature::AirportTiles;
 }
 
 uint32_t AirportTileResolverObject::GetDebugID() const
@@ -254,7 +252,7 @@ static void AirportDrawTileLayout(const TileInfo *ti, const DrawTileSpriteSpan &
 		}
 	}
 
-	DrawNewGRFTileSeq(ti, &dts, TO_BUILDINGS, 0, GetColourPalette(colour));
+	DrawNewGRFTileSeq(ti, &dts, TransparencyOption::Buildings, 0, GetColourPalette(colour));
 }
 
 bool DrawNewAirportTile(TileInfo *ti, Station *st, const AirportTileSpec *airts)
@@ -267,7 +265,7 @@ bool DrawNewAirportTile(TileInfo *ti, Station *st, const AirportTileSpec *airts)
 			if (callback_res != CALLBACK_FAILED) draw_old_one = ConvertBooleanCallback(airts->grf_prop.grffile, CBID_AIRPTILE_DRAW_FOUNDATIONS, callback_res);
 		}
 
-		if (draw_old_one) DrawFoundation(ti, FOUNDATION_LEVELED);
+		if (draw_old_one) DrawFoundation(ti, Foundation::Leveled);
 	}
 
 	AirportTileResolverObject object(airts, ti->tile, st);
@@ -321,7 +319,7 @@ bool TriggerAirportTileAnimation(Station *st, TileIndex tile, AirportAnimationTr
 
 bool TriggerAirportAnimation(Station *st, AirportAnimationTrigger trigger, CargoType cargo_type)
 {
-	if (st->airport.tile == INVALID_TILE) return false;
+	if (st->airport.IsEmpty()) return false;
 
 	bool ret = true;
 	uint32_t random = Random();

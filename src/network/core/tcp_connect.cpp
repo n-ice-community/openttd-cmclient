@@ -5,9 +5,7 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <https://www.gnu.org/licenses/old-licenses/gpl-2.0>.
  */
 
-/**
- * @file tcp_connect.cpp Basic functions to create connections without blocking.
- */
+/** @file tcp_connect.cpp Basic functions to create connections without blocking. */
 
 #include "../../stdafx.h"
 #include "../../thread.h"
@@ -25,6 +23,7 @@
  * @param connection_string The address to connect to.
  * @param default_port If not indicated in connection_string, what port to use.
  * @param bind_address The local bind address to use. Defaults to letting the OS find one.
+ * @param family The IP-family to connect with.
  */
 TCPConnecter::TCPConnecter(std::string_view connection_string, uint16_t default_port, const NetworkAddress &bind_address, int family) :
 	bind_address(bind_address),
@@ -42,11 +41,11 @@ TCPServerConnecter::TCPServerConnecter(std::string_view connection_string, uint1
 	server_address(ServerAddress::Parse(connection_string, default_port))
 {
 	switch (this->server_address.type) {
-		case SERVER_ADDRESS_DIRECT:
+		case ServerAddressType::Direct:
 			this->connection_string = this->server_address.connection_string;
 			break;
 
-		case SERVER_ADDRESS_INVITE_CODE:
+		case ServerAddressType::InviteCode:
 			this->status = Status::Connecting;
 			_network_coordinator_client.ConnectToServer(this->server_address.connection_string, this);
 			break;
@@ -56,6 +55,7 @@ TCPServerConnecter::TCPServerConnecter(std::string_view connection_string, uint1
 	}
 }
 
+/** Wait until the resolving is done, then release the sockets. */
 TCPConnecter::~TCPConnecter()
 {
 	if (this->resolve_thread.joinable()) {
@@ -89,37 +89,37 @@ void TCPConnecter::Connect(addrinfo *address)
 {
 	SOCKET sock = socket(address->ai_family, address->ai_socktype, address->ai_protocol);
 	if (sock == INVALID_SOCKET) {
-		Debug(net, 0, "Could not create {} {} socket: {}", NetworkAddress::SocketTypeAsString(address->ai_socktype), NetworkAddress::AddressFamilyAsString(address->ai_family), NetworkError::GetLast().AsString());
+		Debug(Facility::Net, Severity::Critical, "Could not create {} {} socket: {}", NetworkAddress::SocketTypeAsString(address->ai_socktype), NetworkAddress::AddressFamilyAsString(address->ai_family), NetworkError::GetLast().AsString());
 		return;
 	}
 
 	if (!SetReusePort(sock)) {
-		Debug(net, 0, "Setting reuse-port mode failed: {}", NetworkError::GetLast().AsString());
+		Debug(Facility::Net, Severity::Critical, "Setting reuse-port mode failed: {}", NetworkError::GetLast().AsString());
 	}
 
 	if (this->bind_address.GetPort() > 0) {
 		if (bind(sock, (const sockaddr *)this->bind_address.GetAddress(), this->bind_address.GetAddressLength()) != 0) {
-			Debug(net, 1, "Could not bind socket on {}: {}", this->bind_address.GetAddressAsString(), NetworkError::GetLast().AsString());
+			Debug(Facility::Net, Severity::Error, "Could not bind socket on {}: {}", this->bind_address.GetAddressAsString(), NetworkError::GetLast().AsString());
 			closesocket(sock);
 			return;
 		}
 	}
 
 	if (!SetNoDelay(sock)) {
-		Debug(net, 1, "Setting TCP_NODELAY failed: {}", NetworkError::GetLast().AsString());
+		Debug(Facility::Net, Severity::Error, "Setting TCP_NODELAY failed: {}", NetworkError::GetLast().AsString());
 	}
 	if (!SetNonBlocking(sock)) {
-		Debug(net, 0, "Setting non-blocking mode failed: {}", NetworkError::GetLast().AsString());
+		Debug(Facility::Net, Severity::Critical, "Setting non-blocking mode failed: {}", NetworkError::GetLast().AsString());
 	}
 
 	NetworkAddress network_address = NetworkAddress(address->ai_addr, (int)address->ai_addrlen);
-	Debug(net, 5, "Attempting to connect to {}", network_address.GetAddressAsString());
+	Debug(Facility::Net, Severity::Debug1, "Attempting to connect to {}", network_address.GetAddressAsString());
 
 	int err = connect(sock, address->ai_addr, (int)address->ai_addrlen);
 	if (err != 0 && !NetworkError::GetLast().IsConnectInProgress()) {
 		closesocket(sock);
 
-		Debug(net, 1, "Could not connect to {}: {}", network_address.GetAddressAsString(), NetworkError::GetLast().AsString());
+		Debug(Facility::Net, Severity::Error, "Could not connect to {}: {}", network_address.GetAddressAsString(), NetworkError::GetLast().AsString());
 		return;
 	}
 
@@ -197,13 +197,13 @@ void TCPConnecter::OnResolved(addrinfo *ai)
 		}
 	}
 
-	if (_debug_net_level >= 6) {
+	if (IsVisibleSeverity(Facility::Net, Severity::Debug2)) {
 		if (this->addresses.empty()) {
-			Debug(net, 6, "{} did not resolve", this->connection_string);
+			Debug(Facility::Net, Severity::Debug2, "{} did not resolve", this->connection_string);
 		} else {
-			Debug(net, 6, "{} resolved in:", this->connection_string);
+			Debug(Facility::Net, Severity::Debug2, "{} resolved in:", this->connection_string);
 			for (const auto &address : this->addresses) {
-				Debug(net, 6, "- {}", NetworkAddress(address->ai_addr, (int)address->ai_addrlen).GetAddressAsString());
+				Debug(Facility::Net, Severity::Debug2, "- {}", NetworkAddress(address->ai_addr, (int)address->ai_addrlen).GetAddressAsString());
 			}
 		}
 	}
@@ -238,13 +238,13 @@ void TCPConnecter::Resolve()
 	auto end = std::chrono::steady_clock::now();
 	auto duration = std::chrono::duration_cast<std::chrono::seconds>(end - start);
 	if (!getaddrinfo_timeout_error_shown && duration >= std::chrono::seconds(5)) {
-		Debug(net, 0, "getaddrinfo() for address \"{}\" took {} seconds", this->connection_string, duration.count());
-		Debug(net, 0, "  This is likely an issue in the DNS name resolver's configuration causing it to time out");
+		Debug(Facility::Net, Severity::Critical, "getaddrinfo() for address \"{}\" took {} seconds", this->connection_string, duration.count());
+		Debug(Facility::Net, Severity::Critical, "  This is likely an issue in the DNS name resolver's configuration causing it to time out");
 		getaddrinfo_timeout_error_shown = true;
 	}
 
 	if (error != 0) {
-		Debug(net, 0, "Failed to resolve DNS for {}", this->connection_string);
+		Debug(Facility::Net, Severity::Critical, "Failed to resolve DNS for {}", this->connection_string);
 		this->status = Status::Failure;
 		return;
 	}
@@ -257,6 +257,7 @@ void TCPConnecter::Resolve()
 
 /**
  * Thunk to start Resolve() on the right instance.
+ * @param connecter The connector to resolve on.
  */
 /* static */ void TCPConnecter::ResolveThunk(TCPConnecter *connecter)
 {
@@ -325,7 +326,7 @@ bool TCPConnecter::CheckActivity()
 	/* select() failed; hopefully next try it doesn't. */
 	if (n < 0) {
 		/* select() normally never fails; so hopefully it works next try! */
-		Debug(net, 1, "select() failed: {}", NetworkError::GetLast().AsString());
+		Debug(Facility::Net, Severity::Error, "select() failed: {}", NetworkError::GetLast().AsString());
 		return false;
 	}
 
@@ -342,7 +343,7 @@ bool TCPConnecter::CheckActivity()
 
 		/* More than 3 seconds no socket reported activity, and there are no
 		 * more address to try. Timeout the attempt. */
-		Debug(net, 0, "Timeout while connecting to {}", this->connection_string);
+		Debug(Facility::Net, Severity::Critical, "Timeout while connecting to {}", this->connection_string);
 
 		for (const auto &socket : this->sockets) {
 			closesocket(socket);
@@ -361,7 +362,7 @@ bool TCPConnecter::CheckActivity()
 	for (auto it = this->sockets.begin(); it != this->sockets.end(); /* nothing */) {
 		NetworkError socket_error = GetSocketError(*it);
 		if (socket_error.HasError()) {
-			Debug(net, 1, "Could not connect to {}: {}", this->sock_to_address[*it].GetAddressAsString(), socket_error.AsString());
+			Debug(Facility::Net, Severity::Error, "Could not connect to {}: {}", this->sock_to_address[*it].GetAddressAsString(), socket_error.AsString());
 			closesocket(*it);
 			this->sock_to_address.erase(*it);
 			it = this->sockets.erase(it);
@@ -388,10 +389,8 @@ bool TCPConnecter::CheckActivity()
 		it = this->sockets.erase(it);
 	}
 
-	Debug(net, 3, "Connected to {}", this->connection_string);
-	if (_debug_net_level >= 5) {
-		Debug(net, 5, "- using {}", NetworkAddress::GetPeerName(connected_socket));
-	}
+	Debug(Facility::Net, Severity::Notice, "Connected to {}", this->connection_string);
+	Debug(Facility::Net, Severity::Debug1, "- using {}", NetworkAddress::GetPeerName(connected_socket));
 
 	this->OnConnect(connected_socket);
 	this->status = Status::Connected;
@@ -407,10 +406,10 @@ bool TCPServerConnecter::CheckActivity()
 	if (this->killed) return true;
 
 	switch (this->server_address.type) {
-		case SERVER_ADDRESS_DIRECT:
+		case ServerAddressType::Direct:
 			return TCPConnecter::CheckActivity();
 
-		case SERVER_ADDRESS_INVITE_CODE:
+		case ServerAddressType::InviteCode:
 			/* Check if a result has come in. */
 			switch (this->status) {
 				case Status::Failure:

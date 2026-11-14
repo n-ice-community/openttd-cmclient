@@ -5,7 +5,7 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <https://www.gnu.org/licenses/old-licenses/gpl-2.0>.
  */
 
-/** @file object_sl.cpp Code handling saving and loading of objects */
+/** @file object_sl.cpp Code handling saving and loading of objects. */
 
 #include "../stdafx.h"
 
@@ -14,23 +14,24 @@
 
 #include "../object_base.h"
 #include "../object_map.h"
+#include "../town.h"
 #include "newgrf_sl.h"
 
 #include "../safeguards.h"
 
 static const SaveLoad _object_desc[] = {
-	    SLE_VAR(Object, location.tile,              SLE_UINT32),
-	    SLE_VAR(Object, location.w,                 SLE_FILE_U8 | SLE_VAR_U16),
-	    SLE_VAR(Object, location.h,                 SLE_FILE_U8 | SLE_VAR_U16),
-	    SLE_REF(Object, town,                       REF_TOWN),
-	    SLE_VAR(Object, build_date,                 SLE_UINT32),
-	SLE_CONDVAR(Object, colour,                     SLE_UINT8,                  SLV_148, SL_MAX_VERSION),
-	SLE_CONDVAR(Object, view,                       SLE_UINT8,                  SLV_155, SL_MAX_VERSION),
-	SLE_CONDVAR(Object, type,                       SLE_UINT16,                 SLV_186, SL_MAX_VERSION),
+	SaveLoad::Variable<VarFileType::U32>("location.tile", SLE_OBJECT_ADDRESS(Object, location.tile)),
+	SaveLoad::Variable<VarFileType::U8>("location.w", SLE_OBJECT_ADDRESS(Object, location.w)),
+	SaveLoad::Variable<VarFileType::U8>("location.h", SLE_OBJECT_ADDRESS(Object, location.h)),
+	SaveLoad::Reference<SLRefType::Town>("town", SLE_OBJECT_ADDRESS(Object, town)),
+	SaveLoad::Variable<VarFileType::U32>("build_date", SLE_OBJECT_ADDRESS(Object, build_date)),
+	SaveLoad::Variable<VarFileType::U8>("colour", SLE_OBJECT_ADDRESS(Object, recolour_offset), SaveLoadVersion::IndustryPlatform),
+	SaveLoad::Variable<VarFileType::U8>("view", SLE_OBJECT_ADDRESS(Object, view), SaveLoadVersion::NewGRFObjectView),
+	SaveLoad::Variable<VarFileType::U16>("type", SLE_OBJECT_ADDRESS(Object, type), SaveLoadVersion::ObjectTypeToPool),
 };
 
 struct OBJSChunkHandler : ChunkHandler {
-	OBJSChunkHandler() : ChunkHandler('OBJS', CH_TABLE) {}
+	OBJSChunkHandler() : ChunkHandler("OBJS", ChunkType::Table) {}
 
 	void Save() const override
 	{
@@ -49,7 +50,7 @@ struct OBJSChunkHandler : ChunkHandler {
 
 		int index;
 		while ((index = SlIterateArray()) != -1) {
-			Object *o = new (ObjectID(index)) Object();
+			Object *o = Object::CreateAtIndex(ObjectID(index));
 			SlObject(o, slt);
 		}
 	}
@@ -58,7 +59,7 @@ struct OBJSChunkHandler : ChunkHandler {
 	{
 		for (Object *o : Object::Iterate()) {
 			SlObject(o, _object_desc);
-			if (IsSavegameVersionBefore(SLV_148) && !IsTileType(o->location.tile, MP_OBJECT)) {
+			if (IsSavegameVersionBefore(SaveLoadVersion::IndustryPlatform) && !IsTileType(o->location.tile, TileType::Object)) {
 				/* Due to a small bug stale objects could remain. */
 				delete o;
 			}
@@ -67,7 +68,7 @@ struct OBJSChunkHandler : ChunkHandler {
 };
 
 struct OBIDChunkHandler : NewGRFMappingChunkHandler {
-	OBIDChunkHandler() : NewGRFMappingChunkHandler('OBID', _object_mngr) {}
+	OBIDChunkHandler() : NewGRFMappingChunkHandler("OBID", _object_mngr) {}
 };
 
 static const OBIDChunkHandler OBID;

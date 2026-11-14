@@ -10,6 +10,7 @@
 #include "../../stdafx.h"
 #include "../../debug.h"
 #include "address.h"
+#include "config.h"
 
 #include "../../safeguards.h"
 
@@ -86,10 +87,10 @@ void NetworkFindBroadcastIPs(NetworkAddressList *broadcast)
 	NetworkFindBroadcastIPsInternal(broadcast);
 
 	/* Now display to the debug all the detected ips */
-	Debug(net, 3, "Detected broadcast addresses:");
+	Debug(Facility::Net, Severity::Notice, "Detected broadcast addresses:");
 	int i = 0;
 	for (NetworkAddress &addr : *broadcast) {
 		addr.SetPort(NETWORK_DEFAULT_PORT);
-		Debug(net, 3, "  {}) {}", i++, addr.GetHostname());
+		Debug(Facility::Net, Severity::Notice, "  {}) {}", i++, addr.GetHostname());
 	}
 }

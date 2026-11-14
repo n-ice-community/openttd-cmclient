@@ -11,7 +11,6 @@
 #define LEAGUE_BASE_H
 
 #include "company_type.h"
-#include "goal_type.h"
 #include "league_type.h"
 #include "core/pool_type.hpp"
 #include "strings_type.h"
@@ -37,17 +36,9 @@ struct LeagueTableElement : LeagueTableElementPool::PoolItem<&_league_table_elem
 	EncodedString score{}; ///< String representation of the score associated with the element
 	Link link{}; ///< What opens when element is clicked
 
-	/**
-	 * We need an (empty) constructor so struct isn't zeroed (as C++ standard states)
-	 */
-	LeagueTableElement() { }
-	LeagueTableElement(LeagueTableID table, int64_t rating, CompanyID company, const EncodedString &text, const EncodedString &score, const Link &link) :
-		table(table), rating(rating), company(company), text(text), score(score), link(link) {}
-
-	/**
-	 * (Empty) destructor has to be defined else operator delete might be called with nullptr parameter
-	 */
-	~LeagueTableElement() { }
+	LeagueTableElement(LeagueTableElementID index) : LeagueTableElementPool::PoolItem<&_league_table_element_pool>(index) { }
+	LeagueTableElement(LeagueTableElementID index, LeagueTableID table, int64_t rating, CompanyID company, const EncodedString &text, const EncodedString &score, const Link &link) :
+		LeagueTableElementPool::PoolItem<&_league_table_element_pool>(index), table(table), rating(rating), company(company), text(text), score(score), link(link) {}
 };
 
 
@@ -57,16 +48,8 @@ struct LeagueTable : LeagueTablePool::PoolItem<&_league_table_pool> {
 	EncodedString header{}; ///< Text to show above the table
 	EncodedString footer{}; ///< Text to show below the table
 
-	/**
-	 * We need an (empty) constructor so struct isn't zeroed (as C++ standard states)
-	 */
-	LeagueTable() { }
-	LeagueTable(const EncodedString &title, const EncodedString &header, const EncodedString &footer) : title(title), header(header), footer(footer) { }
-
-	/**
-	 * (Empty) destructor has to be defined else operator delete might be called with nullptr parameter
-	 */
-	~LeagueTable() { }
+	LeagueTable(LeagueTableID index, const EncodedString &title = {}, const EncodedString &header = {}, const EncodedString &footer = {}) :
+		LeagueTablePool::PoolItem<&_league_table_pool>(index), title(title), header(header), footer(footer) { }
 };
 
 #endif /* LEAGUE_BASE_H */

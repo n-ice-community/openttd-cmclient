@@ -5,24 +5,22 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <https://www.gnu.org/licenses/old-licenses/gpl-2.0>.
  */
 
-/**
- * @file http_winhttp.cpp WinHTTP-based implementation for HTTP requests.
- */
+/** @file http_winhttp.cpp WinHTTP-based implementation for HTTP requests. */
 
 #include "../../stdafx.h"
 #include "../../debug.h"
-#include "../../rev.h"
-#include "../network_internal.h"
 
 #include "http.h"
 #include "http_shared.h"
+#include "network_game_info.h"
 
 #include <mutex>
+#include <windows.h>
 #include <winhttp.h>
 
 #include "../../safeguards.h"
 
-static HINTERNET _winhttp_session = nullptr;
+static HINTERNET _winhttp_session = nullptr; ///< Currently running download session.
 
 /** Single HTTP request. */
 class NetworkHTTPRequest {
@@ -46,14 +44,14 @@ public:
 	void WinHttpCallback(DWORD code, void *info, DWORD length);
 };
 
-static std::vector<NetworkHTTPRequest *> _http_requests;
-static std::vector<NetworkHTTPRequest *> _new_http_requests;
-static std::mutex _new_http_requests_mutex;
+static std::vector<NetworkHTTPRequest *> _http_requests; ///< HTTP requests that are currently running.
+static std::vector<NetworkHTTPRequest *> _new_http_requests; ///< HTTP requests that should be started.
+static std::mutex _new_http_requests_mutex; ///< Mutex to prevent concurrent access #_new_http_requests.
 
-static std::vector<HTTPThreadSafeCallback *> _http_callbacks;
-static std::vector<HTTPThreadSafeCallback *> _new_http_callbacks;
-static std::mutex _http_callback_mutex;
-static std::mutex _new_http_callback_mutex;
+static std::vector<HTTPThreadSafeCallback *> _http_callbacks; ///< Callback for the current requests.
+static std::vector<HTTPThreadSafeCallback *> _new_http_callbacks; ///< Callbacks for the request that should be started.
+static std::mutex _http_callback_mutex; ///< Mutex to prevent concurrent access to #_http_callbacks.
+static std::mutex _new_http_callback_mutex; ///< Mutex to prevent concurrent access to #_new_http_callbacks.
 
 /**
  * Create a new HTTP request.
@@ -71,6 +69,10 @@ NetworkHTTPRequest::NetworkHTTPRequest(std::wstring &&uri, HTTPCallback *callbac
 	_new_http_callbacks.push_back(&this->callback);
 }
 
+/**
+ * Gets the last error from Windows as a string.
+ * @return The human readable form of the last error.
+ */
 static std::string GetLastErrorAsString()
 {
 	wchar_t buffer[512];
@@ -120,7 +122,7 @@ void NetworkHTTPRequest::WinHttpCallback(DWORD code, void *info, DWORD length)
 		case WINHTTP_CALLBACK_STATUS_REDIRECT:
 			/* Make sure we are not in a redirect loop. */
 			if (this->depth++ > 5) {
-				Debug(net, 0, "HTTP request failed: too many redirects");
+				Debug(Facility::Net, Severity::Critical, "HTTP request failed: too many redirects");
 				this->callback.OnFailure();
 				this->finished = true;
 				return;
@@ -138,12 +140,12 @@ void NetworkHTTPRequest::WinHttpCallback(DWORD code, void *info, DWORD length)
 			DWORD status_code = 0;
 			DWORD status_code_size = sizeof(status_code);
 			WinHttpQueryHeaders(this->request, WINHTTP_QUERY_STATUS_CODE | WINHTTP_QUERY_FLAG_NUMBER, WINHTTP_HEADER_NAME_BY_INDEX, &status_code, &status_code_size, WINHTTP_NO_HEADER_INDEX);
-			Debug(net, 3, "HTTP request status code: {}", status_code);
+			Debug(Facility::Net, Severity::Notice, "HTTP request status code: {}", status_code);
 
 			/* If there is any error, we simply abort the request. */
 			if (status_code >= 400) {
 				/* No need to be verbose about rate limiting. */
-				Debug(net, status_code == HTTP_429_TOO_MANY_REQUESTS ? 1 : 0, "HTTP request failed: status-code {}", status_code);
+				Debug(Facility::Net, status_code == HTTP_429_TOO_MANY_REQUESTS ? Severity::Error : Severity::Critical, "HTTP request failed: status-code {}", status_code);
 				this->callback.OnFailure();
 				this->finished = true;
 				return;
@@ -165,14 +167,14 @@ void NetworkHTTPRequest::WinHttpCallback(DWORD code, void *info, DWORD length)
 		} break;
 
 		case WINHTTP_CALLBACK_STATUS_READ_COMPLETE:
-			Debug(net, 6, "HTTP callback: {} bytes", length);
+			Debug(Facility::Net, Severity::Debug2, "HTTP callback: {} bytes", length);
 
 			this->callback.OnReceiveData(std::unique_ptr<char[]>(static_cast<char *>(info)), length);
 
 			if (length == 0) {
 				/* Next step: no more data available: request is finished. */
 				this->finished = true;
-				Debug(net, 1, "HTTP request succeeded");
+				Debug(Facility::Net, Severity::Error, "HTTP request succeeded");
 			} else {
 				/* Next step: query for more data. */
 				WinHttpQueryDataAvailable(this->request, nullptr);
@@ -182,19 +184,26 @@ void NetworkHTTPRequest::WinHttpCallback(DWORD code, void *info, DWORD length)
 
 		case WINHTTP_CALLBACK_STATUS_SECURE_FAILURE:
 		case WINHTTP_CALLBACK_STATUS_REQUEST_ERROR:
-			Debug(net, 0, "HTTP request failed: {}", GetLastErrorAsString());
+			Debug(Facility::Net, Severity::Critical, "HTTP request failed: {}", GetLastErrorAsString());
 			this->callback.OnFailure();
 			this->finished = true;
 			break;
 
 		default:
-			Debug(net, 0, "HTTP request failed: unexpected callback code 0x{:x}", code);
+			Debug(Facility::Net, Severity::Critical, "HTTP request failed: unexpected callback code 0x{:x}", code);
 			this->callback.OnFailure();
 			this->finished = true;
 			return;
 	}
 }
 
+/**
+ * Implementation of Microsoft's WINHTTP_STATUS_CALLBACK.
+ * @param context Pointer to our context, i.e. our request.
+ * @param code The code of the event.
+ * @param info The information about the event.
+ * @param length The length of the information.
+ */
 static void CALLBACK StaticWinHttpCallback(HINTERNET, DWORD_PTR context, DWORD code, void *info, DWORD length)
 {
 	if (context == 0) return;
@@ -212,7 +221,7 @@ static void CALLBACK StaticWinHttpCallback(HINTERNET, DWORD_PTR context, DWORD c
  */
 void NetworkHTTPRequest::Connect()
 {
-	Debug(net, 1, "HTTP request to {}", std::string(uri.begin(), uri.end()));
+	Debug(Facility::Net, Severity::Error, "HTTP request to {}", std::string(uri.begin(), uri.end()));
 
 	URL_COMPONENTS url_components = {};
 	wchar_t scheme[32];
@@ -232,7 +241,7 @@ void NetworkHTTPRequest::Connect()
 	/* Create the HTTP connection. */
 	this->connection = WinHttpConnect(_winhttp_session, url_components.lpszHostName, url_components.nPort, 0);
 	if (this->connection == nullptr) {
-		Debug(net, 0, "HTTP request failed: {}", GetLastErrorAsString());
+		Debug(Facility::Net, Severity::Critical, "HTTP request failed: {}", GetLastErrorAsString());
 		this->callback.OnFailure();
 		this->finished = true;
 		return;
@@ -242,7 +251,7 @@ void NetworkHTTPRequest::Connect()
 	if (this->request == nullptr) {
 		WinHttpCloseHandle(this->connection);
 
-		Debug(net, 0, "HTTP request failed: {}", GetLastErrorAsString());
+		Debug(Facility::Net, Severity::Critical, "HTTP request failed: {}", GetLastErrorAsString());
 		this->callback.OnFailure();
 		this->finished = true;
 		return;
@@ -266,7 +275,7 @@ void NetworkHTTPRequest::Connect()
 bool NetworkHTTPRequest::Receive()
 {
 	if (this->callback.cancelled && !this->finished) {
-		Debug(net, 1, "HTTP request failed: cancelled by user");
+		Debug(Facility::Net, Severity::Error, "HTTP request failed: cancelled by user");
 		this->callback.OnFailure();
 		this->finished = true;
 		/* Fall-through, as we are waiting for IsQueueEmpty() to happen. */

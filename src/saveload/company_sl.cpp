@@ -5,13 +5,15 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <https://www.gnu.org/licenses/old-licenses/gpl-2.0>.
  */
 
-/** @file company_sl.cpp Code handling saving and loading of company data */
+/** @file company_sl.cpp Code handling saving and loading of company data. */
 
 #include "../stdafx.h"
 
 #include "saveload.h"
+#include "saveload_error.hpp"
 #include "compat/company_sl_compat.h"
 
+#include "../autoreplace_base.h"
 #include "../company_func.h"
 #include "../company_manager_face.h"
 #include "../fios.h"
@@ -140,13 +142,13 @@ void AfterLoadCompanyStats()
 	Company *c;
 	for (const auto tile : Map::Iterate()) {
 		switch (GetTileType(tile)) {
-			case MP_RAILWAY:
+			case TileType::Railway:
 				c = Company::GetIfValid(GetTileOwner(tile));
 				if (c != nullptr) {
 					uint pieces = 1;
 					if (IsPlainRail(tile)) {
 						TrackBits bits = GetTrackBits(tile);
-						pieces = CountBits(bits);
+						pieces = bits.Count();
 						if (TracksOverlap(bits)) pieces *= pieces;
 					}
 					c->infrastructure.rail[GetRailType(tile)] += pieces;
@@ -155,24 +157,24 @@ void AfterLoadCompanyStats()
 				}
 				break;
 
-			case MP_ROAD: {
+			case TileType::Road: {
 				if (IsLevelCrossing(tile)) {
 					c = Company::GetIfValid(GetTileOwner(tile));
 					if (c != nullptr) c->infrastructure.rail[GetRailType(tile)] += LEVELCROSSING_TRACKBIT_FACTOR;
 				}
 
 				/* Iterate all present road types as each can have a different owner. */
-				for (RoadTramType rtt : _roadtramtypes) {
+				for (RoadTramType rtt : ROADTRAMTYPES_ALL) {
 					RoadType rt = GetRoadType(tile, rtt);
 					if (rt == INVALID_ROADTYPE) continue;
 					c = Company::GetIfValid(IsRoadDepot(tile) ? GetTileOwner(tile) : GetRoadOwner(tile, rtt));
 					/* A level crossings and depots have two road bits. */
-					if (c != nullptr) c->infrastructure.road[rt] += IsNormalRoad(tile) ? CountBits(GetRoadBits(tile, rtt)) : 2;
+					if (c != nullptr) c->infrastructure.road[rt] += IsNormalRoad(tile) ? GetRoadBits(tile, rtt).Count() : 2;
 				}
 				break;
 			}
 
-			case MP_STATION:
+			case TileType::Station:
 				c = Company::GetIfValid(GetTileOwner(tile));
 				if (c != nullptr && GetStationType(tile) != StationType::Airport && !IsBuoy(tile)) c->infrastructure.station++;
 
@@ -186,7 +188,7 @@ void AfterLoadCompanyStats()
 					case StationType::Truck:
 					case StationType::RoadWaypoint: {
 						/* Iterate all present road types as each can have a different owner. */
-						for (RoadTramType rtt : _roadtramtypes) {
+						for (RoadTramType rtt : ROADTRAMTYPES_ALL) {
 							RoadType rt = GetRoadType(tile, rtt);
 							if (rt == INVALID_ROADTYPE) continue;
 							c = Company::GetIfValid(GetRoadOwner(tile, rtt));
@@ -207,7 +209,7 @@ void AfterLoadCompanyStats()
 				}
 				break;
 
-			case MP_WATER:
+			case TileType::Water:
 				if (IsShipDepot(tile) || IsLock(tile)) {
 					c = Company::GetIfValid(GetTileOwner(tile));
 					if (c != nullptr) {
@@ -221,14 +223,14 @@ void AfterLoadCompanyStats()
 				}
 				[[fallthrough]];
 
-			case MP_OBJECT:
+			case TileType::Object:
 				if (GetWaterClass(tile) == WaterClass::Canal) {
 					c = Company::GetIfValid(GetTileOwner(tile));
 					if (c != nullptr) c->infrastructure.water++;
 				}
 				break;
 
-			case MP_TUNNELBRIDGE: {
+			case TileType::TunnelBridge: {
 				/* Only count the tunnel/bridge if we're on the northern end tile. */
 				TileIndex other_end = GetOtherTunnelBridgeEnd(tile);
 				if (tile < other_end) {
@@ -237,14 +239,14 @@ void AfterLoadCompanyStats()
 					uint len = (GetTunnelBridgeLength(tile, other_end) + 2) * TUNNELBRIDGE_TRACKBIT_FACTOR;
 
 					switch (GetTunnelBridgeTransportType(tile)) {
-						case TRANSPORT_RAIL:
+						case TransportType::Rail:
 							c = Company::GetIfValid(GetTileOwner(tile));
 							if (c != nullptr) c->infrastructure.rail[GetRailType(tile)] += len;
 							break;
 
-						case TRANSPORT_ROAD: {
+						case TransportType::Road: {
 							/* Iterate all present road types as each can have a different owner. */
-							for (RoadTramType rtt : _roadtramtypes) {
+							for (RoadTramType rtt : ROADTRAMTYPES_ALL) {
 								RoadType rt = GetRoadType(tile, rtt);
 								if (rt == INVALID_ROADTYPE) continue;
 								c = Company::GetIfValid(GetRoadOwner(tile, rtt));
@@ -253,7 +255,7 @@ void AfterLoadCompanyStats()
 							break;
 						}
 
-						case TRANSPORT_WATER:
+						case TransportType::Water:
 							c = Company::GetIfValid(GetTileOwner(tile));
 							if (c != nullptr) c->infrastructure.water += len;
 							break;
@@ -271,14 +273,14 @@ void AfterLoadCompanyStats()
 	}
 }
 
-/* We do need to read this single value, as the bigger it gets, the more data is stored */
+/** We do need to read this single value, as the bigger it gets, the more data is stored. */
 struct CompanyOldAI {
 	uint8_t num_build_rec;
 };
 
 class SlCompanyOldAIBuildRec : public DefaultSaveLoadHandler<SlCompanyOldAIBuildRec, CompanyOldAI> {
 public:
-	static inline const SaveLoad description[] = {{}}; // Needed to keep DefaultSaveLoadHandler happy.
+	static inline const SaveLoad description[] = {{}}; ///< Needed to keep DefaultSaveLoadHandler happy.
 	static inline const SaveLoadCompatTable compat_description = _company_old_ai_buildrec_compat;
 
 	SaveLoadTable GetDescription() const override { return {}; }
@@ -296,8 +298,8 @@ public:
 class SlCompanyOldAI : public DefaultSaveLoadHandler<SlCompanyOldAI, CompanyProperties> {
 public:
 	static inline const SaveLoad description[] = {
-		SLE_CONDVAR(CompanyOldAI, num_build_rec, SLE_UINT8, SL_MIN_VERSION, SLV_107),
-		SLEG_STRUCTLIST("buildrec", SlCompanyOldAIBuildRec),
+		SaveLoad::Variable<VarFileType::U8>("num_build_rec", SLE_OBJECT_ADDRESS(CompanyOldAI, num_build_rec), SaveLoadVersion::MinVersion, SaveLoadVersion::NoAI),
+		SaveLoad::StructList<SlCompanyOldAIBuildRec>("buildrec"),
 	};
 	static inline const SaveLoadCompatTable compat_description = _company_old_ai_compat;
 
@@ -316,18 +318,18 @@ class SlCompanySettings : public DefaultSaveLoadHandler<SlCompanySettings, Compa
 public:
 	static inline const SaveLoad description[] = {
 		/* Engine renewal settings */
-		SLE_CONDREF(CompanyProperties, engine_renew_list,            REF_ENGINE_RENEWS,   SLV_19, SL_MAX_VERSION),
-		SLE_CONDVAR(CompanyProperties, settings.engine_renew,        SLE_BOOL,            SLV_16, SL_MAX_VERSION),
-		SLE_CONDVAR(CompanyProperties, settings.engine_renew_months, SLE_INT16,           SLV_16, SL_MAX_VERSION),
-		SLE_CONDVAR(CompanyProperties, settings.engine_renew_money,  SLE_UINT32,          SLV_16, SL_MAX_VERSION),
-		SLE_CONDVAR(CompanyProperties, settings.renew_keep_length,   SLE_BOOL,             SLV_2, SL_MAX_VERSION),
+		SaveLoad::Reference<SLRefType::EngineRenew>("engine_renew_list", SLE_OBJECT_ADDRESS(CompanyProperties, engine_renew_list), SaveLoadVersion::EngineRenewPool),
+		SaveLoad::Variable<VarFileType::Bool>("settings.engine_renew", SLE_OBJECT_ADDRESS(CompanyProperties, settings.engine_renew), SaveLoadVersion::EngineRenew),
+		SaveLoad::Variable<VarFileType::I16>("settings.engine_renew_months", SLE_OBJECT_ADDRESS(CompanyProperties, settings.engine_renew_months), SaveLoadVersion::EngineRenew),
+		SaveLoad::Variable<VarFileType::U32>("settings.engine_renew_money", SLE_OBJECT_ADDRESS(CompanyProperties, settings.engine_renew_money), SaveLoadVersion::EngineRenew),
+		SaveLoad::Variable<VarFileType::Bool>("settings.renew_keep_length", SLE_OBJECT_ADDRESS(CompanyProperties, settings.renew_keep_length), SaveLoadVersion::VehicleCurrencyStationChanges),
 
 		/* Default vehicle settings */
-		SLE_CONDVAR(CompanyProperties, settings.vehicle.servint_ispercent,   SLE_BOOL,     SLV_120, SL_MAX_VERSION),
-		SLE_CONDVAR(CompanyProperties, settings.vehicle.servint_trains,    SLE_UINT16,     SLV_120, SL_MAX_VERSION),
-		SLE_CONDVAR(CompanyProperties, settings.vehicle.servint_roadveh,   SLE_UINT16,     SLV_120, SL_MAX_VERSION),
-		SLE_CONDVAR(CompanyProperties, settings.vehicle.servint_aircraft,  SLE_UINT16,     SLV_120, SL_MAX_VERSION),
-		SLE_CONDVAR(CompanyProperties, settings.vehicle.servint_ships,     SLE_UINT16,     SLV_120, SL_MAX_VERSION),
+		SaveLoad::Variable<VarFileType::Bool>("settings.vehicle.servint_ispercent", SLE_OBJECT_ADDRESS(CompanyProperties, settings.vehicle.servint_ispercent), SaveLoadVersion::CompanyServiceIntervals),
+		SaveLoad::Variable<VarFileType::U16>("settings.vehicle.servint_trains", SLE_OBJECT_ADDRESS(CompanyProperties, settings.vehicle.servint_trains), SaveLoadVersion::CompanyServiceIntervals),
+		SaveLoad::Variable<VarFileType::U16>("settings.vehicle.servint_roadveh", SLE_OBJECT_ADDRESS(CompanyProperties, settings.vehicle.servint_roadveh), SaveLoadVersion::CompanyServiceIntervals),
+		SaveLoad::Variable<VarFileType::U16>("settings.vehicle.servint_aircraft", SLE_OBJECT_ADDRESS(CompanyProperties, settings.vehicle.servint_aircraft), SaveLoadVersion::CompanyServiceIntervals),
+		SaveLoad::Variable<VarFileType::U16>("settings.vehicle.servint_ships", SLE_OBJECT_ADDRESS(CompanyProperties, settings.vehicle.servint_ships), SaveLoadVersion::CompanyServiceIntervals),
 	};
 	static inline const SaveLoadCompatTable compat_description = _company_settings_compat;
 
@@ -354,17 +356,17 @@ static_assert(NUM_CARGO == 64);  // cargo_income needs version bump
 class SlCompanyEconomy : public DefaultSaveLoadHandler<SlCompanyEconomy, CompanyProperties> {
 public:
 	static inline const SaveLoad description[] = {
-		SLE_CONDVAR(CompanyEconomyEntry, income,              SLE_FILE_I32 | SLE_VAR_I64, SL_MIN_VERSION, SLV_2),
-		SLE_CONDVAR(CompanyEconomyEntry, income,              SLE_INT64,                  SLV_2, SL_MAX_VERSION),
-		SLE_CONDVAR(CompanyEconomyEntry, expenses,            SLE_FILE_I32 | SLE_VAR_I64, SL_MIN_VERSION, SLV_2),
-		SLE_CONDVAR(CompanyEconomyEntry, expenses,            SLE_INT64,                  SLV_2, SL_MAX_VERSION),
-		SLE_CONDVAR(CompanyEconomyEntry, company_value,       SLE_FILE_I32 | SLE_VAR_I64, SL_MIN_VERSION, SLV_2),
-		SLE_CONDVAR(CompanyEconomyEntry, company_value,       SLE_INT64,                  SLV_2, SL_MAX_VERSION),
+		SaveLoad::Variable<VarFileType::I32>("income", SLE_OBJECT_ADDRESS(CompanyEconomyEntry, income), SaveLoadVersion::MinVersion, SaveLoadVersion::VehicleCurrencyStationChanges),
+		SaveLoad::Variable<VarFileType::I64>("income", SLE_OBJECT_ADDRESS(CompanyEconomyEntry, income), SaveLoadVersion::VehicleCurrencyStationChanges),
+		SaveLoad::Variable<VarFileType::I32>("expenses", SLE_OBJECT_ADDRESS(CompanyEconomyEntry, expenses), SaveLoadVersion::MinVersion, SaveLoadVersion::VehicleCurrencyStationChanges),
+		SaveLoad::Variable<VarFileType::I64>("expenses", SLE_OBJECT_ADDRESS(CompanyEconomyEntry, expenses), SaveLoadVersion::VehicleCurrencyStationChanges),
+		SaveLoad::Variable<VarFileType::I32>("company_value", SLE_OBJECT_ADDRESS(CompanyEconomyEntry, company_value), SaveLoadVersion::MinVersion, SaveLoadVersion::VehicleCurrencyStationChanges),
+		SaveLoad::Variable<VarFileType::I64>("company_value", SLE_OBJECT_ADDRESS(CompanyEconomyEntry, company_value), SaveLoadVersion::VehicleCurrencyStationChanges),
 
-		SLE_CONDVAR(CompanyEconomyEntry, delivered_cargo[NUM_CARGO - 1], SLE_INT32,       SL_MIN_VERSION, SLV_170),
-		SLE_CONDARR(CompanyEconomyEntry, delivered_cargo,     SLE_UINT32, 32,           SLV_170, SLV_EXTEND_CARGOTYPES),
-		SLE_CONDARR(CompanyEconomyEntry, delivered_cargo,     SLE_UINT32, NUM_CARGO,    SLV_EXTEND_CARGOTYPES, SL_MAX_VERSION),
-		    SLE_VAR(CompanyEconomyEntry, performance_history, SLE_INT32),
+		SaveLoad::Variable<VarFileType::I32>("delivered_cargo[NUM_CARGO - 1]", SLE_OBJECT_ADDRESS(CompanyEconomyEntry, delivered_cargo[NUM_CARGO - 1]), SaveLoadVersion::MinVersion, SaveLoadVersion::CountIndividualCargoes),
+		SaveLoad::Array<VarFileType::U32, 32>("delivered_cargo", SLE_OBJECT_ADDRESS(CompanyEconomyEntry, delivered_cargo), SaveLoadVersion::CountIndividualCargoes, SaveLoadVersion::ExtendCargotypes),
+		SaveLoad::Array<VarFileType::U32, NUM_CARGO>("delivered_cargo", SLE_OBJECT_ADDRESS(CompanyEconomyEntry, delivered_cargo), SaveLoadVersion::ExtendCargotypes),
+		SaveLoad::Variable<VarFileType::I32>("performance_history", SLE_OBJECT_ADDRESS(CompanyEconomyEntry, performance_history)),
 		CM_SLE_ARR("__cm_cargo_income", CompanyEconomyEntry, cm.cargo_income, SLE_INT64, NUM_CARGO),
 	};
 	static inline const SaveLoadCompatTable compat_description = _company_economy_compat;
@@ -399,7 +401,7 @@ public:
 
 	void Load(CompanyProperties *c) const override
 	{
-		if (!IsSavegameVersionBefore(SLV_SAVELOAD_LIST_LENGTH)) {
+		if (!IsSavegameVersionBefore(SaveLoadVersion::SaveloadListLength)) {
 			c->num_valid_stat_ent = (uint8_t)SlGetStructListLength(UINT8_MAX);
 		}
 		if (c->num_valid_stat_ent > std::size(c->old_economy)) SlErrorCorrupt("Too many old economy entries");
@@ -415,9 +417,9 @@ public:
 class SlCompanyLiveries : public DefaultSaveLoadHandler<SlCompanyLiveries, CompanyProperties> {
 public:
 	static inline const SaveLoad description[] = {
-		SLE_CONDVAR(Livery, in_use,  SLE_UINT8, SLV_34, SL_MAX_VERSION),
-		SLE_CONDVAR(Livery, colour1, SLE_UINT8, SLV_34, SL_MAX_VERSION),
-		SLE_CONDVAR(Livery, colour2, SLE_UINT8, SLV_34, SL_MAX_VERSION),
+		SaveLoad::Variable<VarFileType::U8>("in_use", SLE_OBJECT_ADDRESS(Livery, in_use), SaveLoadVersion::Liveries),
+		SaveLoad::Variable<VarFileType::U8>("colour1", SLE_OBJECT_ADDRESS(Livery, colour1), SaveLoadVersion::Liveries),
+		SaveLoad::Variable<VarFileType::U8>("colour2", SLE_OBJECT_ADDRESS(Livery, colour2), SaveLoadVersion::Liveries),
 	};
 	static inline const SaveLoadCompatTable compat_description = _company_liveries_compat;
 
@@ -427,49 +429,50 @@ public:
 	 */
 	size_t GetNumLiveries() const
 	{
-		if (IsSavegameVersionBefore(SLV_63)) return LS_END - 4;
-		if (IsSavegameVersionBefore(SLV_85)) return LS_END - 2;
-		if (IsSavegameVersionBefore(SLV_SAVELOAD_LIST_LENGTH)) return LS_END;
+		if (IsSavegameVersionBefore(SaveLoadVersion::TramLivery)) return to_underlying(LiveryScheme::End) - 4;
+		if (IsSavegameVersionBefore(SaveLoadVersion::MaglevMonorailPaxWagonLivery)) return to_underlying(LiveryScheme::End) - 2;
+		if (IsSavegameVersionBefore(SaveLoadVersion::SaveloadListLength)) return to_underlying(LiveryScheme::End);
 		/* Read from the savegame how long the list is. */
-		return SlGetStructListLength(LS_END);
+		return SlGetStructListLength(to_underlying(LiveryScheme::End));
 	}
 
 	void Save(CompanyProperties *c) const override
 	{
-		SlSetStructListLength(LS_END);
-		for (int i = 0; i < LS_END; i++) {
-			SlObject(&c->livery[i], this->GetDescription());
+		SlSetStructListLength(to_underlying(LiveryScheme::End));
+		for (auto &livery : c->livery) {
+			SlObject(&livery, this->GetDescription());
 		}
 	}
 
 	void Load(CompanyProperties *c) const override
 	{
 		size_t num_liveries = this->GetNumLiveries();
-		bool update_in_use = IsSavegameVersionBefore(SLV_GROUP_LIVERIES);
+		bool update_in_use = IsSavegameVersionBefore(SaveLoadVersion::GroupLiveries);
 
 		for (size_t i = 0; i < num_liveries; i++) {
-			SlObject(&c->livery[i], this->GetLoadDescription());
-			if (update_in_use && i != LS_DEFAULT) {
-				if (!c->livery[i].in_use.Any({Livery::Flag::Primary, Livery::Flag::Secondary})) {
-					c->livery[i].colour1 = c->livery[LS_DEFAULT].colour1;
-					c->livery[i].colour2 = c->livery[LS_DEFAULT].colour2;
+			Livery &livery = c->livery[static_cast<LiveryScheme>(i)];
+			SlObject(&livery, this->GetLoadDescription());
+			if (update_in_use && i != 0) {
+				if (!livery.in_use.Any({Livery::Flag::Primary, Livery::Flag::Secondary})) {
+					livery.colour1 = c->livery[LiveryScheme::Default].colour1;
+					livery.colour2 = c->livery[LiveryScheme::Default].colour2;
 				} else {
-					c->livery[i].in_use = {Livery::Flag::Primary, Livery::Flag::Secondary};
+					livery.in_use = {Livery::Flag::Primary, Livery::Flag::Secondary};
 				}
 			}
 		}
 
-		if (IsSavegameVersionBefore(SLV_85)) {
+		if (IsSavegameVersionBefore(SaveLoadVersion::MaglevMonorailPaxWagonLivery)) {
 			/* We want to insert some liveries somewhere in between. This means some have to be moved. */
-			std::move_backward(std::begin(c->livery) + LS_FREIGHT_WAGON - 2, std::end(c->livery) - 2, std::end(c->livery));
-			c->livery[LS_PASSENGER_WAGON_MONORAIL] = c->livery[LS_MONORAIL];
-			c->livery[LS_PASSENGER_WAGON_MAGLEV]   = c->livery[LS_MAGLEV];
+			std::move_backward(std::begin(c->livery) + to_underlying(LiveryScheme::FreightWagon) - 2, std::end(c->livery) - 2, std::end(c->livery));
+			c->livery[LiveryScheme::PassengerWagonMonorail] = c->livery[LiveryScheme::Monorail];
+			c->livery[LiveryScheme::PassengerWagonMaglev] = c->livery[LiveryScheme::Maglev];
 		}
 
-		if (IsSavegameVersionBefore(SLV_63)) {
+		if (IsSavegameVersionBefore(SaveLoadVersion::TramLivery)) {
 			/* Copy bus/truck liveries over to trams */
-			c->livery[LS_PASSENGER_TRAM] = c->livery[LS_BUS];
-			c->livery[LS_FREIGHT_TRAM]   = c->livery[LS_TRUCK];
+			c->livery[LiveryScheme::PassengerTram] = c->livery[LiveryScheme::Bus];
+			c->livery[LiveryScheme::FreightTram] = c->livery[LiveryScheme::Truck];
 		}
 	}
 
@@ -483,7 +486,7 @@ public:
 	};
 
 	static inline const SaveLoad description[] = {
-		SLE_SSTR(KeyWrapper, key, SLE_STR),
+		SaveLoad::String("key", SLE_OBJECT_ADDRESS(KeyWrapper, key)),
 	};
 	static inline const SaveLoadCompatTable compat_description = {};
 
@@ -492,71 +495,72 @@ public:
 	void LoadCheck(CompanyProperties *cprops) const override { this->Load(cprops); }
 };
 
-/* Save/load of companies */
+/** Save/load of companies. */
 static const SaveLoad _company_desc[] = {
-	    SLE_VAR(CompanyProperties, name_2,          SLE_UINT32),
-	    SLE_VAR(CompanyProperties, name_1,          SLE_STRINGID),
-	SLE_CONDSSTR(CompanyProperties, name,            SLE_STR | SLF_ALLOW_CONTROL, SLV_84, SL_MAX_VERSION),
+	SaveLoad::Variable<VarFileType::U32>("name_2", SLE_OBJECT_ADDRESS(CompanyProperties, name_2)),
+	SaveLoad::Variable<VarFileType::StringID>("name_1", SLE_OBJECT_ADDRESS(CompanyProperties, name_1)),
+	SaveLoad::String("name", SLE_OBJECT_ADDRESS(CompanyProperties, name), StringValidationSetting::AllowControlCode, SaveLoadVersion::ReplaceCustomNameArray),
 
-	    SLE_VAR(CompanyProperties, president_name_1, SLE_STRINGID),
-	    SLE_VAR(CompanyProperties, president_name_2, SLE_UINT32),
-	SLE_CONDSSTR(CompanyProperties, president_name,  SLE_STR | SLF_ALLOW_CONTROL, SLV_84, SL_MAX_VERSION),
+	SaveLoad::Variable<VarFileType::StringID>("president_name_1", SLE_OBJECT_ADDRESS(CompanyProperties, president_name_1)),
+	SaveLoad::Variable<VarFileType::U32>("president_name_2", SLE_OBJECT_ADDRESS(CompanyProperties, president_name_2)),
+	SaveLoad::String("president_name", SLE_OBJECT_ADDRESS(CompanyProperties, president_name), StringValidationSetting::AllowControlCode, SaveLoadVersion::ReplaceCustomNameArray),
 
-	SLE_CONDVECTOR(CompanyProperties, allow_list, SLE_STR, SLV_COMPANY_ALLOW_LIST, SLV_COMPANY_ALLOW_LIST_V2),
-	SLEG_CONDSTRUCTLIST("allow_list", SlAllowListData, SLV_COMPANY_ALLOW_LIST_V2, SL_MAX_VERSION),
+	SaveLoad::Vector<VarFileType::String>("allow_list", SLE_OBJECT_ADDRESS(CompanyProperties, allow_list), SaveLoadVersion::CompanyAllowList, SaveLoadVersion::CompanyAllowListV2),
+	SaveLoad::StructList<SlAllowListData>("allow_list", SaveLoadVersion::CompanyAllowListV2),
+	SaveLoad::Variable<VarFileType::Bool>("allow_any", SLE_OBJECT_ADDRESS(CompanyProperties, allow_any)),
 
-	SLE_VARNAME(CompanyProperties, face.bits, "face", SLE_UINT32),
-	SLE_CONDSSTRNAME(CompanyProperties, face.style_label, "face_style", SLE_STR, SLV_FACE_STYLES, SL_MAX_VERSION),
+	SaveLoad::Variable<VarFileType::U32>("face", SLE_OBJECT_ADDRESS(CompanyProperties, face.bits)),
+	SaveLoad::String("face_style", SLE_OBJECT_ADDRESS(CompanyProperties, face.style_label), {}, SaveLoadVersion::FaceStyles),
 
 	/* money was changed to a 64 bit field in savegame version 1. */
-	SLE_CONDVAR(CompanyProperties, money,                 SLE_VAR_I64 | SLE_FILE_I32,  SL_MIN_VERSION, SLV_1),
-	SLE_CONDVAR(CompanyProperties, money,                 SLE_INT64,                   SLV_1, SL_MAX_VERSION),
+	SaveLoad::Variable<VarFileType::I32>("money", SLE_OBJECT_ADDRESS(CompanyProperties, money), SaveLoadVersion::MinVersion, SaveLoadVersion::BigCurrency),
+	SaveLoad::Variable<VarFileType::I64>("money", SLE_OBJECT_ADDRESS(CompanyProperties, money), SaveLoadVersion::BigCurrency),
 
-	SLE_CONDVAR(CompanyProperties, current_loan,          SLE_VAR_I64 | SLE_FILE_I32,  SL_MIN_VERSION, SLV_65),
-	SLE_CONDVAR(CompanyProperties, current_loan,          SLE_INT64,                  SLV_65, SL_MAX_VERSION),
-	SLE_CONDVAR(CompanyProperties, max_loan,              SLE_INT64, SLV_MAX_LOAN_FOR_COMPANY, SL_MAX_VERSION),
+	SaveLoad::Variable<VarFileType::I32>("current_loan", SLE_OBJECT_ADDRESS(CompanyProperties, current_loan), SaveLoadVersion::MinVersion, SaveLoadVersion::UnifyCurrency),
+	SaveLoad::Variable<VarFileType::I64>("current_loan", SLE_OBJECT_ADDRESS(CompanyProperties, current_loan), SaveLoadVersion::UnifyCurrency),
+	SaveLoad::Variable<VarFileType::I64>("max_loan", SLE_OBJECT_ADDRESS(CompanyProperties, max_loan), SaveLoadVersion::MaxLoanForCompany),
 
-	    SLE_VAR(CompanyProperties, colour,                SLE_UINT8),
-	    SLE_VAR(CompanyProperties, money_fraction,        SLE_UINT8),
-	    SLE_VAR(CompanyProperties, block_preview,         SLE_UINT8),
+	SaveLoad::Variable<VarFileType::U8>("colour", SLE_OBJECT_ADDRESS(CompanyProperties, colour)),
+	SaveLoad::Variable<VarFileType::U8>("money_fraction", SLE_OBJECT_ADDRESS(CompanyProperties, money_fraction)),
+	SaveLoad::Variable<VarFileType::U8>("block_preview", SLE_OBJECT_ADDRESS(CompanyProperties, block_preview)),
 
-	SLE_CONDVAR(CompanyProperties, location_of_HQ,        SLE_FILE_U16 | SLE_VAR_U32,  SL_MIN_VERSION,  SLV_6),
-	SLE_CONDVAR(CompanyProperties, location_of_HQ,        SLE_UINT32,                  SLV_6, SL_MAX_VERSION),
-	SLE_CONDVAR(CompanyProperties, last_build_coordinate, SLE_FILE_U16 | SLE_VAR_U32,  SL_MIN_VERSION,  SLV_6),
-	SLE_CONDVAR(CompanyProperties, last_build_coordinate, SLE_UINT32,                  SLV_6, SL_MAX_VERSION),
-	SLE_CONDVAR(CompanyProperties, inaugurated_year,      SLE_FILE_U8  | SLE_VAR_I32,  SL_MIN_VERSION, SLV_31),
-	SLE_CONDVAR(CompanyProperties, inaugurated_year,      SLE_INT32,                  SLV_31, SL_MAX_VERSION),
-	SLE_CONDVAR(CompanyProperties, inaugurated_year_calendar, SLE_INT32,               SLV_COMPANY_INAUGURATED_PERIOD_V2, SL_MAX_VERSION),
+	SaveLoad::Variable<VarFileType::U16>("location_of_HQ", SLE_OBJECT_ADDRESS(CompanyProperties, location_of_HQ), SaveLoadVersion::MinVersion, SaveLoadVersion::MultipleRoadStops),
+	SaveLoad::Variable<VarFileType::U32>("location_of_HQ", SLE_OBJECT_ADDRESS(CompanyProperties, location_of_HQ), SaveLoadVersion::MultipleRoadStops),
+	SaveLoad::Variable<VarFileType::U16>("last_build_coordinate", SLE_OBJECT_ADDRESS(CompanyProperties, last_build_coordinate), SaveLoadVersion::MinVersion, SaveLoadVersion::MultipleRoadStops),
+	SaveLoad::Variable<VarFileType::U32>("last_build_coordinate", SLE_OBJECT_ADDRESS(CompanyProperties, last_build_coordinate), SaveLoadVersion::MultipleRoadStops),
+	SaveLoad::Variable<VarFileType::U8>("inaugurated_year", SLE_OBJECT_ADDRESS(CompanyProperties, inaugurated_year), SaveLoadVersion::MinVersion, SaveLoadVersion::BigDates),
+	SaveLoad::Variable<VarFileType::I32>("inaugurated_year", SLE_OBJECT_ADDRESS(CompanyProperties, inaugurated_year), SaveLoadVersion::BigDates),
+	SaveLoad::Variable<VarFileType::I32>("inaugurated_year_calendar", SLE_OBJECT_ADDRESS(CompanyProperties, inaugurated_year_calendar), SaveLoadVersion::CompanyInauguratedPeriodV2),
 
-	SLE_CONDVAR(CompanyProperties, num_valid_stat_ent,    SLE_UINT8,                   SL_MIN_VERSION, SLV_SAVELOAD_LIST_LENGTH),
+	SaveLoad::Variable<VarFileType::U8>("num_valid_stat_ent", SLE_OBJECT_ADDRESS(CompanyProperties, num_valid_stat_ent), SaveLoadVersion::MinVersion, SaveLoadVersion::SaveloadListLength),
 
-	    SLE_VAR(CompanyProperties, months_of_bankruptcy,  SLE_UINT8),
-	SLE_CONDVAR(CompanyProperties, bankrupt_asked,        SLE_FILE_U8  | SLE_VAR_U16,  SL_MIN_VERSION, SLV_104),
-	SLE_CONDVAR(CompanyProperties, bankrupt_asked,        SLE_UINT16,                SLV_104, SL_MAX_VERSION),
-	    SLE_VAR(CompanyProperties, bankrupt_timeout,      SLE_INT16),
-	SLE_CONDVAR(CompanyProperties, bankrupt_value,        SLE_VAR_I64 | SLE_FILE_I32,  SL_MIN_VERSION, SLV_65),
-	SLE_CONDVAR(CompanyProperties, bankrupt_value,        SLE_INT64,                  SLV_65, SL_MAX_VERSION),
+	SaveLoad::Variable<VarFileType::U8>("months_of_bankruptcy", SLE_OBJECT_ADDRESS(CompanyProperties, months_of_bankruptcy)),
+	SaveLoad::Variable<VarFileType::U8>("bankrupt_asked", SLE_OBJECT_ADDRESS(CompanyProperties, bankrupt_asked), SaveLoadVersion::MinVersion, SaveLoadVersion::MoreCompanies),
+	SaveLoad::Variable<VarFileType::U16>("bankrupt_asked", SLE_OBJECT_ADDRESS(CompanyProperties, bankrupt_asked), SaveLoadVersion::MoreCompanies),
+	SaveLoad::Variable<VarFileType::I16>("bankrupt_timeout", SLE_OBJECT_ADDRESS(CompanyProperties, bankrupt_timeout)),
+	SaveLoad::Variable<VarFileType::I32>("bankrupt_value", SLE_OBJECT_ADDRESS(CompanyProperties, bankrupt_value), SaveLoadVersion::MinVersion, SaveLoadVersion::UnifyCurrency),
+	SaveLoad::Variable<VarFileType::I64>("bankrupt_value", SLE_OBJECT_ADDRESS(CompanyProperties, bankrupt_value), SaveLoadVersion::UnifyCurrency),
 
 	/* yearly expenses was changed to 64-bit in savegame version 2. */
-	SLE_CONDARR(CompanyProperties, yearly_expenses,       SLE_FILE_I32 | SLE_VAR_I64, 3 * 13, SL_MIN_VERSION, SLV_2),
-	SLE_CONDARR(CompanyProperties, yearly_expenses,       SLE_INT64, 3 * 13,                  SLV_2, SL_MAX_VERSION),
+	SaveLoad::Array<VarFileType::I32, 3 * 13>("yearly_expenses", SLE_OBJECT_ADDRESS(CompanyProperties, yearly_expenses), SaveLoadVersion::MinVersion, SaveLoadVersion::VehicleCurrencyStationChanges),
+	SaveLoad::Array<VarFileType::I64, 3 * 13>("yearly_expenses", SLE_OBJECT_ADDRESS(CompanyProperties, yearly_expenses), SaveLoadVersion::VehicleCurrencyStationChanges),
 
-	SLE_CONDVAR(CompanyProperties, is_ai,                 SLE_BOOL,                    SLV_2, SL_MAX_VERSION),
+	SaveLoad::Variable<VarFileType::Bool>("is_ai", SLE_OBJECT_ADDRESS(CompanyProperties, is_ai), SaveLoadVersion::VehicleCurrencyStationChanges),
 
-	SLE_CONDVAR(CompanyProperties, terraform_limit,       SLE_UINT32,                SLV_156, SL_MAX_VERSION),
-	SLE_CONDVAR(CompanyProperties, clear_limit,           SLE_UINT32,                SLV_156, SL_MAX_VERSION),
-	SLE_CONDVAR(CompanyProperties, tree_limit,            SLE_UINT32,                SLV_175, SL_MAX_VERSION),
-	SLEG_STRUCT("settings", SlCompanySettings),
-	SLEG_CONDSTRUCT("old_ai", SlCompanyOldAI,                                        SL_MIN_VERSION, SLV_107),
-	SLEG_STRUCT("cur_economy", SlCompanyEconomy),
-	SLEG_STRUCTLIST("old_economy", SlCompanyOldEconomy),
-	SLEG_CONDSTRUCTLIST("liveries", SlCompanyLiveries,                               SLV_34, SL_MAX_VERSION),
+	SaveLoad::Variable<VarFileType::U32>("terraform_limit", SLE_OBJECT_ADDRESS(CompanyProperties, terraform_limit), SaveLoadVersion::TerraformLimits),
+	SaveLoad::Variable<VarFileType::U32>("clear_limit", SLE_OBJECT_ADDRESS(CompanyProperties, clear_limit), SaveLoadVersion::TerraformLimits),
+	SaveLoad::Variable<VarFileType::U32>("tree_limit", SLE_OBJECT_ADDRESS(CompanyProperties, tree_limit), SaveLoadVersion::AutoreplaceWhenOldTreeLimit),
+	SaveLoad::Struct<SlCompanySettings>("settings"),
+	SaveLoad::Struct<SlCompanyOldAI>("old_ai", SaveLoadVersion::MinVersion, SaveLoadVersion::NoAI),
+	SaveLoad::Struct<SlCompanyEconomy>("cur_economy"),
+	SaveLoad::StructList<SlCompanyOldEconomy>("old_economy"),
+	SaveLoad::StructList<SlCompanyLiveries>("liveries", SaveLoadVersion::Liveries),
 	CM_SLE_VAR("__cm_is_server", CompanyProperties, cm.is_server, SLE_BOOL),
 	CM_SLE_VAR("__cm_is_scored", CompanyProperties, cm.is_scored, SLE_BOOL),
 };
 
 struct PLYRChunkHandler : ChunkHandler {
-	PLYRChunkHandler() : ChunkHandler('PLYR', CH_TABLE) {}
+	PLYRChunkHandler() : ChunkHandler("PLYR", ChunkType::Table) {}
 
 	void Save() const override
 	{
@@ -574,9 +578,9 @@ struct PLYRChunkHandler : ChunkHandler {
 
 		int index;
 		while ((index = SlIterateArray()) != -1) {
-			Company *c = new (CompanyID(index)) Company();
+			Company *c = Company::CreateAtIndex(CompanyID(index));
 			SlObject(c, slt);
-			_company_colours[index] = c->colour;
+			_company_colours[c->index] = c->colour;
 		}
 	}
 
@@ -591,7 +595,7 @@ struct PLYRChunkHandler : ChunkHandler {
 			SlObject(cprops.get(), slt);
 
 			/* We do not load old custom names */
-			if (IsSavegameVersionBefore(SLV_84)) {
+			if (IsSavegameVersionBefore(SaveLoadVersion::ReplaceCustomNameArray)) {
 				if (GetStringTab(cprops->name_1) == TEXT_TAB_OLD_CUSTOM) {
 					cprops->name_1 = STR_GAME_SAVELOAD_NOT_AVAILABLE;
 				}

@@ -5,7 +5,7 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <https://www.gnu.org/licenses/old-licenses/gpl-2.0>.
  */
 
-/** @file pbs.h PBS support routines */
+/** @file pbs.h PBS support routines. */
 
 #ifndef PBS_H
 #define PBS_H
@@ -31,7 +31,7 @@ struct PBSTileInfo {
 	/**
 	 * Create an empty PBSTileInfo.
 	 */
-	PBSTileInfo() : tile(INVALID_TILE), trackdir(INVALID_TRACKDIR), okay(false) {}
+	PBSTileInfo() : tile(INVALID_TILE), trackdir(Trackdir::Invalid), okay(false) {}
 
 	/**
 	 * Create a PBSTileInfo with given tile, track direction and safe waiting position information.
@@ -57,7 +57,7 @@ Train *GetTrainForReservation(TileIndex tile, Track track);
  */
 inline bool HasReservedTracks(TileIndex tile, TrackBits tracks)
 {
-	return (GetReservedTrackbits(tile) & tracks) != TRACK_BIT_NONE;
+	return GetReservedTrackbits(tile).Any(tracks);
 }
 
 #endif /* PBS_H */

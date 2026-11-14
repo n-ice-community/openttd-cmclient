@@ -9,6 +9,7 @@
 
 #include "stdafx.h"
 
+#include "gfx_func.h"
 #include "gfx_layout_fallback.h"
 #include "string_func.h"
 #include "zoom_func.h"
@@ -42,16 +43,15 @@ public:
 		std::vector<GlyphID> glyphs; ///< The glyphs we're drawing.
 		std::vector<Position> positions; ///< The positions of the glyphs.
 		std::vector<int> glyph_to_char; ///< The char index of the glyphs.
-
-		Font *font;       ///< The font used to layout these.
+		Font font; ///< The font used to layout these.
 
 	public:
-		FallbackVisualRun(Font *font, const char32_t *chars, int glyph_count, int char_offset, int x);
-		const Font *GetFont() const override { return this->font; }
-		int GetGlyphCount() const override { return static_cast<int>(this->glyphs.size()); }
+		FallbackVisualRun(const Font &font, const char32_t *chars, int glyph_count, int char_offset, int x);
+		const Font &GetFont() const override { return this->font; }
+		size_t GetGlyphCount() const override { return this->glyphs.size(); }
 		std::span<const GlyphID> GetGlyphs() const override { return this->glyphs; }
 		std::span<const Position> GetPositions() const override { return this->positions; }
-		int GetLeading() const override { return this->GetFont()->fc->GetHeight(); }
+		int GetLeading() const override { return this->font.GetFontCache().GetHeight(); }
 		std::span<const int> GetGlyphToCharMap() const override { return this->glyph_to_char; }
 	};
 
@@ -60,8 +60,8 @@ public:
 	public:
 		int GetLeading() const override;
 		int GetWidth() const override;
-		int CountRuns() const override;
-		const ParagraphLayouter::VisualRun &GetVisualRun(int run) const override;
+		size_t CountRuns() const override;
+		const ParagraphLayouter::VisualRun &GetVisualRun(size_t run) const override;
 
 		int GetInternalCharLength(char32_t) const override { return 1; }
 	};
@@ -112,7 +112,8 @@ public:
 FallbackParagraphLayout::FallbackVisualRun::FallbackVisualRun(Font *font, const char32_t *chars, int char_count, int char_offset, int x) :
 		font(font)
 {
-	const bool isbuiltin = font->fc->IsBuiltInFont();
+	FontCache &fc = font.GetFontCache();
+	const bool isbuiltin = fc.IsBuiltInFont();
 
 	this->glyphs.reserve(char_count);
 	this->glyph_to_char.reserve(char_count);
@@ -120,12 +121,12 @@ FallbackParagraphLayout::FallbackVisualRun::FallbackVisualRun(Font *font, const 
 
 	int advance = x;
 	for (int i = 0; i < char_count; i++) {
-		const GlyphID &glyph_id = this->glyphs.emplace_back(font->fc->MapCharToGlyph(chars[i]));
-		int x_advance = font->fc->GetGlyphWidth(glyph_id);
+		const GlyphID &glyph_id = this->glyphs.emplace_back(fc.MapCharToGlyph(chars[i]));
+		int x_advance = fc.GetGlyphWidth(glyph_id);
 		if (isbuiltin) {
-			this->positions.emplace_back(advance, advance + x_advance - 1, font->fc->GetAscender()); // Apply sprite font's ascender.
+			this->positions.emplace_back(advance, advance + x_advance - 1, fc.GetAscender()); // Apply sprite font's ascender.
 		} else if (chars[i] >= SCC_SPRITE_START && chars[i] <= SCC_SPRITE_END) {
-			this->positions.emplace_back(advance, advance + x_advance - 1, (font->fc->GetHeight() - ScaleSpriteTrad(FontCache::GetDefaultFontHeight(font->fc->GetSize()))) / 2); // Align sprite font to centre
+			this->positions.emplace_back(advance, advance + x_advance - 1, (fc.GetHeight() - ScaleSpriteTrad(FontCache::GetDefaultFontHeight(fc.GetSize()))) / 2); // Align sprite font to centre
 		} else {
 			this->positions.emplace_back(advance, advance + x_advance - 1, 0); // No ascender adjustment.
 		}
@@ -134,10 +135,6 @@ FallbackParagraphLayout::FallbackVisualRun::FallbackVisualRun(Font *font, const 
 	}
 }
 
-/**
- * Get the height of the line.
- * @return The maximum height of the line.
- */
 int FallbackParagraphLayout::FallbackLine::GetLeading() const
 {
 	int leading = 0;
@@ -148,10 +145,6 @@ int FallbackParagraphLayout::FallbackLine::GetLeading() const
 	return leading;
 }
 
-/**
- * Get the width of this line.
- * @return The width of the line.
- */
 int FallbackParagraphLayout::FallbackLine::GetWidth() const
 {
 	if (this->empty()) return 0;
@@ -167,20 +160,12 @@ int FallbackParagraphLayout::FallbackLine::GetWidth() const
 	return positions.back().right + 1;
 }
 
-/**
- * Get the number of runs in this line.
- * @return The number of runs.
- */
-int FallbackParagraphLayout::FallbackLine::CountRuns() const
+size_t FallbackParagraphLayout::FallbackLine::CountRuns() const
 {
-	return (uint)this->size();
+	return this->size();
 }
 
-/**
- * Get a specific visual run.
- * @return The visual run.
- */
-const ParagraphLayouter::VisualRun &FallbackParagraphLayout::FallbackLine::GetVisualRun(int run) const
+const ParagraphLayouter::VisualRun &FallbackParagraphLayout::FallbackLine::GetVisualRun(size_t run) const
 {
 	return this->at(run);
 }
@@ -196,19 +181,11 @@ FallbackParagraphLayout::FallbackParagraphLayout(char32_t *buffer, [[maybe_unuse
 	assert(runs.rbegin()->first == length);
 }
 
-/**
- * Reset the position to the start of the paragraph.
- */
 void FallbackParagraphLayout::Reflow()
 {
 	this->buffer = this->buffer_begin;
 }
 
-/**
- * Construct a new line with a maximum width.
- * @param max_width The maximum width of the string.
- * @return A Line, or nullptr when at the end of the paragraph.
- */
 std::unique_ptr<const ParagraphLayouter::Line> FallbackParagraphLayout::NextLine(int max_width)
 {
 	/* Simple idea:
@@ -222,7 +199,7 @@ std::unique_ptr<const ParagraphLayouter::Line> FallbackParagraphLayout::NextLine
 	if (*this->buffer == '\0') {
 		/* Only a newline. */
 		this->buffer = nullptr;
-		l->emplace_back(this->runs.begin()->second, this->buffer, 0, 0, 0);
+		l->emplace_back(this->runs.front().second, this->buffer, 0, 0, 0);
 		return l;
 	}
 
@@ -233,7 +210,7 @@ std::unique_ptr<const ParagraphLayouter::Line> FallbackParagraphLayout::NextLine
 		assert(iter != this->runs.end());
 	}
 
-	const FontCache *fc = iter->second->fc;
+	FontSize fontsize = iter->second.fontsize;
 	const char32_t *next_run = this->buffer_begin + iter->first;
 
 	const char32_t *begin = this->buffer;
@@ -267,7 +244,7 @@ std::unique_ptr<const ParagraphLayouter::Line> FallbackParagraphLayout::NextLine
 		if (IsWhitespace(c)) last_space = this->buffer;
 
 		if (IsPrintable(c) && !IsTextDirectionChar(c)) {
-			int char_width = GetCharacterWidth(fc->GetSize(), c);
+			int char_width = GetCharacterWidth(fontsize, c);
 			width += char_width;
 			if (width > max_width) {
 				/* The string is longer than maximum width so we need to decide

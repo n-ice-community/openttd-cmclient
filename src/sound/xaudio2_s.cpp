@@ -34,7 +34,7 @@ using Microsoft::WRL::ComPtr;
 #include "../os/windows/win32.h"
 #include "../safeguards.h"
 
-/* Definition of the "XAudio2Create" call used to initialise XAudio2 */
+/** Definition of the "XAudio2Create" call used to initialise XAudio2. */
 typedef HRESULT(__stdcall *API_XAudio2Create)(_Outptr_ IXAudio2 **ppXAudio2, UINT32 Flags, XAUDIO2_PROCESSOR XAudio2Processor);
 
 static FSoundDriver_XAudio2 iFSoundDriver_XAudio2;
@@ -56,6 +56,8 @@ public:
 		this->buffer.resize(buffer_length);
 	}
 
+	/* This needs to be virtual because the XAudio2 API declares the interface without
+	 * a virtual destructor, even though it has functions that need to be overridden. */
 	virtual ~StreamingVoiceContext() = default;
 
 	HRESULT SubmitBuffer()
@@ -110,7 +112,11 @@ static IXAudio2MasteringVoice *_mastering_voice = nullptr;
 static ComPtr<IXAudio2> _xaudio2;
 static std::unique_ptr<StreamingVoiceContext> _voice_context;
 
-/** Create XAudio2 context with SEH exception checking. */
+/**
+ * Create XAudio2 context with SEH exception checking.
+ * @param xAudio2Create Function pointer to the xAudio2Create API call in the loaded DLL.
+ * @return \c S_OK iff successful, otherwise an error code.
+ */
 static HRESULT CreateXAudio(API_XAudio2Create xAudio2Create)
 {
 	HRESULT hr;
@@ -136,7 +142,7 @@ std::optional<std::string_view> SoundDriver_XAudio2::Start(const StringList &par
 	HRESULT hr = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
 
 	if (FAILED(hr)) {
-		Debug(driver, 0, "xaudio2_s: CoInitializeEx failed ({:08x})", (uint)hr);
+		Debug(Facility::Driver, Severity::Critical, "xaudio2_s: CoInitializeEx failed ({:08x})", (uint)hr);
 		return "Failed to initialise COM";
 	}
 
@@ -145,7 +151,7 @@ std::optional<std::string_view> SoundDriver_XAudio2::Start(const StringList &par
 	if (_xaudio_dll_handle == nullptr) {
 		CoUninitialize();
 
-		Debug(driver, 0, "xaudio2_s: Unable to load " XAUDIO2_DLL_A);
+		Debug(Facility::Driver, Severity::Critical, "xaudio2_s: Unable to load " XAUDIO2_DLL_A);
 		return "Failed to load XAudio2 DLL";
 	}
 
@@ -155,7 +161,7 @@ std::optional<std::string_view> SoundDriver_XAudio2::Start(const StringList &par
 		FreeLibrary(_xaudio_dll_handle);
 		CoUninitialize();
 
-		Debug(driver, 0, "xaudio2_s: Unable to find XAudio2Create function in DLL");
+		Debug(Facility::Driver, Severity::Critical, "xaudio2_s: Unable to find XAudio2Create function in DLL");
 		return "Failed to load XAudio2 DLL";
 	}
 
@@ -166,7 +172,7 @@ std::optional<std::string_view> SoundDriver_XAudio2::Start(const StringList &par
 		FreeLibrary(_xaudio_dll_handle);
 		CoUninitialize();
 
-		Debug(driver, 0, "xaudio2_s: XAudio2Create failed ({:08x})", (uint)hr);
+		Debug(Facility::Driver, Severity::Critical, "xaudio2_s: XAudio2Create failed ({:08x})", (uint)hr);
 		return "Failed to initialise the XAudio2 engine";
 	}
 
@@ -178,7 +184,7 @@ std::optional<std::string_view> SoundDriver_XAudio2::Start(const StringList &par
 		FreeLibrary(_xaudio_dll_handle);
 		CoUninitialize();
 
-		Debug(driver, 0, "xaudio2_s: CreateMasteringVoice failed ({:08x})", (uint)hr);
+		Debug(Facility::Driver, Severity::Critical, "xaudio2_s: CreateMasteringVoice failed ({:08x})", (uint)hr);
 		return "Failed to create a mastering voice";
 	}
 
@@ -215,7 +221,7 @@ std::optional<std::string_view> SoundDriver_XAudio2::Start(const StringList &par
 		FreeLibrary(_xaudio_dll_handle);
 		CoUninitialize();
 
-		Debug(driver, 0, "xaudio2_s: CreateSourceVoice failed ({:08x})", (uint)hr);
+		Debug(Facility::Driver, Severity::Critical, "xaudio2_s: CreateSourceVoice failed ({:08x})", (uint)hr);
 		return "Failed to create a source voice";
 	}
 
@@ -223,7 +229,7 @@ std::optional<std::string_view> SoundDriver_XAudio2::Start(const StringList &par
 	hr = _source_voice->Start(0, 0);
 
 	if (FAILED(hr)) {
-		Debug(driver, 0, "xaudio2_s: _source_voice->Start failed ({:08x})", (uint)hr);
+		Debug(Facility::Driver, Severity::Critical, "xaudio2_s: _source_voice->Start failed ({:08x})", (uint)hr);
 
 		Stop();
 		return "Failed to start the source voice";
@@ -235,7 +241,7 @@ std::optional<std::string_view> SoundDriver_XAudio2::Start(const StringList &par
 	hr = _voice_context->SubmitBuffer();
 
 	if (FAILED(hr)) {
-		Debug(driver, 0, "xaudio2_s: _voice_context->SubmitBuffer failed ({:08x})", (uint)hr);
+		Debug(Facility::Driver, Severity::Critical, "xaudio2_s: _voice_context->SubmitBuffer failed ({:08x})", (uint)hr);
 
 		Stop();
 		return "Failed to submit the first audio buffer";

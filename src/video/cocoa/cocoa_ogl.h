@@ -15,15 +15,14 @@
 @class OTTD_OpenGLView;
 
 class VideoDriver_CocoaOpenGL : public VideoDriver_Cocoa {
-	CGLContextObj gl_context;
+	CGLContextObj gl_context = nullptr; ///< The OpenGL context.
 
-	uint8_t *anim_buffer; ///< Animation buffer from OpenGL back-end.
 	std::string driver_info; ///< Information string about selected driver.
 
 	std::optional<std::string_view> AllocateContext(bool allow_software);
 
 public:
-	VideoDriver_CocoaOpenGL() : VideoDriver_Cocoa(true), gl_context(nullptr), anim_buffer(nullptr), driver_info(this->GetName()) {}
+	VideoDriver_CocoaOpenGL() : VideoDriver_Cocoa(true, true), driver_info(this->GetName()) {}
 
 	std::optional<std::string_view> Start(const StringList &param) override;
 	void Stop() override;
@@ -36,10 +35,6 @@ public:
 
 	void PopulateSystemSprites() override;
 
-	bool HasAnimBuffer() override { return true; }
-	uint8_t *GetAnimBuffer() override { return this->anim_buffer; }
-
-	/** Return driver name */
 	std::string_view GetName() const override { return "cocoa-opengl"; }
 
 	std::string_view GetInfoString() const override { return this->driver_info; }
@@ -57,7 +52,7 @@ protected:
 
 class FVideoDriver_CocoaOpenGL : public DriverFactoryBase {
 public:
-	FVideoDriver_CocoaOpenGL() : DriverFactoryBase(Driver::DT_VIDEO, 9, "cocoa-opengl", "Cocoa OpenGL Video Driver") {}
+	FVideoDriver_CocoaOpenGL() : DriverFactoryBase(Driver::Type::Video, 9, "cocoa-opengl", "Cocoa OpenGL Video Driver") {}
 	std::unique_ptr<Driver> CreateInstance() const override { return std::make_unique<VideoDriver_CocoaOpenGL>(); }
 
 protected:

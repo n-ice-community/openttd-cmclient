@@ -5,19 +5,16 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <https://www.gnu.org/licenses/old-licenses/gpl-2.0>.
  */
 
-/**
- * @file http_curl.cpp CURL-based implementation for HTTP requests.
- */
+/** @file http_curl.cpp CURL-based implementation for HTTP requests. */
 
 #include "../../stdafx.h"
 #include "../../debug.h"
 #include "../../fileio_func.h"
-#include "../../rev.h"
 #include "../../thread.h"
-#include "../network_internal.h"
 
 #include "http.h"
 #include "http_shared.h"
+#include "network_game_info.h"
 
 #include <atomic>
 #include <condition_variable>
@@ -45,10 +42,10 @@ static constexpr std::initializer_list<std::string_view> _certificate_directorie
 };
 #endif /* UNIX */
 
-static std::vector<HTTPThreadSafeCallback *> _http_callbacks;
-static std::vector<HTTPThreadSafeCallback *> _new_http_callbacks;
-static std::mutex _http_callback_mutex;
-static std::mutex _new_http_callback_mutex;
+static std::vector<HTTPThreadSafeCallback *> _http_callbacks; ///< Callback for the current requests.
+static std::vector<HTTPThreadSafeCallback *> _new_http_callbacks; ///< Callbacks for the request that should be started.
+static std::mutex _http_callback_mutex; ///< Mutex to prevent concurrent access to #_http_callbacks.
+static std::mutex _new_http_callback_mutex; ///< Mutex to prevent concurrent access to #_new_http_callbacks.
 
 /** Single HTTP request. */
 class NetworkHTTPRequest {
@@ -69,6 +66,7 @@ public:
 		_new_http_callbacks.push_back(&this->callback);
 	}
 
+	/** Remove ourselves from the callback list. */
 	~NetworkHTTPRequest()
 	{
 		std::lock_guard<std::mutex> lock(_http_callback_mutex);
@@ -80,15 +78,16 @@ public:
 	const std::string data; ///< Data to send, if any.
 };
 
-static std::thread _http_thread;
-static std::atomic<bool> _http_thread_exit = false;
-static std::queue<std::unique_ptr<NetworkHTTPRequest>> _http_requests;
-static std::mutex _http_mutex;
-static std::condition_variable _http_cv;
+static std::thread _http_thread; ///< The thread running the HTTP requests.
+static std::atomic<bool> _http_thread_exit = false; ///< Whether to ask the HTTP request thread to stop.
+static std::queue<std::unique_ptr<NetworkHTTPRequest>> _http_requests; ///< HTTP requests that are currently running
+static std::mutex _http_mutex; ///< Mutex to prevent concurrent access #_http_requests.
+static std::condition_variable _http_cv; ///< Conditional variable to wake up the HTTP request thread.
 #if defined(UNIX)
-static std::string _http_ca_file = "";
-static std::string _http_ca_path = "";
+static std::string _http_ca_file = ""; ///< File with certificate authority data.
+static std::string _http_ca_path = ""; ///< Folder with certificate authority data.
 #endif /* UNIX */
+
 
 /* static */ void NetworkHTTPSocketHandler::Connect(std::string_view uri, HTTPCallback *callback, std::string &&data)
 {
@@ -122,14 +121,21 @@ static std::string _http_ca_path = "";
 	}
 }
 
+/**
+ * Set some specific option and emit debug information upon failure.
+ * @param curl The curl instance we're using.
+ * @param option The option to set.
+ * @param value The value for the option.
+ */
 void CurlSetOption(CURL *curl, auto option, auto value)
 {
 	CURLcode res = curl_easy_setopt(curl, option, value);
 	if (res != CURLE_OK) {
-		Debug(net, 0, "Could not execute curl_easy_setopt for {} [{}]", option, res);
+		Debug(Facility::Net, Severity::Critical, "Could not execute curl_easy_setopt for {} [{}]", option, res);
 	}
 }
 
+/** Thread entry point for the HTTP request thread. */
 void HttpThread()
 {
 	CURL *curl = curl_easy_init();
@@ -154,7 +160,7 @@ void HttpThread()
 		curl_easy_reset(curl);
 		curl_slist *headers = nullptr;
 
-		if (_debug_net_level >= 5) {
+		if (IsVisibleSeverity(Facility::Net, Severity::Debug1)) {
 			CurlSetOption(curl, CURLOPT_VERBOSE, 1L);
 		}
 
@@ -198,7 +204,7 @@ void HttpThread()
 
 		/* Setup our (C-style) callback function which we pipe back into the callback. */
 		CurlSetOption(curl, CURLOPT_WRITEFUNCTION, +[](char *ptr, size_t size, size_t nmemb, void *userdata) -> size_t {
-			Debug(net, 6, "HTTP callback: {} bytes", size * nmemb);
+			Debug(Facility::Net, Severity::Debug2, "HTTP callback: {} bytes", size * nmemb);
 			HTTPThreadSafeCallback *callback = static_cast<HTTPThreadSafeCallback *>(userdata);
 
 			/* Copy the buffer out of CURL. OnReceiveData() will free it when done. */
@@ -227,14 +233,14 @@ void HttpThread()
 		curl_slist_free_all(headers);
 
 		if (res == CURLE_OK) {
-			Debug(net, 1, "HTTP request succeeded");
+			Debug(Facility::Net, Severity::Error, "HTTP request succeeded");
 			request->callback.OnReceiveData(nullptr, 0);
 		} else {
 			long status_code = 0;
 			curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &status_code);
 
 			/* No need to be verbose about rate limiting. */
-			Debug(net, (request->callback.cancelled || _http_thread_exit || status_code == HTTP_429_TOO_MANY_REQUESTS) ? 1 : 0, "HTTP request failed: status_code: {}, error: {}", status_code, curl_easy_strerror(res));
+			Debug(Facility::Net, (request->callback.cancelled || _http_thread_exit || status_code == HTTP_429_TOO_MANY_REQUESTS) ? Severity::Error : Severity::Critical, "HTTP request failed: status_code: {}, error: {}", status_code, curl_easy_strerror(res));
 			request->callback.OnFailure();
 		}
 
@@ -269,12 +275,12 @@ void NetworkHTTPInitialize()
 			}
 		}
 	}
-	Debug(net, 3, "Using certificate file: {}", _http_ca_file.empty() ? "none" : _http_ca_file);
-	Debug(net, 3, "Using certificate path: {}", _http_ca_path.empty() ? "none" : _http_ca_path);
+	Debug(Facility::Net, Severity::Notice, "Using certificate file: {}", _http_ca_file.empty() ? "none" : _http_ca_file);
+	Debug(Facility::Net, Severity::Notice, "Using certificate path: {}", _http_ca_path.empty() ? "none" : _http_ca_path);
 
 	/* Tell the user why HTTPS will not be working. */
 	if (_http_ca_file.empty() && _http_ca_path.empty()) {
-		Debug(net, 0, "No certificate files or directories found, HTTPS will not work!");
+		Debug(Facility::Net, Severity::Critical, "No certificate files or directories found, HTTPS will not work!");
 	}
 #endif /* UNIX */
 

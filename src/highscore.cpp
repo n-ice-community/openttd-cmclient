@@ -5,14 +5,13 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <https://www.gnu.org/licenses/old-licenses/gpl-2.0>.
  */
 
-/** @file highscore.cpp Definition of functions used for highscore handling */
+/** @file highscore.cpp Definition of functions used for highscore handling. */
 
 #include "stdafx.h"
 #include "highscore.h"
 #include "company_base.h"
 #include "company_func.h"
-#include "cheat_func.h"
-#include "fileio_func.h"
+#include "fileio_type.h"
 #include "string_func.h"
 #include "strings_func.h"
 #include "debug.h"
@@ -75,7 +74,7 @@ int8_t SaveHighScoreValue(const Company *c)
 	return std::distance(highscores.begin(), it);
 }
 
-/** Sort all companies given their performance */
+/** Sort all companies given their performance. @copydoc GUIList::Sorter */
 static bool HighScoreSorter(const Company * const &a, const Company * const &b)
 {
 	return b->old_economy[0].performance_history < a->old_economy[0].performance_history;
@@ -120,7 +119,7 @@ void SaveToHighScore()
 	auto &fp = *ofp;
 
 	/* Does not iterate through the complete array!. */
-	for (int i = 0; i < SP_SAVED_HIGHSCORE_END; i++) {
+	for (SettingsProfile i : EnumRange(SP_SAVED_HIGHSCORE_END)) {
 		for (HighScore &hs : _highscore_table[i]) {
 			/* This code is weird and old fashioned to keep compatibility with the old high score files. */
 			uint8_t name_length = ClampTo<uint8_t>(hs.name.size());
@@ -128,7 +127,7 @@ void SaveToHighScore()
 					fwrite(hs.name.data(), name_length, 1, fp) > 1 || // Yes... could be 0 bytes too
 					fwrite(&hs.score, sizeof(hs.score), 1, fp) != 1 ||
 					fwrite("  ", 2, 1, fp) != 1) { // Used to be hs.title, not saved anymore; compatibility
-				Debug(misc, 1, "Could not save highscore.");
+				Debug(Facility::Misc, Severity::Error, "Could not save highscore.");
 				return;
 			}
 		}
@@ -145,7 +144,7 @@ void LoadFromHighScore()
 	auto &fp = *ofp;
 
 	/* Does not iterate through the complete array!. */
-	for (int i = 0; i < SP_SAVED_HIGHSCORE_END; i++) {
+	for (SettingsProfile i : EnumRange(SP_SAVED_HIGHSCORE_END)) {
 		for (HighScore &hs : _highscore_table[i]) {
 			/* This code is weird and old fashioned to keep compatibility with the old high score files. */
 			uint8_t name_length;
@@ -155,7 +154,7 @@ void LoadFromHighScore()
 					fread(buffer, name_length, 1, fp) > 1 || // Yes... could be 0 bytes too
 					fread(&hs.score, sizeof(hs.score), 1, fp) !=  1 ||
 					fseek(fp, 2, SEEK_CUR) == -1) { // Used to be hs.title, not saved anymore; compatibility
-				Debug(misc, 1, "Highscore corrupted");
+				Debug(Facility::Misc, Severity::Error, "Highscore corrupted");
 				return;
 			}
 			hs.name = StrMakeValid(std::string_view(buffer, name_length));

@@ -14,6 +14,7 @@
 #include "../../blitter/factory.hpp"
 #include "../../error_func.h"
 #include "../../fileio_func.h"
+#include "../../spritecache.h"
 #include "../../string_func.h"
 #include "../../strings_func.h"
 #include "../../zoom_func.h"
@@ -67,7 +68,7 @@ void CoreTextFontCache::SetFontSize(int pixels)
 
 			/* Font height is minimum height plus the difference between the default
 			 * height for this font size and the small size. */
-			int diff = scaled_height - ScaleGUITrad(FontCache::GetDefaultFontHeight(FS_SMALL));
+			int diff = scaled_height - ScaleGUITrad(FontCache::GetDefaultFontHeight(FontSize::Small));
 			/* Clamp() is not used as scaled_height could be greater than MAX_FONT_SIZE, which is not permitted in Clamp(). */
 			pixels = std::min(std::max(std::min<int>(min_size, MAX_FONT_MIN_REC_SIZE) + diff, scaled_height), MAX_FONT_SIZE);
 		}
@@ -91,7 +92,7 @@ void CoreTextFontCache::SetFontSize(int pixels)
 	CFStringGetCString(font_name.get(), name, lengthof(name), kCFStringEncodingUTF8);
 	this->font_name = name;
 
-	Debug(fontcache, 2, "Loaded font '{}' with size {}", this->font_name, pixels);
+	Debug(Facility::Fontcache, Severity::Warning, "Loaded font '{}' with size {}", this->font_name, pixels);
 }
 
 GlyphID CoreTextFontCache::MapCharToGlyph(char32_t key, bool allow_fallback)
@@ -123,19 +124,14 @@ const Sprite *CoreTextFontCache::InternalGetGlyph(GlyphID key, bool use_aa)
 {
 	/* Get glyph size. */
 	CGGlyph glyph = (CGGlyph)key;
-	CGRect bounds = CGRectNull;
-	if (MacOSVersionIsAtLeast(10, 8, 0)) {
-		bounds = CTFontGetOpticalBoundsForGlyphs(this->font.get(), &glyph, nullptr, 1, 0);
-	} else {
-		bounds = CTFontGetBoundingRectsForGlyphs(this->font.get(), kCTFontOrientationDefault, &glyph, nullptr, 1);
-	}
+	CGRect bounds = CTFontGetOpticalBoundsForGlyphs(this->font.get(), &glyph, nullptr, 1, 0);
 	if (CGRectIsNull(bounds)) UserError("Unable to render font glyph");
 
 	uint bb_width = (uint)std::ceil(bounds.size.width) + 1; // Sometimes the glyph bounds are too tight and cut of the last pixel after rounding.
 	uint bb_height = (uint)std::ceil(bounds.size.height);
 
 	/* Add 1 scaled pixel for the shadow on the medium font. Our sprite must be at least 1x1 pixel. */
-	uint shadow = (this->fs == FS_NORMAL) ? ScaleGUITrad(1) : 0;
+	uint shadow = (this->fs == FontSize::Normal) ? ScaleGUITrad(1) : 0;
 	uint width = std::max(1U, bb_width + shadow);
 	uint height = std::max(1U, bb_height + shadow);
 
@@ -169,7 +165,7 @@ const Sprite *CoreTextFontCache::InternalGetGlyph(GlyphID key, bool use_aa)
 		CTFontDrawGlyphs(this->font.get(), &glyph, &pos, 1, context.get());
 
 		/* Draw shadow for medium size. */
-		if (this->fs == FS_NORMAL && !use_aa) {
+		if (this->fs == FontSize::Normal && !use_aa) {
 			for (uint y = 0; y < bb_height; y++) {
 				for (uint x = 0; x < bb_width; x++) {
 					if (bmp[y * pitch + x] > 0) {
@@ -205,36 +201,16 @@ class CoreTextFontCacheFactory : public FontCacheFactory {
 public:
 	CoreTextFontCacheFactory() : FontCacheFactory("coretext", "CoreText font loader") {}
 
-	/**
-	 * Loads the TrueType font.
-	 * If a CoreText font description is present, e.g. from the automatic font
-	 * fallback search, use it. Otherwise, try to resolve it by font name.
-	 * @param fs The font size to load.
-	 */
-	std::unique_ptr<FontCache> LoadFont(FontSize fs, FontType fonttype) const override
+	std::unique_ptr<FontCache> LoadFont(FontSize fs, FontType fonttype, bool search, const std::string &font_name, const std::any &) const override
 	{
 		if (fonttype != FontType::TrueType) return nullptr;
 
-		FontCacheSubSetting *settings = GetFontCacheSubSetting(fs);
+		/* Might be a font file name, try load it. */
+		CFAutoRelease<CTFontDescriptorRef> font_ref(LoadFontFromFile(font_name));
+		if (!font_ref) ShowInfo("Unable to load file '{}' for {} font, using default OS font selection instead", font_name, FontSizeToName(fs));
 
-		std::string font = GetFontCacheFontName(fs);
-		if (font.empty()) return nullptr;
-
-		CFAutoRelease<CTFontDescriptorRef> font_ref;
-
-		if (settings->os_handle != nullptr) {
-			font_ref.reset(static_cast<CTFontDescriptorRef>(const_cast<void *>(settings->os_handle)));
-			CFRetain(font_ref.get()); // Increase ref count to match a later release.
-		}
-
-		if (!font_ref && MacOSVersionIsAtLeast(10, 6, 0)) {
-			/* Might be a font file name, try load it. */
-			font_ref.reset(LoadFontFromFile(font));
-			if (!font_ref) ShowInfo("Unable to load file '{}' for {} font, using default OS font selection instead", font, FontSizeToName(fs));
-		}
-
-		if (!font_ref) {
-			CFAutoRelease<CFStringRef> name(CFStringCreateWithCString(kCFAllocatorDefault, font.c_str(), kCFStringEncodingUTF8));
+		if (!font_ref && search) {
+			CFAutoRelease<CFStringRef> name(CFStringCreateWithCString(kCFAllocatorDefault, font_name.c_str(), kCFStringEncodingUTF8));
 
 			/* Simply creating the font using CTFontCreateWithNameAndSize will *always* return
 			* something, no matter the name. As such, we can't use it to check for existence.
@@ -252,27 +228,27 @@ public:
 		}
 
 		if (!font_ref) {
-			ShowInfo("Unable to use '{}' for {} font, using sprite font instead", font, FontSizeToName(fs));
+			ShowInfo("Unable to use '{}' for {} font, using sprite font instead", font_name, FontSizeToName(fs));
 			return nullptr;
 		}
 
 		return std::make_unique<CoreTextFontCache>(fs, std::move(font_ref), GetFontCacheFontSize(fs));
 	}
 
-	bool FindFallbackFont(FontCacheSettings *settings, const std::string &language_isocode, MissingGlyphSearcher *callback) const override
+	bool FindFallbackFont(const std::string &language_isocode, MissingGlyphSearcher *callback) const override
 	{
 		/* Determine fallback font using CoreText. This uses the language isocode
 		 * to find a suitable font. CoreText is available from 10.5 onwards. */
 		std::string lang;
-		if (language_isocode == "zh_TW") {
+		if (language_isocode == "zh-TW") {
 			/* Traditional Chinese */
 			lang = "zh-Hant";
-		} else if (language_isocode == "zh_CN") {
+		} else if (language_isocode == "zh-CN") {
 			/* Simplified Chinese */
 			lang = "zh-Hans";
 		} else {
-			/* Just copy the first part of the isocode. */
-			lang = language_isocode.substr(0, language_isocode.find('_'));
+			/* Just copy the isocode. */
+			lang = language_isocode;
 		}
 
 		/* Create a font descriptor matching the wanted language and latin (english) glyphs.
@@ -305,7 +281,7 @@ public:
 				/* Skip bold fonts (especially Arial Bold, which looks worse than regular Arial). */
 				if (symbolic_traits & kCTFontBoldTrait) continue;
 				/* Select monospaced fonts if asked for. */
-				if (((symbolic_traits & kCTFontMonoSpaceTrait) == kCTFontMonoSpaceTrait) != callback->Monospace()) continue;
+				if (((symbolic_traits & kCTFontMonoSpaceTrait) == kCTFontMonoSpaceTrait) != callback->missing_fontsizes.Test(FontSize::Monospace)) continue;
 
 				/* Get font name. */
 				char buffer[128];
@@ -323,10 +299,10 @@ public:
 				if (name.starts_with(".") || name.starts_with("LastResort")) continue;
 
 				/* Save result. */
-				callback->SetFontNames(settings, name);
-				if (!callback->FindMissingGlyphs()) {
-					Debug(fontcache, 2, "CT-Font for {}: {}", language_isocode, name);
-					result = true;
+				result = FontCache::TryFallback(callback->missing_fontsizes, callback->required_glyphs, std::string{name});
+				if (result) {
+					FontCache::AddFallback(callback->missing_fontsizes, name);
+					Debug(Facility::Fontcache, Severity::Warning, "CT-Font for {}: {}", language_isocode, name);
 					break;
 				}
 			}
@@ -335,19 +311,18 @@ public:
 		if (!result) {
 			/* For some OS versions, the font 'Arial Unicode MS' does not report all languages it
 			 * supports. If we didn't find any other font, just try it, maybe we get lucky. */
-			callback->SetFontNames(settings, "Arial Unicode MS");
-			result = !callback->FindMissingGlyphs();
+			result = FontCache::TryFallback(callback->missing_fontsizes, callback->required_glyphs, "Arial Unicode MS");
+			if (result) {
+				FontCache::AddFallback(callback->missing_fontsizes, "Arial Unicode MS");
+			}
 		}
 
-		callback->FindMissingGlyphs();
 		return result;
 	}
 
 private:
 	static CTFontDescriptorRef LoadFontFromFile(const std::string &font_name)
 	{
-		if (!MacOSVersionIsAtLeast(10, 6, 0)) return nullptr;
-
 		/* Might be a font file name, try load it. Direct font loading is
 		 * only supported starting on OSX 10.6. */
 		CFAutoRelease<CFStringRef> path;
@@ -357,7 +332,7 @@ private:
 			path.reset(CFStringCreateWithCString(kCFAllocatorDefault, font_name.c_str(), kCFStringEncodingUTF8));
 		} else {
 			/* Scan the search-paths to see if it can be found. */
-			std::string full_font = FioFindFullPath(BASE_DIR, font_name);
+			std::string full_font = FioFindFullPath(Subdirectory::Base, font_name);
 			if (!full_font.empty()) {
 				path.reset(CFStringCreateWithCString(kCFAllocatorDefault, full_font.c_str(), kCFStringEncodingUTF8));
 			}

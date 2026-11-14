@@ -11,9 +11,7 @@
 #define CARGOMONITOR_H
 
 #include "cargo_type.h"
-#include "company_func.h"
-#include "industry.h"
-#include "town.h"
+#include "source_type.h"
 #include "core/overflowsafe_type.hpp"
 
 struct Station;
@@ -104,7 +102,7 @@ inline CompanyID DecodeMonitorCompany(CargoMonitorID num)
  */
 inline CargoType DecodeMonitorCargoType(CargoMonitorID num)
 {
-	return GB(num, CCB_CARGO_TYPE_START, CCB_CARGO_TYPE_LENGTH);
+	return static_cast<CargoType>(GB(num, CCB_CARGO_TYPE_START, CCB_CARGO_TYPE_LENGTH));
 }
 
 /**

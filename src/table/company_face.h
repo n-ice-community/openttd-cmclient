@@ -5,15 +5,13 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <https://www.gnu.org/licenses/old-licenses/gpl-2.0>.
  */
 
-/**
- * @file table/company_face.h
- * This file contains all definitions for default company faces.
- */
+/** @file company_face.h This file contains all definitions for default company faces. */
 
 #ifndef TABLE_COMPANY_FACE_H
 #define TABLE_COMPANY_FACE_H
 
 #include "../company_manager_face.h"
+#include "table/strings.h"
 
 /* Definitions for default face variables.
  * Faces are drawn in the listed order, so sprite layers must be ordered

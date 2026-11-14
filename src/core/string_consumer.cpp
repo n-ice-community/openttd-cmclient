@@ -11,9 +11,6 @@
 #include "string_consumer.hpp"
 
 #include "utf8.hpp"
-#include "string_builder.hpp"
-
-#include "../string_func.h"
 
 #if defined(STRGEN) || defined(SETTINGSGEN)
 #include "../error_func.h"
@@ -26,12 +23,16 @@
 /* static */ const std::string_view StringConsumer::WHITESPACE_NO_NEWLINE = "\t\v\f\r ";
 /* static */ const std::string_view StringConsumer::WHITESPACE_OR_NEWLINE = "\t\n\v\f\r ";
 
+/**
+ * Log an error in the processing (too small buffer, integer out of range, etc.).
+ * @param msg The message to log.
+ */
 /* static */ void StringConsumer::LogError(std::string &&msg)
 {
 #if defined(STRGEN) || defined(SETTINGSGEN)
 	FatalErrorI(std::move(msg));
 #else
-	DebugPrint("misc", 0, std::move(msg));
+	DebugPrint(Facility::Misc, Severity::Critical, std::move(msg));
 #endif
 }
 

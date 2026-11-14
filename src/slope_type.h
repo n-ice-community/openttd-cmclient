@@ -7,8 +7,7 @@
 
 /**
  * @file slope_type.h Definitions of a slope.
- * This file defines the enumeration and helper functions for handling
- * the slope info of a tile.
+ * This file defines the enumeration and helper functions for handling the slope info of a tile.
  */
 
 #ifndef SLOPE_TYPE_H
@@ -19,15 +18,21 @@
 /**
  * Enumeration of tile corners
  */
-enum Corner : uint8_t {
-	CORNER_W = 0,
-	CORNER_S = 1,
-	CORNER_E = 2,
-	CORNER_N = 3,
-	CORNER_END,
-	CORNER_INVALID = 0xFF
+enum class Corner : uint8_t {
+	W, ///< West tile corner.
+	S, ///< South tile corner.
+	E, ///< East tile corner.
+	N, ///< North tile corner.
+	End, ///< End marker.
+	Invalid = 0xFF, ///< Invalid marker.
 };
 
+/**
+ * Array with \c Corner as index.
+ * @tparam T the type contained within the array.
+ */
+template <typename T>
+using CornerIndexArray = EnumIndexArray<T, Corner, Corner::End>;
 
 /**
  * Enumeration for the slope-type.
@@ -70,12 +75,33 @@ enum Slope : uint8_t {
 
 	SLOPE_HALFTILE = 0x20,                                  ///< one halftile is leveled (non continuous slope)
 	SLOPE_HALFTILE_MASK = 0xE0,                             ///< three bits used for halftile slopes
-	SLOPE_HALFTILE_W = SLOPE_HALFTILE | (CORNER_W << 6),    ///< the west halftile is leveled (non continuous slope)
-	SLOPE_HALFTILE_S = SLOPE_HALFTILE | (CORNER_S << 6),    ///< the south halftile is leveled (non continuous slope)
-	SLOPE_HALFTILE_E = SLOPE_HALFTILE | (CORNER_E << 6),    ///< the east halftile is leveled (non continuous slope)
-	SLOPE_HALFTILE_N = SLOPE_HALFTILE | (CORNER_N << 6),    ///< the north halftile is leveled (non continuous slope)
+	SLOPE_HALFTILE_W = SLOPE_HALFTILE | (to_underlying(Corner::W) << 6), ///< the west halftile is leveled (non continuous slope)
+	SLOPE_HALFTILE_S = SLOPE_HALFTILE | (to_underlying(Corner::S) << 6), ///< the south halftile is leveled (non continuous slope)
+	SLOPE_HALFTILE_E = SLOPE_HALFTILE | (to_underlying(Corner::E) << 6), ///< the east halftile is leveled (non continuous slope)
+	SLOPE_HALFTILE_N = SLOPE_HALFTILE | (to_underlying(Corner::N) << 6), ///< the north halftile is leveled (non continuous slope)
 };
 DECLARE_ENUM_AS_BIT_SET(Slope)
+
+/** The total number of possible slope types. */
+static constexpr uint8_t NUM_SLOPES = 19;
+
+/**
+ * Array with \c Slope as index.
+ * @note Remove halftile form the slope before accessing an element.
+ * @note Elevated steep slope (e.g. value 31) is an invalid slope because it does not define which corner is steep.
+ * @tparam T the type contained within the array.
+ */
+template <typename T>
+using SlopeIndexArray = EnumClassIndexContainer<std::array<T, SLOPE_STEEP | SLOPE_ELEVATED>, Slope>;
+
+/**
+ * Array with non steep \c Slope as index.
+ * @note Remove halftile form the slope before accessing an element.
+ * @note SLOPE_ELEVATED is just SLOPE_FLAT with height increased by one, therefore it is not a valid index.
+ * @tparam T the type contained within the array.
+ */
+template <typename T>
+using NonSteepSlopeIndexArray = EnumClassIndexContainer<std::array<T, SLOPE_ELEVATED>, Slope>;
 
 /**
  * Helper for creating a bitset of slopes.
@@ -90,27 +116,29 @@ static const uint32_t VALID_LEVEL_CROSSING_SLOPES = M(SLOPE_SEN) | M(SLOPE_ENW) 
 /**
  * Enumeration for Foundations.
  */
-enum Foundation : uint8_t {
-	FOUNDATION_NONE,             ///< The tile has no foundation, the slope remains unchanged.
-	FOUNDATION_LEVELED,          ///< The tile is leveled up to a flat slope.
-	FOUNDATION_INCLINED_X,       ///< The tile has an along X-axis inclined foundation.
-	FOUNDATION_INCLINED_Y,       ///< The tile has an along Y-axis inclined foundation.
-	FOUNDATION_STEEP_LOWER,      ///< The tile has a steep slope. The lowest corner is raised by a foundation to allow building railroad on the lower halftile.
+enum class Foundation : uint8_t {
+	None, ///< The tile has no foundation, the slope remains unchanged.
+	Leveled, ///< The tile is leveled up to a flat slope.
+	InclinedX, ///< The tile has an along X-axis inclined foundation.
+	InclinedY, ///< The tile has an along Y-axis inclined foundation.
+	SteepLower, ///< The tile has a steep slope. The lowest corner is raised by a foundation to allow building railroad on the lower halftile.
 
 	/* Halftile foundations */
-	FOUNDATION_STEEP_BOTH,       ///< The tile has a steep slope. The lowest corner is raised by a foundation and the upper halftile is leveled.
-	FOUNDATION_HALFTILE_W,       ///< Level west halftile non-continuously.
-	FOUNDATION_HALFTILE_S,       ///< Level south halftile non-continuously.
-	FOUNDATION_HALFTILE_E,       ///< Level east halftile non-continuously.
-	FOUNDATION_HALFTILE_N,       ///< Level north halftile non-continuously.
+	SteepBoth, ///< The tile has a steep slope. The lowest corner is raised by a foundation and the upper halftile is leveled.
+	HalfTileW, ///< Level west halftile non-continuously.
+	HalfTileS, ///< Level south halftile non-continuously.
+	HalfTileE, ///< Level east halftile non-continuously.
+	HalfTileN, ///< Level north halftile non-continuously.
+	HalfTileEnd, ///< End marker for halftile foundations.
 
 	/* Special anti-zig-zag foundations for single horizontal/vertical track */
-	FOUNDATION_RAIL_W,           ///< Foundation for TRACK_BIT_LEFT, but not a leveled foundation.
-	FOUNDATION_RAIL_S,           ///< Foundation for TRACK_BIT_LOWER, but not a leveled foundation.
-	FOUNDATION_RAIL_E,           ///< Foundation for TRACK_BIT_RIGHT, but not a leveled foundation.
-	FOUNDATION_RAIL_N,           ///< Foundation for TRACK_BIT_UPPER, but not a leveled foundation.
+	RailW = Foundation::HalfTileEnd, ///< Foundation for TRACK_BIT_LEFT, but not a leveled foundation.
+	RailS, ///< Foundation for TRACK_BIT_LOWER, but not a leveled foundation.
+	RailE, ///< Foundation for TRACK_BIT_RIGHT, but not a leveled foundation.
+	RailN, ///< Foundation for TRACK_BIT_UPPER, but not a leveled foundation.
+	End, ///< End marker.
 
-	FOUNDATION_INVALID = 0xFF,   ///< Used inside "rail_cmd.cpp" to indicate invalid slope/track combination.
+	Invalid = 0xFF, ///< Used inside "rail_cmd.cpp" to indicate invalid slope/track combination.
 };
 
 #endif /* SLOPE_TYPE_H */

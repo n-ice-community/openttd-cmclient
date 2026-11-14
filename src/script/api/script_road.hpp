@@ -13,7 +13,6 @@
 #include "script_tile.hpp"
 #include "../squirrel_helper_type.hpp"
 #include "../../station_type.h"
-#include "../../road.h"
 
 /**
  * Class that handles all road related functions.
@@ -34,7 +33,7 @@ public:
 		ERR_ROAD_WORKS_IN_PROGRESS,                   // [STR_ERROR_ROAD_WORKS_IN_PROGRESS]
 
 		/** Drive through is in the wrong direction */
-		ERR_ROAD_DRIVE_THROUGH_WRONG_DIRECTION,       // [STR_ERROR_DRIVE_THROUGH_DIRECTION]
+		ERR_ROAD_DRIVE_THROUGH_WRONG_DIRECTION,       // [STR_ERROR_DRIVE_THROUGH_DIRECTION, STR_ERROR_DRIVE_THROUGH_CORNER, STR_ERROR_DRIVE_THROUGH_JUNCTION]
 
 		/** Drive through roads can't be build on town owned roads */
 		ERR_ROAD_CANNOT_BUILD_ON_TOWN_ROAD,           // [STR_ERROR_DRIVE_THROUGH_ON_TOWN_ROAD]
@@ -65,8 +64,8 @@ public:
 	 * Road/tram types
 	 */
 	enum RoadTramTypes : uint8_t {
-		ROADTRAMTYPES_ROAD = ::RTTB_ROAD, ///< Road road types.
-		ROADTRAMTYPES_TRAM = ::RTTB_TRAM, ///< Tram road types.
+		ROADTRAMTYPES_ROAD = ::RoadTramTypes{RoadTramType::Road}.base(), ///< Road road types.
+		ROADTRAMTYPES_TRAM = ::RoadTramTypes{RoadTramType::Tram}.base(), ///< Tram road types.
 	};
 
 	/**

@@ -10,10 +10,7 @@
 #ifndef PALETTE_FUNC_H
 #define PALETTE_FUNC_H
 
-#include "core/enum_type.hpp"
 #include "gfx_type.h"
-#include "strings_type.h"
-#include "string_type.h"
 
 extern Palette _cur_palette; ///< Current palette
 
@@ -64,34 +61,35 @@ static inline uint8_t GetColourBrightness(Colour colour)
  */
 inline bool IsValidColours(Colours colours)
 {
-	return colours < COLOUR_END;
+	return colours < Colours::End;
 }
 
 TextColour GetContrastColour(PixelColour background, uint8_t threshold = 128);
 
-enum ColourShade : uint8_t {
-	SHADE_BEGIN = 0,
-	SHADE_DARKEST = SHADE_BEGIN,
-	SHADE_DARKER,
-	SHADE_DARK,
-	SHADE_NORMAL,
-	SHADE_LIGHT,
-	SHADE_LIGHTER,
-	SHADE_LIGHTEST,
-	SHADE_LIGHTEREST,
-	SHADE_END,
-};
-DECLARE_INCREMENT_DECREMENT_OPERATORS(ColourShade)
+/** The eight shades of each company colour. Not all shaded are used. */
+enum class Shade : uint8_t {
+	Darkest, ///< Darkest colour shade.
+	Darker, ///< Darker colour shade.
+	Dark, ///< Dark colour shade.
+	Normal, ///< Normal colour shade.
+	Light, ///< Light colour shade.
+	Lighter, ///< Lighter colour shade.
+	Lightest, ///< Lightest colour shade.
+	Lighterest, ///< Lighterest colour shade.
 
-PixelColour GetColourGradient(Colours colour, ColourShade shade);
-void SetColourGradient(Colours colour, ColourShade shade, PixelColour palette_colour);
+	End, ///< End marker for iteration.
+	Begin = Shade::Darkest, ///< Begin marker for iteration.
+};
+
+PixelColour GetColourGradient(Colours colour, Shade shade);
+void SetColourGradient(Colours colour, Shade shade, PixelColour palette_colour);
 
 /**
  * Return the colour for a particular greyscale level.
  * @param level Intensity, 0 = black, 15 = white
  * @return colour
  */
-inline constexpr PixelColour GREY_SCALE(uint8_t level) { return PixelColour{level}; }
+constexpr PixelColour GREY_SCALE(uint8_t level) { return PixelColour{level}; }
 
 static constexpr PixelColour PC_BLACK              {GREY_SCALE(1)};  ///< Black palette colour.
 static constexpr PixelColour PC_DARK_GREY          {GREY_SCALE(6)};  ///< Dark grey palette colour.

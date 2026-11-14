@@ -5,7 +5,7 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <https://www.gnu.org/licenses/old-licenses/gpl-2.0>.
  */
 
-/** @file bridge.h Header file for bridges */
+/** @file bridge.h Header file for bridges. */
 
 #ifndef BRIDGE_H
 #define BRIDGE_H
@@ -18,8 +18,8 @@
 static const uint MAX_BRIDGES = 13; ///< Maximal number of available bridge specs.
 constexpr uint SPRITES_PER_BRIDGE_PIECE = 32; ///< Number of sprites there are per bridge piece.
 
-/* Container for Bridge pillar flags for each axis of each bridge middle piece. */
-using BridgeMiddlePillarFlags = std::array<std::array<BridgePillarFlags, AXIS_END>, NUM_BRIDGE_MIDDLE_PIECES>;
+/** Container for Bridge pillar flags for each axis of each bridge middle piece. */
+using BridgeMiddlePillarFlags = std::array<AxisIndexArray<BridgePillarFlags>, NUM_BRIDGE_MIDDLE_PIECES>;
 
 /**
  * Struct containing information about a single bridge type
@@ -30,6 +30,8 @@ struct BridgeSpec {
 		CustomPillarFlags, ///< Bridge has set custom pillar flags.
 		InvalidPillarFlags, ///< Bridge pillar flags are not valid, i.e. only the tile layout has been modified.
 	};
+
+	/** Bitset of \c ControlFlag elements. */
 	using ControlFlags = EnumBitSet<ControlFlag, uint8_t>;
 
 	TimerGameCalendar::Year avail_year; ///< the year where it becomes available
@@ -41,10 +43,11 @@ struct BridgeSpec {
 	PaletteID pal;                      ///< the palette which is used in the GUI
 	StringID material;                  ///< the string that contains the bridge description
 	StringID transport_name[2];         ///< description of the bridge, when built for road or rail
-	std::vector<std::vector<PalSpriteID>> sprite_table; ///< table of sprites for drawing the bridge
-	uint8_t flags;                         ///< bit 0 set: disable drawing of far pillars.
-	ControlFlags ctrl_flags{}; ///< control flags
 	BridgeMiddlePillarFlags pillar_flags{}; ///< bridge pillar flags.
+	uint8_t flags = 0; ///< bit 0 set: disable drawing of far pillars.
+
+	ControlFlags ctrl_flags{}; ///< control flags, NewGRF-only
+	std::vector<std::vector<PalSpriteID>> sprite_table{}; ///< table of sprites for drawing the bridge, NewGRF-only
 };
 
 extern BridgeSpec _bridge[MAX_BRIDGES];

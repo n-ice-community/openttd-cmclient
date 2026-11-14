@@ -5,15 +5,13 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <https://www.gnu.org/licenses/old-licenses/gpl-2.0>.
  */
 
-/** @file script_client.hpp Everything to query a network client's information */
+/** @file script_client.hpp Everything to query a network client's information. */
 
 #ifndef SCRIPT_CLIENT_HPP
 #define SCRIPT_CLIENT_HPP
 
-#include "script_text.hpp"
 #include "script_date.hpp"
 #include "script_company.hpp"
-#include "../../network/network_type.h"
 
 /**
  * Class that handles all client related functions.

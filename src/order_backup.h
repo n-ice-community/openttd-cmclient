@@ -15,29 +15,32 @@
 #include "tile_type.h"
 #include "vehicle_type.h"
 #include "base_consist.h"
-#include "saveload/saveload.h"
+#include "saveload/saveload_type.h"
 
 /** Unique identifier for an order backup. */
 using OrderBackupID = PoolID<uint8_t, struct OrderBackupIDTag, 255, 0xFF>;
 struct OrderBackup;
+enum class ClientID : uint32_t;
 
 /** The pool type for order backups. */
 using OrderBackupPool = Pool<OrderBackup, OrderBackupID, 1>;
 /** The pool with order backups. */
 extern OrderBackupPool _order_backup_pool;
+/** An item in the OrderBackupPool. */
+using OrderBackupPoolItem = OrderBackupPool::PoolItem<&_order_backup_pool>;
 
 /**
  * Data for backing up an order of a vehicle so it can be
  * restored after a vehicle is rebuilt in the same depot.
  */
-struct OrderBackup : OrderBackupPool::PoolItem<&_order_backup_pool>, BaseConsist {
+struct OrderBackup : OrderBackupPoolItem, BaseConsist {
 private:
 	friend SaveLoadTable GetOrderBackupDescription(); ///< Saving and loading of order backups.
 	friend struct BKORChunkHandler; ///< Creating empty orders upon savegame loading.
 	template <typename T>
 	friend class SlOrders;
 
-	uint32_t user = 0; ///< The user that requested the backup.
+	ClientID user{}; ///< The user that requested the backup.
 	TileIndex tile = INVALID_TILE; ///< Tile of the depot where the order was changed.
 	GroupID group = GroupID::Invalid(); ///< The group the vehicle was part of.
 
@@ -45,20 +48,20 @@ private:
 	std::vector<Order> orders; ///< The actual orders if the vehicle was not a clone.
 	uint32_t old_order_index = 0;
 
-	/** Creation for savegame restoration. */
-	OrderBackup() = default;
-	OrderBackup(const Vehicle *v, uint32_t user);
-
 	void DoRestore(Vehicle *v);
+
+	friend OrderBackupPoolItem; ///< Loading of order backups.
+	OrderBackup(OrderBackupID index);
+	OrderBackup(OrderBackupID index, const Vehicle *v, ClientID user);
 
 public:
 	~OrderBackup();
 
-	static void Backup(const Vehicle *v, uint32_t user);
-	static void Restore(Vehicle *v, uint32_t user);
+	static void Backup(const Vehicle *v, ClientID user);
+	static void Restore(Vehicle *v, ClientID user);
 
-	static void ResetOfUser(TileIndex tile, uint32_t user);
-	static void ResetUser(uint32_t user);
+	static void ResetOfUser(TileIndex tile, ClientID user);
+	static void ResetUser(ClientID user);
 	static void Reset(TileIndex tile = INVALID_TILE, bool from_gui = true);
 
 	static void ClearGroup(GroupID group);

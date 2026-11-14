@@ -121,17 +121,17 @@ bool DriverFactoryBase::SelectDriverImpl(const std::string &name, Driver::Type t
 				if (d->type != type) continue;
 				if (d->priority != priority) continue;
 
-				if (type == Driver::DT_VIDEO && !_video_hw_accel && d->UsesHardwareAcceleration()) continue;
+				if (type == Driver::Type::Video && !_video_hw_accel && d->UsesHardwareAcceleration()) continue;
 
-				if (type == Driver::DT_VIDEO && _video_hw_accel && d->UsesHardwareAcceleration()) {
+				if (type == Driver::Type::Video && _video_hw_accel && d->UsesHardwareAcceleration()) {
 					/* Check if we have already tried this driver in last run.
 					 * If it is here, it most likely means we crashed. So skip
 					 * hardware acceleration. */
-					auto filename = FioFindFullPath(BASE_DIR, HWACCELERATION_TEST_FILE);
+					auto filename = FioFindFullPath(Subdirectory::Base, HWACCELERATION_TEST_FILE);
 					if (!filename.empty()) {
 						FioRemove(filename);
 
-						Debug(driver, 1, "Probing {} driver '{}' skipped due to earlier crash", GetDriverTypeName(type), d->name);
+						Debug(Facility::Driver, Severity::Error, "Probing {} driver '{}' skipped due to earlier crash", GetDriverTypeName(type), d->name);
 
 						_video_hw_accel = false;
 						ErrorMessageData msg(GetEncodedString(STR_VIDEO_DRIVER_ERROR), GetEncodedString(STR_VIDEO_DRIVER_ERROR_HARDWARE_ACCELERATION_CRASH), true);
@@ -140,7 +140,7 @@ bool DriverFactoryBase::SelectDriverImpl(const std::string &name, Driver::Type t
 					}
 
 					/* Write empty file to note we are attempting hardware acceleration. */
-					FioFOpenFile(HWACCELERATION_TEST_FILE, "w", BASE_DIR);
+					FioFOpenFile(HWACCELERATION_TEST_FILE, "w", Subdirectory::Base);
 				}
 
 				/* Keep old driver in case we need to switch back, or may still need to process an OS callback. */
@@ -149,15 +149,15 @@ bool DriverFactoryBase::SelectDriverImpl(const std::string &name, Driver::Type t
 
 				auto err = newd->Start({});
 				if (!err) {
-					Debug(driver, 1, "Successfully probed {} driver '{}'", GetDriverTypeName(type), d->name);
+					Debug(Facility::Driver, Severity::Error, "Successfully probed {} driver '{}'", GetDriverTypeName(type), d->name);
 					GetActiveDriver(type) = std::move(newd);
 					return true;
 				}
 
 				GetActiveDriver(type) = std::move(oldd);
-				Debug(driver, 1, "Probing {} driver '{}' failed with error: {}", GetDriverTypeName(type), d->name, *err);
+				Debug(Facility::Driver, Severity::Error, "Probing {} driver '{}' failed with error: {}", GetDriverTypeName(type), d->name, *err);
 
-				if (type == Driver::DT_VIDEO && _video_hw_accel && d->UsesHardwareAcceleration()) {
+				if (type == Driver::Type::Video && _video_hw_accel && d->UsesHardwareAcceleration()) {
 					_video_hw_accel = false;
 					ErrorMessageData msg(GetEncodedString(STR_VIDEO_DRIVER_ERROR), GetEncodedString(STR_VIDEO_DRIVER_ERROR_NO_HARDWARE_ACCELERATION), true);
 					ScheduleErrorMessage(std::move(msg));
@@ -194,7 +194,7 @@ bool DriverFactoryBase::SelectDriverImpl(const std::string &name, Driver::Type t
 				UserError("Unable to load driver '{}'. The error was: {}", d->name, *err);
 			}
 
-			Debug(driver, 1, "Successfully loaded {} driver '{}'", GetDriverTypeName(type), d->name);
+			Debug(Facility::Driver, Severity::Error, "Successfully loaded {} driver '{}'", GetDriverTypeName(type), d->name);
 			GetActiveDriver(type) = std::move(newd);
 			return true;
 		}
@@ -210,7 +210,7 @@ void DriverFactoryBase::MarkVideoDriverOperational()
 	/* As part of the detection whether the GPU driver crashes the game,
 	 * and as we are operational now, remove the hardware acceleration
 	 * test-file. */
-	auto filename = FioFindFullPath(BASE_DIR, HWACCELERATION_TEST_FILE);
+	auto filename = FioFindFullPath(Subdirectory::Base, HWACCELERATION_TEST_FILE);
 	if (!filename.empty()) FioRemove(filename);
 }
 
@@ -220,7 +220,7 @@ void DriverFactoryBase::MarkVideoDriverOperational()
  */
 void DriverFactoryBase::GetDriversInfo(std::back_insert_iterator<std::string> &output_iterator)
 {
-	for (Driver::Type type = Driver::DT_BEGIN; type != Driver::DT_END; type++) {
+	for (Driver::Type type : EnumRange(Driver::Type::End)) {
 		fmt::format_to(output_iterator, "List of {} drivers:\n", GetDriverTypeName(type));
 
 		for (int priority = 10; priority >= 0; priority--) {

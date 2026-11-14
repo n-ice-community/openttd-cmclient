@@ -5,14 +5,11 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <https://www.gnu.org/licenses/old-licenses/gpl-2.0>.
  */
 
-/**
- * @file core.cpp Functions used to initialize/shut down the core network
- */
+/** @file core.cpp Functions used to initialize/shut down the core network. */
 
 #include "../../stdafx.h"
 #include "../../debug.h"
 #include "os_abstraction.h"
-#include "packet.h"
 
 #include "../../safeguards.h"
 
@@ -27,9 +24,9 @@ bool NetworkCoreInitialize()
 #ifdef _WIN32
 	{
 		WSADATA wsa;
-		Debug(net, 5, "Loading windows socket library");
+		Debug(Facility::Net, Severity::Debug1, "Loading windows socket library");
 		if (WSAStartup(MAKEWORD(2, 0), &wsa) != 0) {
-			Debug(net, 0, "WSAStartup failed, network unavailable");
+			Debug(Facility::Net, Severity::Critical, "WSAStartup failed, network unavailable");
 			return false;
 		}
 	}

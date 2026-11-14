@@ -12,7 +12,7 @@
 #include "../timer/timer_game_tick.h"
 #include "../gfx_func.h"
 #include "../blitter/factory.hpp"
-#include "../saveload/saveload.h"
+#include "../saveload/saveload_func.h"
 #include "../window_func.h"
 #include "null_v.h"
 
@@ -41,7 +41,7 @@ std::optional<std::string_view> VideoDriver_Null::Start(const StringList &parm)
 	ScreenSizeChanged();
 
 	/* Do not render, nor blit */
-	Debug(misc, 1, "Forcing blitter 'null'...");
+	Debug(Facility::Misc, Severity::Error, "Forcing blitter 'null'...");
 	BlitterFactory::SelectBlitter("null");
 	return std::nullopt;
 }

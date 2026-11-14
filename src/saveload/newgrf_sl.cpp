@@ -5,11 +5,12 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <https://www.gnu.org/licenses/old-licenses/gpl-2.0>.
  */
 
-/** @file newgrf_sl.cpp Code handling saving and loading of newgrf config */
+/** @file newgrf_sl.cpp Code handling saving and loading of newgrf config. */
 
 #include "../stdafx.h"
 
 #include "saveload.h"
+#include "saveload_error.hpp"
 #include "compat/newgrf_sl_compat.h"
 
 #include "newgrf_sl.h"
@@ -19,11 +20,11 @@
 
 /** Save and load the mapping between a spec and the NewGRF it came from. */
 static const SaveLoad _newgrf_mapping_desc[] = {
-	SLE_VAR(EntityIDMapping, grfid,         SLE_UINT32),
-	SLE_CONDVAR(EntityIDMapping, entity_id,     SLE_FILE_U8 | SLE_VAR_U16, SL_MIN_VERSION,            SLV_EXTEND_ENTITY_MAPPING),
-	SLE_CONDVAR(EntityIDMapping, entity_id,     SLE_UINT16,                SLV_EXTEND_ENTITY_MAPPING, SL_MAX_VERSION),
-	SLE_CONDVAR(EntityIDMapping, substitute_id, SLE_FILE_U8 | SLE_VAR_U16, SL_MIN_VERSION,            SLV_EXTEND_ENTITY_MAPPING),
-	SLE_CONDVAR(EntityIDMapping, substitute_id, SLE_UINT16,                SLV_EXTEND_ENTITY_MAPPING, SL_MAX_VERSION),
+	SaveLoad::Variable<VarFileType::Label>("grfid", SLE_OBJECT_ADDRESS(EntityIDMapping, grfid)),
+	SaveLoad::Variable<VarFileType::U8>("entity_id", SLE_OBJECT_ADDRESS(EntityIDMapping, entity_id), SaveLoadVersion::MinVersion, SaveLoadVersion::ExtendEntityMapping),
+	SaveLoad::Variable<VarFileType::U16>("entity_id", SLE_OBJECT_ADDRESS(EntityIDMapping, entity_id), SaveLoadVersion::ExtendEntityMapping),
+	SaveLoad::Variable<VarFileType::U8>("substitute_id", SLE_OBJECT_ADDRESS(EntityIDMapping, substitute_id), SaveLoadVersion::MinVersion, SaveLoadVersion::ExtendEntityMapping),
+	SaveLoad::Variable<VarFileType::U16>("substitute_id", SLE_OBJECT_ADDRESS(EntityIDMapping, substitute_id), SaveLoadVersion::ExtendEntityMapping),
 };
 
 /**
@@ -34,7 +35,7 @@ void NewGRFMappingChunkHandler::Save() const
 	SlTableHeader(_newgrf_mapping_desc);
 
 	for (uint i = 0; i < this->mapping.GetMaxMapping(); i++) {
-		if (this->mapping.mappings[i].grfid == 0 &&
+		if (this->mapping.mappings[i].grfid.Empty() &&
 			this->mapping.mappings[i].entity_id == 0) continue;
 		SlSetArrayIndex(i);
 		SlObject(&this->mapping.mappings[i], _newgrf_mapping_desc);
@@ -62,19 +63,19 @@ void NewGRFMappingChunkHandler::Load() const
 }
 
 struct NGRFChunkHandler : ChunkHandler {
-	NGRFChunkHandler() : ChunkHandler('NGRF', CH_TABLE) {}
+	NGRFChunkHandler() : ChunkHandler("NGRF", ChunkType::Table) {}
 
 	static inline std::array<uint32_t, GRFConfig::MAX_NUM_PARAMS> param;
 	static inline uint8_t num_params;
 
 	static inline const SaveLoad description[] = {
-		   SLE_SSTR(GRFConfig, filename,         SLE_STR),
-		    SLE_VAR(GRFConfig, ident.grfid,      SLE_UINT32),
-		    SLE_ARR(GRFConfig, ident.md5sum,     SLE_UINT8,  16),
-		SLE_CONDVAR(GRFConfig, version,          SLE_UINT32, SLV_151, SL_MAX_VERSION),
-		   SLEG_ARR("param", param,              SLE_UINT32, std::size(param)),
-		   SLEG_VAR("num_params", num_params,    SLE_UINT8),
-		SLE_CONDVAR(GRFConfig, palette,          SLE_UINT8,  SLV_101, SL_MAX_VERSION),
+		SaveLoad::String("filename", SLE_OBJECT_ADDRESS(GRFConfig, filename)),
+		SaveLoad::Variable<VarFileType::Label>("ident.grfid", SLE_OBJECT_ADDRESS(GRFConfig, ident.grfid)),
+		SaveLoad::Array<VarFileType::U8, MD5_HASH_BYTES>("ident.md5sum", SLE_OBJECT_ADDRESS(GRFConfig, ident.md5sum)),
+		SaveLoad::Variable<VarFileType::U32>("version", SLE_OBJECT_ADDRESS(GRFConfig, version), SaveLoadVersion::StoreNewGRFVersion),
+		SaveLoad::Array<VarFileType::U32, GRFConfig::MAX_NUM_PARAMS>("param", SLE_GLOBAL_ADDRESS(param)),
+		SaveLoad::Variable<VarFileType::U8>("num_params", SLE_GLOBAL_ADDRESS(num_params)),
+		SaveLoad::Variable<VarFileType::U8>("palette", SLE_OBJECT_ADDRESS(GRFConfig, palette), SaveLoadVersion::NewGRFPalette),
 	};
 
 	void SaveParameters(const GRFConfig &config) const
@@ -114,7 +115,7 @@ struct NGRFChunkHandler : ChunkHandler {
 		while (SlIterateArray() != -1) {
 			auto c = std::make_unique<GRFConfig>();
 			SlObject(c.get(), slt);
-			if (IsSavegameVersionBefore(SLV_101)) c->SetSuitablePalette();
+			if (IsSavegameVersionBefore(SaveLoadVersion::NewGRFPalette)) c->SetSuitablePalette();
 			this->LoadParameters(*c);
 			AppendToGRFConfigList(grfconfig, std::move(c));
 		}
@@ -124,7 +125,7 @@ struct NGRFChunkHandler : ChunkHandler {
 	{
 		this->LoadCommon(_grfconfig);
 
-		if (_game_mode == GM_MENU) {
+		if (_game_mode == GameMode::Menu) {
 			/* Intro game must not have NewGRF. */
 			if (!_grfconfig.empty()) SlErrorCorrupt("The intro game must not use NewGRF");
 

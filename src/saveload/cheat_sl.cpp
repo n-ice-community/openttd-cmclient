@@ -5,11 +5,12 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <https://www.gnu.org/licenses/old-licenses/gpl-2.0>.
  */
 
-/** @file cheat_sl.cpp Code handling saving and loading of cheats */
+/** @file cheat_sl.cpp Code handling saving and loading of cheats. */
 
 #include "../stdafx.h"
 
 #include "saveload.h"
+#include "saveload_error.hpp"
 #include "compat/cheat_sl_compat.h"
 
 #include "../cheat_type.h"
@@ -17,29 +18,29 @@
 #include "../safeguards.h"
 
 static const SaveLoad _cheats_desc[] = {
-	SLE_VAR(Cheats, magic_bulldozer.been_used, SLE_BOOL),
-	SLE_VAR(Cheats, magic_bulldozer.value, SLE_BOOL),
-	SLE_VAR(Cheats, switch_company.been_used, SLE_BOOL),
-	SLE_VAR(Cheats, switch_company.value, SLE_BOOL),
-	SLE_VAR(Cheats, money.been_used, SLE_BOOL),
-	SLE_VAR(Cheats, money.value, SLE_BOOL),
-	SLE_VAR(Cheats, crossing_tunnels.been_used, SLE_BOOL),
-	SLE_VAR(Cheats, crossing_tunnels.value, SLE_BOOL),
-	SLE_VAR(Cheats, no_jetcrash.been_used, SLE_BOOL),
-	SLE_VAR(Cheats, no_jetcrash.value, SLE_BOOL),
-	SLE_VAR(Cheats, change_date.been_used, SLE_BOOL),
-	SLE_VAR(Cheats, change_date.value, SLE_BOOL),
-	SLE_VAR(Cheats, setup_prod.been_used, SLE_BOOL),
-	SLE_VAR(Cheats, setup_prod.value, SLE_BOOL),
-	SLE_VAR(Cheats, edit_max_hl.been_used, SLE_BOOL),
-	SLE_VAR(Cheats, edit_max_hl.value, SLE_BOOL),
-	SLE_CONDVAR(Cheats, station_rating.been_used, SLE_BOOL, SLV_STATION_RATING_CHEAT, SL_MAX_VERSION),
-	SLE_CONDVAR(Cheats, station_rating.value, SLE_BOOL, SLV_STATION_RATING_CHEAT, SL_MAX_VERSION),
+	SaveLoad::Variable<VarFileType::Bool>("magic_bulldozer.been_used", SLE_OBJECT_ADDRESS(Cheats, magic_bulldozer.been_used)),
+	SaveLoad::Variable<VarFileType::Bool>("magic_bulldozer.value", SLE_OBJECT_ADDRESS(Cheats, magic_bulldozer.value)),
+	SaveLoad::Variable<VarFileType::Bool>("switch_company.been_used", SLE_OBJECT_ADDRESS(Cheats, switch_company.been_used)),
+	SaveLoad::Variable<VarFileType::Bool>("switch_company.value", SLE_OBJECT_ADDRESS(Cheats, switch_company.value)),
+	SaveLoad::Variable<VarFileType::Bool>("money.been_used", SLE_OBJECT_ADDRESS(Cheats, money.been_used)),
+	SaveLoad::Variable<VarFileType::Bool>("money.value", SLE_OBJECT_ADDRESS(Cheats, money.value)),
+	SaveLoad::Variable<VarFileType::Bool>("crossing_tunnels.been_used", SLE_OBJECT_ADDRESS(Cheats, crossing_tunnels.been_used)),
+	SaveLoad::Variable<VarFileType::Bool>("crossing_tunnels.value", SLE_OBJECT_ADDRESS(Cheats, crossing_tunnels.value)),
+	SaveLoad::Variable<VarFileType::Bool>("no_jetcrash.been_used", SLE_OBJECT_ADDRESS(Cheats, no_jetcrash.been_used)),
+	SaveLoad::Variable<VarFileType::Bool>("no_jetcrash.value", SLE_OBJECT_ADDRESS(Cheats, no_jetcrash.value)),
+	SaveLoad::Variable<VarFileType::Bool>("change_date.been_used", SLE_OBJECT_ADDRESS(Cheats, change_date.been_used)),
+	SaveLoad::Variable<VarFileType::Bool>("change_date.value", SLE_OBJECT_ADDRESS(Cheats, change_date.value)),
+	SaveLoad::Variable<VarFileType::Bool>("setup_prod.been_used", SLE_OBJECT_ADDRESS(Cheats, setup_prod.been_used)),
+	SaveLoad::Variable<VarFileType::Bool>("setup_prod.value", SLE_OBJECT_ADDRESS(Cheats, setup_prod.value)),
+	SaveLoad::Variable<VarFileType::Bool>("edit_max_hl.been_used", SLE_OBJECT_ADDRESS(Cheats, edit_max_hl.been_used)),
+	SaveLoad::Variable<VarFileType::Bool>("edit_max_hl.value", SLE_OBJECT_ADDRESS(Cheats, edit_max_hl.value)),
+	SaveLoad::Variable<VarFileType::Bool>("station_rating.been_used", SLE_OBJECT_ADDRESS(Cheats, station_rating.been_used), SaveLoadVersion::StationRatingCheat),
+	SaveLoad::Variable<VarFileType::Bool>("station_rating.value", SLE_OBJECT_ADDRESS(Cheats, station_rating.value), SaveLoadVersion::StationRatingCheat),
 };
 
 
 struct CHTSChunkHandler : ChunkHandler {
-	CHTSChunkHandler() : ChunkHandler('CHTS', CH_TABLE) {}
+	CHTSChunkHandler() : ChunkHandler("CHTS", ChunkType::Table) {}
 
 	void Save() const override
 	{
@@ -53,13 +54,13 @@ struct CHTSChunkHandler : ChunkHandler {
 	{
 		std::vector<SaveLoad> slt = SlCompatTableHeader(_cheats_desc, _cheats_sl_compat);
 
-		if (IsSavegameVersionBefore(SLV_TABLE_CHUNKS)) {
+		if (IsSavegameVersionBefore(SaveLoadVersion::TableChunks)) {
 			size_t count = SlGetFieldLength();
 			std::vector<SaveLoad> oslt;
 
 			/* Cheats were added over the years without a savegame bump. They are
-			 * stored as 2 SLE_BOOLs per entry. "count" indicates how many SLE_BOOLs
-			 * are stored for this savegame. So read only "count" SLE_BOOLs (and in
+			 * stored as 2 VarTypes::BOOLs per entry. "count" indicates how many VarTypes::BOOLs
+			 * are stored for this savegame. So read only "count" VarTypes::BOOLs (and in
 			 * result "count / 2" cheats). */
 			for (auto &sld : slt) {
 				count--;
@@ -70,9 +71,9 @@ struct CHTSChunkHandler : ChunkHandler {
 			slt = std::move(oslt);
 		}
 
-		if (!IsSavegameVersionBefore(SLV_RIFF_TO_ARRAY) && SlIterateArray() == -1) return;
+		if (!IsSavegameVersionBefore(SaveLoadVersion::RiffToArray) && SlIterateArray() == -1) return;
 		SlObject(&_cheats, slt);
-		if (!IsSavegameVersionBefore(SLV_RIFF_TO_ARRAY) && SlIterateArray() != -1) SlErrorCorrupt("Too many CHTS entries");
+		if (!IsSavegameVersionBefore(SaveLoadVersion::RiffToArray) && SlIterateArray() != -1) SlErrorCorrupt("Too many CHTS entries");
 	}
 };
 

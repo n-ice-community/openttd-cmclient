@@ -25,7 +25,6 @@ void ShowVehicleRefitWindow(const Vehicle *v, VehicleOrderID order, Window *pare
 enum TrainDetailsWindowTabs : uint8_t {
 	TDW_TAB_CARGO = 0, ///< Tab with cargo carried by the vehicles
 	TDW_TAB_INFO,      ///< Tab with name and value of the vehicles
-	TDW_TAB_CAPACITY,  ///< Tab with cargo capacity of the vehicles
 	TDW_TAB_TOTALS,    ///< Tab with sum of total cargo transported
 };
 DECLARE_ENUM_AS_ADDABLE(TrainDetailsWindowTabs)
@@ -73,7 +72,7 @@ void ShowVehicleListWindow(CompanyID company, VehicleType vehicle_type, TileInde
  */
 inline uint GetVehicleHeight(VehicleType type)
 {
-	return (type == VEH_TRAIN || type == VEH_ROAD) ? 14 : 24;
+	return (type == VehicleType::Train || type == VehicleType::Road) ? 14 : 24;
 }
 
 int GetSingleVehicleWidth(const Vehicle *v, EngineImageType image_type);
@@ -98,10 +97,10 @@ inline WindowClass GetWindowClassForVehicleType(VehicleType vt)
 {
 	switch (vt) {
 		default: NOT_REACHED();
-		case VEH_TRAIN:    return WC_TRAINS_LIST;
-		case VEH_ROAD:     return WC_ROADVEH_LIST;
-		case VEH_SHIP:     return WC_SHIPS_LIST;
-		case VEH_AIRCRAFT: return WC_AIRCRAFT_LIST;
+		case VehicleType::Train: return WindowClass::TrainList;
+		case VehicleType::Road: return WindowClass::RoadVehicleList;
+		case VehicleType::Ship: return WindowClass::ShipList;
+		case VehicleType::Aircraft: return WindowClass::AircraftList;
 	}
 }
 

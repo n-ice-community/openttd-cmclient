@@ -5,7 +5,7 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <https://www.gnu.org/licenses/old-licenses/gpl-2.0>.
  */
 
-/** @file provider_manager.h Definition of the ProviderManager */
+/** @file provider_manager.h Definition of the ProviderManager. */
 
 #ifndef PROVIDER_MANAGER_H
 #define PROVIDER_MANAGER_H
@@ -53,10 +53,25 @@ public:
 template <typename T>
 class BaseProvider {
 public:
+	/**
+	 * Create the provider.
+	 * @param name The name of the provider.
+	 * @param description A description of the provider.
+	 */
 	constexpr BaseProvider(std::string_view name, std::string_view description) : name(name), description(description) {}
-	virtual ~BaseProvider() {}
+	/** Ensure the destructor of the sub classes are called as well. */
+	virtual ~BaseProvider() = default;
 
+	/**
+	 * Get the name of this provider.
+	 * @return Our name.
+	 */
 	inline std::string_view GetName() const { return this->name; }
+
+	/**
+	 * Get a description of this provider.
+	 * @return The description.
+	 */
 	inline std::string_view GetDescription() const { return this->description; }
 
 	/**
@@ -74,16 +89,25 @@ public:
 	};
 
 protected:
-	const std::string_view name;
-	const std::string_view description;
+	const std::string_view name; ///< The name of the provider.
+	const std::string_view description; ///< A description of the provider.
 };
 
 template <typename T>
 class PriorityBaseProvider : public BaseProvider<T> {
 public:
+	/**
+	 * Create the provider.
+	 * @param name The name of the provider.
+	 * @param description A description of the provider.
+	 * @param priority The priority number to sort all providers by.
+	 */
 	constexpr PriorityBaseProvider(std::string_view name, std::string_view description, int priority) : BaseProvider<T>(name, description), priority(priority) {}
-	virtual ~PriorityBaseProvider() {}
 
+	/**
+	 * Get the priority of this provider.
+	 * @return The priority.
+	 */
 	inline int GetPriority() const { return this->priority; }
 
 	/**
@@ -101,7 +125,7 @@ public:
 	};
 
 protected:
-	const int priority;
+	const int priority; ///< The priority of this provider.
 };
 
 #endif /* PROVIDER_MANAGER_H */

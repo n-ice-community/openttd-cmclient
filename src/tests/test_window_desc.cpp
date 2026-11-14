@@ -13,6 +13,7 @@
 
 #include "mock_environment.h"
 
+#include "../core/format.hpp"
 #include "../window_gui.h"
 
 #include "../safeguards.h"
@@ -68,7 +69,7 @@ TEST_CASE("WindowDesc - ini_key validity")
 static bool IsNWidgetTreeClosed(std::span<const NWidgetPart> nwid_parts)
 {
 	int depth = 0;
-	for (const auto nwid : nwid_parts) {
+	for (const auto &nwid : nwid_parts) {
 		if (IsContainerWidgetType(nwid.type)) ++depth;
 		if (nwid.type == WPT_ENDCONTAINER) --depth;
 	}

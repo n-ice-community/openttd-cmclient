@@ -25,11 +25,11 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
 
     - name: Setup vcpkg
       id: vcpkg
-      uses: OpenTTD/actions/setup-vcpkg@v6
+      uses: OpenTTD/actions/setup-vcpkg@v7
 
     - name: Install dependencies
       run: |
@@ -49,8 +49,8 @@ jobs:
           libopus-dev \
           libopusfile-dev \
           libsdl2-dev \
+          libsoxr-dev \
           zlib1g-dev \
-          libzstd-dev \
           # EOF
 
         echo "::group::Install vcpkg dependencies"
@@ -76,7 +76,7 @@ jobs:
         echo "::endgroup::"
 
     - name: Initialize CodeQL
-      uses: github/codeql-action/init@v4
+      uses: github/codeql-action/init@v4.38.2
       with:
         languages: cpp
         config-file: ./.github/codeql/codeql-config.yml
@@ -92,7 +92,7 @@ jobs:
         echo "::endgroup::"
 
     - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v4
+      uses: github/codeql-action/analyze@v4.38.2
       with:
         category: /language:cpp
         upload: False
@@ -110,6 +110,6 @@ jobs:
         output: sarif-results/cpp.sarif
 
     - name: Upload results
-      uses: github/codeql-action/upload-sarif@v4
+      uses: github/codeql-action/upload-sarif@v4.38.2
       with:
         sarif_file: sarif-results/cpp.sarif

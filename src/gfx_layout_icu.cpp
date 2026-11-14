@@ -11,6 +11,7 @@
 #include "gfx_layout_icu.h"
 
 #include "debug.h"
+#include "misc/autorelease.hpp"
 #include "strings_func.h"
 #include "language.h"
 #include "table/control_codes.h"
@@ -40,7 +41,7 @@ public:
 	int length; ///< Length of the run in the buffer.
 	UBiDiLevel level; ///< Embedding level of the run.
 	UScriptCode script; ///< Script of the run.
-	Font *font; ///< Font of the run.
+	Font font; ///< Font of the run.
 
 	std::vector<GlyphID> glyphs; ///< The glyphs of the run. Valid after Shape() is called.
 	std::vector<int> advance; ///< The advance (width) of the glyphs. Valid after Shape() is called.
@@ -48,7 +49,15 @@ public:
 	std::vector<ParagraphLayouter::Position> positions; ///< The positions of the glyphs. Valid after Shape() is called.
 	int total_advance = 0; ///< The total advance of the run. Valid after Shape() is called.
 
-	ICURun(int start, int length, UBiDiLevel level, UScriptCode script = USCRIPT_UNKNOWN, Font *font = nullptr) : start(start), length(length), level(level), script(script), font(font) {}
+	/**
+	 * Construct a new ICURun object
+	 * @param start Start of the run in the buffer.
+	 * @param length Length of the run in the buffer.
+	 * @param level Embedding level of the run.
+	 * @param script Script of the run.
+	 * @param font Font of the run.
+	 */
+	ICURun(int start, int length, UBiDiLevel level, UScriptCode script, const Font &font) : start(start), length(length), level(level), script(script), font(font) {}
 
 	void Shape(UChar *buff, size_t length);
 };
@@ -66,7 +75,7 @@ public:
 		std::vector<int> glyph_to_char;
 
 		int total_advance;
-		const Font *font;
+		Font font;
 
 	public:
 		ICUVisualRun(const ICURun &run, int x);
@@ -75,9 +84,9 @@ public:
 		std::span<const Position> GetPositions() const override { return this->positions; }
 		std::span<const int> GetGlyphToCharMap() const override { return this->glyph_to_char; }
 
-		const Font *GetFont() const override { return this->font; }
-		int GetLeading() const override { return this->font->fc->GetHeight(); }
-		int GetGlyphCount() const override { return this->glyphs.size(); }
+		const Font &GetFont() const override { return this->font; }
+		int GetLeading() const override { return this->font.GetFontCache().GetHeight(); }
+		size_t GetGlyphCount() const override { return this->glyphs.size(); }
 		int GetAdvance() const { return this->total_advance; }
 	};
 
@@ -86,8 +95,8 @@ public:
 	public:
 		int GetLeading() const override;
 		int GetWidth() const override;
-		int CountRuns() const override { return (uint)this->size();  }
-		const VisualRun &GetVisualRun(int run) const override { return this->at(run); }
+		size_t CountRuns() const override { return this->size();  }
+		const VisualRun &GetVisualRun(size_t run) const override { return this->at(run); }
 
 		int GetInternalCharLength(char32_t c) const override
 		{
@@ -109,7 +118,7 @@ public:
 		this->Reflow();
 	}
 
-	~ICUParagraphLayout() override { }
+	~ICUParagraphLayout() override = default;
 
 	void Reflow() override
 	{
@@ -145,11 +154,13 @@ ICUParagraphLayout::ICUVisualRun::ICUVisualRun(const ICURun &run, int x) :
  * Shape a single run.
  *
  * @param buff The buffer of which a partial (depending on start/length of the run) will be shaped.
- * @param length The length of the buffer.
+ * @param buff_length The length of the buffer.
  */
 void ICURun::Shape(UChar *buff, size_t buff_length)
 {
-	auto hbfont = hb_ft_font_create_referenced(*(static_cast<const FT_Face *>(font->fc->GetOSHandle())));
+	FontCache &fc = this->font.GetFontCache();
+
+	auto hbfont = hb_ft_font_create_referenced(*(static_cast<const FT_Face *>(fc.GetOSHandle())));
 	/* Match the flags with how we render the glyphs. */
 	hb_ft_font_set_load_flags(hbfont, GetFontAAState() ? FT_LOAD_TARGET_NORMAL : FT_LOAD_TARGET_MONO);
 
@@ -188,10 +199,10 @@ void ICURun::Shape(UChar *buff, size_t buff_length)
 		int x_advance;
 
 		if (buff[glyph_info[i].cluster] >= SCC_SPRITE_START && buff[glyph_info[i].cluster] <= SCC_SPRITE_END && glyph_info[i].codepoint == 0) {
-			auto glyph = this->font->fc->MapCharToGlyph(buff[glyph_info[i].cluster]);
-			x_advance = this->font->fc->GetGlyphWidth(glyph);
+			auto glyph = fc.MapCharToGlyph(buff[glyph_info[i].cluster]);
+			x_advance = fc.GetGlyphWidth(glyph);
 			this->glyphs.push_back(glyph);
-			this->positions.emplace_back(advance, advance + x_advance - 1, (this->font->fc->GetHeight() - ScaleSpriteTrad(FontCache::GetDefaultFontHeight(this->font->fc->GetSize()))) / 2); // Align sprite font to centre
+			this->positions.emplace_back(advance, advance + x_advance - 1, (fc.GetHeight() - ScaleSpriteTrad(FontCache::GetDefaultFontHeight(fc.GetSize()))) / 2); // Align sprite font to centre
 		} else {
 			x_advance = glyph_pos[i].x_advance / FONT_SCALE;
 			this->glyphs.push_back(glyph_info[i].codepoint);
@@ -249,23 +260,21 @@ int ICUParagraphLayout::ICULine::GetWidth() const
  */
 std::vector<ICURun> ItemizeBidi(UChar *buff, size_t length)
 {
-	auto ubidi = ubidi_open();
+	auto ubidi = AutoRelease<UBiDi, ubidi_close>(ubidi_open());
 
 	auto parLevel = _current_text_dir == TD_RTL ? UBIDI_RTL : UBIDI_LTR;
 
 	UErrorCode err = U_ZERO_ERROR;
-	ubidi_setPara(ubidi, buff, length, parLevel, nullptr, &err);
+	ubidi_setPara(ubidi.get(), buff, length, parLevel, nullptr, &err);
 	if (U_FAILURE(err)) {
-		Debug(fontcache, 0, "Failed to set paragraph: {}", u_errorName(err));
-		ubidi_close(ubidi);
-		return std::vector<ICURun>();
+		Debug(Facility::Fontcache, Severity::Critical, "Failed to set paragraph: {}", u_errorName(err));
+		return {};
 	}
 
-	int32_t count = ubidi_countRuns(ubidi, &err);
+	int32_t count = ubidi_countRuns(ubidi.get(), &err);
 	if (U_FAILURE(err)) {
-		Debug(fontcache, 0, "Failed to count runs: {}", u_errorName(err));
-		ubidi_close(ubidi);
-		return std::vector<ICURun>();
+		Debug(Facility::Fontcache, Severity::Critical, "Failed to count runs: {}", u_errorName(err));
+		return {};
 	}
 
 	std::vector<ICURun> runs;
@@ -278,14 +287,13 @@ std::vector<ICURun> ItemizeBidi(UChar *buff, size_t length)
 
 		/* Fetch the embedding level, so we can order bidi correctly later on. */
 		UBiDiLevel level;
-		ubidi_getLogicalRun(ubidi, start_pos, &logical_pos, &level);
+		ubidi_getLogicalRun(ubidi.get(), start_pos, &logical_pos, &level);
 
-		runs.emplace_back(start_pos, logical_pos - start_pos, level);
+		runs.emplace_back(start_pos, logical_pos - start_pos, level, USCRIPT_UNKNOWN, Font{});
 	}
 
 	assert(static_cast<size_t>(count) == runs.size());
 
-	ubidi_close(ubidi);
 	return runs;
 }
 
@@ -311,7 +319,7 @@ std::vector<ICURun> ItemizeScript(UChar *buff, size_t length, std::vector<ICURun
 			int stop_pos = std::min(script_itemizer.getScriptEnd(), cur_run->start + cur_run->length);
 			assert(stop_pos - cur_pos > 0);
 
-			runs.emplace_back(cur_pos, stop_pos - cur_pos, cur_run->level, script_itemizer.getScriptCode());
+			runs.emplace_back(cur_pos, stop_pos - cur_pos, cur_run->level, script_itemizer.getScriptCode(), Font{});
 
 			if (stop_pos == cur_run->start + cur_run->length) cur_run++;
 			cur_pos = stop_pos;
@@ -361,7 +369,7 @@ std::vector<ICURun> ItemizeStyle(std::vector<ICURun> &runs_current, FontMap &fon
 
 	/* Can't layout our in-built sprite fonts. */
 	for (auto const &[position, font] : font_mapping) {
-		if (font->fc->IsBuiltInFont()) return nullptr;
+		if (font.GetFontCache().IsBuiltInFont()) return nullptr;
 	}
 
 	auto runs = ItemizeBidi(buff, length);
@@ -435,7 +443,8 @@ std::unique_ptr<const ICUParagraphLayout::Line> ICUParagraphLayout::NextLine(int
 	if (cur_width > max_width) {
 		/* Create a break-iterator to find a good place to break lines. */
 		auto break_iterator = ICUParagraphLayoutFactory::GetBreakIterator();
-		break_iterator->setText(icu::UnicodeString(this->buff, this->buff_length));
+		icu::UnicodeString text(this->buff, this->buff_length);
+		break_iterator->setText(text);
 
 		auto overflow_run = last_run - 1;
 

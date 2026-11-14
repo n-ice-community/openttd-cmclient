@@ -10,6 +10,7 @@
 #ifndef NEWGRF_BYTEREADER_H
 #define NEWGRF_BYTEREADER_H
 
+#include "../core/label_type.hpp"
 #include "../core/string_consumer.hpp"
 
 class OTTDByteReaderSignal { };
@@ -94,6 +95,18 @@ public:
 		return this->consumer.ReadUntilChar('\0', StringConsumer::SKIP_ONE_SEPARATOR);
 	}
 
+	/**
+	 * Read a label.
+	 * @return The read label.
+	 */
+	template <typename T> requires std::is_base_of_v<BaseLabel, T>
+	T ReadLabel()
+	{
+		T label{};
+		std::ranges::copy(this->consumer.Read(label.size()), label.data());
+		return label;
+	}
+
 	size_t Remaining() const
 	{
 		return this->consumer.GetBytesLeft();
@@ -110,6 +123,14 @@ public:
 		if (result.size() != len) throw OTTDByteReaderSignal();
 	}
 
+	/**
+	 * Get number of already read bytes.
+	 * @return The number of bytes read so far.
+	 */
+	size_t GetBytesRead() const
+	{
+		return this->consumer.GetBytesRead();
+	}
 };
 
 #endif /* NEWGRF_BYTEREADER_H */

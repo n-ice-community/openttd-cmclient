@@ -5,16 +5,16 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <https://www.gnu.org/licenses/old-licenses/gpl-2.0>.
  */
 
-/** @file ai_sl.cpp Handles the saveload part of the AIs */
+/** @file ai_sl.cpp Handles the saveload part of the AIs. */
 
 #include "../stdafx.h"
 #include "../debug.h"
 
 #include "saveload.h"
+#include "saveload_error.hpp"
 #include "compat/ai_sl_compat.h"
 
 #include "../company_base.h"
-#include "../string_func.h"
 
 #include "../ai/ai.hpp"
 #include "../ai/ai_config.hpp"
@@ -29,22 +29,22 @@ static std::string _ai_saveload_settings;
 static bool        _ai_saveload_is_random;
 
 static const SaveLoad _ai_company_desc[] = {
-	   SLEG_SSTR("name",      _ai_saveload_name,         SLE_STR),
-	   SLEG_SSTR("settings",  _ai_saveload_settings,     SLE_STR),
-	SLEG_CONDVAR("version",   _ai_saveload_version,   SLE_UINT32, SLV_108, SL_MAX_VERSION),
-	SLEG_CONDVAR("is_random", _ai_saveload_is_random,   SLE_BOOL, SLV_136, SLV_AI_LOCAL_CONFIG),
+	SaveLoad::String("name", SLE_GLOBAL_ADDRESS(_ai_saveload_name)),
+	SaveLoad::String("settings", SLE_GLOBAL_ADDRESS(_ai_saveload_settings)),
+	SaveLoad::Variable<VarFileType::U32>("version", SLE_GLOBAL_ADDRESS(_ai_saveload_version), SaveLoadVersion::StoreAIVersion),
+	SaveLoad::Variable<VarFileType::Bool>("is_random", SLE_GLOBAL_ADDRESS(_ai_saveload_is_random), SaveLoadVersion::SplitLoadWaitCounters, SaveLoadVersion::AILocalConfig),
 };
 
 static const SaveLoad _ai_running_desc[] = {
-	SLEG_CONDSSTR("running_name",     _ai_saveload_name,        SLE_STR, SLV_AI_LOCAL_CONFIG, SL_MAX_VERSION),
-	SLEG_CONDSSTR("running_settings", _ai_saveload_settings,    SLE_STR, SLV_AI_LOCAL_CONFIG, SL_MAX_VERSION),
-	 SLEG_CONDVAR("running_version",  _ai_saveload_version,  SLE_UINT32, SLV_AI_LOCAL_CONFIG, SL_MAX_VERSION),
+	SaveLoad::String("running_name", SLE_GLOBAL_ADDRESS(_ai_saveload_name), {}, SaveLoadVersion::AILocalConfig),
+	SaveLoad::String("running_settings", SLE_GLOBAL_ADDRESS(_ai_saveload_settings), {}, SaveLoadVersion::AILocalConfig),
+	SaveLoad::Variable<VarFileType::U32>("running_version", SLE_GLOBAL_ADDRESS(_ai_saveload_version), SaveLoadVersion::AILocalConfig),
 };
 
 static void SaveReal_AIPL(int arg)
 {
 	CompanyID index = static_cast<CompanyID>(arg);
-	AIConfig *config = AIConfig::GetConfig(index, AIConfig::SSS_FORCE_GAME);
+	AIConfig *config = AIConfig::GetConfig(index, AIConfig::ScriptSettingSource::ForceCurrentGame);
 
 	if (config->HasScript()) {
 		_ai_saveload_name = config->GetName();
@@ -73,7 +73,7 @@ static void SaveReal_AIPL(int arg)
 }
 
 struct AIPLChunkHandler : ChunkHandler {
-	AIPLChunkHandler() : ChunkHandler('AIPL', CH_TABLE) {}
+	AIPLChunkHandler() : ChunkHandler("AIPL", ChunkType::Table) {}
 
 	void Load() const override
 	{
@@ -81,7 +81,7 @@ struct AIPLChunkHandler : ChunkHandler {
 
 		/* Free all current data */
 		for (CompanyID c = CompanyID::Begin(); c < MAX_COMPANIES; ++c) {
-			AIConfig::GetConfig(c, AIConfig::SSS_FORCE_GAME)->Change(std::nullopt);
+			AIConfig::GetConfig(c, AIConfig::ScriptSettingSource::ForceCurrentGame)->Change(std::nullopt);
 		}
 
 		CompanyID index;
@@ -92,7 +92,7 @@ struct AIPLChunkHandler : ChunkHandler {
 			_ai_saveload_version = -1;
 			SlObject(nullptr, slt);
 
-			if (_game_mode == GM_MENU || (_networking && !_network_server)) {
+			if (_game_mode == GameMode::Menu || (_networking && !_network_server)) {
 				if (Company::IsValidAiID(index)) {
 					SlObject(nullptr, _ai_running_desc);
 					AIInstance::LoadEmpty();
@@ -100,7 +100,7 @@ struct AIPLChunkHandler : ChunkHandler {
 				continue;
 			}
 
-			AIConfig *config = AIConfig::GetConfig(index, AIConfig::SSS_FORCE_GAME);
+			AIConfig *config = AIConfig::GetConfig(index, AIConfig::ScriptSettingSource::ForceCurrentGame);
 			if (_ai_saveload_name.empty() || _ai_saveload_is_random) {
 				/* A random AI. */
 				config->Change(std::nullopt, -1, false);
@@ -112,12 +112,12 @@ struct AIPLChunkHandler : ChunkHandler {
 					config->Change(_ai_saveload_name, -1, false);
 					if (!config->HasScript()) {
 						if (_ai_saveload_name != "%_dummy") {
-							Debug(script, 0, "The savegame has an AI by the name '{}', version {} which is no longer available.", _ai_saveload_name, _ai_saveload_version);
-							Debug(script, 0, "Configuration switched to Random AI.");
+							Debug(Facility::Script, Severity::Critical, "The savegame has an AI by the name '{}', version {} which is no longer available.", _ai_saveload_name, _ai_saveload_version);
+							Debug(Facility::Script, Severity::Critical, "Configuration switched to Random AI.");
 						}
 					} else {
-						Debug(script, 0, "The savegame has an AI by the name '{}', version {} which is no longer available.", _ai_saveload_name, _ai_saveload_version);
-						Debug(script, 0, "The latest version of that AI has been configured instead");
+						Debug(Facility::Script, Severity::Critical, "The savegame has an AI by the name '{}', version {} which is no longer available.", _ai_saveload_name, _ai_saveload_version);
+						Debug(Facility::Script, Severity::Critical, "The latest version of that AI has been configured instead");
 					}
 				}
 			}
@@ -137,15 +137,15 @@ struct AIPLChunkHandler : ChunkHandler {
 				config->Change(_ai_saveload_name, -1, false);
 				if (!config->HasScript()) {
 					if (_ai_saveload_name != "%_dummy") {
-						Debug(script, 0, "The savegame has an AI by the name '{}', version {} which is no longer available.", _ai_saveload_name, _ai_saveload_version);
-						Debug(script, 0, "A random other AI will be loaded in its place.");
+						Debug(Facility::Script, Severity::Critical, "The savegame has an AI by the name '{}', version {} which is no longer available.", _ai_saveload_name, _ai_saveload_version);
+						Debug(Facility::Script, Severity::Critical, "A random other AI will be loaded in its place.");
 					} else {
-						Debug(script, 0, "The savegame had no AIs available at the time of saving.");
-						Debug(script, 0, "A random available AI will be loaded now.");
+						Debug(Facility::Script, Severity::Critical, "The savegame had no AIs available at the time of saving.");
+						Debug(Facility::Script, Severity::Critical, "A random available AI will be loaded now.");
 					}
 				} else {
-					Debug(script, 0, "The savegame has an AI by the name '{}', version {} which is no longer available.", _ai_saveload_name, _ai_saveload_version);
-					Debug(script, 0, "The latest version of that AI has been loaded instead, but it'll not get the savegame data as it's incompatible.");
+					Debug(Facility::Script, Severity::Critical, "The savegame has an AI by the name '{}', version {} which is no longer available.", _ai_saveload_name, _ai_saveload_version);
+					Debug(Facility::Script, Severity::Critical, "The latest version of that AI has been loaded instead, but it'll not get the savegame data as it's incompatible.");
 				}
 				/* Make sure the AI doesn't get the saveload data, as it was not the
 				 *  writer of the saveload data in the first place */

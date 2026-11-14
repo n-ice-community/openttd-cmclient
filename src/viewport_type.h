@@ -23,6 +23,8 @@ enum class ViewportStringFlag : uint8_t {
 	TransparentRect, ///< Draw a transparent rect around the sign.
 	TextColour, ///< Draw text in colour.
 };
+
+/** Bitset of \c ViewportStringFlag elements. */
 using ViewportStringFlags = EnumBitSet<ViewportStringFlag, uint8_t>;
 
 /**
@@ -94,6 +96,10 @@ struct TrackedViewportSign : ViewportSign {
 	/**
 	 * Update the position of the viewport sign.
 	 * Note that this function hides the base class function.
+	 * @param center The (preferred) center of the viewport sign.
+	 * @param top The new top of the sign.
+	 * @param str The string to show in the sign.
+	 * @param str_small The string to show when zoomed out. If the string is empty then the \a str is used.
 	 */
 	void UpdatePosition(int center, int top, std::string_view str, std::string_view str_small = {})
 	{
@@ -150,11 +156,13 @@ enum ViewportDragDropSelectionProcess : uint8_t {
 	DDSP_LEVEL_AREA,           ///< Level area
 	DDSP_CREATE_DESERT,        ///< Fill area with desert
 	DDSP_CREATE_ROCKS,         ///< Fill area with rocks
+	DDSP_CREATE_ROUGH,         ///< Fill area with rough land
 	DDSP_CREATE_WATER,         ///< Create a canal
 	DDSP_CREATE_RIVER,         ///< Create rivers
 	DDSP_PLANT_TREES,          ///< Plant trees
 	DDSP_BUILD_BRIDGE,         ///< Bridge placement
 	DDSP_BUILD_OBJECT,         ///< Build an object
+	DDSP_PLACE_HOUSE,          ///< Place a house
 	CM_DDSP_MEASURE,           ///< Measurement tool
 
 	/* Rail specific actions */
@@ -226,10 +234,10 @@ enum ViewportDragDropSelectionProcess : uint8_t {
 /**
  * Target of the viewport scrolling GS method
  */
-enum ViewportScrollTarget : uint8_t {
-	VST_EVERYONE, ///< All players
-	VST_COMPANY,  ///< All players in specific company
-	VST_CLIENT,   ///< Single player
+enum class ViewportScrollTarget : uint8_t {
+	Everyone, ///< All players
+	Company, ///< All players in specific company
+	Client, ///< Single player
 };
 
 #endif /* VIEWPORT_TYPE_H */

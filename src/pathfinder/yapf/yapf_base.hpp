@@ -13,7 +13,6 @@
 #include "../../debug.h"
 #include "../../settings_type.h"
 #include "../../misc/dbg_helpers.h"
-#include "yapf_type.hpp"
 
 /**
  * CYapfBaseT - A-star type path finder base class.
@@ -56,6 +55,53 @@ public:
 
 	NodeList nodes; ///< node list multi-container
 
+	/**
+	 * Called by YAPF to move from the given node to the next tile. For each
+	 * reachable trackdir on the new tile creates new node, initializes it
+	 * and adds it to the open list by calling Yapf().AddNewNode(n).
+	 * @param old_node The node to follow from.
+	 */
+	using PfFollowNodeFunc = void(Node &old_node);
+
+	/**
+	 * Called by YAPF to calculate the cost from the origin to the given node.
+	 * Calculates only the cost of given node, adds it to the parent node cost
+	 * and stores the result into Node::cost member.
+	 * @param n The node to consider.
+	 * @param follower The track follower to the next node.
+	 * @return \c true iff the costs could be calculated.
+	 */
+	using PfCalcCostFunc = bool(Node &n, const TrackFollower *follower);
+
+	/**
+	 * Called by YAPF to calculate cost estimate. Calculates distance to the destination
+	 * adds it to the actual cost from origin and stores the sum to the Node::estimate.
+	 * @param n The node to start from.
+	 * @return \c true iff the cost could be estimated.
+	 */
+	using PfCalcEstimateFunc = bool(Node &n);
+
+	/**
+	 * Called by YAPF to detect if node ends in the desired destination.
+	 * @param n The current node.
+	 * @return \c true iff the destination has been reached.
+	 */
+	using PfDetectDestinationFunc = bool(Node &n);
+
+	/**
+	 * Called by YAPF to detect if node ends in the desired destination.
+	 * @param tile The reached tile.
+	 * @param td The reached track direction.
+	 * @return \c true iff the destination has been reached.
+	 */
+	using PfDetectDestinationTileFunc = bool(TileIndex tile, Trackdir td);
+
+	/**
+	 * Return debug report character to identify the transportation type.
+	 * @return The debug representation
+	 */
+	using TransportTypeCharFunc = char();
+
 protected:
 	Node *best_dest_node = nullptr; ///< pointer to the destination node found at last round
 	Node *best_intermediate_node = nullptr; ///< here should be node closest to the destination if path not found
@@ -73,18 +119,21 @@ public:
 	/** default constructor */
 	inline CYapfBaseT() : settings(&_settings_game.pf.yapf), max_search_nodes(PfGetSettings().max_search_nodes) {}
 
-	/** default destructor */
-	~CYapfBaseT() {}
-
 protected:
-	/** to access inherited path finder */
+	/**
+	 * Access the inherited path finder.
+	 * @return The current path finder.
+	 */
 	inline Tpf &Yapf()
 	{
 		return *static_cast<Tpf *>(this);
 	}
 
 public:
-	/** return current settings (can be custom - company based - but later) */
+	/**
+	 * Return current settings (can be custom - company based - but later).
+	 * @return The pathfinder settings.
+	 */
 	inline const YAPFSettings &PfGetSettings() const
 	{
 		return *this->settings;
@@ -97,6 +146,7 @@ public:
 	 *      - the destination was found
 	 *      - or the open list is empty (no route to destination).
 	 *      - or the maximum amount of loops reached - max_search_nodes (default = 10000)
+	 * @param v The vehicle to find the path for.
 	 * @return true if the path was found
 	 */
 	inline bool FindPath(const VehicleType *v)
@@ -122,14 +172,14 @@ public:
 
 		const bool destination_found = (this->best_dest_node != nullptr);
 
-		if (_debug_yapf_level >= 3) {
+		if (IsVisibleSeverity(Facility::Yapf, Severity::Notice)) {
 			const UnitID veh_idx = (this->vehicle != nullptr) ? this->vehicle->unitnumber : 0;
 			const char ttc = Yapf().TransportTypeChar();
 			const float cache_hit_ratio = (this->stats_cache_hits == 0) ? 0.0f : ((float)this->stats_cache_hits / (float)(this->stats_cache_hits + this->stats_cost_calcs) * 100.0f);
 			const int cost = destination_found ? this->best_dest_node->cost : -1;
 			const int dist = destination_found ? this->best_dest_node->estimate - this->best_dest_node->cost : -1;
 
-			Debug(yapf, 3, "[YAPF{}]{}{:4d} - {} rounds - {} open - {} closed - CHR {:4.1f}% - C {} D {}",
+			Debug(Facility::Yapf, Severity::Notice, "[YAPF{}]{}{:4d} - {} rounds - {} open - {} closed - CHR {:4.1f}% - C {} D {}",
 				ttc, destination_found ? '-' : '!', veh_idx, this->num_steps, this->nodes.OpenCount(), this->nodes.ClosedCount(), cache_hit_ratio, cost, dist
 			);
 		}
@@ -140,6 +190,7 @@ public:
 	/**
 	 * If path was found return the best node that has reached the destination. Otherwise
 	 *  return the best visited node (which was nearest to the destination).
+	 * @return The best node, or best intermediate node.
 	 */
 	inline Node *GetBestNode()
 	{
@@ -149,6 +200,7 @@ public:
 	/**
 	 * Calls NodeList::CreateNewNode() - allocates new node that can be filled and used
 	 *  as argument for AddStartupNode() or AddNewNode()
+	 * @return The created node.
 	 */
 	inline Node &CreateNewNode()
 	{
@@ -156,7 +208,10 @@ public:
 		return node;
 	}
 
-	/** Add new node (created by CreateNewNode and filled with data) into open list */
+	/**
+	 * Add new node (created by CreateNewNode and filled with data) into open list.
+	 * @param n The node to add.
+	 */
 	inline void AddStartupNode(Node &n)
 	{
 		assert(n.parent == nullptr);
@@ -169,12 +224,15 @@ public:
 		}
 	}
 
-	/** add multiple nodes - direct children of the given node */
+	/**
+	 * Add multiple nodes - direct children of the given node.
+	 * @param parent The parent of the nodes.
+	 * @param tf The track follower to keep following.
+	 */
 	inline void AddMultipleNodes(Node *parent, const TrackFollower &tf)
 	{
-		bool is_choice = (KillFirstBit(tf.new_td_bits) != TRACKDIR_BIT_NONE);
-		for (TrackdirBits rtds = tf.new_td_bits; rtds != TRACKDIR_BIT_NONE; rtds = KillFirstBit(rtds)) {
-			Trackdir td = (Trackdir)FindFirstBit(rtds);
+		bool is_choice = tf.new_td_bits.Count() > 1;
+		for (Trackdir td : tf.new_td_bits) {
 			Node &n = Yapf().CreateNewNode();
 			n.Set(parent, tf.new_tile, td, is_choice);
 			Yapf().AddNewNode(n, tf);
@@ -184,6 +242,8 @@ public:
 	/**
 	 * AddNewNode() - called by Tderived::PfFollowNode() for each child node.
 	 *  Nodes are evaluated here and added into open list
+	 * @param n The node to add.
+	 * @param follower The track follower to keep calculate the cost with.
 	 */
 	void AddNewNode(Node &n, const TrackFollower &follower)
 	{

@@ -5,13 +5,14 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <https://www.gnu.org/licenses/old-licenses/gpl-2.0>.
  */
 
-/** @file game_scanner.hpp declarations of the class for Game scanner */
+/** @file game_scanner.hpp Declarations of the class for GS scanner. */
 
 #ifndef GAME_SCANNER_HPP
 #define GAME_SCANNER_HPP
 
 #include "../script/script_scanner.hpp"
 
+/** Game instantiation of a ScriptScanner. */
 class GameScannerInfo : public ScriptScanner {
 public:
 	void Initialize() override;
@@ -28,12 +29,13 @@ public:
 protected:
 	std::string GetScriptName(ScriptInfo &info) override;
 	std::string_view GetFileName() const override { return PATHSEP "info.nut"; }
-	Subdirectory GetDirectory() const override { return GAME_DIR; }
+	Subdirectory GetDirectory() const override { return Subdirectory::Gs; }
 	std::string_view GetScannerName() const override { return "Game Scripts"; }
 	void RegisterAPI(class Squirrel &engine) override;
 };
 
 
+/** Game instantiation of a ScriptScanner for libraries. */
 class GameScannerLibrary : public ScriptScanner {
 public:
 	void Initialize() override;
@@ -49,7 +51,7 @@ public:
 protected:
 	std::string GetScriptName(ScriptInfo &info) override;
 	std::string_view GetFileName() const override { return PATHSEP "library.nut"; }
-	Subdirectory GetDirectory() const override { return GAME_LIBRARY_DIR; }
+	Subdirectory GetDirectory() const override { return Subdirectory::GsLibrary; }
 	std::string_view GetScannerName() const override { return "GS Libraries"; }
 	void RegisterAPI(class Squirrel &engine) override;
 };

@@ -11,7 +11,8 @@
 #define SCRIPT_CONFIG_HPP
 
 #include "../company_type.h"
-#include "../textfile_gui.h"
+#include "../gfx_type.h"
+#include "../textfile_type.h"
 #include "script_instance.hpp"
 
 /** Maximum of 10 digits for MIN / MAX_INT32, 1 for the sign and 1 for '\0'. */
@@ -25,6 +26,7 @@ enum class ScriptConfigFlag : uint8_t {
 	Developer = 3, ///< This setting will only be visible when the Script development tools are active.
 };
 
+/** Bitset of \c ScriptConfigFlag elements. */
 using ScriptConfigFlags = EnumBitSet<ScriptConfigFlag, uint8_t>;
 
 typedef std::map<int, std::string> LabelMapping; ///< Map-type used to map the setting numbers to labels.
@@ -56,11 +58,8 @@ protected:
 	typedef std::map<std::string, int> SettingValueList;
 
 public:
-	ScriptConfig() :
-		version(-1),
-		info(nullptr),
-		to_load_data(nullptr)
-	{}
+	/** Default constructor. */
+	ScriptConfig() = default;
 
 	/**
 	 * Create a new Script config that is a copy of an existing config.
@@ -68,8 +67,8 @@ public:
 	 */
 	ScriptConfig(const ScriptConfig &config);
 
-	/** Delete an Script configuration. */
-	virtual ~ScriptConfig();
+	/** Ensure the destructor of the sub classes are called as well. */
+	virtual ~ScriptConfig() = default;
 
 	/**
 	 * Set another Script to be loaded in this slot.
@@ -82,11 +81,13 @@ public:
 
 	/**
 	 * Get the ScriptInfo linked to this ScriptConfig.
+	 * @return The info.
 	 */
 	class ScriptInfo *GetInfo() const;
 
 	/**
 	 * Get the config list for this ScriptConfig.
+	 * @return The configuration list.
 	 */
 	const ScriptConfigItemList *GetConfigList();
 
@@ -94,10 +95,10 @@ public:
 	 * Where to get the config from, either default (depends on current game
 	 * mode) or force either newgame or normal
 	 */
-	enum ScriptSettingSource : uint8_t {
-		SSS_DEFAULT,       ///< Get the Script config from the current game mode
-		SSS_FORCE_NEWGAME, ///< Get the newgame Script config
-		SSS_FORCE_GAME,    ///< Get the Script config from the current game
+	enum class ScriptSettingSource : uint8_t {
+		Default, ///< Get the Script config from the current game mode
+		ForceNewGame, ///< Get the newgame Script config
+		ForceCurrentGame, ///< Get the Script config from the current game
 	};
 
 	/**
@@ -114,6 +115,7 @@ public:
 	 * Get the value of a setting for this config. It might fallback to its
 	 *  'info' to find the default value (if not set or if not-custom difficulty
 	 *  level).
+	 * @param name The name of the setting.
 	 * @return The (default) value of the setting, or -1 if the setting was not
 	 *  found.
 	 */
@@ -121,6 +123,8 @@ public:
 
 	/**
 	 * Set the value of a setting for this config.
+	 * @param name The name of the setting.
+	 * @param value The new value for the setting.
 	 */
 	void SetSetting(std::string_view name, int value);
 
@@ -131,34 +135,40 @@ public:
 
 	/**
 	 * Reset only editable and visible settings to their default value.
+	 * @param yet_to_start Denotes whether the script is not yet running, e.g. the main menu.
 	 */
 	void ResetEditableSettings(bool yet_to_start);
 
 	/**
 	 * Is this config attached to an Script? In other words, is there a Script
 	 *  that is assigned to this slot.
+	 * @return \c true iff a script is assigned to this configuration.
 	 */
 	bool HasScript() const;
 
 	/**
 	 * Get the name of the Script.
+	 * @return The script's name.
 	 */
 	const std::string &GetName() const;
 
 	/**
 	 * Get the version of the Script.
+	 * @return The script's version.
 	 */
 	int GetVersion() const;
 
 	/**
 	 * Convert a string which is stored in the config file or savegames to
 	 *  custom settings of this Script.
+	 * @param value The string-encoded settings to decode into this configuration.
 	 */
 	void StringToSettings(std::string_view value);
 
 	/**
 	 * Convert the custom settings to a string that can be stored in the config
 	 *  file or savegames.
+	 * @return The string-encoded version of the settings in this configuration.
 	 */
 	std::string SettingsToString() const;
 
@@ -174,12 +184,12 @@ public:
 	ScriptInstance::ScriptData *GetToLoadData();
 
 protected:
-	std::string name;                                         ///< Name of the Script
-	int version;                                              ///< Version of the Script
-	class ScriptInfo *info;                                   ///< ScriptInfo object for related to this Script version
-	SettingValueList settings;                                ///< List with all setting=>value pairs that are configure for this Script
-	std::unique_ptr<ScriptConfigItemList> config_list;        ///< List with all settings defined by this Script
-	std::unique_ptr<ScriptInstance::ScriptData> to_load_data; ///< Data to load after the Script start.
+	std::string name{}; ///< Name of the Script
+	int version = -1; ///< Version of the Script
+	class ScriptInfo *info = nullptr; ///< ScriptInfo object for related to this Script version
+	SettingValueList settings{}; ///< List with all setting=>value pairs that are configure for this Script
+	std::unique_ptr<ScriptConfigItemList> config_list{}; ///< List with all settings defined by this Script
+	std::unique_ptr<ScriptInstance::ScriptData> to_load_data{}; ///< Data to load after the Script start.
 
 	/**
 	 * Routine that clears the config list.
@@ -187,8 +197,11 @@ protected:
 	void ClearConfigList();
 
 	/**
-	 * This function should call back to the Scanner in charge of this Config,
-	 *  to find the ScriptInfo belonging to a name+version.
+	 * Finds the appropriate ScriptInfo for a given script name and version.
+	 * @param name The script name to find.
+	 * @param version The version the script should have.
+	 * @param force_exact_match Whether an exact match is required.
+	 * @return The script if found, nullptr otherwise.
 	 */
 	virtual ScriptInfo *FindInfo(const std::string &name, int version, bool force_exact_match) = 0;
 };

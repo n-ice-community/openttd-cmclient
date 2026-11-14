@@ -5,11 +5,12 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <https://www.gnu.org/licenses/old-licenses/gpl-2.0>.
  */
 
-/** @file core/address.cpp Implementation of the address. */
+/** @file address.cpp Implementation of the address. */
 
 #include "../../stdafx.h"
 
 #include "address.h"
+#include "../network_func.h"
 #include "../network_internal.h"
 #include "../../debug.h"
 #include "../../core/string_consumer.hpp"
@@ -227,9 +228,9 @@ SOCKET NetworkAddress::Resolve(int family, int socktype, int flags, SocketList *
 	auto end = std::chrono::steady_clock::now();
 	std::chrono::seconds duration = std::chrono::duration_cast<std::chrono::seconds>(end - start);
 	if (!_resolve_timeout_error_message_shown && duration >= std::chrono::seconds(5)) {
-		Debug(net, 0, "getaddrinfo for hostname \"{}\", port {}, address family {} and socket type {} took {} seconds",
+		Debug(Facility::Net, Severity::Critical, "getaddrinfo for hostname \"{}\", port {}, address family {} and socket type {} took {} seconds",
 				this->hostname, port_name, AddressFamilyAsString(family), SocketTypeAsString(socktype), duration.count());
-		Debug(net, 0, "  this is likely an issue in the DNS name resolver's configuration causing it to time out");
+		Debug(Facility::Net, Severity::Critical, "  this is likely an issue in the DNS name resolver's configuration causing it to time out");
 		_resolve_timeout_error_message_shown = true;
 	}
 
@@ -238,7 +239,7 @@ SOCKET NetworkAddress::Resolve(int family, int socktype, int flags, SocketList *
 
 	if (e != 0) {
 		if (func != ResolveLoopProc) {
-			Debug(net, 0, "getaddrinfo for hostname \"{}\", port {}, address family {} and socket type {} failed: {}",
+			Debug(Facility::Net, Severity::Critical, "getaddrinfo for hostname \"{}\", port {}, address family {} and socket type {} failed: {}",
 				this->hostname, port_name, AddressFamilyAsString(family), SocketTypeAsString(socktype), FS2OTTD(gai_strerror(e)));
 		}
 		return INVALID_SOCKET;
@@ -297,32 +298,32 @@ static SOCKET ListenLoopProc(addrinfo *runp)
 	if (sock == INVALID_SOCKET) {
 		std::string_view type = NetworkAddress::SocketTypeAsString(runp->ai_socktype);
 		std::string_view family = NetworkAddress::AddressFamilyAsString(runp->ai_family);
-		Debug(net, 0, "Could not create {} {} socket: {}", type, family, NetworkError::GetLast().AsString());
+		Debug(Facility::Net, Severity::Critical, "Could not create {} {} socket: {}", type, family, NetworkError::GetLast().AsString());
 		return INVALID_SOCKET;
 	}
 
 	if (runp->ai_socktype == SOCK_STREAM && !SetNoDelay(sock)) {
-		Debug(net, 1, "Setting no-delay mode failed: {}", NetworkError::GetLast().AsString());
+		Debug(Facility::Net, Severity::Error, "Setting no-delay mode failed: {}", NetworkError::GetLast().AsString());
 	}
 
 	if (!SetReusePort(sock)) {
-		Debug(net, 0, "Setting reuse-address mode failed: {}", NetworkError::GetLast().AsString());
+		Debug(Facility::Net, Severity::Critical, "Setting reuse-address mode failed: {}", NetworkError::GetLast().AsString());
 	}
 
 	int on = 1;
 	if (runp->ai_family == AF_INET6 &&
 			setsockopt(sock, IPPROTO_IPV6, IPV6_V6ONLY, reinterpret_cast<const char *>(&on), sizeof(on)) == -1) {
-		Debug(net, 3, "Could not disable IPv4 over IPv6: {}", NetworkError::GetLast().AsString());
+		Debug(Facility::Net, Severity::Notice, "Could not disable IPv4 over IPv6: {}", NetworkError::GetLast().AsString());
 	}
 
 	if (bind(sock, runp->ai_addr, (int)runp->ai_addrlen) != 0) {
-		Debug(net, 0, "Could not bind socket on {}: {}", address, NetworkError::GetLast().AsString());
+		Debug(Facility::Net, Severity::Critical, "Could not bind socket on {}: {}", address, NetworkError::GetLast().AsString());
 		closesocket(sock);
 		return INVALID_SOCKET;
 	}
 
 	if (runp->ai_socktype != SOCK_DGRAM && listen(sock, 1) != 0) {
-		Debug(net, 0, "Could not listen on socket: {}", NetworkError::GetLast().AsString());
+		Debug(Facility::Net, Severity::Critical, "Could not listen on socket: {}", NetworkError::GetLast().AsString());
 		closesocket(sock);
 		return INVALID_SOCKET;
 	}
@@ -330,10 +331,10 @@ static SOCKET ListenLoopProc(addrinfo *runp)
 	/* Connection succeeded */
 
 	if (!SetNonBlocking(sock)) {
-		Debug(net, 0, "Setting non-blocking mode failed: {}", NetworkError::GetLast().AsString());
+		Debug(Facility::Net, Severity::Critical, "Setting non-blocking mode failed: {}", NetworkError::GetLast().AsString());
 	}
 
-	Debug(net, 3, "Listening on {}", address);
+	Debug(Facility::Net, Severity::Notice, "Listening on {}", address);
 	return sock;
 }
 
@@ -399,7 +400,7 @@ void NetworkAddress::Listen(int socktype, SocketList *sockets)
 	sockaddr_storage addr = {};
 	socklen_t addr_len = sizeof(addr);
 	if (getpeername(sock, (sockaddr *)&addr, &addr_len) != 0) {
-		Debug(net, 0, "Failed to get address of the peer: {}", NetworkError::GetLast().AsString());
+		Debug(Facility::Net, Severity::Critical, "Failed to get address of the peer: {}", NetworkError::GetLast().AsString());
 		return NetworkAddress();
 	}
 	return NetworkAddress(addr, addr_len);
@@ -415,7 +416,7 @@ void NetworkAddress::Listen(int socktype, SocketList *sockets)
 	sockaddr_storage addr = {};
 	socklen_t addr_len = sizeof(addr);
 	if (getsockname(sock, (sockaddr *)&addr, &addr_len) != 0) {
-		Debug(net, 0, "Failed to get address of the socket: {}", NetworkError::GetLast().AsString());
+		Debug(Facility::Net, Severity::Critical, "Failed to get address of the socket: {}", NetworkError::GetLast().AsString());
 		return NetworkAddress();
 	}
 	return NetworkAddress(addr, addr_len);
@@ -438,17 +439,17 @@ void NetworkAddress::Listen(int socktype, SocketList *sockets)
  *
  * @param connection_string The string to parse.
  * @param default_port The default port to set port to if not in connection_string.
- * @param company Pointer to the company variable to set iff indicated.
+ * @param company_id Pointer to the company variable to set iff indicated.
  * @return A valid ServerAddress of the parsed information.
  */
 /* static */ ServerAddress ServerAddress::Parse(std::string_view connection_string, uint16_t default_port, CompanyID *company_id)
 {
 	if (connection_string.starts_with("+")) {
 		std::string_view invite_code = ParseCompanyFromConnectionString(connection_string, company_id);
-		return ServerAddress(SERVER_ADDRESS_INVITE_CODE, std::string(invite_code));
+		return ServerAddress(ServerAddressType::InviteCode, std::string(invite_code));
 	}
 
 	uint16_t port = default_port;
 	std::string_view ip = ParseFullConnectionString(connection_string, port, company_id);
-	return ServerAddress(SERVER_ADDRESS_DIRECT, fmt::format("{}:{}", ip, port));
+	return ServerAddress(ServerAddressType::Direct, fmt::format("{}:{}", ip, port));
 }

@@ -12,10 +12,11 @@
 #include "script_industry.hpp"
 #include "../../industry.h"
 #include "../../station_base.h"
+#include "../../station_func.h"
 
 #include "../../safeguards.h"
 
-bool ScriptTileList::SaveObject(HSQUIRRELVM vm)
+bool ScriptTileList::SaveObject(HSQUIRRELVM vm) const
 {
 	sq_pushstring(vm, "TileList");
 	if (!ScriptList::SaveObject(vm)) return false;
@@ -23,20 +24,38 @@ bool ScriptTileList::SaveObject(HSQUIRRELVM vm)
 	return true;
 }
 
-ScriptObject *ScriptTileList::CloneObject()
+ScriptObject *ScriptTileList::CloneObject() const
 {
 	ScriptTileList *clone = new ScriptTileList();
 	clone->CopyList(this);
 	return clone;
 }
 
-void ScriptTileList::AddRectangle(TileIndex t1, TileIndex t2)
+bool ScriptTileList::AddRectangle(TileIndex t1, TileIndex t2)
 {
-	if (!::IsValidTile(t1)) return;
-	if (!::IsValidTile(t2)) return;
+	if (!::IsValidTile(t1)) return false;
+	if (!::IsValidTile(t2)) return false;
 
 	TileArea ta(t1, t2);
-	for (TileIndex t : ta) this->AddItem(t.base());
+
+	ScriptObject::DisableDoCommandScope disabler{};
+
+	auto begin = ta.begin();
+	if (disabler.GetOriginalValue() && this->resume_iter.has_value()) {
+		begin = this->resume_iter.value();
+	}
+
+	for (auto iter = begin; iter != ta.end(); ++iter) {
+		if (disabler.GetOriginalValue() && iter != begin && ScriptController::GetOpsTillSuspend() < 0) {
+			this->resume_iter = iter;
+			return true;
+		}
+		this->AddItem((*iter).base());
+		ScriptController::DecreaseOps(5);
+	}
+
+	this->resume_iter.reset();
+	return false;
 }
 
 void ScriptTileList::AddTile(TileIndex tile)
@@ -46,13 +65,31 @@ void ScriptTileList::AddTile(TileIndex tile)
 	this->AddItem(tile.base());
 }
 
-void ScriptTileList::RemoveRectangle(TileIndex t1, TileIndex t2)
+bool ScriptTileList::RemoveRectangle(TileIndex t1, TileIndex t2)
 {
-	if (!::IsValidTile(t1)) return;
-	if (!::IsValidTile(t2)) return;
+	if (!::IsValidTile(t1)) return false;
+	if (!::IsValidTile(t2)) return false;
 
 	TileArea ta(t1, t2);
-	for (TileIndex t : ta) this->RemoveItem(t.base());
+
+	ScriptObject::DisableDoCommandScope disabler{};
+
+	auto begin = ta.begin();
+	if (disabler.GetOriginalValue() && this->resume_iter.has_value()) {
+		begin = this->resume_iter.value();
+	}
+
+	for (auto iter = begin; iter != ta.end(); ++iter) {
+		if (disabler.GetOriginalValue() && iter != begin && ScriptController::GetOpsTillSuspend() < 0) {
+			this->resume_iter = iter;
+			return true;
+		}
+		this->RemoveItem((*iter).base());
+		ScriptController::DecreaseOps(5);
+	}
+
+	this->resume_iter.reset();
+	return false;
 }
 
 void ScriptTileList::RemoveTile(TileIndex tile)
@@ -71,7 +108,7 @@ void ScriptTileList::RemoveTile(TileIndex tile)
 static void FillIndustryCatchment(const Industry *i, SQInteger radius, BitmapTileArea &bta)
 {
 	for (TileIndex cur_tile : i->location) {
-		if (!::IsTileType(cur_tile, MP_INDUSTRY) || ::GetIndustryIndex(cur_tile) != i->index) continue;
+		if (!::IsTileType(cur_tile, TileType::Industry) || ::GetIndustryIndex(cur_tile) != i->index) continue;
 
 		int tx = TileX(cur_tile);
 		int ty = TileY(cur_tile);
@@ -81,8 +118,8 @@ static void FillIndustryCatchment(const Industry *i, SQInteger radius, BitmapTil
 				if (tx + x < 0 || tx + x > (int)Map::MaxX()) continue;
 				TileIndex tile = TileXY(tx + x, ty + y);
 				if (!IsValidTile(tile)) continue;
-				if (::IsTileType(tile, MP_INDUSTRY) && ::GetIndustryIndex(tile) == i->index) continue;
-				bta.SetTile(tile);
+				if (::IsTileType(tile, TileType::Industry) && ::GetIndustryIndex(tile) == i->index) continue;
+				bta.Add(tile);
 			}
 		}
 	}
@@ -105,11 +142,10 @@ ScriptTileList_IndustryAccepting::ScriptTileList_IndustryAccepting(IndustryID in
 	BitmapTileArea bta(TileArea(i->location).Expand(radius));
 	FillIndustryCatchment(i, radius, bta);
 
-	BitmapTileIterator it(bta);
-	for (TileIndex cur_tile = it; cur_tile != INVALID_TILE; cur_tile = ++it) {
+	for (TileIndex cur_tile : bta) {
 		/* Only add the tile if it accepts the cargo (sometimes just 1 tile of an
 		 *  industry triggers the acceptance). */
-		CargoArray acceptance = ::GetAcceptanceAroundTiles(cur_tile, 1, 1, radius);
+		CargoArray acceptance = ::GetAcceptanceAroundTiles(cur_tile, 1, 1, radius).first;
 		if (std::none_of(std::begin(i->accepted), std::end(i->accepted), [&acceptance](const auto &a) { return ::IsValidCargoType(a.cargo) && acceptance[a.cargo] != 0; })) continue;
 
 		this->AddTile(cur_tile);
@@ -133,8 +169,7 @@ ScriptTileList_IndustryProducing::ScriptTileList_IndustryProducing(IndustryID in
 	BitmapTileArea bta(TileArea(i->location).Expand(radius));
 	FillIndustryCatchment(i, radius, bta);
 
-	BitmapTileIterator it(bta);
-	for (TileIndex cur_tile = it; cur_tile != INVALID_TILE; cur_tile = ++it) {
+	for (TileIndex cur_tile : bta) {
 		this->AddTile(cur_tile);
 	}
 }
@@ -142,8 +177,6 @@ ScriptTileList_IndustryProducing::ScriptTileList_IndustryProducing(IndustryID in
 ScriptTileList_StationType::ScriptTileList_StationType(StationID station_id, ScriptStation::StationType station_type)
 {
 	if (!ScriptStation::IsValidStation(station_id)) return;
-
-	const StationRect *rect = &::Station::Get(station_id)->rect;
 
 	EnumBitSet<StationType, uint8_t> station_types = {};
 	/* Convert ScriptStation::StationType to ::StationType, but do it in a
@@ -154,9 +187,8 @@ ScriptTileList_StationType::ScriptTileList_StationType(StationID station_id, Scr
 	if ((station_type & ScriptStation::STATION_AIRPORT) != 0)    station_types.Set({::StationType::Airport, ::StationType::Oilrig});
 	if ((station_type & ScriptStation::STATION_DOCK) != 0)       station_types.Set({::StationType::Dock, ::StationType::Oilrig});
 
-	TileArea ta(::TileXY(rect->left, rect->top), rect->Width(), rect->Height());
-	for (TileIndex cur_tile : ta) {
-		if (!::IsTileType(cur_tile, MP_STATION)) continue;
+	for (TileIndex cur_tile : ::Station::Get(station_id)->spread) {
+		if (!::IsTileType(cur_tile, TileType::Station)) continue;
 		if (::GetStationIndex(cur_tile) != station_id) continue;
 		if (!station_types.Test(::GetStationType(cur_tile))) continue;
 		this->AddTile(cur_tile);
@@ -167,11 +199,7 @@ ScriptTileList_StationCoverage::ScriptTileList_StationCoverage(StationID station
 {
 	if (!ScriptStation::IsValidStation(station_id)) return;
 
-	const BitmapTileArea &ta = ::Station::Get(station_id)->catchment_tiles;
-	if (ta.tile == INVALID_TILE) return;
-
-	BitmapTileIterator it(ta);
-	for (TileIndex tile = it; tile != INVALID_TILE; tile = ++it) {
+	for (TileIndex tile : ::Station::Get(station_id)->catchment_tiles) {
 		this->AddTile(tile);
 	}
 }

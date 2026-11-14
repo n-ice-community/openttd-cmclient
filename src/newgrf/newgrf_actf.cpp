@@ -9,6 +9,7 @@
 
 #include "../stdafx.h"
 #include "../debug.h"
+#include "../newgrf_text.h"
 #include "../newgrf_townname.h"
 #include "newgrf_bytereader.h"
 #include "newgrf_internal.h"
@@ -17,7 +18,10 @@
 
 #include "../safeguards.h"
 
-/** Action 0x0F - Define Town names */
+/**
+ * Action 0x0F - Define Town names.
+ * @param buf Reader of the NewGRF.
+ */
 static void FeatureTownName(ByteReader &buf)
 {
 	/* <0F> <id> <style-name> <num-parts> <parts>
@@ -27,12 +31,12 @@ static void FeatureTownName(ByteReader &buf)
 	 * B num-parts   Number of parts in this definition
 	 * V parts       The parts */
 
-	uint32_t grfid = _cur_gps.grffile->grfid;
+	GrfID grfid = _cur_gps.grffile->grfid;
 
 	GRFTownName *townname = AddGRFTownName(grfid);
 
 	uint8_t id = buf.ReadByte();
-	GrfMsg(6, "FeatureTownName: definition 0x{:02X}", id & 0x7F);
+	GrfMsg(Severity::Debug2, "FeatureTownName: definition 0x{:02X}", id & 0x7F);
 
 	if (HasBit(id, 7)) {
 		/* Final definition */
@@ -47,8 +51,7 @@ static void FeatureTownName(ByteReader &buf)
 
 			std::string_view name = buf.ReadString();
 
-			std::string lang_name = TranslateTTDPatchCodes(grfid, lang, false, name);
-			GrfMsg(6, "FeatureTownName: lang 0x{:X} -> '{}'", lang, lang_name);
+			GrfMsg(Severity::Debug2, "FeatureTownName: lang 0x{:X} (new_scheme: {}) -> '{}'", lang, new_scheme, TranslateTTDPatchCodes(grfid, GRFLanguage::Fallback, false, name));
 
 			style = AddGRFString(grfid, GRFStringID{id}, lang, new_scheme, false, name, STR_UNDEFINED);
 
@@ -58,7 +61,7 @@ static void FeatureTownName(ByteReader &buf)
 	}
 
 	uint8_t parts = buf.ReadByte();
-	GrfMsg(6, "FeatureTownName: {} parts", parts);
+	GrfMsg(Severity::Debug2, "FeatureTownName: {} parts", parts);
 
 	townname->partlists[id].reserve(parts);
 	for (uint partnum = 0; partnum < parts; partnum++) {
@@ -67,7 +70,7 @@ static void FeatureTownName(ByteReader &buf)
 		partlist.bitstart = buf.ReadByte();
 		partlist.bitcount = buf.ReadByte();
 		partlist.maxprob  = 0;
-		GrfMsg(6, "FeatureTownName: part {} contains {} texts and will use GB(seed, {}, {})", partnum, texts, partlist.bitstart, partlist.bitcount);
+		GrfMsg(Severity::Debug2, "FeatureTownName: part {} contains {} texts and will use GB(seed, {}, {})", partnum, texts, partlist.bitstart, partlist.bitcount);
 
 		partlist.parts.reserve(texts);
 		for (uint textnum = 0; textnum < texts; textnum++) {
@@ -77,27 +80,33 @@ static void FeatureTownName(ByteReader &buf)
 			if (HasBit(part.prob, 7)) {
 				uint8_t ref_id = buf.ReadByte();
 				if (ref_id >= GRFTownName::MAX_LISTS || townname->partlists[ref_id].empty()) {
-					GrfMsg(0, "FeatureTownName: definition 0x{:02X} doesn't exist, deactivating", ref_id);
+					GrfMsg(Severity::Critical, "FeatureTownName: definition 0x{:02X} doesn't exist, deactivating", ref_id);
 					DelGRFTownName(grfid);
 					DisableGrf(STR_NEWGRF_ERROR_INVALID_ID);
 					return;
 				}
 				part.id = ref_id;
-				GrfMsg(6, "FeatureTownName: part {}, text {}, uses intermediate definition 0x{:02X} (with probability {})", partnum, textnum, ref_id, part.prob & 0x7F);
+				GrfMsg(Severity::Debug2, "FeatureTownName: part {}, text {}, uses intermediate definition 0x{:02X} (with probability {})", partnum, textnum, ref_id, part.prob & 0x7F);
 			} else {
 				std::string_view text = buf.ReadString();
-				part.text = TranslateTTDPatchCodes(grfid, 0, false, text);
-				GrfMsg(6, "FeatureTownName: part {}, text {}, '{}' (with probability {})", partnum, textnum, part.text, part.prob);
+				part.text = TranslateTTDPatchCodes(grfid, GRFLanguage::Fallback, false, text);
+				GrfMsg(Severity::Debug2, "FeatureTownName: part {}, text {}, '{}' (with probability {})", partnum, textnum, part.text, part.prob);
 			}
 			partlist.maxprob += GB(part.prob, 0, 7);
 		}
-		GrfMsg(6, "FeatureTownName: part {}, total probability {}", partnum, partlist.maxprob);
+		GrfMsg(Severity::Debug2, "FeatureTownName: part {}, total probability {}", partnum, partlist.maxprob);
 	}
 }
 
+/** @copybrief GrfActionHandler::FileScan */
 template <> void GrfActionHandler<0x0F>::FileScan(ByteReader &) { }
+/** @copydoc GrfActionHandler::SafetyScan */
 template <> void GrfActionHandler<0x0F>::SafetyScan(ByteReader &buf) { GRFUnsafe(buf); }
+/** @copybrief GrfActionHandler::LabelScan */
 template <> void GrfActionHandler<0x0F>::LabelScan(ByteReader &) { }
+/** @copydoc GrfActionHandler::Init */
 template <> void GrfActionHandler<0x0F>::Init(ByteReader &buf) { FeatureTownName(buf); }
+/** @copybrief GrfActionHandler::Reserve */
 template <> void GrfActionHandler<0x0F>::Reserve(ByteReader &) { }
+/** @copybrief GrfActionHandler::Activation */
 template <> void GrfActionHandler<0x0F>::Activation(ByteReader &) { }

@@ -10,8 +10,8 @@
 #include "../stdafx.h"
 #include "../debug.h"
 #include "../saveload/saveload.h"
+#include "../saveload/saveload_error.hpp"
 
-#include "../script/squirrel_class.hpp"
 #include "../script/squirrel_std.hpp"
 
 #include "script_fatalerror.hpp"
@@ -114,7 +114,7 @@ bool ScriptInstance::LoadCompatibilityScript(std::string_view api_version, Subdi
 		if (this->engine->LoadScript(buf)) return true;
 
 		ScriptLog::Error(fmt::format("Failed to load API compatibility script for {}", api_version));
-		Debug(script, 0, "Error compiling / running API compatibility script: {}", buf);
+		Debug(Facility::Script, Severity::Critical, "Error compiling / running API compatibility script: {}", buf);
 		return false;
 	}
 
@@ -152,6 +152,7 @@ bool ScriptInstance::LoadCompatibilityScripts(Subdirectory dir, std::span<const 
 	return true;
 }
 
+/** Release our hold on the engine and reset it in the right scope. */
 ScriptInstance::~ScriptInstance()
 {
 	ScriptObject::ActiveInstance active(*this);
@@ -171,7 +172,7 @@ void ScriptInstance::Continue()
 
 void ScriptInstance::Died()
 {
-	Debug(script, 0, "The script died unexpectedly.");
+	Debug(Facility::Script, Severity::Critical, "The script died unexpectedly.");
 	this->is_dead = true;
 	this->in_shutdown = true;
 
@@ -364,7 +365,7 @@ static uint8_t _script_sl_byte; ///< Used as source/target by the script saveloa
 
 /** SaveLoad array that saves/loads exactly one byte. */
 static const SaveLoad _script_byte[] = {
-	SLEG_VAR("type", _script_sl_byte, SLE_UINT8),
+	SaveLoad::Variable<VarFileType::U8>("type", SLE_GLOBAL_ADDRESS(_script_sl_byte)),
 };
 
 /* static */ bool ScriptInstance::SaveObject(HSQUIRRELVM vm, SQInteger index, int max_depth, bool test)
@@ -384,7 +385,7 @@ static const SaveLoad _script_byte[] = {
 			sq_getinteger(vm, index, &res);
 			if (!test) {
 				int64_t value = (int64_t)res;
-				SlCopy(&value, 1, SLE_INT64);
+				SlCopy(&value, 1, VarTypes::I64);
 			}
 			return true;
 		}
@@ -396,15 +397,14 @@ static const SaveLoad _script_byte[] = {
 			}
 			std::string_view view;
 			sq_getstring(vm, index, view);
-			size_t len = view.size() + 1;
-			if (len >= 255) {
-				ScriptLog::Error("Maximum string length is 254 chars. No data saved.");
+			if (view.size() > 255) {
+				ScriptLog::Error("Maximum string length is 255 chars. No data saved.");
 				return false;
 			}
 			if (!test) {
-				_script_sl_byte = (uint8_t)len;
+				_script_sl_byte = static_cast<uint8_t>(view.size());
 				SlObject(nullptr, _script_byte);
-				SlCopy(const_cast<char *>(view.data()), len, SLE_CHAR);
+				SlCopy(const_cast<char *>(view.data()), view.size(), VarTypes::I8);
 			}
 			return true;
 		}
@@ -603,16 +603,16 @@ bool ScriptInstance::IsPaused()
 	switch (_script_sl_byte) {
 		case SQSL_INT: {
 			int64_t value;
-			SlCopy(&value, 1, IsSavegameVersionBefore(SLV_SCRIPT_INT64) ? SLE_FILE_I32 | SLE_VAR_I64 : SLE_INT64);
+			SlCopy(&value, 1, IsSavegameVersionBefore(SaveLoadVersion::ScriptInt64) ? VarType{VarFileType::I32, VarMemType::I64} : VarTypes::I64);
 			if (data != nullptr) data->push_back(static_cast<SQInteger>(value));
 			return true;
 		}
 
 		case SQSL_STRING: {
 			SlObject(nullptr, _script_byte);
-			static char buf[std::numeric_limits<decltype(_script_sl_byte)>::max()];
-			SlCopy(buf, _script_sl_byte, SLE_CHAR);
-			if (data != nullptr) data->push_back(StrMakeValid(std::string_view(buf, _script_sl_byte)));
+			std::string buf(_script_sl_byte, '\0');
+			SlCopy<VarFileType::I8>(buf);
+			if (data != nullptr) data->push_back(StrMakeValid(std::move(buf)));
 			return true;
 		}
 
@@ -815,7 +815,7 @@ bool ScriptInstance::DoCommandCallback(const CommandCost &result, const CommandD
 	ScriptObject::ActiveInstance active(*this);
 
 	if (!ScriptObject::CheckLastCommand(data, cmd)) {
-		Debug(script, 1, "DoCommandCallback terminating a script, last command does not match expected command");
+		Debug(Facility::Script, Severity::Error, "DoCommandCallback terminating a script, last command does not match expected command");
 		return false;
 	}
 
@@ -829,7 +829,7 @@ bool ScriptInstance::DoCommandCallback(const CommandCost &result, const CommandD
 		ScriptObject::SetLastCost(result.GetCost());
 	}
 
-	ScriptObject::SetLastCommand({}, CMD_END);
+	ScriptObject::SetLastCommand({}, Commands::End);
 
 	return true;
 }

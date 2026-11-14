@@ -10,7 +10,6 @@
 #ifndef ROAD_GUI_H
 #define ROAD_GUI_H
 
-#include "road.h"
 #include "road_type.h"
 #include "tile_type.h"
 #include "direction_type.h"
@@ -21,6 +20,6 @@ struct Window *ShowBuildRoadScenToolbar(RoadType roadtype);
 void ConnectRoadToStructure(TileIndex tile, DiagDirection direction);
 DropDownList GetRoadTypeDropDownList(RoadTramTypes rtts, bool for_replacement = false, bool all_option = false);
 DropDownList GetScenRoadTypeDropDownList(RoadTramTypes rtts);
-void InitializeRoadGUI();
+void SetDefaultRoadGui();
 
 #endif /* ROAD_GUI_H */

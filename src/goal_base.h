@@ -21,22 +21,22 @@ extern GoalPool _goal_pool;
 /** Struct about goals, current and completed */
 struct Goal : GoalPool::PoolItem<&_goal_pool> {
 	CompanyID company = CompanyID::Invalid(); ///< Goal is for a specific company; CompanyID::Invalid() if it is global
-	GoalType type = GT_NONE; ///< Type of the goal
+	GoalType type = GoalType::None; ///< Type of the goal
 	GoalTypeID dst = 0; ///< Index of type
 	EncodedString text{}; ///< Text of the goal.
 	EncodedString progress{}; ///< Progress text of the goal.
 	bool completed = false; ///< Is the goal completed or not?
 
 	/**
-	 * We need an (empty) constructor so struct isn't zeroed (as C++ standard states)
+	 * Construct the goal.
+	 * @param index The index within the goal pool.
+	 * @param type The goal type.
+	 * @param dst The goal target.
+	 * @param company The company for the goal.
+	 * @param text The text of the goal.
 	 */
-	Goal() { }
-	Goal(GoalType type, GoalTypeID dst, CompanyID company, const EncodedString &text) : company(company), type(type), dst(dst), text(text) {}
-
-	/**
-	 * (Empty) destructor has to be defined else operator delete might be called with nullptr parameter
-	 */
-	~Goal() { }
+	Goal(GoalID index, GoalType type = GoalType::None, GoalTypeID dst = 0, CompanyID company = CompanyID::Invalid(), const EncodedString &text = {}) :
+		GoalPool::PoolItem<&_goal_pool>(index), company(company), type(type), dst(dst), text(text) {}
 
 	static bool IsValidGoalDestination(CompanyID company, GoalType type, GoalTypeID dest);
 };

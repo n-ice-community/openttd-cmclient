@@ -5,10 +5,7 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <https://www.gnu.org/licenses/old-licenses/gpl-2.0>.
  */
 
-/**
- * @file cocoa_m.cpp
- * @brief MIDI music player for MacOS X using CoreAudio.
- */
+/** @file cocoa_m.cpp MIDI music player for MacOS X using CoreAudio. */
 
 
 #ifdef WITH_COCOA
@@ -25,10 +22,6 @@
 #include <AudioToolbox/AudioToolbox.h>
 
 #include "../safeguards.h"
-
-#if !defined(HAVE_OSX_1011_SDK)
-#define kMusicSequenceFile_AnyType 0
-#endif
 
 static FMusicDriver_Cocoa iFMusicDriver_Cocoa;
 
@@ -67,7 +60,7 @@ static void DoSetVolume()
 		}
 	}
 	if (output_unit == nullptr) {
-		Debug(driver, 1, "cocoa_m: Failed to get output node to set volume");
+		Debug(Facility::Driver, Severity::Error, "cocoa_m: Failed to get output node to set volume");
 		return;
 	}
 
@@ -119,7 +112,7 @@ void MusicDriver_Cocoa::PlaySong(const MusicSongInfo &song)
 {
 	std::string filename = MidiFile::GetSMFFile(song);
 
-	Debug(driver, 2, "cocoa_m: trying to play '{}'", filename);
+	Debug(Facility::Driver, Severity::Warning, "cocoa_m: trying to play '{}'", filename);
 
 	this->StopSong();
 	if (_sequence != nullptr) {
@@ -130,7 +123,7 @@ void MusicDriver_Cocoa::PlaySong(const MusicSongInfo &song)
 	if (filename.empty()) return;
 
 	if (NewMusicSequence(&_sequence) != noErr) {
-		Debug(driver, 0, "cocoa_m: Failed to create music sequence");
+		Debug(Facility::Driver, Severity::Critical, "cocoa_m: Failed to create music sequence");
 		return;
 	}
 
@@ -138,7 +131,7 @@ void MusicDriver_Cocoa::PlaySong(const MusicSongInfo &song)
 	CFAutoRelease<CFURLRef> url(CFURLCreateFromFileSystemRepresentation(kCFAllocatorDefault, (const UInt8*)os_file.data(), os_file.length(), false));
 
 	if (MusicSequenceFileLoad(_sequence, url.get(), kMusicSequenceFile_AnyType, 0) != noErr) {
-		Debug(driver, 0, "cocoa_m: Failed to load MIDI file");
+		Debug(Facility::Driver, Severity::Critical, "cocoa_m: Failed to load MIDI file");
 		return;
 	}
 
@@ -148,7 +141,7 @@ void MusicDriver_Cocoa::PlaySong(const MusicSongInfo &song)
 	MusicSequenceGetAUGraph(_sequence, &graph);
 	AUGraphOpen(graph);
 	if (AUGraphInitialize(graph) != noErr) {
-		Debug(driver, 0, "cocoa_m: Failed to initialize AU graph");
+		Debug(Facility::Driver, Severity::Critical, "cocoa_m: Failed to initialize AU graph");
 		return;
 	}
 
@@ -173,7 +166,7 @@ void MusicDriver_Cocoa::PlaySong(const MusicSongInfo &song)
 	if (MusicPlayerStart(_player) != noErr) return;
 	_playing = true;
 
-	Debug(driver, 3, "cocoa_m: playing '{}'", filename);
+	Debug(Facility::Driver, Severity::Notice, "cocoa_m: playing '{}'", filename);
 }
 
 

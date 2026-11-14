@@ -5,14 +5,13 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <https://www.gnu.org/licenses/old-licenses/gpl-2.0>.
  */
 
-/** @file station_gui.h Contains enums and function declarations connected with stations GUI */
+/** @file station_gui.h Contains enums and function declarations connected with stations GUI. */
 
 #ifndef STATION_GUI_H
 #define STATION_GUI_H
 
 #include "core/geometry_type.hpp"
-#include "command_type.h"
-#include "tilearea_type.h"
+#include "tilearea_orthogonal.h"
 #include "window_type.h"
 #include "station_type.h"
 

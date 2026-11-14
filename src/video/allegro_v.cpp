@@ -59,7 +59,7 @@ void VideoDriver_Allegro::MakeDirty(int left, int top, int width, int height)
 
 void VideoDriver_Allegro::Paint()
 {
-	PerformanceMeasurer framerate(PFE_VIDEO);
+	PerformanceMeasurer framerate(PerformanceElement::Video);
 
 	size_t n = _num_dirty_rects;
 	if (n == 0) return;
@@ -192,7 +192,7 @@ static bool CreateMainSurface(uint w, uint h)
 
 	GetAvailableVideoMode(&w, &h);
 	if (set_gfx_mode(_fullscreen ? GFX_AUTODETECT_FULLSCREEN : GFX_AUTODETECT_WINDOWED, w, h, 0, 0) != 0) {
-		Debug(driver, 0, "Allegro: Couldn't allocate a window to draw on '{}'", allegro_error);
+		Debug(Facility::Driver, Severity::Critical, "Allegro: Couldn't allocate a window to draw on '{}'", allegro_error);
 		return false;
 	}
 
@@ -228,12 +228,11 @@ static bool CreateMainSurface(uint w, uint h)
 	return true;
 }
 
-bool VideoDriver_Allegro::ClaimMousePointer()
+void VideoDriver_Allegro::ClaimMousePointer()
 {
 	select_mouse_cursor(MOUSE_CURSOR_NONE);
 	show_mouse(nullptr);
 	disable_hardware_cursor();
-	return true;
 }
 
 std::vector<int> VideoDriver_Allegro::GetListOfMonitorRefreshRates()
@@ -326,8 +325,8 @@ static uint32_t ConvertAllegroKeyIntoMy(char32_t *character)
 	if (key_shifts & KB_CTRL_FLAG)  key |= WKC_CTRL;
 	if (key_shifts & KB_ALT_FLAG)   key |= WKC_ALT;
 #if 0
-	Debug(driver, 0, "Scancode character pressed {}", scancode);
-	Debug(driver, 0, "Unicode character pressed {}", unicode);
+	Debug(Facility::Driver, Severity::Critical, "Scancode character pressed {}", scancode);
+	Debug(Facility::Driver, Severity::Critical, "Unicode character pressed {}", unicode);
 #endif
 
 	*character = unicode;
@@ -424,7 +423,7 @@ int _allegro_instance_count = 0;
 std::optional<std::string_view> VideoDriver_Allegro::Start(const StringList &param)
 {
 	if (_allegro_instance_count == 0 && install_allegro(SYSTEM_AUTODETECT, &errno, nullptr)) {
-		Debug(driver, 0, "allegro: install_allegro failed '{}'", allegro_error);
+		Debug(Facility::Driver, Severity::Critical, "allegro: install_allegro failed '{}'", allegro_error);
 		return "Failed to set up Allegro";
 	}
 	_allegro_instance_count++;
@@ -472,11 +471,10 @@ void VideoDriver_Allegro::InputLoop()
 	this->fast_forward_key_pressed = key[KEY_TAB] && (key_shifts & KB_ALT_FLAG) == 0;
 
 	/* Determine which directional keys are down. */
-	_dirkeys =
-		(key[KEY_LEFT]  ? 1 : 0) |
-		(key[KEY_UP]    ? 2 : 0) |
-		(key[KEY_RIGHT] ? 4 : 0) |
-		(key[KEY_DOWN]  ? 8 : 0);
+	_dirkeys.Set(DirectionKey::Left, key[KEY_LEFT]);
+	_dirkeys.Set(DirectionKey::Up, key[KEY_UP]);
+	_dirkeys.Set(DirectionKey::Right, key[KEY_RIGHT]);
+	_dirkeys.Set(DirectionKey::Down, key[KEY_DOWN]);
 
 		// CM if (old_ctrl_pressed != _ctrl_pressed) HandleCtrlChanged();
 		citymania::UpdateModKeys(_shift_pressed, _ctrl_pressed, _alt_pressed, false);

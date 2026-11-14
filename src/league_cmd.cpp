@@ -12,6 +12,7 @@
 #include "league_base.h"
 #include "command_type.h"
 #include "command_func.h"
+#include "company_base.h"
 #include "industry.h"
 #include "story_base.h"
 #include "town.h"
@@ -34,12 +35,12 @@ INSTANTIATE_POOL_METHODS(LeagueTable)
 bool IsValidLink(Link link)
 {
 	switch (link.type) {
-		case LT_NONE: return (link.target == 0);
-		case LT_TILE: return IsValidTile(link.target);
-		case LT_INDUSTRY: return Industry::IsValidID(link.target);
-		case LT_TOWN: return Town::IsValidID(link.target);
-		case LT_COMPANY: return Company::IsValidID(link.target);
-		case LT_STORY_PAGE: return StoryPage::IsValidID(link.target);
+		case LinkType::None: return (link.target == 0);
+		case LinkType::Tile: return IsValidTile(link.target);
+		case LinkType::Industry: return Industry::IsValidID(link.target);
+		case LinkType::Town: return Town::IsValidID(link.target);
+		case LinkType::Company: return Company::IsValidID(link.target);
+		case LinkType::StoryPage: return StoryPage::IsValidID(link.target);
 		default: return false;
 	}
 	return false;
@@ -60,7 +61,7 @@ std::tuple<CommandCost, LeagueTableID> CmdCreateLeagueTable(DoCommandFlags flags
 	if (title.empty()) return { CMD_ERROR, LeagueTableID::Invalid() };
 
 	if (flags.Test(DoCommandFlag::Execute)) {
-		LeagueTable *lt = new LeagueTable(title, header, footer);
+		LeagueTable *lt = LeagueTable::Create(title, header, footer);
 		return { CommandCost(), lt->index };
 	}
 
@@ -89,8 +90,8 @@ std::tuple<CommandCost, LeagueTableElementID> CmdCreateLeagueTableElement(DoComm
 	if (company != CompanyID::Invalid() && !Company::IsValidID(company)) return { CMD_ERROR, LeagueTableElementID::Invalid() };
 
 	if (flags.Test(DoCommandFlag::Execute)) {
-		LeagueTableElement *lte = new LeagueTableElement(table, rating, company, text, score, link);
-		InvalidateWindowData(WC_COMPANY_LEAGUE, table);
+		LeagueTableElement *lte = LeagueTableElement::Create(table, rating, company, text, score, link);
+		InvalidateWindowData(WindowClass::CompanyLeague, table);
 		return { CommandCost(), lte->index };
 	}
 	return { CommandCost(), LeagueTableElementID::Invalid() };
@@ -119,7 +120,7 @@ CommandCost CmdUpdateLeagueTableElementData(DoCommandFlags flags, LeagueTableEle
 		lte->company = company;
 		lte->text = text;
 		lte->link = link;
-		InvalidateWindowData(WC_COMPANY_LEAGUE, lte->table);
+		InvalidateWindowData(WindowClass::CompanyLeague, lte->table);
 	}
 	return CommandCost();
 }
@@ -141,7 +142,7 @@ CommandCost CmdUpdateLeagueTableElementScore(DoCommandFlags flags, LeagueTableEl
 	if (flags.Test(DoCommandFlag::Execute)) {
 		lte->rating = rating;
 		lte->score = score;
-		InvalidateWindowData(WC_COMPANY_LEAGUE, lte->table);
+		InvalidateWindowData(WindowClass::CompanyLeague, lte->table);
 	}
 	return CommandCost();
 }
@@ -161,7 +162,7 @@ CommandCost CmdRemoveLeagueTableElement(DoCommandFlags flags, LeagueTableElement
 	if (flags.Test(DoCommandFlag::Execute)) {
 		auto table = lte->table;
 		delete lte;
-		InvalidateWindowData(WC_COMPANY_LEAGUE, table);
+		InvalidateWindowData(WindowClass::CompanyLeague, table);
 	}
 	return CommandCost();
 }

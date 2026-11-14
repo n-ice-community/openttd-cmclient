@@ -10,9 +10,7 @@
 #include "../stdafx.h"
 #include "../settings_type.h"
 #include "script_info.hpp"
-#include "api/script_object.hpp"
 #include "../textfile_gui.h"
-#include "../string_func.h"
 #include <charconv>
 
 #include "table/strings.h"
@@ -27,7 +25,7 @@ void ScriptConfig::Change(std::optional<std::string_view> name, int version, boo
 	} else {
 		this->info = nullptr;
 	}
-	this->version = (info == nullptr) ? -1 : info->GetVersion();
+	this->version = (this->info == nullptr) ? -1 : this->info->GetVersion();
 	this->config_list.reset();
 	this->to_load_data.reset();
 
@@ -44,12 +42,6 @@ ScriptConfig::ScriptConfig(const ScriptConfig &config)
 	for (const auto &item : config.settings) {
 		this->settings[item.first] = item.second;
 	}
-}
-
-ScriptConfig::~ScriptConfig()
-{
-	this->ResetSettings();
-	this->to_load_data.reset();
 }
 
 ScriptInfo *ScriptConfig::GetInfo() const
@@ -179,7 +171,7 @@ std::optional<std::string> ScriptConfig::GetTextfile(TextfileType type, CompanyI
 {
 	if (slot == CompanyID::Invalid() || this->GetInfo() == nullptr) return std::nullopt;
 
-	return ::GetTextfile(type, (slot == OWNER_DEITY) ? GAME_DIR : AI_DIR, this->GetInfo()->GetMainScript());
+	return ::GetTextfile(type, (slot == OWNER_DEITY) ? Subdirectory::Gs : Subdirectory::Ai, this->GetInfo()->GetMainScript());
 }
 
 void ScriptConfig::SetToLoadData(ScriptInstance::ScriptData *data)
@@ -221,6 +213,6 @@ std::string ScriptConfigItem::GetString(int value) const
  */
 TextColour ScriptConfigItem::GetColour() const
 {
-	return this->description.empty() ? TC_ORANGE : TC_LIGHT_BLUE;
+	return this->description.empty() ? TextColour::Orange : TextColour::LightBlue;
 }
 

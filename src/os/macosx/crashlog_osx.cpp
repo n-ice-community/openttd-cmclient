@@ -5,14 +5,14 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <https://www.gnu.org/licenses/old-licenses/gpl-2.0>.
  */
 
-/** @file crashlog_osx.cpp OS X crash log handler */
+/** @file crashlog_osx.cpp OS X crash log handler. */
 
 #include "../../stdafx.h"
 #include "../../crashlog.h"
 #include "../../fileio_func.h"
 #include "../../string_func.h"
 #include "../../gamelog.h"
-#include "../../saveload/saveload.h"
+#include "../../saveload/saveload_func.h"
 #include "../../video/video_driver.hpp"
 #include "macos.h"
 
@@ -85,7 +85,7 @@ class CrashLogOSX : public CrashLog {
 	}
 #endif
 
-	/* virtual */ bool TryExecute(std::string_view section_name, std::function<bool()> &&func) override
+	bool TryExecute(std::string_view section_name, std::function<bool()> &&func) override
 	{
 		this->try_execute_active = true;
 
@@ -181,7 +181,7 @@ static void CDECL HandleInternalCrash(int)
 {
 	if (CrashLogOSX::current == nullptr || !CrashLogOSX::current->try_execute_active) {
 		fmt::print("Something went seriously wrong when creating the crash log. Aborting.\n");
-		_exit(1);
+		std::_Exit(1);
 	}
 
 	longjmp(CrashLogOSX::current->internal_fault_jmp_buf, 1);
@@ -196,7 +196,7 @@ static void CDECL HandleCrash(int signum)
 {
 	if (CrashLogOSX::current != nullptr) {
 		CrashLog::AfterCrashLogCleanup();
-		_exit(2);
+		std::_Exit(2);
 	}
 
 	/* Capture crashing during the handling of a crash. */
@@ -208,14 +208,14 @@ static void CDECL HandleCrash(int signum)
 		ShowMacDialog("A serious fault condition occurred in the game. The game will shut down.",
 				"As you loaded an emergency savegame no crash information will be generated.\n",
 				"Quit");
-		_exit(3);
+		std::_Exit(3);
 	}
 
 	if (SaveloadCrashWithMissingNewGRFs()) {
 		ShowMacDialog("A serious fault condition occurred in the game. The game will shut down.",
 				"As you loaded an savegame for which you do not have the required NewGRFs no crash information will be generated.\n",
 				"Quit");
-		_exit(3);
+		std::_Exit(3);
 	}
 
 	CrashLogOSX *log = new CrashLogOSX(signum);
@@ -226,7 +226,7 @@ static void CDECL HandleCrash(int signum)
 	}
 
 	CrashLog::AfterCrashLogCleanup();
-	_exit(2);
+	std::_Exit(2);
 }
 
 /* static */ void CrashLog::InitialiseCrashLog()

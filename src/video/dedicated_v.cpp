@@ -19,7 +19,7 @@
 #include "../fios.h"
 #include "../blitter/factory.hpp"
 #include "../company_func.h"
-#include "../saveload/saveload.h"
+#include "../saveload/saveload_func.h"
 #include "../thread.h"
 #include "../window_func.h"
 #include <iostream>
@@ -32,11 +32,13 @@
 #	include <signal.h>
 #	define STDIN 0  /* file descriptor for standard input */
 
+/** Dedicated exit requested. */
+std::atomic<bool> _dedicated_exit_requested;
+
 /* Signal handlers */
 static void DedicatedSignalHandler(int sig)
 {
-	if (_game_mode == GM_NORMAL && _settings_client.gui.autosave_on_exit) DoExitSave();
-	_exit_game = true;
+	_dedicated_exit_requested = true;
 	signal(sig, DedicatedSignalHandler);
 }
 #endif
@@ -76,7 +78,7 @@ static void CreateWindowsConsoleThread()
 	_hThread = CreateThread(nullptr, 0, (LPTHREAD_START_ROUTINE)CheckForConsoleInput, nullptr, 0, &dwThreadId);
 	if (_hThread == nullptr) UserError("Cannot create console thread!");
 
-	Debug(driver, 2, "Windows console thread started");
+	Debug(Facility::Driver, Severity::Warning, "Windows console thread started");
 }
 
 static void CloseWindowsConsoleThread()
@@ -84,7 +86,7 @@ static void CloseWindowsConsoleThread()
 	CloseHandle(_hThread);
 	CloseHandle(_hInputReady);
 	CloseHandle(_hWaitForInputHandling);
-	Debug(driver, 2, "Windows console thread shut down");
+	Debug(Facility::Driver, Severity::Warning, "Windows console thread shut down");
 }
 
 #endif
@@ -94,7 +96,7 @@ static void CloseWindowsConsoleThread()
 
 static std::unique_ptr<uint8_t[]> _dedicated_video_mem;
 
-/* Whether a fork has been done. */
+/** Whether a fork has been done. */
 bool _dedicated_forks;
 
 extern bool SafeLoad(const std::string &filename, SaveLoadOperation fop, DetailedFileType dft, GameMode newgm, Subdirectory subdir, struct LoadFilter *lf = nullptr);
@@ -129,7 +131,7 @@ std::optional<std::string_view> VideoDriver_Dedicated::Start(const StringList &)
 	_CrtSetReportFile(_CRT_ASSERT, _CRTDBG_FILE_STDERR);
 #endif
 
-	Debug(driver, 1, "Loading dedicated server");
+	Debug(Facility::Driver, Severity::Error, "Loading dedicated server");
 	return std::nullopt;
 }
 
@@ -205,8 +207,8 @@ void VideoDriver_Dedicated::MainLoop()
 	_network_dedicated = true;
 	_current_company = _local_company = COMPANY_SPECTATOR;
 
-	/* If SwitchMode is SM_LOAD_GAME / SM_START_HEIGHTMAP, it means that the user used the '-g' options */
-	if (_switch_mode != SM_LOAD_GAME && _switch_mode != SM_START_HEIGHTMAP) {
+	/* If SwitchMode is SwitchMode::LoadGame / SwitchMode::StartHeightmap, it means that the user used the '-g' options */
+	if (_switch_mode != SwitchMode::LoadGame && _switch_mode != SwitchMode::StartHeightmap) {
 		StartNewGameWithoutGUI(GENERATE_NEW_SEED);
 	}
 
@@ -220,5 +222,12 @@ void VideoDriver_Dedicated::MainLoop()
 
 		this->Tick();
 		this->SleepTillNextTick();
+
+#if defined(UNIX)
+		if (_dedicated_exit_requested) {
+			if (_game_mode == GameMode::Normal && _settings_client.gui.autosave_on_exit) DoExitSave();
+			_exit_game = true;
+		}
+#endif
 	}
 }

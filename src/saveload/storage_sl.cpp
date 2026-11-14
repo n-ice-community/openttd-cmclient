@@ -18,14 +18,14 @@
 
 /** Description of the data to save and load in #PersistentStorage. */
 static const SaveLoad _storage_desc[] = {
-	 SLE_CONDVAR(PersistentStorage, grfid,    SLE_UINT32,                  SLV_6, SL_MAX_VERSION),
-	 SLE_CONDARR(PersistentStorage, storage,  SLE_UINT32,  16,           SLV_161, SLV_EXTEND_PERSISTENT_STORAGE),
-	 SLE_CONDARR(PersistentStorage, storage,  SLE_UINT32, 256,           SLV_EXTEND_PERSISTENT_STORAGE, SL_MAX_VERSION),
+	SaveLoad::Variable<VarFileType::Label>("grfid", SLE_OBJECT_ADDRESS(PersistentStorage, grfid), SaveLoadVersion::MultipleRoadStops),
+	SaveLoad::Array<VarFileType::U32, 16>("storage", SLE_OBJECT_ADDRESS(PersistentStorage, storage), SaveLoadVersion::PersistentStoragePool, SaveLoadVersion::ExtendPersistentStorage),
+	SaveLoad::Array<VarFileType::U32, 256>("storage", SLE_OBJECT_ADDRESS(PersistentStorage, storage), SaveLoadVersion::ExtendPersistentStorage),
 };
 
 /** Persistent storage data. */
 struct PSACChunkHandler : ChunkHandler {
-	PSACChunkHandler() : ChunkHandler('PSAC', CH_TABLE) {}
+	PSACChunkHandler() : ChunkHandler("PSAC", ChunkType::Table) {}
 
 	void Load() const override
 	{
@@ -35,7 +35,7 @@ struct PSACChunkHandler : ChunkHandler {
 
 		while ((index = SlIterateArray()) != -1) {
 			assert(PersistentStorage::CanAllocateItem());
-			PersistentStorage *ps = new (PersistentStorageID(index)) PersistentStorage(0, GSF_INVALID, TileIndex{});
+			PersistentStorage *ps = PersistentStorage::CreateAtIndex(PersistentStorageID(index), GrfID{}, GrfSpecFeature::Invalid, TileIndex{});
 			SlObject(ps, slt);
 		}
 	}

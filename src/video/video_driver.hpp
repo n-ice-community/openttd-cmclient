@@ -16,11 +16,7 @@
 #include "../core/math_func.hpp"
 #include "../gfx_func.h"
 #include "../settings_type.h"
-#include "../zoom_type.h"
-#include "../network/network_func.h"
-#include <atomic>
 #include <chrono>
-#include <condition_variable>
 #include <mutex>
 #include <thread>
 
@@ -37,7 +33,13 @@ class VideoDriver : public Driver {
 	const uint DEFAULT_WINDOW_HEIGHT = 480u; ///< Default window height.
 
 public:
-	VideoDriver(bool uses_hardware_acceleration = false) : fast_forward_key_pressed(false), fast_forward_via_key(false), is_game_threaded(true), uses_hardware_acceleration(uses_hardware_acceleration) {}
+	/**
+	 * Create the video driver.
+	 * @param uses_hardware_acceleration Whether hardware acceleration is used by this driver.
+	 * @param supports_animation_buffer Whether this driver supports a hardware accelerated animation buffer.
+	 */
+	VideoDriver(bool uses_hardware_acceleration = false, bool supports_animation_buffer = false) :
+			uses_hardware_acceleration(uses_hardware_acceleration), supports_animation_buffer(supports_animation_buffer) {}
 
 	/**
 	 * Mark a particular area dirty.
@@ -83,10 +85,10 @@ public:
 		return true;
 	}
 
-	virtual bool ClaimMousePointer()
-	{
-		return true;
-	}
+	/**
+	 * Claim the exclusive rights for the mouse pointer.
+	 */
+	virtual void ClaimMousePointer() {}
 
 	/**
 	 * Get whether the mouse cursor is drawn by the video driver.
@@ -133,18 +135,18 @@ public:
 	 * Does this video driver support a separate animation buffer in addition to the colour buffer?
 	 * @return True if a separate animation buffer is supported.
 	 */
-	virtual bool HasAnimBuffer()
+	constexpr bool SupportsAnimationBuffer() const
 	{
-		return false;
+		return this->supports_animation_buffer;
 	}
 
 	/**
 	 * Get a pointer to the animation buffer of the video back-end.
 	 * @return Pointer to the buffer or nullptr if no animation buffer is supported.
 	 */
-	virtual uint8_t *GetAnimBuffer()
+	constexpr uint8_t *GetAnimBuffer() const
 	{
-		return nullptr;
+		return this->anim_buffer;
 	}
 
 	/**
@@ -166,6 +168,10 @@ public:
 		return {};
 	}
 
+	/**
+	 * Get some information about the selected driver/backend to be shown to the user.
+	 * @return The information.
+	 */
 	virtual std::string_view GetInfoString() const
 	{
 		return this->GetName();
@@ -187,11 +193,19 @@ public:
 	void GameLoopPause();
 
 	/**
+	 * Prevents the system from going to sleep.
+	 *
+	 * @param inhibited If true, sleep will be disabled. If false, sleep will be enabled.
+	 */
+	virtual void SetScreensaverInhibited([[maybe_unused]] bool inhibited) {}
+
+	/**
 	 * Get the currently active instance of the video driver.
+	 * @return The instance.
 	 */
 	static VideoDriver *GetInstance()
 	{
-		return static_cast<VideoDriver *>(DriverFactoryBase::GetActiveDriver(Driver::DT_VIDEO).get());
+		return static_cast<VideoDriver *>(DriverFactoryBase::GetActiveDriver(Driver::Type::Video).get());
 	}
 
 	static std::string GetCaption();
@@ -201,11 +215,13 @@ public:
 	 * will make sure the buffer is unlocked no matter how the scope is exited.
 	 */
 	struct VideoBufferLocker {
+		/** Lock the video buffer. */
 		VideoBufferLocker()
 		{
 			this->unlock = VideoDriver::GetInstance()->LockVideoBuffer();
 		}
 
+		/** Release the video buffer. */
 		~VideoBufferLocker()
 		{
 			if (this->unlock) VideoDriver::GetInstance()->UnlockVideoBuffer();
@@ -220,6 +236,7 @@ protected:
 
 	/**
 	 * Get the resolution of the main screen.
+	 * @return The dimension of the screen in pixels.
 	 */
 	virtual Dimension GetScreenSize() const { return { DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT }; }
 
@@ -343,15 +360,17 @@ protected:
 	std::chrono::steady_clock::time_point next_game_tick;
 	std::chrono::steady_clock::time_point next_draw_tick;
 
-	bool fast_forward_key_pressed; ///< The fast-forward key is being pressed.
-	bool fast_forward_via_key; ///< The fast-forward was enabled by key press.
-
-	bool is_game_threaded;
 	std::thread game_thread;
 	std::mutex game_state_mutex;
 	std::mutex game_thread_wait_mutex;
 
-	bool uses_hardware_acceleration;
+	uint8_t *anim_buffer = nullptr; ///< The animation buffer if supported/used.
+
+	const bool uses_hardware_acceleration; ///< Whether hardware acceleration is used or not.
+	const bool supports_animation_buffer; ///< Whether this driver supports hardware accelerated animation.
+	bool fast_forward_key_pressed = false; ///< The fast-forward key is being pressed.
+	bool fast_forward_via_key = false; ///< The fast-forward was enabled by key press.
+	bool is_game_threaded = true; ///< Whether the game is allowed to use threads; cleared in the driver implementation constructors if required.
 
 	static void GameThreadThunk(VideoDriver *drv);
 

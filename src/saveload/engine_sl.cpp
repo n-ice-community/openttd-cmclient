@@ -5,7 +5,7 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <https://www.gnu.org/licenses/old-licenses/gpl-2.0>.
  */
 
-/** @file engine_sl.cpp Code handling saving and loading of engines */
+/** @file engine_sl.cpp Code handling saving and loading of engines. */
 
 #include "../stdafx.h"
 
@@ -19,43 +19,50 @@
 #include "../safeguards.h"
 
 static const SaveLoad _engine_desc[] = {
-	 SLE_CONDVAR(Engine, intro_date,          SLE_FILE_U16 | SLE_VAR_I32,  SL_MIN_VERSION,  SLV_31),
-	 SLE_CONDVAR(Engine, intro_date,          SLE_INT32,                  SLV_31, SL_MAX_VERSION),
-	 SLE_CONDVAR(Engine, age,                 SLE_FILE_U16 | SLE_VAR_I32,  SL_MIN_VERSION,  SLV_31),
-	 SLE_CONDVAR(Engine, age,                 SLE_INT32,                  SLV_31, SL_MAX_VERSION),
-	     SLE_VAR(Engine, reliability,         SLE_UINT16),
-	     SLE_VAR(Engine, reliability_spd_dec, SLE_UINT16),
-	     SLE_VAR(Engine, reliability_start,   SLE_UINT16),
-	     SLE_VAR(Engine, reliability_max,     SLE_UINT16),
-	     SLE_VAR(Engine, reliability_final,   SLE_UINT16),
-	     SLE_VAR(Engine, duration_phase_1,    SLE_UINT16),
-	     SLE_VAR(Engine, duration_phase_2,    SLE_UINT16),
-	     SLE_VAR(Engine, duration_phase_3,    SLE_UINT16),
-	     SLE_VAR(Engine, flags,               SLE_UINT8),
-	 SLE_CONDVAR(Engine, preview_asked,       SLE_UINT16,                SLV_179, SL_MAX_VERSION),
-	 SLE_CONDVAR(Engine, preview_company,     SLE_UINT8,                 SLV_179, SL_MAX_VERSION),
-	     SLE_VAR(Engine, preview_wait,        SLE_UINT8),
-	 SLE_CONDVAR(Engine, company_avail,       SLE_FILE_U8  | SLE_VAR_U16,  SL_MIN_VERSION, SLV_104),
-	 SLE_CONDVAR(Engine, company_avail,       SLE_UINT16,                SLV_104, SL_MAX_VERSION),
-	 SLE_CONDVAR(Engine, company_hidden,      SLE_UINT16,                SLV_193, SL_MAX_VERSION),
-	SLE_CONDSSTR(Engine, name,                SLE_STR,                    SLV_84, SL_MAX_VERSION),
+	SaveLoad::Variable<VarFileType::U16>("intro_date", SLE_OBJECT_ADDRESS(Engine, intro_date), SaveLoadVersion::MinVersion, SaveLoadVersion::BigDates),
+	SaveLoad::Variable<VarFileType::I32>("intro_date", SLE_OBJECT_ADDRESS(Engine, intro_date), SaveLoadVersion::BigDates),
+	SaveLoad::Variable<VarFileType::U16>("age", SLE_OBJECT_ADDRESS(Engine, age), SaveLoadVersion::MinVersion, SaveLoadVersion::BigDates),
+	SaveLoad::Variable<VarFileType::I32>("age", SLE_OBJECT_ADDRESS(Engine, age), SaveLoadVersion::BigDates),
+	SaveLoad::Variable<VarFileType::U16>("reliability", SLE_OBJECT_ADDRESS(Engine, reliability)),
+	SaveLoad::Variable<VarFileType::U16>("reliability_spd_dec", SLE_OBJECT_ADDRESS(Engine, reliability_spd_dec)),
+	SaveLoad::Variable<VarFileType::U16>("reliability_start", SLE_OBJECT_ADDRESS(Engine, reliability_start)),
+	SaveLoad::Variable<VarFileType::U16>("reliability_max", SLE_OBJECT_ADDRESS(Engine, reliability_max)),
+	SaveLoad::Variable<VarFileType::U16>("reliability_final", SLE_OBJECT_ADDRESS(Engine, reliability_final)),
+	SaveLoad::Variable<VarFileType::U16>("duration_phase_1", SLE_OBJECT_ADDRESS(Engine, duration_phase_1)),
+	SaveLoad::Variable<VarFileType::U16>("duration_phase_2", SLE_OBJECT_ADDRESS(Engine, duration_phase_2)),
+	SaveLoad::Variable<VarFileType::U16>("duration_phase_3", SLE_OBJECT_ADDRESS(Engine, duration_phase_3)),
+	SaveLoad::Variable<VarFileType::U8>("flags", SLE_OBJECT_ADDRESS(Engine, flags)),
+	SaveLoad::Variable<VarFileType::U16>("preview_asked", SLE_OBJECT_ADDRESS(Engine, preview_asked), SaveLoadVersion::RobustEnginePreview),
+	SaveLoad::Variable<VarFileType::U8>("preview_company", SLE_OBJECT_ADDRESS(Engine, preview_company), SaveLoadVersion::RobustEnginePreview),
+	SaveLoad::Variable<VarFileType::U8>("preview_wait", SLE_OBJECT_ADDRESS(Engine, preview_wait)),
+	SaveLoad::Variable<VarFileType::U8>("company_avail", SLE_OBJECT_ADDRESS(Engine, company_avail), SaveLoadVersion::MinVersion, SaveLoadVersion::MoreCompanies),
+	SaveLoad::Variable<VarFileType::U16>("company_avail", SLE_OBJECT_ADDRESS(Engine, company_avail), SaveLoadVersion::MoreCompanies),
+	SaveLoad::Variable<VarFileType::U16>("company_hidden", SLE_OBJECT_ADDRESS(Engine, company_hidden), SaveLoadVersion::HideEnginesForCompany),
+	SaveLoad::String("name", SLE_OBJECT_ADDRESS(Engine, name), {}, SaveLoadVersion::ReplaceCustomNameArray),
 };
 
 static TypedIndexContainer<std::vector<Engine>, EngineID> _temp_engine;
 
-Engine *GetTempDataEngine(EngineID index)
+/**
+ * Get temporary engine data for loading savegame engine information.
+ * @param index Engine ID of data.
+ * @param type Vehicle type of engine.
+ * @param local_id The local index of the engine.
+ * @return A temporary engine.
+ */
+Engine *GetTempDataEngine(EngineID index, VehicleType type, uint16_t local_id)
 {
 	if (index < _temp_engine.size()) {
 		return &_temp_engine[index];
 	} else if (index == _temp_engine.size()) {
-		return &_temp_engine.emplace_back();
+		return &_temp_engine.emplace_back(index, type, local_id);
 	} else {
 		NOT_REACHED();
 	}
 }
 
 struct ENGNChunkHandler : ChunkHandler {
-	ENGNChunkHandler() : ChunkHandler('ENGN', CH_TABLE) {}
+	ENGNChunkHandler() : ChunkHandler("ENGN", ChunkType::Table) {}
 
 	void Save() const override
 	{
@@ -79,7 +86,7 @@ struct ENGNChunkHandler : ChunkHandler {
 			Engine *e = GetTempDataEngine(static_cast<EngineID>(index));
 			SlObject(e, slt);
 
-			if (IsSavegameVersionBefore(SLV_179)) {
+			if (IsSavegameVersionBefore(SaveLoadVersion::RobustEnginePreview)) {
 				/* preview_company_rank was replaced with preview_company and preview_asked.
 				 * Just cancel any previews. */
 				e->flags.Reset(EngineFlag{2}); // ENGINE_OFFER_WINDOW_OPEN
@@ -128,7 +135,7 @@ void ResetTempEngineData()
 }
 
 struct ENGSChunkHandler : ChunkHandler {
-	ENGSChunkHandler() : ChunkHandler('ENGS', CH_READONLY) {}
+	ENGSChunkHandler() : ChunkHandler("ENGS", ChunkType::ReadOnly) {}
 
 	void Load() const override
 	{
@@ -136,7 +143,7 @@ struct ENGSChunkHandler : ChunkHandler {
 		 * was always 256 entries. */
 		TypedIndexContainer<std::array<StringID, 256>, EngineID> names{};
 
-		SlCopy(names.data(), std::size(names), SLE_STRINGID);
+		SlCopy<VarFileType::StringID>(names);
 
 		/* Copy each string into the temporary engine array. */
 		for (EngineID engine = EngineID::Begin(); engine < std::size(names); ++engine) {
@@ -148,14 +155,14 @@ struct ENGSChunkHandler : ChunkHandler {
 
 /** Save and load the mapping between the engine id in the pool, and the grf file it came from. */
 static const SaveLoad _engine_id_mapping_desc[] = {
-	SLE_VAR(EngineIDMapping, grfid,         SLE_UINT32),
-	SLE_VAR(EngineIDMapping, internal_id,   SLE_UINT16),
-	SLE_VAR(EngineIDMapping, type,          SLE_UINT8),
-	SLE_VAR(EngineIDMapping, substitute_id, SLE_UINT8),
+	SaveLoad::Variable<VarFileType::Label>("grfid", SLE_OBJECT_ADDRESS(EngineIDMapping, grfid)),
+	SaveLoad::Variable<VarFileType::U16>("internal_id", SLE_OBJECT_ADDRESS(EngineIDMapping, internal_id)),
+	SaveLoad::Variable<VarFileType::U8>("type", SLE_OBJECT_ADDRESS(EngineIDMapping, type)),
+	SaveLoad::Variable<VarFileType::U8>("substitute_id", SLE_OBJECT_ADDRESS(EngineIDMapping, substitute_id)),
 };
 
 struct EIDSChunkHandler : ChunkHandler {
-	EIDSChunkHandler() : ChunkHandler('EIDS', CH_TABLE) {}
+	EIDSChunkHandler() : ChunkHandler("EIDS", ChunkType::Table) {}
 
 	void Save() const override
 	{

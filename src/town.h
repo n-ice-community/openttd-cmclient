@@ -20,7 +20,7 @@
 #include "table/strings.h"
 #include "company_func.h"
 #include "newgrf_storage.h"
-#include "cargotype.h"
+#include "cargo_type.h"
 
 #include "citymania/extensions/cmext_town.hpp"
 
@@ -51,6 +51,7 @@ enum class TownFlag : uint8_t {
 	CustomGrowth = 3, ///< Growth rate is controlled by GS.
 };
 
+/** Bitset of \c TownFlag elements. */
 using TownFlags = EnumBitSet<TownFlag, uint8_t>;
 
 /** Data structure with cached data of towns. */
@@ -71,12 +72,14 @@ struct Town : TownPool::PoolItem<&_town_pool> {
 
 	TownCache cache{}; ///< Container for all cacheable data.
 
-	/* Town name */
-	uint32_t townnamegrfid = 0;
-	uint16_t townnametype = 0;
-	uint32_t townnameparts = 0;
+	/** @name Town name.
+	 * @{ */
+	GrfID townnamegrfid{}; ///< NewGRF id that contains the name. O is not used.
+	uint16_t townnametype = 0; ///< The style of the name.
+	uint32_t townnameparts = 0; ///< Random number that give unique town name when passed to generator.
 	std::string name{}; ///< Custom town name. If empty, the town was not renamed and uses the generated name.
 	mutable std::string cached_name{}; ///< NOSAVE: Cache of the resolved name of the town, if not using a custom town name
+	/** @} */
 
 	TownFlags flags{}; ///< See #TownFlags.
 
@@ -110,11 +113,31 @@ struct Town : TownPool::PoolItem<&_town_pool> {
 		SuppliedCargo(CargoType cargo) : cargo(cargo) {}
 	};
 
-	using SuppliedCargoes = std::vector<SuppliedCargo>;
+	/** Individual data point for accepted cargo history. */
+	struct AcceptedHistory {
+		uint32_t accepted = 0; ///< Total accepted.
+	};
+
+	/** Storage for accepted cargo history. */
+	struct AcceptedCargo {
+		CargoType cargo = INVALID_CARGO; ///< Cargo type of accepted cargo.
+		HistoryData<AcceptedHistory> history{}; ///< Histor data of accepted cargo.
+
+		AcceptedCargo() = default;
+		/**
+		 * Construct AcceptedCargo.
+		 * @param cargo Cargo type of this AcceptedCargo.
+		 */
+		AcceptedCargo(CargoType cargo) : cargo(cargo) {}
+	};
+
+	using SuppliedCargoes = std::vector<SuppliedCargo>; ///< Type for storage of all supplied cargo history.
+	using AcceptedCargoes = std::vector<AcceptedCargo>; ///< Type for storage of all accepted cargo history.
 
 	SuppliedCargoes supplied{}; ///< Cargo statistics about supplied cargo.
-	std::array<TransportedCargoStat<uint16_t>, NUM_TAE> received{}; ///< Cargo statistics about received cargotypes.
-	std::array<uint32_t, NUM_TAE> goal{}; ///< Amount of cargo required for the town to grow.
+	AcceptedCargoes accepted{}; ///< Cargo statistics about accepted cargo.
+	EnumIndexArray<TransportedCargoStat<uint16_t>, TownAcceptanceEffect, TownAcceptanceEffect::End> received{}; ///< Cargo statistics about received cargotypes.
+	EnumIndexArray<uint32_t, TownAcceptanceEffect, TownAcceptanceEffect::End> goal{}; ///< Amount of cargo required for the town to grow.
 	ValidHistoryMask valid_history = 0; ///< Mask of valid history records.
 
 	EncodedString text{}; ///< General text with additional information.
@@ -131,7 +154,33 @@ struct Town : TownPool::PoolItem<&_town_pool> {
 	{
 		if (!IsValidCargoType(cargo)) return std::end(this->supplied);
 		auto it = std::ranges::lower_bound(this->supplied, cargo, std::less{}, &SuppliedCargo::cargo);
-		if (it == std::end(this->supplied) || it->cargo != cargo) return std::end(supplied);
+		if (it == std::end(this->supplied) || it->cargo != cargo) return std::end(this->supplied);
+		return it;
+	}
+
+	/**
+	 * Get or create the storage for an accepted cargo.
+	 * @param cargo Cargo type to get.
+	 * @return Accepted cargo storage for the cargo type.
+	 */
+	inline AcceptedCargo &GetOrCreateCargoAccepted(CargoType cargo)
+	{
+		assert(IsValidCargoType(cargo));
+		auto it = std::ranges::lower_bound(this->accepted, cargo, std::less{}, &AcceptedCargo::cargo);
+		if (it == std::end(this->accepted) || it->cargo != cargo) it = this->accepted.emplace(it, cargo);
+		return *it;
+	}
+
+	/**
+	 * Get iterator to the storage for an accepted cargo.
+	 * @param cargo Cargo type to get.
+	 * @return Iterator to the cargo type or end of accepted cargo if it is not present.
+	 */
+	inline AcceptedCargoes::const_iterator GetCargoAccepted(CargoType cargo) const
+	{
+		if (!IsValidCargoType(cargo)) return std::end(this->accepted);
+		auto it = std::ranges::lower_bound(this->accepted, cargo, std::less{}, &AcceptedCargo::cargo);
+		if (it == std::end(this->accepted) || it->cargo != cargo) return std::end(this->accepted);
 		return it;
 	}
 
@@ -164,9 +213,10 @@ struct Town : TownPool::PoolItem<&_town_pool> {
 
 	/**
 	 * Creates a new town.
+	 * @param index the index within the town pool
 	 * @param tile center tile of the town
 	 */
-	Town(TileIndex tile = INVALID_TILE) : xy(tile) { }
+	Town(TownID index, TileIndex tile = INVALID_TILE) : TownPool::PoolItem<&_town_pool>(index), xy(tile) { }
 
 	/** Destroy the town. */
 	~Town();
@@ -248,7 +298,7 @@ enum TownCouncilAttitudes {
 enum class TownRatingCheckType : uint8_t {
 	RoadRemove, ///< Removal of a road owned by the town.
 	TunnelBridgeRemove, ///< Removal of a tunnel or bridge owned by the town.
-	End,
+	End, ///< End marker.
 };
 
 /** Special values for town list window for the data parameter of #InvalidateWindowData. */
@@ -289,11 +339,11 @@ enum class TownAction : uint8_t {
 	FundBuildings, ///< Fund new buildings.
 	BuyRights, ///< Buy exclusive transport rights.
 	Bribe, ///< Try to bribe the council.
-	End,
+	End, ///< End marker.
 };
-using TownActions = EnumBitSet<TownAction, uint8_t>;
 
-DECLARE_INCREMENT_DECREMENT_OPERATORS(TownAction);
+/** Bitset of \c TownAction elements. */
+using TownActions = EnumBitSet<TownAction, uint8_t>;
 
 void ClearTownHouse(Town *t, TileIndex tile);
 void UpdateTownMaxPass(Town *t);
@@ -306,6 +356,7 @@ void SetTownRatingTestMode(bool mode);
 TownActions GetMaskOfTownActions(CompanyID cid, const Town *t);
 uint GetDefaultTownsForMapSize();
 bool GenerateTowns(TownLayout layout, std::optional<uint> number = std::nullopt);
+Town *TryGenerateNamedTownAroundTile(TileIndex target_tile, TownSize size, bool city, TownLayout layout, std::string_view name);
 const CargoSpec *FindFirstCargoWithTownAcceptanceEffect(TownAcceptanceEffect effect);
 CargoArray GetAcceptedCargoOfHouse(const HouseSpec *hs);
 

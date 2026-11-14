@@ -52,9 +52,9 @@ static inline uint8_t CalcOldVarLen(OldChunkType type)
 }
 
 /**
- *
- * Reads a byte from a file (do not call yourself, use ReadByte())
- *
+ * Reads a byte from a file (do not call yourself, use ReadByte()).
+ * @param ls The state for loading the save game.
+ * @return A single byte.
  */
 static uint8_t ReadByteFromFile(LoadgameState &ls)
 {
@@ -67,7 +67,7 @@ static uint8_t ReadByteFromFile(LoadgameState &ls)
 
 		/* We tried to read, but there is nothing in the file anymore.. */
 		if (count == 0) {
-			Debug(oldloader, 0, "Read past end of file, loading failed");
+			Debug(Facility::Oldloader, Severity::Critical, "Read past end of file, loading failed");
 			throw std::exception();
 		}
 
@@ -79,9 +79,9 @@ static uint8_t ReadByteFromFile(LoadgameState &ls)
 }
 
 /**
- *
- * Reads a byte from the buffer and decompress if needed
- *
+ * Reads a byte from the buffer and decompress if needed.
+ * @param ls The state for loading the save game.
+ * @return A single byte.
  */
 uint8_t ReadByte(LoadgameState &ls)
 {
@@ -113,15 +113,17 @@ uint8_t ReadByte(LoadgameState &ls)
 }
 
 /**
- *
- * Loads a chunk from the old savegame
- *
+ * Loads a chunk from the old savegame.
+ * @param ls The state for loading the save game.
+ * @param base The pointer to the object to load the data into, or \c nullptr for global objects.
+ * @param chunks The definition of the elements to load for this object.
+ * @return \c true if the chunk was loaded without problems.
  */
 bool LoadChunk(LoadgameState &ls, void *base, const OldChunks *chunks)
 {
 	for (const OldChunks *chunk = chunks; chunk->type != OC_END; chunk++) {
-		if (((chunk->type & OC_TTD) && _savegame_type == SGT_TTO) ||
-				((chunk->type & OC_TTO) && _savegame_type != SGT_TTO)) {
+		if (((chunk->type & OC_TTD) && _savegame_type == SavegameType::TTO) ||
+				((chunk->type & OC_TTO) && _savegame_type != SavegameType::TTO)) {
 			/* TTD(P)-only chunk, but TTO savegame || TTO-only chunk, but TTD/TTDP savegame */
 			continue;
 		}
@@ -142,7 +144,7 @@ bool LoadChunk(LoadgameState &ls, void *base, const OldChunks *chunks)
 						break;
 
 					case OC_ASSERT:
-						Debug(oldloader, 4, "Assert point: 0x{:X} / 0x{:X}", ls.total_read, reinterpret_cast<size_t>(chunk->ptr) + _bump_assert_value);
+						Debug(Facility::Oldloader, Severity::Info, "Assert point: 0x{:X} / 0x{:X}", ls.total_read, reinterpret_cast<size_t>(chunk->ptr) + _bump_assert_value);
 						if (ls.total_read != reinterpret_cast<size_t>(chunk->ptr) + _bump_assert_value) throw std::exception();
 					default: break;
 				}
@@ -215,18 +217,18 @@ static std::tuple<SavegameType, std::string> DetermineOldSavegameTypeAndName(Fil
 	long pos = ftell(f);
 	char buffer[std::max(TTO_HEADER_SIZE, TTD_HEADER_SIZE)];
 	if (pos < 0 || fread(buffer, 1, lengthof(buffer), f) != lengthof(buffer)) {
-		return { SGT_INVALID, "(broken) Unable to read file" };
+		return { SavegameType::Invalid, "(broken) Unable to read file" };
 	}
 
 	if (VerifyOldNameChecksum(buffer, TTO_HEADER_SIZE) && fseek(f, pos + TTO_HEADER_SIZE, SEEK_SET) == 0) {
-		return { SGT_TTO, "(TTO) " + StrMakeValid(std::string_view{buffer, TTO_HEADER_SIZE - HEADER_CHECKSUM_SIZE}) };
+		return { SavegameType::TTO, "(TTO) " + StrMakeValid(std::string_view{buffer, TTO_HEADER_SIZE - HEADER_CHECKSUM_SIZE}) };
 	}
 
 	if (VerifyOldNameChecksum(buffer, TTD_HEADER_SIZE) && fseek(f, pos + TTD_HEADER_SIZE, SEEK_SET) == 0) {
-		return { SGT_TTD, "(TTD) " + StrMakeValid(std::string_view{buffer, TTD_HEADER_SIZE - HEADER_CHECKSUM_SIZE}) };
+		return { SavegameType::TTD, "(TTD) " + StrMakeValid(std::string_view{buffer, TTD_HEADER_SIZE - HEADER_CHECKSUM_SIZE}) };
 	}
 
-	return { SGT_INVALID, "(broken) Unknown" };
+	return { SavegameType::Invalid, "(broken) Unknown" };
 }
 
 typedef bool LoadOldMainProc(LoadgameState &ls);
@@ -235,16 +237,16 @@ bool LoadOldSaveGame(std::string_view file)
 {
 	LoadgameState ls{};
 
-	Debug(oldloader, 3, "Trying to load a TTD(Patch) savegame");
+	Debug(Facility::Oldloader, Severity::Notice, "Trying to load a TTD(Patch) savegame");
 
 	_bump_assert_value = 0;
 	_settings_game.construction.freeform_edges = false; // disable so we can convert map array (SetTileType is still used)
 
 	/* Open file */
-	ls.file = FioFOpenFile(file, "rb", NO_DIRECTORY);
+	ls.file = FioFOpenFile(file, "rb", Subdirectory::None);
 
 	if (!ls.file.has_value()) {
-		Debug(oldloader, 0, "Cannot open file '{}'", file);
+		Debug(Facility::Oldloader, Severity::Critical, "Cannot open file '{}'", file);
 		SetSaveLoadError(STR_GAME_SAVELOAD_ERROR_FILE_NOT_READABLE);
 		return false;
 	}
@@ -255,10 +257,10 @@ bool LoadOldSaveGame(std::string_view file)
 	LoadOldMainProc *proc = nullptr;
 
 	switch (type) {
-		case SGT_TTO: proc = &LoadTTOMain; break;
-		case SGT_TTD: proc = &LoadTTDMain; break;
+		case SavegameType::TTO: proc = &LoadTTOMain; break;
+		case SavegameType::TTD: proc = &LoadTTDMain; break;
 		default:
-			Debug(oldloader, 0, "Unknown savegame type; cannot be loaded");
+			Debug(Facility::Oldloader, Severity::Critical, "Unknown savegame type; cannot be loaded");
 			break;
 	}
 
@@ -284,7 +286,7 @@ bool LoadOldSaveGame(std::string_view file)
 
 std::string GetOldSaveGameName(std::string_view file)
 {
-	auto f = FioFOpenFile(file, "rb", NO_DIRECTORY);
+	auto f = FioFOpenFile(file, "rb", Subdirectory::None);
 	if (!f.has_value()) return {};
 
 	std::string name;

@@ -5,7 +5,7 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <https://www.gnu.org/licenses/old-licenses/gpl-2.0>.
  */
 
-/** @file randomizer_sl.cpp Code handling saving and loading of script randomizers */
+/** @file randomizer_sl.cpp Code handling saving and loading of script randomizers. */
 
 #include "../stdafx.h"
 #include "../script/api/script_object.hpp"
@@ -14,12 +14,12 @@
 #include "../safeguards.h"
 
 static const SaveLoad _randomizer_desc[] = {
-	SLE_VAR(Randomizer, state[0], SLE_UINT32),
-	SLE_VAR(Randomizer, state[1], SLE_UINT32),
+	SaveLoad::Variable<VarFileType::U32>("state[0]", SLE_OBJECT_ADDRESS(Randomizer, state[0])),
+	SaveLoad::Variable<VarFileType::U32>("state[1]", SLE_OBJECT_ADDRESS(Randomizer, state[1])),
 };
 
 struct SRNDChunkHandler : ChunkHandler {
-	SRNDChunkHandler() : ChunkHandler('SRND', CH_TABLE)
+	SRNDChunkHandler() : ChunkHandler("SRND", ChunkType::Table)
 	{}
 
 	void Save() const override

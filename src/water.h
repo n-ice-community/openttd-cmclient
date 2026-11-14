@@ -5,7 +5,7 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <https://www.gnu.org/licenses/old-licenses/gpl-2.0>.
  */
 
-/** @file water.h Functions related to water (management) */
+/** @file water.h Functions related to water management. */
 
 #ifndef WATER_H
 #define WATER_H
@@ -16,11 +16,11 @@
 /**
  * Describes the behaviour of a tile during flooding.
  */
-enum FloodingBehaviour : uint8_t {
-	FLOOD_NONE,    ///< The tile does not flood neighboured tiles.
-	FLOOD_ACTIVE,  ///< The tile floods neighboured tiles.
-	FLOOD_PASSIVE, ///< The tile does not actively flood neighboured tiles, but it prevents them from drying up.
-	FLOOD_DRYUP,   ///< The tile drys up if it is not constantly flooded from neighboured tiles.
+enum class FloodingBehaviour : uint8_t {
+	None, ///< The tile does not flood neighboured tiles.
+	Active, ///< The tile floods neighboured tiles.
+	Passive, ///< The tile does not actively flood neighboured tiles, but it prevents them from drying out.
+	DryOut, ///< The tile drys out if it is not constantly flooded from neighboured tiles.
 };
 
 FloodingBehaviour GetFloodingBehaviour(TileIndex tile);
@@ -52,7 +52,7 @@ bool IsWateredTile(TileIndex tile, Direction from);
  */
 inline Money CanalMaintenanceCost(uint32_t num)
 {
-	return (_price[PR_INFRASTRUCTURE_WATER] * num * (1 + IntSqrt(num))) >> 6; // 6 bits scaling.
+	return (_price[Price::InfrastructureWater] * num * (1 + IntSqrt(num))) >> 6; // 6 bits scaling.
 }
 
 #endif /* WATER_H */

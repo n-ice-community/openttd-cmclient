@@ -5,7 +5,7 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <https://www.gnu.org/licenses/old-licenses/gpl-2.0>.
  */
 
-/** @file industry_map.h Accessors for industries */
+/** @file industry_map.h Accessors to map for industries. */
 
 #ifndef INDUSTRY_MAP_H
 #define INDUSTRY_MAP_H
@@ -15,66 +15,26 @@
 
 
 /**
- * The following enums are indices used to know what to draw for this industry tile.
- * They all are pointing toward array _industry_draw_tile_data, in table/industry_land.h
- * How to calculate the correct position ? GFXid << 2 | IndustryStage (0 to 3)
- */
-enum IndustryGraphics : uint8_t {
-	GFX_COAL_MINE_TOWER_NOT_ANIMATED   =   0,
-	GFX_COAL_MINE_TOWER_ANIMATED       =   1,
-	GFX_POWERPLANT_CHIMNEY             =   8,
-	GFX_POWERPLANT_SPARKS              =  10,
-	GFX_OILRIG_1                       =  24,
-	GFX_OILRIG_2                       =  25,
-	GFX_OILRIG_3                       =  26,
-	GFX_OILRIG_4                       =  27,
-	GFX_OILRIG_5                       =  28,
-	GFX_OILWELL_NOT_ANIMATED           =  29,
-	GFX_OILWELL_ANIMATED_1             =  30,
-	GFX_OILWELL_ANIMATED_2             =  31,
-	GFX_OILWELL_ANIMATED_3             =  32,
-	GFX_COPPER_MINE_TOWER_NOT_ANIMATED =  47,
-	GFX_COPPER_MINE_TOWER_ANIMATED     =  48,
-	GFX_COPPER_MINE_CHIMNEY            =  49,
-	GFX_GOLD_MINE_TOWER_NOT_ANIMATED   =  79,
-	GFX_GOLD_MINE_TOWER_ANIMATED       =  88,
-	GFX_TOY_FACTORY                    = 143,
-	GFX_PLASTIC_FOUNTAIN_ANIMATED_1    = 148,
-	GFX_PLASTIC_FOUNTAIN_ANIMATED_2    = 149,
-	GFX_PLASTIC_FOUNTAIN_ANIMATED_3    = 150,
-	GFX_PLASTIC_FOUNTAIN_ANIMATED_4    = 151,
-	GFX_PLASTIC_FOUNTAIN_ANIMATED_5    = 152,
-	GFX_PLASTIC_FOUNTAIN_ANIMATED_6    = 153,
-	GFX_PLASTIC_FOUNTAIN_ANIMATED_7    = 154,
-	GFX_PLASTIC_FOUNTAIN_ANIMATED_8    = 155,
-	GFX_BUBBLE_GENERATOR               = 161,
-	GFX_BUBBLE_CATCHER                 = 162,
-	GFX_TOFFEE_QUARRY                  = 165,
-	GFX_SUGAR_MINE_SIEVE               = 174,
-	GFX_WATERTILE_SPECIALCHECK         = 255,  ///< not really a tile, but rather a very special check
-};
-
-/**
  * Get the industry ID of the given tile
  * @param t the tile to get the industry ID from
- * @pre IsTileType(t, MP_INDUSTRY)
+ * @pre IsTileType(t, TileType::Industry)
  * @return the industry ID
  */
 inline IndustryID GetIndustryIndex(Tile t)
 {
-	assert(IsTileType(t, MP_INDUSTRY));
+	assert(IsTileType(t, TileType::Industry));
 	return static_cast<IndustryID>(t.m2());
 }
 
 /**
  * Is this industry tile fully built?
  * @param t the tile to analyze
- * @pre IsTileType(t, MP_INDUSTRY)
+ * @pre IsTileType(t, TileType::Industry)
  * @return true if and only if the industry tile is fully built
  */
 inline bool IsIndustryCompleted(Tile t)
 {
-	assert(IsTileType(t, MP_INDUSTRY));
+	assert(IsTileType(t, TileType::Industry));
 	return HasBit(t.m1(), 7);
 }
 
@@ -83,23 +43,23 @@ IndustryType GetIndustryType(Tile tile);
 /**
  * Set if the industry that owns the tile as under construction or not
  * @param tile the tile to query
- * @pre IsTileType(tile, MP_INDUSTRY)
+ * @pre IsTileType(tile, TileType::Industry)
  */
 inline void SetIndustryCompleted(Tile tile)
 {
-	assert(IsTileType(tile, MP_INDUSTRY));
+	assert(IsTileType(tile, TileType::Industry));
 	SetBit(tile.m1(), 7);
 }
 
 /**
  * Returns the industry construction stage of the specified tile
  * @param tile the tile to query
- * @pre IsTileType(tile, MP_INDUSTRY)
+ * @pre IsTileType(tile, TileType::Industry)
  * @return the construction stage
  */
 inline uint8_t GetIndustryConstructionStage(Tile tile)
 {
-	assert(IsTileType(tile, MP_INDUSTRY));
+	assert(IsTileType(tile, TileType::Industry));
 	return IsIndustryCompleted(tile) ? (uint8_t)INDUSTRY_COMPLETED : GB(tile.m1(), 0, 2);
 }
 
@@ -107,11 +67,11 @@ inline uint8_t GetIndustryConstructionStage(Tile tile)
  * Sets the industry construction stage of the specified tile
  * @param tile the tile to query
  * @param value the new construction stage
- * @pre IsTileType(tile, MP_INDUSTRY)
+ * @pre IsTileType(tile, TileType::Industry)
  */
 inline void SetIndustryConstructionStage(Tile tile, uint8_t value)
 {
-	assert(IsTileType(tile, MP_INDUSTRY));
+	assert(IsTileType(tile, TileType::Industry));
 	SB(tile.m1(), 0, 2, value);
 }
 
@@ -119,36 +79,36 @@ inline void SetIndustryConstructionStage(Tile tile, uint8_t value)
  * Get the industry graphics ID for the given industry tile as
  * stored in the without translation.
  * @param t the tile to get the gfx for
- * @pre IsTileType(t, MP_INDUSTRY)
+ * @pre IsTileType(t, TileType::Industry)
  * @return the gfx ID
  */
 inline IndustryGfx GetCleanIndustryGfx(Tile t)
 {
-	assert(IsTileType(t, MP_INDUSTRY));
+	assert(IsTileType(t, TileType::Industry));
 	return t.m5() | (GB(t.m6(), 2, 1) << 8);
 }
 
 /**
  * Get the industry graphics ID for the given industry tile
  * @param t the tile to get the gfx for
- * @pre IsTileType(t, MP_INDUSTRY)
+ * @pre IsTileType(t, TileType::Industry)
  * @return the gfx ID
  */
 inline IndustryGfx GetIndustryGfx(Tile t)
 {
-	assert(IsTileType(t, MP_INDUSTRY));
+	assert(IsTileType(t, TileType::Industry));
 	return GetTranslatedIndustryTileID(GetCleanIndustryGfx(t));
 }
 
 /**
  * Set the industry graphics ID for the given industry tile
  * @param t   the tile to set the gfx for
- * @pre IsTileType(t, MP_INDUSTRY)
+ * @pre IsTileType(t, TileType::Industry)
  * @param gfx the graphics ID
  */
 inline void SetIndustryGfx(Tile t, IndustryGfx gfx)
 {
-	assert(IsTileType(t, MP_INDUSTRY));
+	assert(IsTileType(t, TileType::Industry));
 	t.m5() = GB(gfx, 0, 8);
 	SB(t.m6(), 2, 1, GB(gfx, 8, 1));
 }
@@ -156,12 +116,12 @@ inline void SetIndustryGfx(Tile t, IndustryGfx gfx)
 /**
  * Returns this industry tile's construction counter value
  * @param tile the tile to query
- * @pre IsTileType(tile, MP_INDUSTRY)
+ * @pre IsTileType(tile, TileType::Industry)
  * @return the construction counter
  */
 inline uint8_t GetIndustryConstructionCounter(Tile tile)
 {
-	assert(IsTileType(tile, MP_INDUSTRY));
+	assert(IsTileType(tile, TileType::Industry));
 	return GB(tile.m1(), 2, 2);
 }
 
@@ -169,11 +129,11 @@ inline uint8_t GetIndustryConstructionCounter(Tile tile)
  * Sets this industry tile's construction counter value
  * @param tile the tile to query
  * @param value the new value for the construction counter
- * @pre IsTileType(tile, MP_INDUSTRY)
+ * @pre IsTileType(tile, TileType::Industry)
  */
 inline void SetIndustryConstructionCounter(Tile tile, uint8_t value)
 {
-	assert(IsTileType(tile, MP_INDUSTRY));
+	assert(IsTileType(tile, TileType::Industry));
 	SB(tile.m1(), 2, 2, value);
 }
 
@@ -182,11 +142,11 @@ inline void SetIndustryConstructionCounter(Tile tile, uint8_t value)
  * as well as the completion bit.
  * In fact, it is the same as restarting construction from the ground up.
  * @param tile the tile to query
- * @pre IsTileType(tile, MP_INDUSTRY)
+ * @pre IsTileType(tile, TileType::Industry)
  */
 inline void ResetIndustryConstructionStage(Tile tile)
 {
-	assert(IsTileType(tile, MP_INDUSTRY));
+	assert(IsTileType(tile, TileType::Industry));
 	SB(tile.m1(), 0, 4, 0);
 	SB(tile.m1(), 7, 1, 0);
 }
@@ -194,11 +154,12 @@ inline void ResetIndustryConstructionStage(Tile tile)
 /**
  * Get the animation loop number
  * @param tile the tile to get the animation loop number of
- * @pre IsTileType(tile, MP_INDUSTRY)
+ * @pre IsTileType(tile, TileType::Industry)
+ * @return The loop/frame number.
  */
 inline uint8_t GetIndustryAnimationLoop(Tile tile)
 {
-	assert(IsTileType(tile, MP_INDUSTRY));
+	assert(IsTileType(tile, TileType::Industry));
 	return tile.m4();
 }
 
@@ -206,11 +167,11 @@ inline uint8_t GetIndustryAnimationLoop(Tile tile)
  * Set the animation loop number
  * @param tile the tile to set the animation loop number of
  * @param count the new animation frame number
- * @pre IsTileType(tile, MP_INDUSTRY)
+ * @pre IsTileType(tile, TileType::Industry)
  */
 inline void SetIndustryAnimationLoop(Tile tile, uint8_t count)
 {
-	assert(IsTileType(tile, MP_INDUSTRY));
+	assert(IsTileType(tile, TileType::Industry));
 	tile.m4() = count;
 }
 
@@ -218,12 +179,12 @@ inline void SetIndustryAnimationLoop(Tile tile, uint8_t count)
  * Get the random bits for this tile.
  * Used for grf callbacks
  * @param tile the tile to query
- * @pre IsTileType(tile, MP_INDUSTRY)
+ * @pre IsTileType(tile, TileType::Industry)
  * @return requested bits
  */
 inline uint8_t GetIndustryRandomBits(Tile tile)
 {
-	assert(IsTileType(tile, MP_INDUSTRY));
+	assert(IsTileType(tile, TileType::Industry));
 	return tile.m3();
 }
 
@@ -232,11 +193,11 @@ inline uint8_t GetIndustryRandomBits(Tile tile)
  * Used for grf callbacks
  * @param tile the tile to query
  * @param bits the random bits
- * @pre IsTileType(tile, MP_INDUSTRY)
+ * @pre IsTileType(tile, TileType::Industry)
  */
 inline void SetIndustryRandomBits(Tile tile, uint8_t bits)
 {
-	assert(IsTileType(tile, MP_INDUSTRY));
+	assert(IsTileType(tile, TileType::Industry));
 	tile.m3() = bits;
 }
 
@@ -244,12 +205,12 @@ inline void SetIndustryRandomBits(Tile tile, uint8_t bits)
  * Get the activated triggers bits for this industry tile
  * Used for grf callbacks
  * @param tile the tile to query
- * @pre IsTileType(tile, MP_INDUSTRY)
+ * @pre IsTileType(tile, TileType::Industry)
  * @return requested triggers
  */
 inline IndustryRandomTriggers GetIndustryRandomTriggers(Tile tile)
 {
-	assert(IsTileType(tile, MP_INDUSTRY));
+	assert(IsTileType(tile, TileType::Industry));
 	return static_cast<IndustryRandomTriggers>(GB(tile.m6(), 3, 3));
 }
 
@@ -259,11 +220,11 @@ inline IndustryRandomTriggers GetIndustryRandomTriggers(Tile tile)
  * Used for grf callbacks
  * @param tile the tile to query
  * @param triggers the triggers to set
- * @pre IsTileType(tile, MP_INDUSTRY)
+ * @pre IsTileType(tile, TileType::Industry)
  */
 inline void SetIndustryRandomTriggers(Tile tile, IndustryRandomTriggers triggers)
 {
-	assert(IsTileType(tile, MP_INDUSTRY));
+	assert(IsTileType(tile, TileType::Industry));
 	SB(tile.m6(), 3, 3, triggers.base());
 }
 
@@ -277,7 +238,7 @@ inline void SetIndustryRandomTriggers(Tile tile, IndustryRandomTriggers triggers
  */
 inline void MakeIndustry(Tile t, IndustryID index, IndustryGfx gfx, uint8_t random, WaterClass wc)
 {
-	SetTileType(t, MP_INDUSTRY);
+	SetTileType(t, TileType::Industry);
 	t.m1() = 0;
 	t.m2() = index.base();
 	SetIndustryRandomBits(t, random); // m3

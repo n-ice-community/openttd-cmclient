@@ -972,9 +972,9 @@ STR_RIVERS_MODERATE                                             :درمیانے
 STR_RIVERS_LOT                                                  :بہت سے
 
 ###length 3
-STR_DISASTER_NONE                                               :کوئی نہیں
-STR_DISASTER_REDUCED                                            :کم
-STR_DISASTER_NORMAL                                             :نارمل
+STR_BREAKDOWNS_NONE                                             :کوئی نہیں
+STR_BREAKDOWNS_REDUCED                                          :کم
+STR_BREAKDOWNS_NORMAL                                           :نارمل
 
 ###length 4
 STR_SUBSIDY_X1_5                                                :x1.5
@@ -1045,6 +1045,8 @@ STR_CONFIG_SETTING_HORIZONTAL_POS_RIGHT                         :دائیں
 ###length 3
 
 
+
+###length 3
 
 
 
@@ -1164,6 +1166,8 @@ STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES                        :گاڑیوں ک
 ###setting-zero-is-special
 
 
+###setting-zero-is-special
+
 STR_CONFIG_SETTING_AUTORENEW_VEHICLE                            :گاڑی پرانی ہونے کی صورت میں خودکار طریقے سے بدل دیں: {STRING}
 
 STR_CONFIG_SETTING_AUTORENEW_MONTHS                             :گاڑی کی زیادہ سے زیادہ عمر {STRING} ہونے پر خودکار تجدید کریں۔
@@ -1203,6 +1207,8 @@ STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_VERY_SMOOTH             :بہت ہموا
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_SMOOTH                  :ہموار
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_ROUGH                   :رف
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_VERY_ROUGH              :بہت رف
+
+###length 4
 
 
 
@@ -1298,11 +1304,7 @@ STR_CONFIG_SETTING_TIMETABLE_SHOW_ARRIVAL_DEPARTURE             :قوقات کے
 
 STR_CONFIG_SETTING_QUICKGOTO                                    :جلدی گاڑیوں کو احکامات دینا: {STRING}
 
-STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE                            :کھیل شروع کرنے یا لوڈ کرنے کے بعد ریل گاڑی کی شروعاتی قسم: {STRING}
 ###length 3
-STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_FIRST                      :پہلی دستیاب
-STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_LAST                       :آخری دستیاب
-STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_MOST_USED                  :زیادہ استعمال شدہ
 
 STR_CONFIG_SETTING_SHOW_TRACK_RESERVATION                       :مخصوص پٹریاں دکھائیں: {STRING}
 
@@ -1356,6 +1358,7 @@ STR_CONFIG_SETTING_NOSERVICE                                    :گاڑیوں ک
 
 
 STR_CONFIG_SETTING_WAGONSPEEDLIMITS                             :مال گاڑی کی حد رفتار فعال کریں: {STRING}
+
 
 STR_CONFIG_SETTING_DISABLE_ELRAILS                              :الیلٹرک ریل گاڑیاں غیر فعال کریں: {STRING}
 
@@ -1512,7 +1515,7 @@ STR_CONFIG_ERROR_INVALID_GRF_UNKNOWN                            :نا معلوم
 STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_LEVEL             :{WHITE}- - - کمپریشن کی سطح '{STRING}' درست نہیں ہے
 STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_ALGORITHM         :{WHITE} ۔ ۔ ۔ کھیل بچانے کا یہ فارمیٹ '{STRING}' دستیاب نہیں ہے۔ واپس '{STRING}' پر جا رہے ہیں
 
-# Video initalization errors
+# Video initialization errors
 
 # Intro window
 
@@ -1713,15 +1716,13 @@ STR_NETWORK_CONNECTING_WAITING                                  :{BLACK}آپ س�
 STR_NETWORK_CONNECTING_DOWNLOADING_1                            :{BLACK}اب تک {BYTES} ڈاون لوڈ ہوئی ہیں
 STR_NETWORK_CONNECTING_DOWNLOADING_2                            :{BLACK}اب تک {BYTES} / {BYTES} ڈاون لوڈ ہوئی ہیں
 
-###length 8
+###length 6
 STR_NETWORK_CONNECTING_1                                        :{BLACK}(1/6) رابطہ کر رہے ہیں۔ ۔ ۔
 STR_NETWORK_CONNECTING_2                                        :{BLACK}(2/6) اختیار دے رہے ہیں ۔ ۔ ۔
 STR_NETWORK_CONNECTING_3                                        :{BLACK}(3/6) انتظار کر رہے ہیں ۔ ۔ ۔
 STR_NETWORK_CONNECTING_4                                        :{BLACK}(4/6) نقشہ ڈاون لوڈ کر رہے ہیں ۔ ۔ ۔
 STR_NETWORK_CONNECTING_5                                        :{BLACK}(5/6) معلومات پر کام کر رہے ہیں ۔ ۔ ۔
 STR_NETWORK_CONNECTING_6                                        :{BLACK}(6/6) رجسٹر کر رہے ہیں ۔ ۔ ۔
-STR_NETWORK_CONNECTING_SPECIAL_1                                :{BLACK}کھیل کے بارے میں معلومات حاصل کر رہے ہیں ۔ ۔ ۔
-STR_NETWORK_CONNECTING_SPECIAL_2                                :{BLACK}کمپنی کے بارے میں معلومات حاصل کر رہے ہیں ۔ ۔ ۔
 
 STR_NETWORK_CONNECTION_DISCONNECT                               :{BLACK}رابطہ منقطع کریں
 
@@ -1985,6 +1986,8 @@ STR_STATION_BUILD_DRAG_DROP_TOOLTIP                             :{BLACK}کھین
 
 
 
+
+
 STR_STATION_CLASS_DFLT                                          :طے شدہ اسٹیشن
 STR_STATION_CLASS_WAYP                                          :گزرگاہیں
 
@@ -2155,8 +2158,6 @@ STR_FOUND_TOWN_SELECT_LAYOUT_RANDOM                             :{G=f}{BLACK}ک�
 
 # Industry cargoes window
 STR_INDUSTRY_CARGOES_CARGO_CAPTION                              :{WHITE}کارگو چین - {STRING}
-STR_INDUSTRY_CARGOES_CUSTOMERS                                  :{WHITE}قبول کرنے والی صنعتیں۔
-STR_INDUSTRY_CARGOES_CARGO_TOOLTIP                              :{BLACK}{STRING}{}اس کے فروخت کنندہ اور گاہک کو دیکھنے کے لیے سامان پر کلک کریں۔
 
 # Land area window
 
@@ -2333,6 +2334,7 @@ STR_LOCAL_AUTHORITY_COMPANY_RATING                              :{YELLOW}{COMPAN
 STR_GOALS_TEXT                                                  :{ORANGE}{STRING}
 
 # Goal question window
+###length 4
 STR_GOAL_QUESTION_CAPTION_QUESTION                              :سوال
 STR_GOAL_QUESTION_CAPTION_INFORMATION                           :معلومات
 STR_GOAL_QUESTION_CAPTION_WARNING                               :انتباہ
@@ -2457,6 +2459,8 @@ STR_PURCHASE_INFO_ALL_BUT                                       :{CARGO_LIST} ک
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}پہنچ: {GOLD}{COMMA} ٹائلیں
 STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}ہوائی جہاز کی قسم: {GOLD}{STRING}
 
+# Vehicle sort details
+
 ###length 3
 
 ###length VEHICLE_TYPES
@@ -2537,6 +2541,7 @@ STR_DEPOT_VEHICLE_TOOLTIP_CARGO                                 :{}{CARGO_LONG} 
 
 
 
+
 # Autoreplace window
 
 STR_REPLACE_VEHICLE_VEHICLES_IN_USE                             :{YELLOW}استعمالکردہ گاڑیاں
@@ -2599,6 +2604,8 @@ STR_VEHICLE_COMMAND_STARTED                                     :{GREEN} شرو�
 
 
 
+
+
 STR_VEHICLE_DETAIL_TAB_CARGO                                    :{BLACK}سامان
 
 
@@ -2627,7 +2634,7 @@ STR_ORDER_INDEX                                                 :{COMMA}:{NBSP}
 
 
 # Conditional order variables, must follow order of OrderConditionVariable enum
-###length 8
+###length 9
 ###next-name-looks-similar
 
 

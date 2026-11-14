@@ -10,11 +10,8 @@
 #ifndef LINKGRAPH_GUI_H
 #define LINKGRAPH_GUI_H
 
-#include "../company_func.h"
 #include "../station_base.h"
-#include "../widget_type.h"
 #include "../window_gui.h"
-#include "linkgraph_base.h"
 
 /**
  * Monthly statistics for a link between two stations.
@@ -23,7 +20,10 @@
 struct LinkProperties {
 	LinkProperties() {}
 
-	/** Return the usage of the link to display. */
+	/**
+	 * Return the usage of the link to display.
+	 * @return The maximum of the actual and planned usage of the link.
+	 */
 	uint Usage() const { return std::max(this->usage, this->planned); }
 
 	CargoType cargo = INVALID_CARGO; ///< Cargo type of the link.
@@ -67,10 +67,16 @@ public:
 	/** Mark the linkgraph dirty to be rebuilt next time Draw() is called. */
 	void SetDirty() { this->dirty = true; }
 
-	/** Get a bitmask of the currently shown cargoes. */
+	/**
+	 * Get a bitmask of the currently shown cargoes.
+	 * @return The shown cargoes.
+	 */
 	CargoTypes GetCargoMask() { return this->cargo_mask; }
 
-	/** Get a bitmask of the currently shown companies. */
+	/**
+	 * Get a bitmask of the currently shown companies.
+	 * @return The shown companies.
+	 */
 	CompanyMask GetCompanyMask() { return this->company_mask; }
 
 protected:

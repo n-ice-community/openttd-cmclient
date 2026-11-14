@@ -5,7 +5,7 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <https://www.gnu.org/licenses/old-licenses/gpl-2.0>.
  */
 
-/** @file house.h definition of HouseSpec and accessors */
+/** @file house.h Definition of HouseSpec and accessors. */
 
 #ifndef HOUSE_H
 #define HOUSE_H
@@ -34,16 +34,19 @@ static const HouseID NUM_HOUSES_PER_GRF = NUM_HOUSES; ///< Number of supported h
 static const uint HOUSE_NUM_ACCEPTS = 16; ///< Max number of cargoes accepted by a tile
 static const uint HOUSE_ORIGINAL_NUM_ACCEPTS = 3; ///< Original number of accepted cargo types.
 
+/** Flags describing the layout and purpose of a building. */
 enum class BuildingFlag : uint8_t {
-	Size1x1    = 0,
-	NotSloped  = 1,
-	Size2x1    = 2,
-	Size1x2    = 3,
-	Size2x2    = 4,
-	IsAnimated = 5,
-	IsChurch   = 6,
-	IsStadium  = 7,
+	Size1x1    = 0, ///< The building is a single tile.
+	NotSloped  = 1, ///< The building can only be built on flat land; when not set foundations are placed.
+	Size2x1    = 2, ///< The building is 2x1 tiles, i.e. wider on the X-axis.
+	Size1x2    = 3, ///< The building is 1x2 tiles, i.e. wider on the Y-axis.
+	Size2x2    = 4, ///< The building is 2x2 tiles.
+	IsAnimated = 5, ///< The building uses animation.
+	IsChurch   = 6, ///< The building functions as a church, i.e. only one can be built in a town.
+	IsStadium  = 7, ///< The building functions as a stadium, i.e. only one can be built in a town.
 };
+
+/** Bitset of \c BuildingFlag elements. */
 using BuildingFlags = EnumBitSet<BuildingFlag, uint8_t>;
 
 static constexpr BuildingFlags BUILDING_HAS_1_TILE  = {BuildingFlag::Size1x1, BuildingFlag::Size2x1, BuildingFlag::Size1x2, BuildingFlag::Size2x2};
@@ -52,12 +55,13 @@ static constexpr BuildingFlags BUILDING_2_TILES_X   = {BuildingFlag::Size2x1, Bu
 static constexpr BuildingFlags BUILDING_2_TILES_Y   = {BuildingFlag::Size1x2, BuildingFlag::Size2x2};
 static constexpr BuildingFlags BUILDING_HAS_4_TILES = {BuildingFlag::Size2x2};
 
+/** Concentric rings of zoning around the centre of a town. */
 enum class HouseZone : uint8_t {
-	TownEdge = 0,
-	TownOutskirt = 1,
-	TownOuterSuburb = 2,
-	TownInnerSuburb = 3,
-	TownCentre = 4,
+	TownEdge = 0, ///< Edge of the town; roads without pavement.
+	TownOutskirt = 1, ///< Outskirts of a town; roads without pavement.
+	TownOuterSuburb = 2, ///< Outer suburbs; roads with pavement.
+	TownInnerSuburb = 3, ///< Inner suburbs; roads with pavement and trees.
+	TownCentre = 4, ///< Centre of town; roads with pavement and streetlights.
 	TownEnd,
 
 	ClimateSubarcticAboveSnow = 11, ///< Building can appear in sub-arctic climate above the snow line
@@ -66,6 +70,8 @@ enum class HouseZone : uint8_t {
 	ClimateSubtropic = 14, ///< Building can appear in subtropical climate
 	ClimateToyland = 15, ///< Building can appear in toyland climate
 };
+
+/** Bitset of \c HouseZone elements. */
 using HouseZones = EnumBitSet<HouseZone, uint16_t>;
 
 static constexpr uint NUM_HOUSE_ZONES = to_underlying(HouseZone::TownEnd);
@@ -93,6 +99,8 @@ enum class HouseExtraFlag : uint8_t {
 	SynchronisedCallback1B = 2, ///< synchronized callback 1B will be performed, on multi tile houses
 	Callback1ARandomBits   = 3, ///< callback 1A needs random bits
 };
+
+/** Bitset of \c HouseExtraFlag elements. */
 using HouseExtraFlags = EnumBitSet<HouseExtraFlag, uint8_t>;
 
 struct HouseSpec {

@@ -5,9 +5,7 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <https://www.gnu.org/licenses/old-licenses/gpl-2.0>.
  */
 
-/**
- * @file tcp_stun.cpp Basic functions to receive and send STUN packets.
- */
+/** @file tcp_stun.cpp Basic functions to receive and send STUN packets. */
 
 #include "../../stdafx.h"
 #include "../../debug.h"
@@ -22,8 +20,8 @@
  */
 bool NetworkStunSocketHandler::ReceiveInvalidPacket(PacketStunType type)
 {
-	Debug(net, 0, "[tcp/stun] Received illegal packet type {}", type);
+	Debug(Facility::Net, Severity::Critical, "[tcp/stun] Received illegal packet type {}", type);
 	return false;
 }
 
-bool NetworkStunSocketHandler::Receive_SERCLI_STUN(Packet &) { return this->ReceiveInvalidPacket(PACKET_STUN_SERCLI_STUN); }
+bool NetworkStunSocketHandler::ReceiveClientStun(Packet &) { return this->ReceiveInvalidPacket(PacketStunType::ClientStun); }

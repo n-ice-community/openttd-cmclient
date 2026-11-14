@@ -21,7 +21,7 @@ jobs:
 
     steps:
     - name: Download source
-      uses: actions/download-artifact@v7
+      uses: actions/download-artifact@v8
       with:
         name: internal-source
 
@@ -40,12 +40,12 @@ jobs:
         echo "::group::Install system dependencies"
         # perl-IPC-Cmd, wget, and zip are needed to run vcpkg.
         # autoconf-archive is needed to build ICU.
+        # perl-Time-Piece is needed to build OpenSSL.
         yum install -y \
           autoconf-archive \
           perl-IPC-Cmd \
           perl-Time-Piece \
           wget \
-          libzstd-devel \
           zip \
           # EOF
 
@@ -114,7 +114,7 @@ jobs:
 
     - name: Setup vcpkg
       id: vcpkg
-      uses: OpenTTD/actions/setup-vcpkg@v6
+      uses: OpenTTD/actions/setup-vcpkg@v7
       with:
         vcpkg-location: /vcpkg
         mono-install-command: 'yum install -y mono-complete'
@@ -160,14 +160,14 @@ jobs:
         echo "::endgroup::"
 
     - name: Store bundles
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       with:
         name: citymania-client-linux-generic
         path: build/bundles
         retention-days: 5
 
     - name: Store symbols
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       with:
         name: symbols-linux-generic
         path: build/symbols

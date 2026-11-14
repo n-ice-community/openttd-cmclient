@@ -5,79 +5,78 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <https://www.gnu.org/licenses/old-licenses/gpl-2.0>.
  */
 
-/** @file pricebase.h Price Bases */
+/** @file pricebase.h Table of all default price bases. */
 
-extern const PriceBaseSpec _price_base_specs[] = {
-	{    100, PCAT_NONE,         GSF_END,          INVALID_PRICE         }, ///< PR_STATION_VALUE
-	{    100, PCAT_CONSTRUCTION, GSF_END,          INVALID_PRICE         }, ///< PR_BUILD_RAIL
-	{     95, PCAT_CONSTRUCTION, GSF_END,          INVALID_PRICE         }, ///< PR_BUILD_ROAD
-	{     65, PCAT_CONSTRUCTION, GSF_END,          INVALID_PRICE         }, ///< PR_BUILD_SIGNALS
-	{    275, PCAT_CONSTRUCTION, GSF_END,          INVALID_PRICE         }, ///< PR_BUILD_BRIDGE
-	{    600, PCAT_CONSTRUCTION, GSF_END,          INVALID_PRICE         }, ///< PR_BUILD_DEPOT_TRAIN
-	{    500, PCAT_CONSTRUCTION, GSF_END,          INVALID_PRICE         }, ///< PR_BUILD_DEPOT_ROAD
-	{    700, PCAT_CONSTRUCTION, GSF_END,          INVALID_PRICE         }, ///< PR_BUILD_DEPOT_SHIP
-	{    450, PCAT_CONSTRUCTION, GSF_END,          INVALID_PRICE         }, ///< PR_BUILD_TUNNEL
-	{    200, PCAT_CONSTRUCTION, GSF_END,          INVALID_PRICE         }, ///< PR_BUILD_STATION_RAIL
-	{    180, PCAT_CONSTRUCTION, GSF_END,          INVALID_PRICE         }, ///< PR_BUILD_STATION_RAIL_LENGTH
-	{    600, PCAT_CONSTRUCTION, GSF_END,          INVALID_PRICE         }, ///< PR_BUILD_STATION_AIRPORT
-	{    200, PCAT_CONSTRUCTION, GSF_END,          INVALID_PRICE         }, ///< PR_BUILD_STATION_BUS
-	{    200, PCAT_CONSTRUCTION, GSF_END,          INVALID_PRICE         }, ///< PR_BUILD_STATION_TRUCK
-	{    350, PCAT_CONSTRUCTION, GSF_END,          INVALID_PRICE         }, ///< PR_BUILD_STATION_DOCK
-	{ 400000, PCAT_CONSTRUCTION, GSF_TRAINS,       INVALID_PRICE         }, ///< PR_BUILD_VEHICLE_TRAIN
-	{   2000, PCAT_CONSTRUCTION, GSF_TRAINS,       INVALID_PRICE         }, ///< PR_BUILD_VEHICLE_WAGON
-	{ 700000, PCAT_CONSTRUCTION, GSF_AIRCRAFT,     INVALID_PRICE         }, ///< PR_BUILD_VEHICLE_AIRCRAFT
-	{  14000, PCAT_CONSTRUCTION, GSF_ROADVEHICLES, INVALID_PRICE         }, ///< PR_BUILD_VEHICLE_ROAD
-	{  65000, PCAT_CONSTRUCTION, GSF_SHIPS,        INVALID_PRICE         }, ///< PR_BUILD_VEHICLE_SHIP
-	{     20, PCAT_CONSTRUCTION, GSF_END,          INVALID_PRICE         }, ///< PR_BUILD_TREES
-	{    250, PCAT_CONSTRUCTION, GSF_END,          INVALID_PRICE         }, ///< PR_TERRAFORM
-	{     20, PCAT_CONSTRUCTION, GSF_END,          INVALID_PRICE         }, ///< PR_CLEAR_GRASS
-	{     40, PCAT_CONSTRUCTION, GSF_END,          INVALID_PRICE         }, ///< PR_CLEAR_ROUGH
-	{    200, PCAT_CONSTRUCTION, GSF_END,          INVALID_PRICE         }, ///< PR_CLEAR_ROCKS
-	{    500, PCAT_CONSTRUCTION, GSF_END,          INVALID_PRICE         }, ///< PR_CLEAR_FIELDS
-	{     20, PCAT_CONSTRUCTION, GSF_END,          INVALID_PRICE         }, ///< PR_CLEAR_TREES
-	{    -70, PCAT_CONSTRUCTION, GSF_END,          INVALID_PRICE         }, ///< PR_CLEAR_RAIL
-	{     10, PCAT_CONSTRUCTION, GSF_END,          INVALID_PRICE         }, ///< PR_CLEAR_SIGNALS
-	{     50, PCAT_CONSTRUCTION, GSF_END,          INVALID_PRICE         }, ///< PR_CLEAR_BRIDGE
-	{     80, PCAT_CONSTRUCTION, GSF_END,          INVALID_PRICE         }, ///< PR_CLEAR_DEPOT_TRAIN
-	{     80, PCAT_CONSTRUCTION, GSF_END,          INVALID_PRICE         }, ///< PR_CLEAR_DEPOT_ROAD
-	{     90, PCAT_CONSTRUCTION, GSF_END,          INVALID_PRICE         }, ///< PR_CLEAR_DEPOT_SHIP
-	{     30, PCAT_CONSTRUCTION, GSF_END,          INVALID_PRICE         }, ///< PR_CLEAR_TUNNEL
-	{  10000, PCAT_CONSTRUCTION, GSF_END,          INVALID_PRICE         }, ///< PR_CLEAR_WATER
-	{     50, PCAT_CONSTRUCTION, GSF_END,          INVALID_PRICE         }, ///< PR_CLEAR_STATION_RAIL
-	{     30, PCAT_CONSTRUCTION, GSF_END,          INVALID_PRICE         }, ///< PR_CLEAR_STATION_AIRPORT
-	{     50, PCAT_CONSTRUCTION, GSF_END,          INVALID_PRICE         }, ///< PR_CLEAR_STATION_BUS
-	{     50, PCAT_CONSTRUCTION, GSF_END,          INVALID_PRICE         }, ///< PR_CLEAR_STATION_TRUCK
-	{     55, PCAT_CONSTRUCTION, GSF_END,          INVALID_PRICE         }, ///< PR_CLEAR_STATION_DOCK
-	{   1600, PCAT_CONSTRUCTION, GSF_END,          INVALID_PRICE         }, ///< PR_CLEAR_HOUSE
-	{     40, PCAT_CONSTRUCTION, GSF_END,          INVALID_PRICE         }, ///< PR_CLEAR_ROAD
-	{   5600, PCAT_RUNNING,      GSF_TRAINS,       INVALID_PRICE         }, ///< PR_RUNNING_TRAIN_STEAM
-	{   5200, PCAT_RUNNING,      GSF_TRAINS,       INVALID_PRICE         }, ///< PR_RUNNING_TRAIN_DIESEL
-	{   4800, PCAT_RUNNING,      GSF_TRAINS,       INVALID_PRICE         }, ///< PR_RUNNING_TRAIN_ELECTRIC
-	{   9600, PCAT_RUNNING,      GSF_AIRCRAFT,     INVALID_PRICE         }, ///< PR_RUNNING_AIRCRAFT
-	{   1600, PCAT_RUNNING,      GSF_ROADVEHICLES, INVALID_PRICE         }, ///< PR_RUNNING_ROADVEH
-	{   5600, PCAT_RUNNING,      GSF_SHIPS,        INVALID_PRICE         }, ///< PR_RUNNING_SHIP
-	{1000000, PCAT_CONSTRUCTION, GSF_END,          INVALID_PRICE         }, ///< PR_BUILD_INDUSTRY
-	{   1600, PCAT_CONSTRUCTION, GSF_END,          PR_CLEAR_HOUSE        }, ///< PR_CLEAR_INDUSTRY
-	{     40, PCAT_CONSTRUCTION, GSF_OBJECTS,      PR_CLEAR_ROUGH        }, ///< PR_BUILD_OBJECT
-	{     40, PCAT_CONSTRUCTION, GSF_OBJECTS,      PR_CLEAR_ROUGH        }, ///< PR_CLEAR_OBJECT
-	{    600, PCAT_CONSTRUCTION, GSF_END,          PR_BUILD_DEPOT_TRAIN  }, ///< PR_BUILD_WAYPOINT_RAIL
-	{     80, PCAT_CONSTRUCTION, GSF_END,          PR_CLEAR_DEPOT_TRAIN  }, ///< PR_CLEAR_WAYPOINT_RAIL
-	{    350, PCAT_CONSTRUCTION, GSF_END,          PR_BUILD_STATION_DOCK }, ///< PR_BUILD_WAYPOINT_BUOY
-	{     50, PCAT_CONSTRUCTION, GSF_END,          PR_CLEAR_STATION_TRUCK}, ///< PR_CLEAR_WAYPOINT_BUOY
-	{1000000, PCAT_CONSTRUCTION, GSF_END,          PR_BUILD_INDUSTRY     }, ///< PR_TOWN_ACTION
-	{    250, PCAT_CONSTRUCTION, GSF_END,          PR_TERRAFORM          }, ///< PR_BUILD_FOUNDATION
-	{8000000, PCAT_CONSTRUCTION, GSF_END,          PR_BUILD_INDUSTRY     }, ///< PR_BUILD_INDUSTRY_RAW
-	{1000000, PCAT_CONSTRUCTION, GSF_END,          PR_BUILD_INDUSTRY     }, ///< PR_BUILD_TOWN
-	{   5000, PCAT_CONSTRUCTION, GSF_END,          PR_CLEAR_WATER        }, ///< PR_BUILD_CANAL
-	{   5000, PCAT_CONSTRUCTION, GSF_END,          PR_CLEAR_WATER        }, ///< PR_CLEAR_CANAL
-	{  10000, PCAT_CONSTRUCTION, GSF_END,          PR_CLEAR_WATER        }, ///< PR_BUILD_AQUEDUCT
-	{   2000, PCAT_CONSTRUCTION, GSF_END,          PR_CLEAR_BRIDGE       }, ///< PR_CLEAR_AQUEDUCT
-	{   7500, PCAT_CONSTRUCTION, GSF_END,          PR_CLEAR_WATER        }, ///< PR_BUILD_LOCK
-	{   2000, PCAT_CONSTRUCTION, GSF_END,          PR_CLEAR_WATER        }, ///< PR_CLEAR_LOCK
-	{     10, PCAT_RUNNING,      GSF_END,          PR_BUILD_RAIL         }, ///< PR_INFRASTRUCTURE_RAIL
-	{     10, PCAT_RUNNING,      GSF_END,          PR_BUILD_ROAD         }, ///< PR_INFRASTRUCTURE_ROAD
-	{      8, PCAT_RUNNING,      GSF_END,          PR_BUILD_CANAL        }, ///< PR_INFRASTRUCTURE_WATER
-	{    100, PCAT_RUNNING,      GSF_END,          PR_STATION_VALUE      }, ///< PR_INFRASTRUCTURE_STATION
-	{   5000, PCAT_RUNNING,      GSF_END,          PR_BUILD_STATION_AIRPORT}, ///< PR_INFRASTRUCTURE_AIRPORT
+static const EnumIndexArray<PriceBaseSpec, Price, Price::End> _price_base_specs = {
+	PriceBaseSpec(100, PriceCategory::None, GrfSpecFeature::End, Price::Invalid), // Price::StationValue
+	PriceBaseSpec(100, PriceCategory::Construction, GrfSpecFeature::End, Price::Invalid), // Price::BuildRail
+	PriceBaseSpec(95, PriceCategory::Construction, GrfSpecFeature::End, Price::Invalid), // Price::BuildRoad
+	PriceBaseSpec(65, PriceCategory::Construction, GrfSpecFeature::End, Price::Invalid), // Price::BuildSignals
+	PriceBaseSpec(275, PriceCategory::Construction, GrfSpecFeature::End, Price::Invalid), // Price::BuildBridge
+	PriceBaseSpec(600, PriceCategory::Construction, GrfSpecFeature::End, Price::Invalid), // Price::BuildDepotTrain
+	PriceBaseSpec(500, PriceCategory::Construction, GrfSpecFeature::End, Price::Invalid), // Price::BuildDepotRoad
+	PriceBaseSpec(700, PriceCategory::Construction, GrfSpecFeature::End, Price::Invalid), // Price::BuildDepotShip
+	PriceBaseSpec(450, PriceCategory::Construction, GrfSpecFeature::End, Price::Invalid), // Price::BuildTunnel
+	PriceBaseSpec(200, PriceCategory::Construction, GrfSpecFeature::End, Price::Invalid), // Price::BuildStationRail
+	PriceBaseSpec(180, PriceCategory::Construction, GrfSpecFeature::End, Price::Invalid), // Price::BuildStationRailLength
+	PriceBaseSpec(600, PriceCategory::Construction, GrfSpecFeature::End, Price::Invalid), // Price::BuildStationAirport
+	PriceBaseSpec(200, PriceCategory::Construction, GrfSpecFeature::End, Price::Invalid), // Price::BuildStationBus
+	PriceBaseSpec(200, PriceCategory::Construction, GrfSpecFeature::End, Price::Invalid), // Price::BuildStationTruck
+	PriceBaseSpec(350, PriceCategory::Construction, GrfSpecFeature::End, Price::Invalid), // Price::BuildStationDock
+	PriceBaseSpec(400000, PriceCategory::Construction, GrfSpecFeature::Trains, Price::Invalid), // Price::BuildVehicleTrain
+	PriceBaseSpec(2000, PriceCategory::Construction, GrfSpecFeature::Trains, Price::Invalid), // Price::BuildVehicleWagon
+	PriceBaseSpec(700000, PriceCategory::Construction, GrfSpecFeature::Aircraft, Price::Invalid), // Price::BuildVehicleAircraft
+	PriceBaseSpec(14000, PriceCategory::Construction, GrfSpecFeature::RoadVehicles, Price::Invalid), // Price::BuildVehicleRoad
+	PriceBaseSpec(65000, PriceCategory::Construction, GrfSpecFeature::Ships, Price::Invalid), // Price::BuildVehicleShip
+	PriceBaseSpec(20, PriceCategory::Construction, GrfSpecFeature::End, Price::Invalid), // Price::BuildTrees
+	PriceBaseSpec(250, PriceCategory::Construction, GrfSpecFeature::End, Price::Invalid), // Price::Terraform
+	PriceBaseSpec(20, PriceCategory::Construction, GrfSpecFeature::End, Price::Invalid), // Price::ClearGrass
+	PriceBaseSpec(40, PriceCategory::Construction, GrfSpecFeature::End, Price::Invalid), // Price::ClearRough
+	PriceBaseSpec(200, PriceCategory::Construction, GrfSpecFeature::End, Price::Invalid), // Price::ClearRocks
+	PriceBaseSpec(500, PriceCategory::Construction, GrfSpecFeature::End, Price::Invalid), // Price::ClearFields
+	PriceBaseSpec(20, PriceCategory::Construction, GrfSpecFeature::End, Price::Invalid), // Price::ClearTrees
+	PriceBaseSpec(-70, PriceCategory::Construction, GrfSpecFeature::End, Price::Invalid), // Price::ClearRail
+	PriceBaseSpec(10, PriceCategory::Construction, GrfSpecFeature::End, Price::Invalid), // Price::ClearSignals
+	PriceBaseSpec(50, PriceCategory::Construction, GrfSpecFeature::End, Price::Invalid), // Price::ClearBridge
+	PriceBaseSpec(80, PriceCategory::Construction, GrfSpecFeature::End, Price::Invalid), // Price::ClearDepotTrain
+	PriceBaseSpec(80, PriceCategory::Construction, GrfSpecFeature::End, Price::Invalid), // Price::ClearDepotRoad
+	PriceBaseSpec(90, PriceCategory::Construction, GrfSpecFeature::End, Price::Invalid), // Price::ClearDepotShip
+	PriceBaseSpec(30, PriceCategory::Construction, GrfSpecFeature::End, Price::Invalid), // Price::ClearTunnel
+	PriceBaseSpec(10000, PriceCategory::Construction, GrfSpecFeature::End, Price::Invalid), // Price::ClearWater
+	PriceBaseSpec(50, PriceCategory::Construction, GrfSpecFeature::End, Price::Invalid), // Price::ClearStationRail
+	PriceBaseSpec(30, PriceCategory::Construction, GrfSpecFeature::End, Price::Invalid), // Price::ClearStationAirport
+	PriceBaseSpec(50, PriceCategory::Construction, GrfSpecFeature::End, Price::Invalid), // Price::ClearStationBus
+	PriceBaseSpec(50, PriceCategory::Construction, GrfSpecFeature::End, Price::Invalid), // Price::ClearStationTruck
+	PriceBaseSpec(55, PriceCategory::Construction, GrfSpecFeature::End, Price::Invalid), // Price::ClearStationDock
+	PriceBaseSpec(1600, PriceCategory::Construction, GrfSpecFeature::End, Price::Invalid), // Price::ClearHouse
+	PriceBaseSpec(40, PriceCategory::Construction, GrfSpecFeature::End, Price::Invalid), // Price::ClearRoad
+	PriceBaseSpec(5600, PriceCategory::Running, GrfSpecFeature::Trains, Price::Invalid), // Price::RunningTrainSteam
+	PriceBaseSpec(5200, PriceCategory::Running, GrfSpecFeature::Trains, Price::Invalid), // Price::RunningTrainDiesel
+	PriceBaseSpec(4800, PriceCategory::Running, GrfSpecFeature::Trains, Price::Invalid), // Price::RunningTrainElectric
+	PriceBaseSpec(9600, PriceCategory::Running, GrfSpecFeature::Aircraft, Price::Invalid), // Price::RunningAircraft
+	PriceBaseSpec(1600, PriceCategory::Running, GrfSpecFeature::RoadVehicles, Price::Invalid), // Price::RunningRoadveh
+	PriceBaseSpec(5600, PriceCategory::Running, GrfSpecFeature::Ships, Price::Invalid), // Price::RunningShip
+	PriceBaseSpec(1000000, PriceCategory::Construction, GrfSpecFeature::End, Price::Invalid), // Price::BuildIndustry
+	PriceBaseSpec(1600, PriceCategory::Construction, GrfSpecFeature::End, Price::ClearHouse), // Price::ClearIndustry
+	PriceBaseSpec(40, PriceCategory::Construction, GrfSpecFeature::Objects, Price::ClearRough), // Price::BuildObject
+	PriceBaseSpec(40, PriceCategory::Construction, GrfSpecFeature::Objects, Price::ClearRough), // Price::ClearObject
+	PriceBaseSpec(600, PriceCategory::Construction, GrfSpecFeature::End, Price::BuildDepotTrain), // Price::BuildWaypointRail
+	PriceBaseSpec(80, PriceCategory::Construction, GrfSpecFeature::End, Price::ClearDepotTrain), // Price::ClearWaypointRail
+	PriceBaseSpec(350, PriceCategory::Construction, GrfSpecFeature::End, Price::BuildStationDock), // Price::BuildWaypointBuoy
+	PriceBaseSpec(50, PriceCategory::Construction, GrfSpecFeature::End, Price::ClearStationTruck), // Price::ClearWaypointBuoy
+	PriceBaseSpec(1000000, PriceCategory::Construction, GrfSpecFeature::End, Price::BuildIndustry), // Price::TownAction
+	PriceBaseSpec(250, PriceCategory::Construction, GrfSpecFeature::End, Price::Terraform), // Price::BuildFoundation
+	PriceBaseSpec(8000000, PriceCategory::Construction, GrfSpecFeature::End, Price::BuildIndustry), // Price::BuildIndustryRaw
+	PriceBaseSpec(1000000, PriceCategory::Construction, GrfSpecFeature::End, Price::BuildIndustry), // Price::BuildTown
+	PriceBaseSpec(5000, PriceCategory::Construction, GrfSpecFeature::End, Price::ClearWater), // Price::BuildCanal
+	PriceBaseSpec(5000, PriceCategory::Construction, GrfSpecFeature::End, Price::ClearWater), // Price::ClearCanal
+	PriceBaseSpec(10000, PriceCategory::Construction, GrfSpecFeature::End, Price::ClearWater), // Price::BuildAqueduct
+	PriceBaseSpec(2000, PriceCategory::Construction, GrfSpecFeature::End, Price::ClearBridge), // Price::ClearAqueduct
+	PriceBaseSpec(7500, PriceCategory::Construction, GrfSpecFeature::End, Price::ClearWater), // Price::BuildLock
+	PriceBaseSpec(2000, PriceCategory::Construction, GrfSpecFeature::End, Price::ClearWater), // Price::ClearLock
+	PriceBaseSpec(10, PriceCategory::Running, GrfSpecFeature::End, Price::BuildRail), // Price::InfrastructureRail
+	PriceBaseSpec(10, PriceCategory::Running, GrfSpecFeature::End, Price::BuildRoad), // Price::InfrastructureRoad
+	PriceBaseSpec(8, PriceCategory::Running, GrfSpecFeature::End, Price::BuildCanal), // Price::InfrastructureWater
+	PriceBaseSpec(100, PriceCategory::Running, GrfSpecFeature::End, Price::StationValue), // Price::InfrastructureStation
+	PriceBaseSpec(5000, PriceCategory::Running, GrfSpecFeature::End, Price::BuildStationAirport), // Price::InfrastructureAirport
 };
-static_assert(lengthof(_price_base_specs) == PR_END);

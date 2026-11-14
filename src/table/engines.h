@@ -5,10 +5,7 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <https://www.gnu.org/licenses/old-licenses/gpl-2.0>.
  */
 
-/**
- * @file table/engines.h
- *  This file contains all the data for vehicles
- */
+/** @file engines.h This file contains all the data for vehicles. */
 
 #ifndef ENGINES_H
 #define ENGINES_H
@@ -26,7 +23,7 @@
  * @param f Bitmask of the climates
  * @note the 5 between b and f is the load amount
  */
-#define MT(a, b, c, d, e, f) { CalendarTime::DAYS_TILL_ORIGINAL_BASE_YEAR + a, TimerGameCalendar::Year{c}, TimerGameCalendar::Year{d}, b, 5, f, INVALID_CARGO, e, 0, 8, EngineMiscFlags{}, VehicleCallbackMasks{}, 0, {}, STR_EMPTY, Ticks::CARGO_AGING_TICKS, EngineID::Invalid() }
+#define MT(a, b, c, d, e, f) { CalendarTime::DAYS_TILL_ORIGINAL_BASE_YEAR + a, TimerGameCalendar::Year{c}, TimerGameCalendar::Year{d}, b, 5, f, INVALID_CARGO, e, CargoTypes{}, 8, EngineMiscFlags{}, VehicleCallbackMasks{}, 0, {}, STR_EMPTY, Ticks::CARGO_AGING_TICKS, EngineID::Invalid() }
 
 /**
  * Writes the properties of a multiple-unit train into the EngineInfo struct.
@@ -39,7 +36,7 @@
  * @param f Bitmask of the climates
  * @note the 5 between b and f is the load amount
  */
-#define MM(a, b, c, d, e, f) { CalendarTime::DAYS_TILL_ORIGINAL_BASE_YEAR + a, TimerGameCalendar::Year{c}, TimerGameCalendar::Year{d}, b, 5, f, INVALID_CARGO, e, 0, 8, EngineMiscFlags{EngineMiscFlag::RailIsMU}, VehicleCallbackMasks{}, 0, {}, STR_EMPTY, Ticks::CARGO_AGING_TICKS, EngineID::Invalid() }
+#define MM(a, b, c, d, e, f) { CalendarTime::DAYS_TILL_ORIGINAL_BASE_YEAR + a, TimerGameCalendar::Year{c}, TimerGameCalendar::Year{d}, b, 5, f, INVALID_CARGO, e, CargoTypes{}, 8, EngineMiscFlags{EngineMiscFlag::RailIsMU}, VehicleCallbackMasks{}, 0, {}, STR_EMPTY, Ticks::CARGO_AGING_TICKS, EngineID::Invalid() }
 
 /**
  * Writes the properties of a train carriage into the EngineInfo struct.
@@ -52,7 +49,7 @@
  * @see MT
  * @note the 5 between b and f is the load amount
  */
-#define MW(a, b, c, d, e, f) { CalendarTime::DAYS_TILL_ORIGINAL_BASE_YEAR + a, TimerGameCalendar::Year{c}, TimerGameCalendar::Year{d}, b, 5, f, INVALID_CARGO, e, 0, 8, EngineMiscFlags{}, VehicleCallbackMasks{}, 0, {}, STR_EMPTY, Ticks::CARGO_AGING_TICKS, EngineID::Invalid() }
+#define MW(a, b, c, d, e, f) { CalendarTime::DAYS_TILL_ORIGINAL_BASE_YEAR + a, TimerGameCalendar::Year{c}, TimerGameCalendar::Year{d}, b, 5, f, INVALID_CARGO, e, CargoTypes{}, 8, EngineMiscFlags{}, VehicleCallbackMasks{}, 0, {}, STR_EMPTY, Ticks::CARGO_AGING_TICKS, EngineID::Invalid() }
 
 /**
  * Writes the properties of a road vehicle into the EngineInfo struct.
@@ -65,7 +62,7 @@
  * @param f Bitmask of the climates
  * @note the 5 between b and f is the load amount
  */
-#define MR(a, b, c, d, e, f) { CalendarTime::DAYS_TILL_ORIGINAL_BASE_YEAR + a, TimerGameCalendar::Year{c}, TimerGameCalendar::Year{d}, b, 5, f, INVALID_CARGO, e, 0, 8, EngineMiscFlags{}, VehicleCallbackMasks{}, 0, {}, STR_EMPTY, Ticks::CARGO_AGING_TICKS, EngineID::Invalid() }
+#define MR(a, b, c, d, e, f) { CalendarTime::DAYS_TILL_ORIGINAL_BASE_YEAR + a, TimerGameCalendar::Year{c}, TimerGameCalendar::Year{d}, b, 5, f, INVALID_CARGO, e, CargoTypes{}, 8, EngineMiscFlags{}, VehicleCallbackMasks{}, 0, {}, STR_EMPTY, Ticks::CARGO_AGING_TICKS, EngineID::Invalid() }
 
 /**
  * Writes the properties of a ship into the EngineInfo struct.
@@ -77,7 +74,7 @@
  * @param f Bitmask of the climates
  * @note the 10 between b and f is the load amount
  */
-#define MS(a, b, c, d, e, f) { CalendarTime::DAYS_TILL_ORIGINAL_BASE_YEAR + a, TimerGameCalendar::Year{c}, TimerGameCalendar::Year{d}, b, 10, f, INVALID_CARGO, e, 0, 8, EngineMiscFlags{}, VehicleCallbackMasks{}, 0, {}, STR_EMPTY, Ticks::CARGO_AGING_TICKS, EngineID::Invalid() }
+#define MS(a, b, c, d, e, f) { CalendarTime::DAYS_TILL_ORIGINAL_BASE_YEAR + a, TimerGameCalendar::Year{c}, TimerGameCalendar::Year{d}, b, 10, f, INVALID_CARGO, e, CargoTypes{}, 8, EngineMiscFlags{}, VehicleCallbackMasks{}, 0, {}, STR_EMPTY, Ticks::CARGO_AGING_TICKS, EngineID::Invalid() }
 
 /**
  * Writes the properties of an aeroplane into the EngineInfo struct.
@@ -88,16 +85,15 @@
  * @param e Bitmask of the climates
  * @note the 20 between b and e is the load amount
  */
-#define MA(a, b, c, d, e) { CalendarTime::DAYS_TILL_ORIGINAL_BASE_YEAR + a, TimerGameCalendar::Year{c}, TimerGameCalendar::Year{d}, b, 20, e, INVALID_CARGO, CT_INVALID, 0, 8, EngineMiscFlags{}, VehicleCallbackMasks{}, 0, {}, STR_EMPTY, Ticks::CARGO_AGING_TICKS, EngineID::Invalid() }
+#define MA(a, b, c, d, e) { CalendarTime::DAYS_TILL_ORIGINAL_BASE_YEAR + a, TimerGameCalendar::Year{c}, TimerGameCalendar::Year{d}, b, 20, e, INVALID_CARGO, CT_INVALID, CargoTypes{}, 8, EngineMiscFlags{}, VehicleCallbackMasks{}, 0, {}, STR_EMPTY, Ticks::CARGO_AGING_TICKS, EngineID::Invalid() }
 
-/* Climates
- * T = Temperate
- * A = Sub-Arctic
- * S = Sub-Tropic
- * Y = Toyland */
+/** Climate temperate. */
 #define T LandscapeType::Temperate
+/** Climate sub-arctic. */
 #define A LandscapeType::Arctic
+/** Climate sub-tropic. */
 #define S LandscapeType::Tropic
+/** Climate toyland. */
 #define Y LandscapeType::Toyland
 static constexpr EngineInfo _orig_engine_info[] = {
 	/*      base_intro     base_life
@@ -358,7 +354,7 @@ static constexpr EngineInfo _orig_engine_info[] = {
 	MA( 21275,  20,  20,  99,                  LandscapeTypes({      Y})), // 251 Juggerplane M1
 	MA( 23832,  20,  20,  99,                  LandscapeTypes({      Y})), // 252 Flashbang Wizzer
 	MA( 13575,  20,  20,  40,                  LandscapeTypes({T,A,S  })), // 253 Tricario Helicopter
-	MA( 28215,  20,  20,  30,                  LandscapeTypes({T,A,S  })), // 254 Guru X2 Helicopter
+	MA( 28215,  20,  20,  50,                  LandscapeTypes({T,A,S  })), // 254 Guru X2 Helicopter
 	MA( 13575,  20,  20,  99,                  LandscapeTypes({      Y})), // 255 Powernaut Helicopter
 };
 #undef Y
@@ -389,26 +385,26 @@ static constexpr EngineInfo _orig_engine_info[] = {
  * Air drag value depends on the top speed of the vehicle.
  */
 #define RVI(a, b, c, d, e, f, g, h, i, j, k) { a, b, c, j, j, 0, d, e, f, g, h, k, i, 0, 0, VE_DEFAULT, 0, 76, 0, 0, 0 }
-#define M RAILVEH_MULTIHEAD
-#define W RAILVEH_WAGON
-#define G RAILVEH_SINGLEHEAD
-#define S EC_STEAM
-#define D EC_DIESEL
-#define E EC_ELECTRIC
-#define N EC_MONORAIL
-#define V EC_MAGLEV
-/* Wagons always have engine type 0, i.e. steam. */
-#define A EC_STEAM
+#define M RailVehicleType::Multihead
+#define W RailVehicleType::Wagon
+#define G RailVehicleType::Singlehead
+#define S EngineClass::Steam
+#define D EngineClass::Diesel
+#define E EngineClass::Electric
+#define N EngineClass::Monorail
+#define V EngineClass::Maglev
+/** Wagons always have engine type 0, i.e. steam. */
+#define A EngineClass::Steam
 
 #define R RAILTYPE_RAIL
 #define C RAILTYPE_ELECTRIC
 #define O RAILTYPE_MONO
 #define L RAILTYPE_MAGLEV
 
-#define RC_S PR_RUNNING_TRAIN_STEAM
-#define RC_D PR_RUNNING_TRAIN_DIESEL
-#define RC_E PR_RUNNING_TRAIN_ELECTRIC
-#define RC_W INVALID_PRICE
+#define RC_S Price::RunningTrainSteam
+#define RC_D Price::RunningTrainDiesel
+#define RC_E Price::RunningTrainElectric
+#define RC_W Price::Invalid
 
 static constexpr RailVehicleInfo _orig_rail_vehicle_info[] = {
 	/*   image_index  max_speed          running_cost      engclass
@@ -670,7 +666,7 @@ static constexpr AircraftVehicleInfo _orig_aircraft_vehicle_info[] = {
  * Tractive effort coefficient by default is the same as TTDPatch, 0.30*256=76
  * Air drag value depends on the top speed of the vehicle.
  */
-#define ROV(a, b, c, d, e, f, g, h) { a, b, c, PR_RUNNING_ROADVEH, d, e, f, g, h, 76, 0, VE_DEFAULT, 0, ROADTYPE_ROAD }
+#define ROV(a, b, c, d, e, f, g, h) { a, b, c, Price::RunningRoadveh, d, e, f, g, h, 76, 0, VE_DEFAULT, 0, ROADTYPE_ROAD }
 static constexpr RoadVehicleInfo _orig_road_vehicle_info[] = {
 	/*    image_index       sfx                            max_speed    power
 	 *    |    cost_factor  |                              |   capacity |

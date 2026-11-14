@@ -8,7 +8,7 @@
 /** @file strings.cpp Handling of translated strings. */
 
 #include "stdafx.h"
-#include "currency.h"
+#include "currency_func.h"
 #include "station_base.h"
 #include "town.h"
 #include "waypoint_base.h"
@@ -26,7 +26,6 @@
 #include "vehicle_base.h"
 #include "engine_base.h"
 #include "language.h"
-#include "townname_func.h"
 #include "string_func.h"
 #include "company_base.h"
 #include "smallmap_gui.h"
@@ -104,7 +103,7 @@ EncodedString GetEncodedStringWithArgs(StringID str, std::span<const StringParam
 	std::string result;
 	StringBuilder builder(result);
 	builder.PutUtf8(SCC_ENCODED_INTERNAL);
-	builder.PutIntegerBase(str, 16);
+	builder.PutIntegerBase(str.base(), 16);
 
 	struct visitor {
 		StringBuilder &builder;
@@ -158,7 +157,7 @@ EncodedString EncodedString::ReplaceParam(size_t param, StringParameter &&data) 
 
 	StringID str;
 	if (auto r = consumer.TryReadIntegerBase<uint32_t>(16); r.has_value()) {
-		str = *r;
+		str = static_cast<StringID>(*r);
 	} else {
 		return {};
 	}
@@ -265,7 +264,7 @@ static void FormatString(StringBuilder &builder, std::string_view str, std::span
 }
 
 struct LanguagePack : public LanguagePackHeader {
-	char data[]; // list of strings
+	char data[]; ///< List of strings.
 };
 
 struct LanguagePackDeleter {
@@ -347,9 +346,9 @@ void GetStringWithArgs(StringBuilder &builder, StringID string, StringParameters
 		case TEXT_TAB_TOWN:
 			if (IsInsideMM(string, SPECSTR_TOWNNAME_START, SPECSTR_TOWNNAME_END) && !game_script) {
 				try {
-					GenerateTownNameString(builder, string - SPECSTR_TOWNNAME_START, args.GetNextParameter<uint32_t>());
+					GenerateTownNameString(builder, (string - SPECSTR_TOWNNAME_START).base(), args.GetNextParameter<uint32_t>());
 				} catch (const std::runtime_error &e) {
-					Debug(misc, 0, "GetStringWithArgs: {}", e.what());
+					Debug(Facility::Misc, Severity::Critical, "GetStringWithArgs: {}", e.what());
 					builder += "(invalid string parameter)";
 				}
 				return;
@@ -361,7 +360,7 @@ void GetStringWithArgs(StringBuilder &builder, StringID string, StringParameters
 				try {
 					if (GetSpecialNameString(builder, string, args)) return;
 				} catch (const std::runtime_error &e) {
-					Debug(misc, 0, "GetStringWithArgs: {}", e.what());
+					Debug(Facility::Misc, Severity::Critical, "GetStringWithArgs: {}", e.what());
 					builder += "(invalid string parameter)";
 					return;
 				}
@@ -406,7 +405,7 @@ void GetStringWithArgs(StringBuilder &builder, StringID string, StringParameters
  * Get a parsed string with most special stringcodes replaced by the string parameters.
  * @param builder The builder of the string.
  * @param string The ID of the string to parse.
- * @param args Span of arguments for the string.
+ * @param params Span of arguments for the string.
  * @param case_index The "case index". This will only be set when FormatString wants to print the string in a different case.
  * @param game_script The string is coming directly from a game script.
  */
@@ -603,10 +602,8 @@ static void FormatGenericCurrency(StringBuilder &builder, const CurrencySpec *sp
 		number = -number;
 	}
 
-	/* Add prefix part, following symbol_pos specification.
-	 * Here, it can can be either 0 (prefix) or 2 (both prefix and suffix).
-	 * The only remaining value is 1 (suffix), so everything that is not 1 */
-	if (spec->symbol_pos != 1) builder += spec->prefix;
+	/* Add prefix part, following symbol_pos specification. */
+	if (spec->symbol_pos.Test(CurrencySymbolPosition::Prefix)) builder += spec->prefix;
 
 	StringID number_str = STR_NULL;
 
@@ -637,10 +634,8 @@ static void FormatGenericCurrency(StringBuilder &builder, const CurrencySpec *sp
 		FormatString(builder, GetStringPtr(number_str), {});
 	}
 
-	/* Add suffix part, following symbol_pos specification.
-	 * Here, it can can be either 1 (suffix) or 2 (both prefix and suffix).
-	 * The only remaining value is 1 (prefix), so everything that is not 0 */
-	if (spec->symbol_pos != 0) builder += spec->suffix;
+	/* Add suffix part, following symbol_pos specification. */
+	if (spec->symbol_pos.Test(CurrencySymbolPosition::Suffix)) builder += spec->suffix;
 
 	if (negative) {
 		builder.PutUtf8(SCC_POP_COLOUR);
@@ -950,7 +945,7 @@ static const Units _units_time_years_or_minutes[] = {
  */
 static const Units GetVelocityUnits(VehicleType type)
 {
-	uint8_t setting = (type == VEH_SHIP || type == VEH_AIRCRAFT) ? _settings_game.locale.units_velocity_nautical : _settings_game.locale.units_velocity;
+	uint8_t setting = (type == VehicleType::Ship || type == VehicleType::Aircraft) ? _settings_game.locale.units_velocity_nautical : _settings_game.locale.units_velocity;
 
 	assert(setting < lengthof(_units_velocity_calendar));
 	assert(setting < lengthof(_units_velocity_realtime));
@@ -962,7 +957,8 @@ static const Units GetVelocityUnits(VehicleType type)
 
 /**
  * Convert the given (internal) speed to the display speed.
- * @param speed the speed to convert
+ * @param speed The speed to convert.
+ * @param type The associated vehicle type.
  * @return the converted speed.
  */
 uint ConvertSpeedToDisplaySpeed(uint speed, VehicleType type)
@@ -975,7 +971,8 @@ uint ConvertSpeedToDisplaySpeed(uint speed, VehicleType type)
 
 /**
  * Convert the given display speed to the (internal) speed.
- * @param speed the speed to convert
+ * @param speed The speed to convert.
+ * @param type The associated vehicle type.
  * @return the converted speed.
  */
 uint ConvertDisplaySpeedToSpeed(uint speed, VehicleType type)
@@ -985,7 +982,8 @@ uint ConvertDisplaySpeedToSpeed(uint speed, VehicleType type)
 
 /**
  * Convert the given km/h-ish speed to the display speed.
- * @param speed the speed to convert
+ * @param speed The speed to convert.
+ * @param type The associated vehicle type.
  * @return the converted speed.
  */
 uint ConvertKmhishSpeedToDisplaySpeed(uint speed, VehicleType type)
@@ -995,7 +993,8 @@ uint ConvertKmhishSpeedToDisplaySpeed(uint speed, VehicleType type)
 
 /**
  * Convert the given display speed to the km/h-ish speed.
- * @param speed the speed to convert
+ * @param speed The speed to convert.
+ * @param type The associated vehicle type.
  * @return the converted speed.
  */
 uint ConvertDisplaySpeedToKmhishSpeed(uint speed, VehicleType type)
@@ -1045,7 +1044,7 @@ static void DecodeEncodedString(StringConsumer &consumer, bool game_script, Stri
 					return;
 				}
 				assert(!record.AnyBytesLeft());
-				param = MakeStringID(TEXT_TAB_GAMESCRIPT_START, StringIndexInTab(param));
+				param = MakeStringID(TEXT_TAB_GAMESCRIPT_START, StringIndexInTab(param)).base();
 				sub_args.emplace_back(param);
 				break;
 			}
@@ -1099,6 +1098,8 @@ static bool IsColourSafe(std::string_view buffer)
  * @param builder The string builder to write the final string to.
  * @param str_arg The original string with format codes.
  * @param args    Pointer to extra arguments used by various string codes.
+ * @param orig_case_index The selected case when entering the function.
+ * @param game_script Whether this string originates from a game-script.
  * @param dry_run True when the args' type data is not yet initialized.
  */
 static void FormatString(StringBuilder &builder, std::string_view str_arg, StringParameters &args, uint orig_case_index, bool game_script, bool dry_run)
@@ -1173,7 +1174,7 @@ static void FormatString(StringBuilder &builder, std::string_view str_arg, Strin
 					break;
 
 				case SCC_NEWGRF_STRINL: {
-					StringID substr = consumer.ReadUtf8(STR_NULL);
+					StringID substr{consumer.ReadUtf8(STR_NULL.base())};
 					std::string_view ptr = GetStringPtr(substr);
 					str_stack.emplace(ptr, args.GetOffset(), next_substr_case_index); // this may invalidate "consumer"
 					next_substr_case_index = 0;
@@ -1375,12 +1376,12 @@ static void FormatString(StringBuilder &builder, std::string_view str_arg, Strin
 						break;
 					}
 
-					switch (CargoSpec::Get(cargo)->units_volume) {
-						case STR_TONS:
+					switch (CargoSpec::Get(cargo)->units_volume.base()) {
+						case STR_TONS.base():
 							amount = _units_weight[_settings_game.locale.units_weight].c.ToDisplay(amount);
 							break;
 
-						case STR_LITERS:
+						case STR_LITERS.base():
 							amount = _units_volume[_settings_game.locale.units_volume].c.ToDisplay(amount);
 							break;
 
@@ -1405,8 +1406,8 @@ static void FormatString(StringBuilder &builder, std::string_view str_arg, Strin
 					}
 
 					StringID cargo_str = CargoSpec::Get(cargo)->units_volume;
-					switch (cargo_str) {
-						case STR_TONS: {
+					switch (cargo_str.base()) {
+						case STR_TONS.base(): {
 							assert(_settings_game.locale.units_weight < lengthof(_units_weight));
 							const auto &x = _units_weight[_settings_game.locale.units_weight];
 							auto tmp_params = MakeParameters(x.c.ToDisplay(amount), x.decimal_places);
@@ -1414,7 +1415,7 @@ static void FormatString(StringBuilder &builder, std::string_view str_arg, Strin
 							break;
 						}
 
-						case STR_LITERS: {
+						case STR_LITERS.base(): {
 							assert(_settings_game.locale.units_volume < lengthof(_units_volume));
 							const auto &x = _units_volume[_settings_game.locale.units_volume];
 							auto tmp_params = MakeParameters(x.c.ToDisplay(amount), x.decimal_places);
@@ -1452,7 +1453,7 @@ static void FormatString(StringBuilder &builder, std::string_view str_arg, Strin
 
 					std::string_view list_separator = GetListSeparator();
 					for (const auto &cs : _sorted_cargo_specs) {
-						if (!HasBit(cmask, cs->Index())) continue;
+						if (!cmask.Test(cs->Index())) continue;
 
 						if (first) {
 							first = false;
@@ -1573,7 +1574,7 @@ static void FormatString(StringBuilder &builder, std::string_view str_arg, Strin
 				}
 
 				case SCC_UNITS_DAYS_OR_SECONDS: { // {UNITS_DAYS_OR_SECONDS}
-					uint8_t realtime = TimerGameEconomy::UsingWallclockUnits(_game_mode == GM_MENU);
+					uint8_t realtime = TimerGameEconomy::UsingWallclockUnits(_game_mode == GameMode::Menu);
 					const auto &x = _units_time_days_or_seconds[realtime];
 					auto tmp_params = MakeParameters(x.c.ToDisplay(args.GetNextParameter<int64_t>()), x.decimal_places);
 					FormatString(builder, GetStringPtr(x.s), tmp_params);
@@ -1581,7 +1582,7 @@ static void FormatString(StringBuilder &builder, std::string_view str_arg, Strin
 				}
 
 				case SCC_UNITS_MONTHS_OR_MINUTES: { // {UNITS_MONTHS_OR_MINUTES}
-					uint8_t realtime = TimerGameEconomy::UsingWallclockUnits(_game_mode == GM_MENU);
+					uint8_t realtime = TimerGameEconomy::UsingWallclockUnits(_game_mode == GameMode::Menu);
 					const auto &x = _units_time_months_or_minutes[realtime];
 					auto tmp_params = MakeParameters(x.c.ToDisplay(args.GetNextParameter<int64_t>()), x.decimal_places);
 					FormatString(builder, GetStringPtr(x.s), tmp_params);
@@ -1589,7 +1590,7 @@ static void FormatString(StringBuilder &builder, std::string_view str_arg, Strin
 				}
 
 				case SCC_UNITS_YEARS_OR_PERIODS: { // {UNITS_YEARS_OR_PERIODS}
-					uint8_t realtime = TimerGameEconomy::UsingWallclockUnits(_game_mode == GM_MENU);
+					uint8_t realtime = TimerGameEconomy::UsingWallclockUnits(_game_mode == GameMode::Menu);
 					const auto &x = _units_time_years_or_periods[realtime];
 					auto tmp_params = MakeParameters(x.c.ToDisplay(args.GetNextParameter<int64_t>()), x.decimal_places);
 					FormatString(builder, GetStringPtr(x.s), tmp_params);
@@ -1597,7 +1598,7 @@ static void FormatString(StringBuilder &builder, std::string_view str_arg, Strin
 				}
 
 				case SCC_UNITS_YEARS_OR_MINUTES: { // {UNITS_YEARS_OR_MINUTES}
-					uint8_t realtime = TimerGameEconomy::UsingWallclockUnits(_game_mode == GM_MENU);
+					uint8_t realtime = TimerGameEconomy::UsingWallclockUnits(_game_mode == GameMode::Menu);
 					const auto &x = _units_time_years_or_minutes[realtime];
 					auto tmp_params = MakeParameters(x.c.ToDisplay(args.GetNextParameter<int64_t>()), x.decimal_places);
 					FormatString(builder, GetStringPtr(x.s), tmp_params);
@@ -1631,7 +1632,7 @@ static void FormatString(StringBuilder &builder, std::string_view str_arg, Strin
 
 				case SCC_DEPOT_NAME: { // {DEPOT}
 					VehicleType vt = args.GetNextParameter<VehicleType>();
-					if (vt == VEH_AIRCRAFT) {
+					if (vt == VehicleType::Aircraft) {
 						auto tmp_params = MakeParameters(args.GetNextParameter<StationID>());
 						GetStringWithArgs(builder, STR_FORMAT_DEPOT_NAME_AIRCRAFT, tmp_params);
 						break;
@@ -1643,7 +1644,7 @@ static void FormatString(StringBuilder &builder, std::string_view str_arg, Strin
 						GetStringWithArgs(builder, STR_JUST_RAW_STRING, tmp_params);
 					} else {
 						auto tmp_params = MakeParameters(d->town->index, d->town_cn + 1);
-						GetStringWithArgs(builder, STR_FORMAT_DEPOT_NAME_TRAIN + 2 * vt + (d->town_cn == 0 ? 0 : 1), tmp_params);
+						GetStringWithArgs(builder, STR_FORMAT_DEPOT_NAME_TRAIN + 2 * to_underlying(vt) + (d->town_cn == 0 ? 0 : 1), tmp_params);
 					}
 					break;
 				}
@@ -1820,10 +1821,10 @@ static void FormatString(StringBuilder &builder, std::string_view str_arg, Strin
 						StringID string_id;
 						switch (v->type) {
 							default:           string_id = STR_INVALID_VEHICLE; break;
-							case VEH_TRAIN:    string_id = STR_SV_TRAIN_NAME; break;
-							case VEH_ROAD:     string_id = STR_SV_ROAD_VEHICLE_NAME; break;
-							case VEH_SHIP:     string_id = STR_SV_SHIP_NAME; break;
-							case VEH_AIRCRAFT: string_id = STR_SV_AIRCRAFT_NAME; break;
+							case VehicleType::Train:    string_id = STR_SV_TRAIN_NAME; break;
+							case VehicleType::Road:     string_id = STR_SV_ROAD_VEHICLE_NAME; break;
+							case VehicleType::Ship:     string_id = STR_SV_SHIP_NAME; break;
+							case VehicleType::Aircraft: string_id = STR_SV_AIRCRAFT_NAME; break;
 						}
 
 						GetStringWithArgs(builder, string_id, tmp_params);
@@ -1850,7 +1851,7 @@ static void FormatString(StringBuilder &builder, std::string_view str_arg, Strin
 				}
 
 				case SCC_COLOUR: { // {COLOUR}
-					StringControlCode scc = (StringControlCode)(SCC_BLUE + args.GetNextParameter<Colours>());
+					StringControlCode scc = static_cast<StringControlCode>(SCC_BLUE + to_underlying(args.GetNextParameter<Colours>()));
 					if (IsInsideMM(scc, SCC_BLUE, SCC_COLOUR)) builder.PutUtf8(scc);
 					break;
 				}
@@ -1860,7 +1861,7 @@ static void FormatString(StringBuilder &builder, std::string_view str_arg, Strin
 					break;
 			}
 		} catch (std::out_of_range &e) {
-			Debug(misc, 0, "FormatString: {}", e.what());
+			Debug(Facility::Misc, Severity::Critical, "FormatString: {}", e.what());
 			builder += "(invalid parameter)";
 		}
 	}
@@ -1986,23 +1987,23 @@ static void GenPresidentName(StringBuilder &builder, uint32_t seed)
 
 static bool GetSpecialNameString(StringBuilder &builder, StringID string, StringParameters &args)
 {
-	switch (string) {
-		case SPECSTR_SILLY_NAME: // Not used in new companies, but retained for old-loader savegames
+	switch (string.base()) {
+		case SPECSTR_SILLY_NAME.base(): // Not used in new companies, but retained for old-loader savegames
 			builder += _silly_company_names[std::min<size_t>(args.GetNextParameter<uint16_t>(), std::size(_silly_company_names) - 1)];
 			return true;
 
-		case SPECSTR_ANDCO_NAME: // used for Foobar & Co company names
+		case SPECSTR_ANDCO_NAME.base(): // used for Foobar & Co company names
 			GenAndCoName(builder, args.GetNextParameter<uint32_t>());
 			return true;
 
-		case SPECSTR_PRESIDENT_NAME: // President name
+		case SPECSTR_PRESIDENT_NAME.base(): // President name
 			GenPresidentName(builder, args.GetNextParameter<uint32_t>());
 			return true;
 	}
 
 	/* TownName Transport company names, with the appropriate town name. */
 	if (IsInsideMM(string, SPECSTR_COMPANY_NAME_START, SPECSTR_COMPANY_NAME_END)) {
-		GenerateTownNameString(builder, string - SPECSTR_COMPANY_NAME_START, args.GetNextParameter<uint32_t>());
+		GenerateTownNameString(builder, (string - SPECSTR_COMPANY_NAME_START).base(), args.GetNextParameter<uint32_t>());
 		builder += " Transport";
 		return true;
 	}
@@ -2020,7 +2021,7 @@ bool LanguagePackHeader::IsValid() const
 	       this->version      == TO_LE32(LANGUAGE_PACK_VERSION) &&
 	       this->plural_form  <  LANGUAGE_MAX_PLURAL &&
 	       this->text_dir     <= 1 &&
-	       this->newgrflangid < MAX_LANG &&
+	       this->newgrflangid < GRFLanguage::End &&
 	       this->num_genders  < MAX_NUM_GENDERS &&
 	       this->num_cases    < MAX_NUM_CASES &&
 	       StrValid(this->name) &&
@@ -2033,6 +2034,7 @@ bool LanguagePackHeader::IsValid() const
 
 /**
  * Check whether a translation is sufficiently finished to offer it to the public.
+ * @return \c true iff there are less than 25% missing strings.
  */
 bool LanguagePackHeader::IsReasonablyFinished() const
 {
@@ -2063,7 +2065,7 @@ bool ReadLanguagePack(const LanguageMetadata *lang)
 	std::array<uint, TEXT_TAB_END> tab_start, tab_num;
 
 	uint count = 0;
-	for (uint i = 0; i < TEXT_TAB_END; i++) {
+	for (StringTab i : EnumRange(TEXT_TAB_END)) {
 		uint16_t num = FROM_LE16(lang_pack->offsets[i]);
 		if (num > TAB_SIZE) return false;
 
@@ -2098,7 +2100,6 @@ bool ReadLanguagePack(const LanguageMetadata *lang)
 	_current_language = lang;
 	_current_text_dir = (TextDirection)_current_language->text_dir;
 	_config_language_file = FS2OTTD(_current_language->file.filename().native());
-	SetCurrentGrfLangID(_current_language->newgrflangid);
 	_langpack.list_separator = GetString(STR_LIST_SEPARATOR);
 	_langpack.ellipsis = GetString(STR_TRUNCATION_ELLIPSIS);
 
@@ -2132,13 +2133,13 @@ bool ReadLanguagePack(const LanguageMetadata *lang)
 	SortIndustryTypes();
 	BuildIndustriesLegend();
 	BuildContentTypeStringList();
-	InvalidateWindowClassesData(WC_BUILD_VEHICLE);      // Build vehicle window.
-	InvalidateWindowClassesData(WC_TRAINS_LIST);        // Train group window.
-	InvalidateWindowClassesData(WC_ROADVEH_LIST);       // Road vehicle group window.
-	InvalidateWindowClassesData(WC_SHIPS_LIST);         // Ship group window.
-	InvalidateWindowClassesData(WC_AIRCRAFT_LIST);      // Aircraft group window.
-	InvalidateWindowClassesData(WC_INDUSTRY_DIRECTORY); // Industry directory window.
-	InvalidateWindowClassesData(WC_STATION_LIST);       // Station list window.
+	InvalidateWindowClassesData(WindowClass::BuildVehicle); // Build vehicle window.
+	InvalidateWindowClassesData(WindowClass::TrainList); // Train group window.
+	InvalidateWindowClassesData(WindowClass::RoadVehicleList); // Road vehicle group window.
+	InvalidateWindowClassesData(WindowClass::ShipList); // Ship group window.
+	InvalidateWindowClassesData(WindowClass::AircraftList); // Aircraft group window.
+	InvalidateWindowClassesData(WindowClass::IndustryDirectory); // Industry directory window.
+	InvalidateWindowClassesData(WindowClass::StationList); // Station list window.
 
 	return true;
 }
@@ -2181,7 +2182,7 @@ std::optional<std::string> GetCurrentLocale(const char *param);
  * @param newgrflangid NewGRF languages ID to check.
  * @return The language's metadata, or nullptr if it is not known.
  */
-const LanguageMetadata *GetLanguage(uint8_t newgrflangid)
+const LanguageMetadata *GetLanguage(GRFLanguage newgrflangid)
 {
 	for (const LanguageMetadata &lang : _languages) {
 		if (newgrflangid == lang.newgrflangid) return &lang;
@@ -2230,15 +2231,15 @@ static void FillLanguageList(const std::string &path)
 		/* Check whether the file is of the correct version */
 		std::string file = FS2OTTD(lmd.file.native());
 		if (!GetLanguageFileHeader(file, &lmd)) {
-			Debug(misc, 3, "{} is not a valid language file", file);
+			Debug(Facility::Misc, Severity::Notice, "{} is not a valid language file", file);
 		} else if (GetLanguage(lmd.newgrflangid) != nullptr) {
-			Debug(misc, 3, "{}'s language ID is already known", file);
+			Debug(Facility::Misc, Severity::Notice, "{}'s language ID is already known", file);
 		} else {
 			_languages.push_back(std::move(lmd));
 		}
 	}
 	if (error_code) {
-		Debug(misc, 9, "Unable to open directory {}: {}", path, error_code.message());
+		Debug(Facility::Misc, Severity::Trace3, "Unable to open directory {}: {}", path, error_code.message());
 	}
 }
 
@@ -2249,7 +2250,7 @@ static void FillLanguageList(const std::string &path)
 void InitializeLanguagePacks()
 {
 	for (Searchpath sp : _valid_searchpaths) {
-		FillLanguageList(FioGetDirectory(sp, LANG_DIR));
+		FillLanguageList(FioGetDirectory(sp, Subdirectory::Lang));
 	}
 	if (_languages.empty()) UserError("No available language packs (invalid versions?)");
 
@@ -2299,34 +2300,41 @@ std::string_view GetCurrentLanguageIsoCode()
 	return _langpack.langpack->isocode;
 }
 
-/**
- * Check whether there are glyphs missing in the current language.
- * @return If glyphs are missing, return \c true, else return \c false.
- */
-bool MissingGlyphSearcher::FindMissingGlyphs()
+void BaseStringMissingGlyphSearcher::DetermineRequiredGlyphs(FontSizes fontsizes)
 {
-	FontCache::LoadFontCaches(this->Monospace() ? FontSizes{FS_MONO} : FONTSIZES_REQUIRED);
+	this->missing_fontsizes.Reset();
+	this->missing_glyphs.clear();
+	this->required_glyphs.clear();
 
 	this->Reset();
 	for (auto text = this->NextString(); text.has_value(); text = this->NextString()) {
-		FontSize size = this->DefaultSize();
-		FontCache *fc = FontCache::Get(size);
+		FontSize fs = this->DefaultSize();
+		FontCache *fc = FontCache::Get(fs);
 		for (char32_t c : Utf8View(*text)) {
 			if (c >= SCC_FIRST_FONT && c <= SCC_LAST_FONT) {
-				size = (FontSize)(c - SCC_FIRST_FONT);
-				fc = FontCache::Get(size);
-			} else if (!IsInsideMM(c, SCC_SPRITE_START, SCC_SPRITE_END) && IsPrintable(c) && !IsTextDirectionChar(c) && fc->MapCharToGlyph(c, false) == 0) {
-				/* The character is printable, but not in the normal font. This is the case we were testing for. */
-				Debug(fontcache, 0, "Font is missing glyphs to display char 0x{:X} in {} font size", static_cast<uint32_t>(c), FontSizeToName(size));
-				return true;
+				fs = (FontSize)(c - SCC_FIRST_FONT);
+				fc = FontCache::Get(fs);
+				continue;
 			}
+
+			if (!fontsizes.Test(fs)) continue;
+			if (!IsPrintable(c) || IsTextDirectionChar(c)) continue;
+			if (c != ' ' && (IsWhitespace(c) || IsNonbreakingWhitespace(c))) continue;
+			if (IsInsideMM(c, SCC_SPRITE_START, SCC_SPRITE_END)) continue;
+
+			this->required_glyphs.insert(c);
+
+			if (fc->MapCharToGlyph(c, false) != 0) continue;
+
+			this->missing_fontsizes.Set(fs);
+			this->missing_glyphs.insert(c);
 		}
 	}
-	return false;
 }
 
 /** Helper for searching through the language pack. */
-class LanguagePackGlyphSearcher : public MissingGlyphSearcher {
+class LanguagePackGlyphSearcher : public BaseStringMissingGlyphSearcher {
+private:
 	uint i; ///< Iterator for the primary language tables.
 	uint j; ///< Iterator for the secondary language tables.
 
@@ -2338,7 +2346,7 @@ class LanguagePackGlyphSearcher : public MissingGlyphSearcher {
 
 	FontSize DefaultSize() override
 	{
-		return FS_NORMAL;
+		return FontSize::Normal;
 	}
 
 	std::optional<std::string_view> NextString() override
@@ -2355,24 +2363,6 @@ class LanguagePackGlyphSearcher : public MissingGlyphSearcher {
 
 		return ret;
 	}
-
-	bool Monospace() override
-	{
-		return false;
-	}
-
-	void SetFontNames([[maybe_unused]] FontCacheSettings *settings, [[maybe_unused]] std::string_view font_name, [[maybe_unused]] const void *os_data) override
-	{
-#if defined(WITH_FREETYPE) || defined(_WIN32) || defined(WITH_COCOA)
-		settings->small.font = font_name;
-		settings->medium.font = font_name;
-		settings->large.font = font_name;
-
-		settings->small.os_handle = os_data;
-		settings->medium.os_handle = os_data;
-		settings->large.os_handle = os_data;
-#endif
-	}
 };
 
 /**
@@ -2384,14 +2374,29 @@ class LanguagePackGlyphSearcher : public MissingGlyphSearcher {
  * mean it might use characters that are not in the
  * font, which is the whole reason this check has
  * been added.
+ * @param fontsizes Font sizes to consider.
  * @param searcher  The methods to use to search for strings to check.
  *                  If nullptr the loaded language pack searcher is used.
  */
-void CheckForMissingGlyphs(MissingGlyphSearcher *searcher)
+void CheckForMissingGlyphs(FontSizes fontsizes, MissingGlyphSearcher *searcher)
 {
 	static LanguagePackGlyphSearcher pack_searcher;
 	if (searcher == nullptr) searcher = &pack_searcher;
-	bool bad_font = searcher->FindMissingGlyphs();
+
+	FontCache::LoadFontCaches(fontsizes);
+
+	searcher->DetermineRequiredGlyphs(fontsizes);
+	bool bad_font = searcher->missing_fontsizes.Any();
+
+	if (bad_font) {
+		Debug(Facility::Fontcache, Severity::Error, "Missing {} glyph(s) in requested fonts", searcher->missing_glyphs.size());
+		if (IsVisibleSeverity(Facility::Fontcache, Severity::Notice)) {
+			for (char32_t c : searcher->missing_glyphs) {
+				Debug(Facility::Fontcache, Severity::Notice, "  U+{:04X}", static_cast<uint32_t>(c));
+			}
+		}
+	}
+
 #if defined(WITH_FREETYPE) || defined(_WIN32) || defined(WITH_COCOA)
 	if (bad_font) {
 		/* We found an unprintable character... lets try whether we can find
@@ -2399,10 +2404,14 @@ void CheckForMissingGlyphs(MissingGlyphSearcher *searcher)
 		bool any_font_configured = !_fcsettings.medium.font.empty();
 		FontCacheSettings backup = _fcsettings;
 
-		_fcsettings.mono.os_handle = nullptr;
-		_fcsettings.medium.os_handle = nullptr;
+		/* All systems expect a hyphen not an underscore in the isocode. */
+		std::string isocode = _langpack.langpack->isocode;
+		std::ranges::replace(isocode, '_', '-');
 
-		bad_font = !FontProviderManager::FindFallbackFont(&_fcsettings, _langpack.langpack->isocode, searcher);
+		bad_font = !FontProviderManager::FindFallbackFont(isocode, searcher);
+		if (!bad_font) {
+			FontCache::LoadFontCaches(searcher->missing_fontsizes);
+		}
 
 		_fcsettings = std::move(backup);
 
@@ -2414,17 +2423,13 @@ void CheckForMissingGlyphs(MissingGlyphSearcher *searcher)
 			StringBuilder builder(err_str);
 			builder.PutUtf8(SCC_YELLOW);
 			builder.Put("The current font is missing some of the characters used in the texts for this language. Using system fallback font instead.");
-			ShowErrorMessage(GetEncodedString(STR_JUST_RAW_STRING, std::move(err_str)), {}, WL_WARNING);
-		}
-
-		if (bad_font) {
-			/* Our fallback font does miss characters too, so keep the
-			 * user chosen font as that is more likely to be any good than
-			 * the wild guess we made */
-			FontCache::LoadFontCaches(searcher->Monospace() ? FontSizes{FS_MONO} : FONTSIZES_REQUIRED);
+			ShowErrorMessage(GetEncodedString(STR_JUST_RAW_STRING, std::move(err_str)), {}, WarningLevel::Warning);
 		}
 	}
 #endif
+
+	/* Update the font width cache */
+	LoadStringWidthTable(fontsizes);
 
 	if (bad_font) {
 		/* All attempts have failed. Display an error. As we do not want the string to be translated by
@@ -2435,15 +2440,9 @@ void CheckForMissingGlyphs(MissingGlyphSearcher *searcher)
 		StringBuilder builder(err_str);
 		builder.PutUtf8(SCC_YELLOW);
 		builder.Put("The current font is missing some of the characters used in the texts for this language. Go to Help & Manuals > Fonts, or read the file docs/fonts.md in your OpenTTD directory, to see how to solve this.");
-		ShowErrorMessage(GetEncodedString(STR_JUST_RAW_STRING, std::move(err_str)), {}, WL_WARNING);
-
-		/* Reset the font width */
-		LoadStringWidthTable(searcher->Monospace() ? FontSizes{FS_MONO} : FONTSIZES_REQUIRED);
+		ShowErrorMessage(GetEncodedString(STR_JUST_RAW_STRING, std::move(err_str)), {}, WarningLevel::Warning);
 		return;
 	}
-
-	/* Update the font with cache */
-	LoadStringWidthTable(searcher->Monospace() ? FontSizes{FS_MONO} : FONTSIZES_REQUIRED);
 
 #if !(defined(WITH_ICU_I18N) && defined(WITH_HARFBUZZ)) && !defined(WITH_UNISCRIBE) && !defined(WITH_COCOA)
 	/*
@@ -2460,7 +2459,7 @@ void CheckForMissingGlyphs(MissingGlyphSearcher *searcher)
 		StringBuilder builder(err_str);
 		builder.PutUtf8(SCC_YELLOW);
 		builder.Put("This version of OpenTTD does not support right-to-left languages. Recompile with ICU + Harfbuzz enabled.");
-		ShowErrorMessage(GetEncodedString(STR_JUST_RAW_STRING, std::move(err_str)), {}, WL_ERROR);
+		ShowErrorMessage(GetEncodedString(STR_JUST_RAW_STRING, std::move(err_str)), {}, WarningLevel::Error);
 	}
 #endif /* !(WITH_ICU_I18N && WITH_HARFBUZZ) && !WITH_UNISCRIBE && !WITH_COCOA */
 }

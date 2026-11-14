@@ -526,6 +526,7 @@ STR_AIRCRAFT_MENU_AIRPORT_CONSTRUCTION                          :공항 건설
 STR_LANDSCAPING_MENU_LANDSCAPING                                :지형 편집
 STR_LANDSCAPING_MENU_PLANT_TREES                                :나무 심기
 STR_LANDSCAPING_MENU_PLACE_SIGN                                 :팻말 달기
+STR_LANDSCAPING_MENU_PLACE_OBJECT                               :오브젝트 설치
 
 # Music menu
 STR_TOOLBAR_SOUND_MUSIC                                         :효과음/배경 음악
@@ -538,6 +539,7 @@ STR_NEWS_MENU_DELETE_ALL_MESSAGES                               :모든 뉴스 �
 # About menu
 STR_ABOUT_MENU_LAND_BLOCK_INFO                                  :지형 정보
 STR_ABOUT_MENU_HELP                                             :도움말 & 매뉴얼
+STR_ABOUT_MENU_ENTER_SCREENSAVER_MODE                           :화면 보호기 모드 전환
 STR_ABOUT_MENU_TOGGLE_CONSOLE                                   :콘솔 켜기/끄기
 STR_ABOUT_MENU_AI_DEBUG                                         :인공지능/게임 스크립트 디버그
 STR_ABOUT_MENU_SCREENSHOT                                       :스크린샷 찍기
@@ -631,7 +633,6 @@ STR_GRAPH_LAST_24_MONTHS                                        :{TINY_FONT}{BLA
 STR_GRAPH_LAST_24_QUARTERS                                      :{TINY_FONT}{BLACK}6년 (분기별)
 STR_GRAPH_LAST_24_YEARS                                         :{TINY_FONT}{BLACK}24년 (연도별)
 
-STR_GRAPH_TOGGLE_RANGE                                          :이 데이터 범위에 대한 그래프 전환
 STR_GRAPH_SELECT_SCALE                                          :그래프 가로 축척 변경
 
 STR_GRAPH_CARGO_PAYMENT_RATES_CAPTION                           :{WHITE}화물 운송단가 비율
@@ -647,13 +648,21 @@ STR_GRAPH_CARGO_PAYMENT_CARGO                                   :{TINY_FONT}{BLA
 
 STR_GRAPH_INDUSTRY_CAPTION                                      :{WHITE}{INDUSTRY} - 화물 그래프
 STR_GRAPH_INDUSTRY_RANGE_PRODUCED                               :생산량
+STR_GRAPH_INDUSTRY_RANGE_PRODUCED_TOOLTIP                       :이 산업시설에서 생산된 화물양 그래프를 표시하거나 숨깁니다
 STR_GRAPH_INDUSTRY_RANGE_TRANSPORTED                            :수송량
+STR_GRAPH_INDUSTRY_RANGE_TRANSPORTED_TOOLTIP                    :이 산업시설에서 수송된 화물양 그래프를 표시하거나 숨깁니다
 STR_GRAPH_INDUSTRY_RANGE_DELIVERED                              :수송됨
+STR_GRAPH_INDUSTRY_RANGE_DELIVERED_TOOLTIP                      :이 산업시설로 수송된 화물양 그래프를 표시하거나 숨깁니다
 STR_GRAPH_INDUSTRY_RANGE_WAITING                                :대기 중
+STR_GRAPH_INDUSTRY_RANGE_WAITING_TOOLTIP                        :이 산업시설의 대기 화물양 그래프를 표시하거나 숨깁니다
 
 STR_GRAPH_TOWN_CARGO_CAPTION                                    :{WHITE}{TOWN} - 화물 이력
-STR_GRAPH_TOWN_RANGE_PRODUCED                                   :공급
+STR_GRAPH_TOWN_RANGE_PRODUCED                                   :생산
+STR_GRAPH_TOWN_RANGE_PRODUCED_TOOLTIP                           :이 도시에서 생산된 화물양 그래프를 표시하거나 숨깁니다
 STR_GRAPH_TOWN_RANGE_TRANSPORTED                                :수송됨
+STR_GRAPH_TOWN_RANGE_TRANSPORTED_TOOLTIP                        :이 도시에서 수송된 화물양 그래프를 표시하거나 숨깁니다
+STR_GRAPH_TOWN_RANGE_DELIVERED                                  :수송됨
+STR_GRAPH_TOWN_RANGE_DELIVERED_TOOLTIP                          :이 도시로 수송된 화물양 그래프를 표시하거나 숨깁니다
 
 STR_GRAPH_PERFORMANCE_DETAIL_TOOLTIP                            :{BLACK}상세 성취도를 봅니다.
 
@@ -924,7 +933,7 @@ STR_NEWS_AIRCRAFT_IS_WAITING                                    :{WHITE}{VEHICLE
 
 # Order review system / warnings
 STR_NEWS_VEHICLE_HAS_TOO_FEW_ORDERS                             :{WHITE}{VEHICLE}에 경로를 하나 이상 지정해주십시오
-STR_NEWS_VEHICLE_HAS_VOID_ORDER                                 :{WHITE}{VEHICLE}에 빈 경로가 지정되어 있습니다
+STR_NEWS_VEHICLE_HAS_VOID_ORDER                                 :{WHITE}{VEHICLE}에 잘못된 경로가 지정되어 있습니다
 STR_NEWS_VEHICLE_HAS_DUPLICATE_ENTRY                            :{WHITE}{VEHICLE}에 중복된 경로가 지정되어 있습니다
 STR_NEWS_VEHICLE_HAS_INVALID_ENTRY                              :{WHITE}{VEHICLE}에 잘못된 경로가 지정되어 있습니다
 STR_NEWS_PLANE_USES_TOO_SHORT_RUNWAY                            :{WHITE}{VEHICLE}의 경로 중에 활주로가 너무 짧은 공항이 있습니다.
@@ -1142,8 +1151,8 @@ STR_GAME_OPTIONS_SOCIAL_PLUGIN_STATE_INVALID_SIGNATURE          :{RED}잘못된 
 
 STR_BASESET_STATUS                                              :{STRING} {RED}({NUM}개의 파일이 빠졌거나 손상되었습니다)
 
-STR_ERROR_RESOLUTION_LIST_FAILED                                :{WHITE}지원되는 해상도 목록을 불러오는데 실패하였습니다.
-STR_ERROR_FULLSCREEN_FAILED                                     :{WHITE}전체화면 모드 실패
+STR_ERROR_RESOLUTION_LIST_FAILED                                :지원되는 해상도 목록을 불러오는데 실패하였습니다.
+STR_ERROR_FULLSCREEN_FAILED                                     :전체화면 모드 실패
 
 # Custom currency window
 
@@ -1210,9 +1219,9 @@ STR_RIVERS_MODERATE                                             :적당히
 STR_RIVERS_LOT                                                  :많이
 
 ###length 3
-STR_DISASTER_NONE                                               :고장 안남
-STR_DISASTER_REDUCED                                            :적음
-STR_DISASTER_NORMAL                                             :일반
+STR_BREAKDOWNS_NONE                                             :고장 안남
+STR_BREAKDOWNS_REDUCED                                          :적음
+STR_BREAKDOWNS_NORMAL                                           :일반
 
 ###length 4
 STR_SUBSIDY_X1_5                                                :1.5배 지급
@@ -1352,8 +1361,13 @@ STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HIGH                      :높음
 STR_CONFIG_SETTING_RECESSIONS                                   :경제 불황: {STRING}
 STR_CONFIG_SETTING_RECESSIONS_HELPTEXT                          :이 설정을 켜면, 주기적으로 경제 불황이 발생할 수 있습니다. 불황 기간 동안에는 모든 화물의 생산량이 확연하게 줄어듭니다. (불황이 끝나면 이전 수준으로 회복됩니다.)
 
-STR_CONFIG_SETTING_TRAIN_REVERSING                              :열차가 역 내에서 회차하는 것을 금지: {STRING}
-STR_CONFIG_SETTING_TRAIN_REVERSING_HELPTEXT                     :이 설정을 켜면. 열차가 뒤로 돌면 다음 목적지까지 더 짧은 경로로 갈 수 있다고 해도 열차가 비두단식 역에서 뒤로 돌 수 없게 됩니다.
+STR_CONFIG_SETTING_TRAIN_FLIP_REVERSE                           :열차가 회차할 때 열차 전체가 뒤집히는 것을 허용: {STRING}
+STR_CONFIG_SETTING_TRAIN_FLIP_REVERSE_HELPTEXT                  :열차가 뒤로 이동할 때 열차 전체가 뒤집혀도 되는지를 선택합니다. "어디서나"를 선택하면 어디에서든 열차가 뒤집힐 수 있습니다. "선로 끝에서만"을 선택하면 역 안에서 전방에 진행 경로가 있다면 열차가 뒤집히지 않습니다. "불가능"을 선택하면 열차는 뒤집히지 않으며 필요한 경우에만 후진하여 운행하지만, 후방 기관차가 없으면 속도가 감소합니다
+
+###length 3
+STR_CONFIG_SETTING_TRAIN_FLIP_REVERSE_ALL                       :어디에서든
+STR_CONFIG_SETTING_TRAIN_FLIP_REVERSE_END_OF_LINE_ONLY          :선로 끝에서만
+STR_CONFIG_SETTING_TRAIN_FLIP_REVERSE_NONE                      :불가능
 
 STR_CONFIG_SETTING_DISASTERS                                    :재앙: {STRING}
 STR_CONFIG_SETTING_DISASTERS_HELPTEXT                           :일정 구역이나 차량, 기반시설을 간혹 파괴할 수도 있는 재앙을 켜거나 끕니다.
@@ -1366,7 +1380,7 @@ STR_CONFIG_SETTING_MAP_HEIGHT_LIMIT_HELPTEXT                    :지도 지형�
 STR_CONFIG_SETTING_MAP_HEIGHT_LIMIT_VALUE                       :{NUM}
 ###setting-zero-is-special
 STR_CONFIG_SETTING_MAP_HEIGHT_LIMIT_AUTO                        :(자동)
-STR_CONFIG_SETTING_TOO_HIGH_MOUNTAIN                            :{WHITE}이 값을 지도 높이 최댓값으로 설정할 수 없습니다. 이 값보다 고도가 높은 산이 최소 한 개 이상 존재합니다.
+STR_CONFIG_SETTING_TOO_HIGH_MOUNTAIN                            :이 값을 지도 높이 최댓값으로 설정할 수 없습니다. 이 값보다 고도가 높은 산이 최소 한 개 이상 존재합니다
 
 STR_CONFIG_SETTING_AUTOSLOPE                                    :건물, 트랙 등의 하부 지형 편집 허용: {STRING}
 STR_CONFIG_SETTING_AUTOSLOPE_HELPTEXT                           :건물이나 도로/선로 등을 제거하지 않고도 하부의 지형을 편집할 수 있게 허용합니다
@@ -1504,7 +1518,7 @@ STR_CONFIG_SETTING_STOP_ON_TOWN_ROAD                            :도시 소유�
 STR_CONFIG_SETTING_STOP_ON_TOWN_ROAD_HELPTEXT                   :도시 소유의 도로 위에 버스 정류장 건설을 허용합니다
 STR_CONFIG_SETTING_STOP_ON_COMPETITOR_ROAD                      :경쟁자 소유의 도로 위에 버스 정류장 건설 허용: {STRING}
 STR_CONFIG_SETTING_STOP_ON_COMPETITOR_ROAD_HELPTEXT             :다른 회사 소유의 도로 위에 버스 정류장을 건설하는 것을 허용합니다
-STR_CONFIG_SETTING_DYNAMIC_ENGINES_EXISTING_VEHICLES            :{WHITE}이미 차량이 존재하면 이 설정을 변경하실 수 없습니다.
+STR_CONFIG_SETTING_DYNAMIC_ENGINES_EXISTING_VEHICLES            :이미 차량이 존재하면 이 설정을 변경할 수 없습니다
 
 STR_CONFIG_SETTING_INFRASTRUCTURE_MAINTENANCE                   :기반시설 유지비: {STRING}
 STR_CONFIG_SETTING_INFRASTRUCTURE_MAINTENANCE_HELPTEXT          :이 설정을 켜면, 기반시설 유지비가 발생합니다. 유지비는 교통망의 규모에 비례하며 대형 회사는 소형 회사보다 많은 유지비가 들어갑니다.
@@ -1558,6 +1572,12 @@ STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE                         :산업시설 �
 STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE_HELPTEXT                :산업시설의 생산량을 이 백분율 값만큼 조정합니다
 STR_CONFIG_SETTING_CARGO_SCALE_VALUE                            :{NUM}%
 
+STR_CONFIG_SETTING_CARGO_AGING_RATE                             :화물 가치 감소 속도 비율 조정 : {STRING}
+STR_CONFIG_SETTING_CARGO_AGING_RATE_HELPTEXT                    :차량에 적재된 화물의 가치가 시간이 지나면서 얼마나 빠르게 감소하는지 조정합니다
+STR_CONFIG_SETTING_CARGO_AGING_RATE_VALUE                       :{NUM}%
+###setting-zero-is-special
+STR_CONFIG_SETTING_CARGO_AGING_RATE_ZERO                        :감소하지 않음
+
 STR_CONFIG_SETTING_AUTORENEW_VEHICLE                            :차량이 낡으면 차량을 자동으로 교체: {STRING}
 STR_CONFIG_SETTING_AUTORENEW_VEHICLE_HELPTEXT                   :이 설정을 켜면, 제한 수명에 다다른 차량이 교체 조건을 만족할 경우 자동으로 차량을 교체할 수 있게 됩니다
 
@@ -1599,7 +1619,7 @@ STR_CONFIG_SETTING_LAND_GENERATOR_HELPTEXT                      :오리지널 �
 STR_CONFIG_SETTING_LAND_GENERATOR_ORIGINAL                      :오리지널
 STR_CONFIG_SETTING_LAND_GENERATOR_TERRA_GENESIS                 :천지창조
 
-STR_CONFIG_SETTING_TERRAIN_TYPE                                 :지형 종류: {STRING}
+STR_CONFIG_SETTING_TERRAIN_TYPE                                 :최대 고도 프리셋: {STRING}
 STR_CONFIG_SETTING_TERRAIN_TYPE_HELPTEXT                        :지형의 언덕과 산지 모양을 결정합니다
 
 STR_CONFIG_SETTING_INDUSTRY_DENSITY                             :산업시설 수: {STRING}
@@ -1627,6 +1647,14 @@ STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_SMOOTH                  :부드럽게
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_ROUGH                   :거칠게
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_VERY_ROUGH              :매우 거칠게
 
+STR_CONFIG_SETTING_AVERAGE_HEIGHT                               :평균 고도: {STRING}
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_HELPTEXT                      :지형의 평균 고도를 선택합니다. '자동'은 선택한 기후에 기반한 기본값(아열대는 '저지대', 온대는 '보통', 아한대는 '고원')을 사용합니다.
+###length 4
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_AUTO                          :자동
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_LOWLANDS                      :저지대
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_NORMAL                        :보통
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_PLATEAUS                      :고원
+
 STR_CONFIG_SETTING_VARIETY                                      :산세 험준도: {STRING}
 STR_CONFIG_SETTING_VARIETY_HELPTEXT                             :지도에 산지와 평지를 모두 있도록 만들지 결정합니다. 더 높은 값을 사용할수록, 산지와 평지 사이의 고도 차이가 더 많아집니다
 
@@ -1641,11 +1669,11 @@ STR_CONFIG_SETTING_TREE_PLACER_ORIGINAL                         :오리지널
 STR_CONFIG_SETTING_TREE_PLACER_IMPROVED                         :향상됨
 
 STR_CONFIG_SETTING_ROAD_SIDE                                    :자동차 통행 방향: {STRING}
-STR_CONFIG_SETTING_ROAD_SIDE_HELPTEXT                           :통행 방향을 선택합니다
+STR_CONFIG_SETTING_ROAD_SIDE_HELPTEXT                           :도로 차량의 통행 방향을 선택합니다.{}이 설정은 열차 신호기의 설치 위치에도 영향을 미칩니다.{}제대로 적용하기 위해서는 게임을 다시 불러올 필요가 있습니다.
 
 ###length 2
-STR_CONFIG_SETTING_ROAD_SIDE_LEFT                               :좌측통행
-STR_CONFIG_SETTING_ROAD_SIDE_RIGHT                              :우측통행
+STR_CONFIG_SETTING_ROAD_SIDE_LEFT                               :좌측
+STR_CONFIG_SETTING_ROAD_SIDE_RIGHT                              :우측
 
 STR_CONFIG_SETTING_HEIGHTMAP_ROTATION                           :높이맵 회전: {STRING}
 STR_CONFIG_SETTING_HEIGHTMAP_ROTATION_TOOLTIP                   :높이맵을 게임 세계에 맞추기 위해 어느 방향으로 회전시킬지 선택합니다
@@ -1655,8 +1683,8 @@ STR_CONFIG_SETTING_HEIGHTMAP_ROTATION_CLOCKWISE                 :시계방향
 
 STR_CONFIG_SETTING_SE_FLAT_WORLD_HEIGHT                         :평지 시나리오의 평지 높이: {STRING}
 ###length 2
-STR_CONFIG_SETTING_EDGES_NOT_EMPTY                              :{WHITE}지도 북쪽 맨 가장자리에 있는 지형의 칸 한 개 이상이 비어있지 않습니다.
-STR_CONFIG_SETTING_EDGES_NOT_WATER                              :{WHITE}지도 맨 가장자리에 있는 칸 한 개 이상이 물이 아닙니다.
+STR_CONFIG_SETTING_EDGES_NOT_EMPTY                              :지도 북쪽 맨 가장자리에 있는 지형의 칸 중 하나 이상이 비어 있지 않습니다
+STR_CONFIG_SETTING_EDGES_NOT_WATER                              :지도 맨 가장자리에 있는 칸 중 하나 이상이 물이 아닙니다
 
 STR_CONFIG_SETTING_STATION_SPREAD                               :역의 최대 크기: {STRING}
 STR_CONFIG_SETTING_STATION_SPREAD_HELPTEXT                      :역의 최대 크기를 설정합니다. 값이 높으면 게임이 느려질 수도 있습니다.
@@ -1785,12 +1813,12 @@ STR_CONFIG_SETTING_TIMETABLE_SHOW_ARRIVAL_DEPARTURE_HELPTEXT    :열차 시간�
 STR_CONFIG_SETTING_QUICKGOTO                                    :빠른 행선지 설정: {STRING}
 STR_CONFIG_SETTING_QUICKGOTO_HELPTEXT                           :경로 창을 열면 자동으로 '행선지' 버튼을 선택하여 곧바로 행선지를 지정할 수 있도록 합니다.
 
-STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE                            :철도 형식 기본값 설정 (게임 시작/불러온 후): {STRING}
-STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_HELPTEXT                   :게임을 새로 시작하거나 불러온 뒤에 사용할 철도의 종류를 선택합니다. '처음 사용 가능한 것'은 가장 오래된 철도 종류를 선택하고, '최신 기술의 철도'는 가장 최신에 나온 철도 종류를 선택하며 '가장 많이 사용한 것'은 현재 가장 많이 사용한 철도 종류를 선택합니다
+STR_CONFIG_SETTING_DEFAULT_RAIL_ROAD_TYPE                       :기본 선로, 도로, 전차 선로 종류 (새 게임/불러오기 이후): {STRING}
+STR_CONFIG_SETTING_DEFAULT_RAIL_ROAD_TYPE_HELPTEXT              :게임을 시작하거나 불러온 이후에 선택할 선로, 도로, 전차 선로 종류입니다. '가장 오래된 것'을 선택하면 가장 오래된 종류를, '가장 최신 것'을 선택하면 가장 최신 것을, 그리고 '가장 많이 사용한 것'을 선택하면 현재 가장 많이 사용한 것을 선택합니다.
 ###length 3
-STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_FIRST                      :처음 사용 가능한 것
-STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_LAST                       :가장 최근에 개발된 철도
-STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_MOST_USED                  :가장 많이 사용한 것
+STR_CONFIG_SETTING_DEFAULT_RAIL_ROAD_TYPE_FIRST                 :가장 오래된 것
+STR_CONFIG_SETTING_DEFAULT_RAIL_ROAD_TYPE_LAST                  :가장 최신 것
+STR_CONFIG_SETTING_DEFAULT_RAIL_ROAD_TYPE_MOST_USED             :가장 많이 사용한 것
 
 STR_CONFIG_SETTING_SHOW_TRACK_RESERVATION                       :차량의 다음 진행 경로 보여주기: {STRING}
 STR_CONFIG_SETTING_SHOW_TRACK_RESERVATION_HELPTEXT              :열차가 경로 탐색 기능 때문에 폐색으로 진입할 수 없는 문제를 해결하기 위해, 열차가 진행할 경로를 별도의 어두운 색으로 표시합니다.
@@ -1896,6 +1924,9 @@ STR_CONFIG_SETTING_STATION_LENGTH_LOADING_PENALTY_HELPTEXT      :이 설정을 �
 
 STR_CONFIG_SETTING_WAGONSPEEDLIMITS                             :화물차 속력 제한 적용: {STRING}
 STR_CONFIG_SETTING_WAGONSPEEDLIMITS_HELPTEXT                    :이 설정을 켜면, 화물차의 속력 제한값에 따라 열차의 최대 속력을 제한합니다.
+
+STR_CONFIG_SETTING_AIRCRAFT_RANGE                               :항공기 최대 항속 거리 사용: {STRING}
+STR_CONFIG_SETTING_AIRCRAFT_RANGE_HELPTEXT                      :이 설정을 켜면, NewGRF가 항공기의 최대 항속 거리를 제한할 수 있습니다
 
 STR_CONFIG_SETTING_DISABLE_ELRAILS                              :전기 철도를 사용하지 않음: {STRING}
 STR_CONFIG_SETTING_DISABLE_ELRAILS_HELPTEXT                     :이 설정을 켜면, 전기 기관차가 일반 철도에서도 달릴 수 있도록 만듭니다
@@ -2091,6 +2122,8 @@ STR_CONFIG_SETTING_LARGER_TOWNS_VALUE                           :{COMMA}개 중�
 STR_CONFIG_SETTING_LARGER_TOWNS_DISABLED                        :없음
 STR_CONFIG_SETTING_CITY_SIZE_MULTIPLIER                         :초기 대도시 크기 비율: 일반 도시보다 {STRING}배 크게 시작
 STR_CONFIG_SETTING_CITY_SIZE_MULTIPLIER_HELPTEXT                :게임을 시작했을 때 일반 도시에 대한 대도시의 평균 크기를 설정합니다
+STR_CONFIG_SETTING_TOWN_MIN_DISTANCE                            :도시 사이의 최소 거리: {STRING}
+STR_CONFIG_SETTING_TOWN_MIN_DISTANCE_HELPTEXT                   :지도 생성 및 무작위 설립시 도시 사이의 최소 거리를 몇 칸으로 할지 설정합니다
 
 STR_CONFIG_SETTING_LINKGRAPH_RECALC_INTERVAL                    :분배 그래프를 매 {STRING}마다 업데이트
 STR_CONFIG_SETTING_LINKGRAPH_RECALC_INTERVAL_HELPTEXT           :각 연결 그래프의 하위 시퀀스 재계산 사이의 시간입니다. 각 재계산은 그래프의 한 구성 요소에 대한 계획을 계산합니다. 즉, 이 설정을 X로 설정한다고 해서 전체 그래프를 X초마다 업데이트한다는 뜻은 아닙니다. 일부 구성 요소만 X초마다 업데이트됩니다. 이 값을 더 짧게 설정할 수록 계산하는데 더 많은 CPU 계산 시간이 필요합니다. 값을 더 길게 설정하면 화물 분배가 새 경로로 이뤄지기까지 더 오랜 시간이 걸리게 됩니다
@@ -2201,27 +2234,27 @@ STR_CONFIG_SETTING_REVERSE_AT_SIGNALS_HELPTEXT                  :열차가 신�
 STR_CONFIG_SETTING_QUERY_CAPTION                                :{WHITE}설정값 변경
 
 # Config errors
-STR_CONFIG_ERROR                                                :{WHITE}설정 파일에서 오류 발생
-STR_CONFIG_ERROR_ARRAY                                          :{WHITE}... 배열 '{STRING}'에서 오류 발생
-STR_CONFIG_ERROR_INVALID_VALUE                                  :{WHITE}... '{1:STRING}'에 잘못된 값('{0:STRING}')이 지정되었습니다
-STR_CONFIG_ERROR_TRAILING_CHARACTERS                            :{WHITE}... '{STRING}' 설정의 끝에 후행 문자가 있습니다
-STR_CONFIG_ERROR_DUPLICATE_GRFID                                :{WHITE}... '{STRING}' NewGRF를 무시합니다: '{STRING}'{G 1 "과" "와"} GRF ID가 겹침
-STR_CONFIG_ERROR_INVALID_GRF                                    :{WHITE}... 유효하지 않은 '{STRING}' NewGRF를 무시합니다: {STRING}
+STR_CONFIG_ERROR                                                :설정 파일에서 오류 발생
+STR_CONFIG_ERROR_ARRAY                                          :배열 '{STRING}'에서 오류 발생
+STR_CONFIG_ERROR_INVALID_VALUE                                  :'{1:STRING}'에 잘못된 값('{0:STRING}')이 지정되었습니다
+STR_CONFIG_ERROR_TRAILING_CHARACTERS                            :'{STRING}' 설정의 끝에 후행 문자가 있습니다
+STR_CONFIG_ERROR_DUPLICATE_GRFID                                :'{STRING}' NewGRF를 무시합니다 - '{STRING}'{G 1 "과" "와"} NewGRF ID가 겹침
+STR_CONFIG_ERROR_INVALID_GRF                                    :유효하지 않은 '{STRING}' NewGRF를 무시합니다: {STRING}
 STR_CONFIG_ERROR_INVALID_GRF_NOT_FOUND                          :찾을 수 없음
 STR_CONFIG_ERROR_INVALID_GRF_UNSAFE                             :사용하기에 불안함
 STR_CONFIG_ERROR_INVALID_GRF_SYSTEM                             :NewGRF 시스템
 STR_CONFIG_ERROR_INVALID_GRF_INCOMPATIBLE                       :현재 OpenTTD 버전과 맞지 않음
 STR_CONFIG_ERROR_INVALID_GRF_UNKNOWN                            :알 수 없음
-STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_LEVEL             :{WHITE}... 압축 레벨 '{STRING}' : 유효하지 않습니다
-STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_ALGORITHM         :{WHITE}... '{STRING}' 형식으로 게임을 저장할 수 없습니다. '{STRING}' 형식으로 변환합니다
-STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :{WHITE}... 기본 그래픽 세트({STRING})가 무시되었습니다: 파일을 찾을 수 없습니다
-STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE}... 기본 효과음 세트({STRING})가 무시되었습니다: 파일을 찾을 수 없습니다
-STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... 기본 배경음 세트({STRING})가 무시되었습니다: 파일을 찾을 수 없습니다
+STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_LEVEL             :'{STRING}' - 유효하지 않은 압축 수준입니다
+STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_ALGORITHM         :'{STRING}' 형식으로 게임을 저장할 수 없습니다. '{STRING}' 형식으로 되돌립니다
+STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :기본 그래픽 세트({STRING})가 무시되었습니다 - 파일을 찾을 수 없습니다
+STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :기본 효과음 세트({STRING})가 무시되었습니다 - 파일을 찾을 수 없습니다
+STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :기본 배경음 세트({STRING})가 무시되었습니다 - 파일을 찾을 수 없습니다
 
-# Video initalization errors
-STR_VIDEO_DRIVER_ERROR                                          :{WHITE}비디오 설정 오류 발생...
-STR_VIDEO_DRIVER_ERROR_NO_HARDWARE_ACCELERATION                 :{WHITE}... 호환되는 GPU를 찾지 못했습니다. 하드웨어 가속이 비활성화됩니다
-STR_VIDEO_DRIVER_ERROR_HARDWARE_ACCELERATION_CRASH              :{WHITE}... GPU 드라이버가 게임을 종료시켰습니다. 하드웨어 가속이 비활성화됩니다
+# Video initialization errors
+STR_VIDEO_DRIVER_ERROR                                          :비디오 설정 오류 발생...
+STR_VIDEO_DRIVER_ERROR_NO_HARDWARE_ACCELERATION                 :호환되는 GPU를 찾지 못했습니다. 하드웨어 가속이 비활성화됩니다
+STR_VIDEO_DRIVER_ERROR_HARDWARE_ACCELERATION_CRASH              :GPU 드라이버가 게임을 종료시켰습니다. 하드웨어 가속이 비활성화됩니다
 
 # Intro window
 STR_INTRO_CAPTION                                               :{WHITE}OpenTTD
@@ -2358,15 +2391,15 @@ STR_FACE_SIMPLE                                                 :{BLACK}간단
 STR_FACE_SIMPLE_TOOLTIP                                         :{BLACK}간편 얼굴 선택 모드로 전환
 STR_FACE_LOAD                                                   :{BLACK}불러오기
 STR_FACE_LOAD_TOOLTIP                                           :{BLACK}즐겨찾는 얼굴 불러오기
-STR_FACE_LOAD_DONE                                              :{WHITE}당신이 즐겨찾는 얼굴을 OpenTTD 설정 파일로부터 불러왔습니다.
+STR_FACE_LOAD_DONE                                              :즐겨찾는 얼굴을 OpenTTD 설정 파일로부터 불러왔습니다
 STR_FACE_FACECODE                                               :{BLACK}플레이어 얼굴 코드
 STR_FACE_FACECODE_TOOLTIP                                       :{BLACK}플레이어 얼굴 코드 보기/설정
 STR_FACE_FACECODE_CAPTION                                       :{WHITE}플레이어 얼굴 코드 보기/설정
-STR_FACE_FACECODE_SET                                           :{WHITE}새 회사 소유주 얼굴이 설정되었습니다
-STR_FACE_FACECODE_ERR                                           :{WHITE}플레이어 얼굴 코드를 설정할 수 없습니다 - 올바른 값을 입력해야 합니다
+STR_FACE_FACECODE_SET                                           :새 회사 소유주 얼굴이 설정되었습니다
+STR_FACE_FACECODE_ERR                                           :플레이어 얼굴 코드를 설정할 수 없습니다 - 올바른 값을 입력해야 합니다
 STR_FACE_SAVE                                                   :{BLACK}저장
 STR_FACE_SAVE_TOOLTIP                                           :{BLACK}즐겨찾는 얼굴로 저장
-STR_FACE_SAVE_DONE                                              :{WHITE}이 얼굴이 OpenTTD 설정 파일에 즐겨찾는 얼굴로 저장될 것입니다.
+STR_FACE_SAVE_DONE                                              :이 얼굴이 OpenTTD 설정 파일에 즐겨찾는 얼굴로 저장됩니다
 STR_FACE_SETTING_TOGGLE                                         :{STRING} {ORANGE}{STRING}
 STR_FACE_SETTING_NUMERIC                                        :{STRING} {ORANGE}{NUM} / {NUM}
 STR_FACE_YES                                                    :예
@@ -2476,15 +2509,13 @@ STR_NETWORK_CONNECTING_WAITING                                  :{BLACK}{NUM}명
 STR_NETWORK_CONNECTING_DOWNLOADING_1                            :{BLACK}지금까지 {BYTES}를 다운로드하였습니다
 STR_NETWORK_CONNECTING_DOWNLOADING_2                            :{BLACK}{BYTES} / {BYTES} 다운로드 완료
 
-###length 8
+###length 6
 STR_NETWORK_CONNECTING_1                                        :{BLACK}(1/6) 접속 중...
 STR_NETWORK_CONNECTING_2                                        :{BLACK}(2/6) 권한 부여중...
 STR_NETWORK_CONNECTING_3                                        :{BLACK}(3/6) 기다리는 중...
 STR_NETWORK_CONNECTING_4                                        :{BLACK}(4/6) 지도 다운로드 중...
 STR_NETWORK_CONNECTING_5                                        :{BLACK}(5/6) 데이터 처리 중...
 STR_NETWORK_CONNECTING_6                                        :{BLACK}(6/6) 등록 중...
-STR_NETWORK_CONNECTING_SPECIAL_1                                :{BLACK}게임 정보 가져오는 중...
-STR_NETWORK_CONNECTING_SPECIAL_2                                :{BLACK}회사 정보 가져오는 중...
 
 STR_NETWORK_CONNECTION_DISCONNECT                               :{BLACK}접속 끊기
 
@@ -2538,6 +2569,8 @@ STR_NETWORK_CLIENT_LIST_SERVER_CONNECTION_TYPE_TURN             :{BLACK}중계 �
 STR_NETWORK_CLIENT_LIST_ADMIN_CLIENT_KICK                       :추방
 STR_NETWORK_CLIENT_LIST_ADMIN_CLIENT_BAN                        :차단
 STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_RESET                     :삭제
+STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_ALLOW_ANY                 :모든 접속자 허용
+STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_ALLOW_LISTED              :등록된 접속자만 허용
 
 STR_NETWORK_CLIENT_LIST_ASK_CAPTION                             :{WHITE}관리자 기능
 STR_NETWORK_CLIENT_LIST_ASK_CLIENT_KICK                         :{YELLOW}'{STRING}' 플레이어를 정말로 추방하시겠습니까?
@@ -2578,33 +2611,33 @@ STR_NETWORK_CHAT_EXTERNAL                                       :[{STRING}] {STR
 STR_NETWORK_CHAT_OSKTITLE                                       :{BLACK}채팅 메시지를 입력하세요
 
 # Network messages
-STR_NETWORK_ERROR_NOTAVAILABLE                                  :{WHITE}사용할 수 있는 네트워크 장치가 없습니다.
-STR_NETWORK_ERROR_NOCONNECTION                                  :{WHITE}서버 연결 시간이 초과되었거나 요청이 거절되었습니다
-STR_NETWORK_ERROR_NEWGRF_MISMATCH                               :{WHITE}NewGRF가 맞지 않아서 연결할 수 없습니다
-STR_NETWORK_ERROR_DESYNC                                        :{WHITE}네트워크와 게임을 동기화하는 데 실패하였습니다
-STR_NETWORK_ERROR_LOSTCONNECTION                                :{WHITE}네트워크와 연결이 끊어졌습니다
-STR_NETWORK_ERROR_SAVEGAMEERROR                                 :{WHITE}게임 저장 파일을 불러올 수 없습니다
-STR_NETWORK_ERROR_SERVER_START                                  :{WHITE}서버를 시작할 수 없습니다
-STR_NETWORK_ERROR_SERVER_ERROR                                  :{WHITE}프로토콜 오류가 발생되어 연결이 끊어졌습니다
-STR_NETWORK_ERROR_BAD_PLAYER_NAME                               :{WHITE}접속자 이름을 지정하지 않았습니다. 접속자 이름은 멀티플레이 창 맨 위에서 설정할 수 있습니다.
-STR_NETWORK_ERROR_BAD_SERVER_NAME                               :{WHITE}서버 이름을 지정하지 않았습니다. 서버 이름은 멀티플레이 창 맨 위에서 설정할 수 있습니다.
-STR_NETWORK_ERROR_WRONG_REVISION                                :{WHITE}이 접속자의 게임 버전이 서버의 버전과 일치하지 않습니다
-STR_NETWORK_ERROR_WRONG_PASSWORD                                :{WHITE}잘못된 비밀번호입니다
-STR_NETWORK_ERROR_NOT_ON_ALLOW_LIST                             :{WHITE}접속이 허용된 접속자가 아닙니다
-STR_NETWORK_ERROR_SERVER_FULL                                   :{WHITE}서버에 인원이 가득 찼습니다
-STR_NETWORK_ERROR_SERVER_BANNED                                 :{WHITE}서버 관리자에 의해 접속이 차단되었습니다
-STR_NETWORK_ERROR_KICKED                                        :{WHITE}서버에서 강제로 추방되었습니다
-STR_NETWORK_ERROR_KICK_MESSAGE                                  :{WHITE}사유: {STRING}
-STR_NETWORK_ERROR_CHEATER                                       :{WHITE}이 서버에서 치트를 사용할 수 없습니다
-STR_NETWORK_ERROR_TOO_MANY_COMMANDS                             :{WHITE}서버에 너무 많은 명령을 보냈습니다
-STR_NETWORK_ERROR_TIMEOUT_PASSWORD                              :{WHITE}비밀번호 입력 시간을 초과하였습니다
-STR_NETWORK_ERROR_TIMEOUT_COMPUTER                              :{WHITE}사용자의 컴퓨터가 서버와 연결을 유지할 수 있을 만큼 빠르지 않습니다
-STR_NETWORK_ERROR_TIMEOUT_MAP                                   :{WHITE}지도 다운로드 시간을 초과하였습니다
-STR_NETWORK_ERROR_TIMEOUT_JOIN                                  :{WHITE}서버 접속 시간을 초과하였습니다
-STR_NETWORK_ERROR_INVALID_CLIENT_NAME                           :{WHITE}사용할 수 없는 이름입니다
+STR_NETWORK_ERROR_NOTAVAILABLE                                  :사용할 수 있는 네트워크 장치가 없습니다
+STR_NETWORK_ERROR_NOCONNECTION                                  :서버 연결 시간이 초과되었거나 요청이 거절되었습니다
+STR_NETWORK_ERROR_NEWGRF_MISMATCH                               :NewGRF가 맞지 않아서 연결할 수 없습니다
+STR_NETWORK_ERROR_DESYNC                                        :네트워크 게임을 동기화하는 데 실패하였습니다
+STR_NETWORK_ERROR_LOSTCONNECTION                                :네트워크 연결이 끊어졌습니다
+STR_NETWORK_ERROR_SAVEGAMEERROR                                 :게임 저장 파일을 불러올 수 없습니다
+STR_NETWORK_ERROR_SERVER_START                                  :서버를 시작할 수 없습니다
+STR_NETWORK_ERROR_SERVER_ERROR                                  :프로토콜 오류가 발생되어 연결이 끊어졌습니다
+STR_NETWORK_ERROR_BAD_PLAYER_NAME                               :접속자 이름을 지정하지 않았습니다. 접속자 이름은 멀티플레이 창 맨 위에서 설정할 수 있습니다.
+STR_NETWORK_ERROR_BAD_SERVER_NAME                               :서버 이름을 지정하지 않았습니다. 서버 이름은 멀티플레이 창 맨 위에서 설정할 수 있습니다.
+STR_NETWORK_ERROR_WRONG_REVISION                                :이 접속자의 게임 버전이 서버의 버전과 일치하지 않습니다
+STR_NETWORK_ERROR_WRONG_PASSWORD                                :잘못된 비밀번호입니다
+STR_NETWORK_ERROR_NOT_ON_ALLOW_LIST                             :접속이 허용된 접속자가 아닙니다
+STR_NETWORK_ERROR_SERVER_FULL                                   :서버에 인원이 가득 찼습니다
+STR_NETWORK_ERROR_SERVER_BANNED                                 :서버 관리자에 의해 접속이 차단되었습니다
+STR_NETWORK_ERROR_KICKED                                        :서버에서 강제로 추방되었습니다
+STR_NETWORK_ERROR_KICK_MESSAGE                                  :사유: {STRING}
+STR_NETWORK_ERROR_CHEATER                                       :이 서버에서 치트를 사용할 수 없습니다
+STR_NETWORK_ERROR_TOO_MANY_COMMANDS                             :서버에 너무 많은 명령을 보냈습니다
+STR_NETWORK_ERROR_TIMEOUT_PASSWORD                              :비밀번호 입력 시간을 초과하였습니다
+STR_NETWORK_ERROR_TIMEOUT_COMPUTER                              :사용자의 컴퓨터가 서버와 연결을 유지할 수 있을 만큼 빠르지 않습니다
+STR_NETWORK_ERROR_TIMEOUT_MAP                                   :지도 다운로드 시간을 초과하였습니다
+STR_NETWORK_ERROR_TIMEOUT_JOIN                                  :서버 접속 시간을 초과하였습니다
+STR_NETWORK_ERROR_INVALID_CLIENT_NAME                           :사용할 수 없는 이름입니다
 
-STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION_CAPTION            :{WHITE}가능한 연결 손실
-STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION                    :{WHITE}마지막 {NUM}초간 서버로부터 데이터를 받지 못했습니다
+STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION_CAPTION            :연결 손실 가능성이 있습니다
+STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION                    :최근 {NUM}초 동안 서버로부터 데이터를 받지 못했습니다
 
 ###length 23
 STR_NETWORK_ERROR_CLIENT_GENERAL                                :일반 오류
@@ -2657,14 +2690,14 @@ STR_NETWORK_MESSAGE_CLIENT_COMPANY_NEW                          :*** {STRING} �
 STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {STRING} 님이 퇴장하셨습니다 (사유: {STRING})
 STR_NETWORK_MESSAGE_NAME_CHANGE                                 :*** {STRING} 님이 이름을 {STRING}(으)로 바꾸었습니다
 STR_NETWORK_MESSAGE_GIVE_MONEY                                  :*** {0:STRING} 님이 {2:STRING}에게 {1:CURRENCY_LONG}만큼의 돈을 보내셨습니다
-STR_NETWORK_MESSAGE_SERVER_SHUTDOWN                             :{WHITE}서버가 게임을 종료하였습니다
-STR_NETWORK_MESSAGE_SERVER_REBOOT                               :{WHITE}서버가 재시작되고 있습니다...{}{}기다려주세요...
+STR_NETWORK_MESSAGE_SERVER_SHUTDOWN                             :서버가 게임을 종료하였습니다
+STR_NETWORK_MESSAGE_SERVER_REBOOT                               :서버가 재시작되고 있습니다...{}{}기다려주세요...
 STR_NETWORK_MESSAGE_KICKED                                      :*** {STRING} - 서버에서 강제로 추방되었습니다. 사유: ({STRING})
 
-STR_NETWORK_ERROR_COORDINATOR_REGISTRATION_FAILED               :{WHITE}서버 등록 실패
-STR_NETWORK_ERROR_COORDINATOR_REUSE_OF_INVITE_CODE              :{WHITE}다른 서버가 이 초대 코드를 이미 사용하고 있습니다. 게임 종류를 "로컬"로 변경합니다.
-STR_NETWORK_ERROR_COORDINATOR_ISOLATED                          :{WHITE}서버가 원격 접속을 허용하지 않습니다
-STR_NETWORK_ERROR_COORDINATOR_ISOLATED_DETAIL                   :{WHITE}다른 플레이어가 이 서버에 들어올 수 없게 될 것입니다
+STR_NETWORK_ERROR_COORDINATOR_REGISTRATION_FAILED               :서버 등록에 실패하였습니다
+STR_NETWORK_ERROR_COORDINATOR_REUSE_OF_INVITE_CODE              :다른 서버가 이 초대 코드를 이미 사용하고 있습니다. 게임 종류를 "로컬"로 변경합니다.
+STR_NETWORK_ERROR_COORDINATOR_ISOLATED                          :서버가 원격 접속을 허용하지 않습니다
+STR_NETWORK_ERROR_COORDINATOR_ISOLATED_DETAIL                   :다른 플레이어가 이 서버에 들어올 수 없게 될 것입니다
 
 # Content downloading window
 STR_CONTENT_TITLE                                               :{WHITE}온라인 콘텐츠
@@ -2708,8 +2741,8 @@ STR_CONTENT_DETAIL_FILESIZE                                     :{SILVER}파일 
 STR_CONTENT_DETAIL_SELECTED_BECAUSE_OF                          :{WHITE}{STRING}{SILVER} 때문에 선택됨
 STR_CONTENT_DETAIL_DEPENDENCIES                                 :{SILVER}필요한 요소: {WHITE}{STRING}
 STR_CONTENT_DETAIL_TAGS                                         :{SILVER}태그: {WHITE}{STRING}
-STR_CONTENT_NO_ZLIB                                             :{WHITE}OpenTTD가 "zlib" 지원 기능이 없는 상태에서 빌드되었습니다...
-STR_CONTENT_NO_ZLIB_SUB                                         :{WHITE}... 콘텐츠를 다운로드할 수 없습니다!
+STR_CONTENT_NO_ZLIB                                             :OpenTTD가 "zlib" 지원 기능이 없는 상태에서 빌드되었습니다...
+STR_CONTENT_NO_ZLIB_SUB                                         :콘텐츠를 다운로드할 수 없습니다!
 
 # Order of these is important!
 STR_CONTENT_TYPE_BASE_GRAPHICS                                  :{G=m}기본 그래픽
@@ -2731,10 +2764,10 @@ STR_CONTENT_DOWNLOAD_COMPLETE                                   :{WHITE}다운�
 STR_CONTENT_DOWNLOAD_PROGRESS_SIZE                              :{WHITE}{BYTES} / {BYTES} 다운로드 ({NUM} %)
 
 # Content downloading error messages
-STR_CONTENT_ERROR_COULD_NOT_CONNECT                             :{WHITE}콘텐츠 서버에 접속할 수 없습니다...
-STR_CONTENT_ERROR_COULD_NOT_DOWNLOAD                            :{WHITE}다운로드 실패...
-STR_CONTENT_ERROR_COULD_NOT_DOWNLOAD_FILE_NOT_WRITABLE          :{WHITE}... 파일 쓰기가 불가능합니다
-STR_CONTENT_ERROR_COULD_NOT_EXTRACT                             :{WHITE}다운로드한 파일의 압축을 풀 수 없습니다
+STR_CONTENT_ERROR_COULD_NOT_CONNECT                             :콘텐츠 서버에 접속할 수 없습니다...
+STR_CONTENT_ERROR_COULD_NOT_DOWNLOAD                            :다운로드 실패...
+STR_CONTENT_ERROR_COULD_NOT_DOWNLOAD_FILE_NOT_WRITABLE          :파일 쓰기가 불가능합니다
+STR_CONTENT_ERROR_COULD_NOT_EXTRACT                             :다운로드한 파일의 압축을 풀 수 없습니다
 
 STR_MISSING_GRAPHICS_SET_CAPTION                                :{WHITE}그래픽이 없습니다
 STR_MISSING_GRAPHICS_SET_MESSAGE                                :{BLACK}OpenTTD를 실행시키기 위해서는 그래픽 파일이 필요하지만 컴퓨터에서 그래픽 파일을 찾을 수 없습니다. OpenTTD를 실행시키기 위해 그래픽을 다운로드 받아서 설치하시겠습니까?
@@ -2849,18 +2882,38 @@ STR_PICKER_PREVIEW_SHRINK_TOOLTIP                               :미리보기 �
 STR_PICKER_PREVIEW_EXPAND                                       :+
 STR_PICKER_PREVIEW_EXPAND_TOOLTIP                               :미리보기 이미지의 높이를 늘입니다. CTRL+클릭하면 최대로 늘입니다
 
-STR_PICKER_STATION_CLASS_TOOLTIP                                :표시할 역 종류를 선택하세요
+STR_PICKER_DEFAULT_COLLECTION                                   :기본 모음집
+STR_PICKER_SELECT_COLLECTION_TOOLTIP                            :모음집을 선택하세요
+STR_PICKER_COLLECTION_ADD                                       :추가
+STR_PICKER_COLLECTION_ADD_TOOLTIP                               :새 모음집을 생성합니다
+STR_PICKER_COLLECTION_RENAME                                    :이름 변경
+STR_PICKER_COLLECTION_RENAME_TOOLTIP                            :모음집 이름을 변경합니다
+STR_PICKER_COLLECTION_DELETE                                    :삭제
+STR_PICKER_COLLECTION_DELETE_TOOLTIP                            :모음집을 삭제합니다
+
+STR_PICKER_COLLECTION_RENAME_QUERY                              :모음집 이름을 변경합니다
+STR_PICKER_COLLECTION_DELETE_QUERY                              :모음집 삭제
+STR_PICKER_COLLECTION_DELETE_QUERY_TEXT                         :{YELLOW}정말 이 모음집을 삭제하시겠습니까?
+STR_PICKER_COLLECTION_DELETE_QUERY_DISABLED_TEXT                :{YELLOW}정말 이 모음집을 삭제하시겠습니까? (비활성화된 NewGRF에서 온 항목을 포함하고 있습니다)
+
+STR_PICKER_STATION_CLASS_TOOLTIP                                :표시할 역 종류를 선택하세요. CTRL + 클릭하면 즐겨찾기된 항목에 추가/제거가 가능합니다
 STR_PICKER_STATION_TYPE_TOOLTIP                                 :설치하려는 역 종류를 선택하세요. CTRL+클릭하면 즐겨찾기 추가/제거가 가능합니다
-STR_PICKER_WAYPOINT_CLASS_TOOLTIP                               :표시할 경유지 종류를 선택하세요
+STR_PICKER_STATION_COLLECTION_TOOLTIP                           :표시할 역 모음집을 선택하세요
+STR_PICKER_WAYPOINT_CLASS_TOOLTIP                               :표시할 경유지 종류를 선택하세요. CTRL + 클릭하면 즐겨찾기된 항목에 추가/제거가 가능합니다
 STR_PICKER_WAYPOINT_TYPE_TOOLTIP                                :설치하려는 경유지를 선택하세요. CTRL+클릭하면 즐겨찾기 추가/제거가 가능합니다
-STR_PICKER_ROADSTOP_BUS_CLASS_TOOLTIP                           :표시할 버스 정류장 종류를 선택하세요
+STR_PICKER_WAYPOINT_COLLECTION_TOOLTIP                          :표시할 경유지 모음집을 선택하세요
+STR_PICKER_ROADSTOP_BUS_CLASS_TOOLTIP                           :표시할 버스 정류장 종류를 선택하세요. CTRL + 클릭하면 즐겨찾기된 항목에 추가/제거가 가능합니다
 STR_PICKER_ROADSTOP_BUS_TYPE_TOOLTIP                            :설치하려는 버스 정류장 종류를 선택하세요. CTRL+클릭하면 즐겨찾기 추가/제거가 가능합니다
-STR_PICKER_ROADSTOP_TRUCK_CLASS_TOOLTIP                         :표시할 트럭 적하장 종류를 선택하세요
+STR_PICKER_ROADSTOP_BUS_COLLECTION_TOOLTIP                      :표시할 버스 정류장 모음집을 선택하세요
+STR_PICKER_ROADSTOP_TRUCK_CLASS_TOOLTIP                         :표시할 트럭 적하장 종류를 선택하세요. CTRL + 클릭하면 즐겨찾기된 항목에 추가/제거가 가능합니다
 STR_PICKER_ROADSTOP_TRUCK_TYPE_TOOLTIP                          :설치하려는 트럭 적하장 종류를 선택하세요. CTRL+클릭하면 즐겨찾기 추가/제거가 가능합니다
-STR_PICKER_OBJECT_CLASS_TOOLTIP                                 :표시할 오브젝트 종류를 선택하세요
+STR_PICKER_ROADSTOP_TRUCK_COLLECTION_TOOLTIP                    :표시할 트럭 적하장 모음집을 선택하세요
+STR_PICKER_OBJECT_CLASS_TOOLTIP                                 :표시할 오브젝트 종류를 선택하세요. CTRL + 클릭하면 즐겨찾기된 항목에 추가/제거가 가능합니다
 STR_PICKER_OBJECT_TYPE_TOOLTIP                                  :설치하려는 오브젝트 종류를 선택합니다. CTRL+클릭+드래그하면 대각선 방향의 영역을 선택할 수 있습니다. SHIFT 키를 누른 채로 사용하면 예상 비용을 볼 수 있습니다
-STR_PICKER_HOUSE_CLASS_TOOLTIP                                  :표시할 도시 구역을 선택하세요
+STR_PICKER_OBJECT_COLLECTION_TOOLTIP                            :표시할 오브젝트 모음집을 선택하세요
+STR_PICKER_HOUSE_CLASS_TOOLTIP                                  :표시할 도시 구역을 선택하세요. CTRL + 클릭하면 즐겨찾기된 항목에 추가/제거가 가능합니다
 STR_PICKER_HOUSE_TYPE_TOOLTIP                                   :지으려는 건물 종류를 선택하세요. CTRL+클릭하면 즐겨찾기 추가/제거가 가능합니다
+STR_PICKER_HOUSE_COLLECTION_TOOLTIP                             :표시할 건물 모음집을 선택하세요
 
 STR_HOUSE_PICKER_CAPTION                                        :건물 선택
 STR_HOUSE_PICKER_NAME                                           :{BLACK}이름: {GOLD}{STRING}
@@ -3020,8 +3073,8 @@ STR_STATION_BUILD_NOISE                                         :{BLACK}발생�
 
 # Landscaping toolbar
 STR_LANDSCAPING_TOOLBAR                                         :{WHITE}지형 편집
-STR_LANDSCAPING_TOOLTIP_LOWER_A_CORNER_OF_LAND                  :{BLACK}땅의 모퉁이를 낮춥니다. 드래그하면 시작점의 땅을 낮추고 선택한 영역의 도착점까지 지형을 적절히 맞춥니다. CTRL+클릭+드래그하면 대각선 방향의 영역을 선택할 수 있습니다. SHIFT 키를 누른 채로 사용하면 예상 비용을 볼 수 있습니다
-STR_LANDSCAPING_TOOLTIP_RAISE_A_CORNER_OF_LAND                  :{BLACK}땅의 모퉁이를 높입니다. 드래그하면 시작점의 땅을 높이고 선택한 영역의 도착점까지 지형을 적절히 맞춥니다. CTRL+클릭+드래그하면 대각선 방향의 영역을 선택할 수 있습니다. SHIFT 키를 누른 채로 사용하면 예상 비용을 볼 수 있습니다
+STR_LANDSCAPING_TOOLTIP_LOWER_A_CORNER_OF_LAND                  :{BLACK}땅의 모퉁이를 낮춥니다. 클릭+드래그하면 시작점의 땅을 낮추고 선택한 영역의 도착점까지 지형을 적절히 맞춥니다. CTRL+클릭+드래그하면 대각선 방향의 영역을 선택할 수 있습니다. SHIFT 키를 누른 채로 사용하면 예상 비용을 볼 수 있습니다
+STR_LANDSCAPING_TOOLTIP_RAISE_A_CORNER_OF_LAND                  :{BLACK}땅의 모퉁이를 높입니다. 클릭+드래그하면 시작점의 땅을 높이고 선택한 영역의 도착점까지 지형을 적절히 맞춥니다. CTRL+클릭+드래그하면 대각선 방향의 영역을 선택할 수 있습니다. SHIFT 키를 누른 채로 사용하면 예상 비용을 볼 수 있습니다
 STR_LANDSCAPING_LEVEL_LAND_TOOLTIP                              :{BLACK}처음 선택한 모퉁이의 고도에 맞추어 땅을 평평하게 고릅니다. CTRL+클릭+드래그하면 대각선 방향의 영역을 선택할 수 있습니다. SHIFT 키를 누른 채로 사용하면 예상 비용을 볼 수 있습니다
 STR_LANDSCAPING_TOOLTIP_PURCHASE_LAND                           :{BLACK}나중에 그 땅을 사용하기 위해 소유권을 구입합니다. CTRL+클릭+드래그하면 대각선 방향의 영역을 선택할 수 있습니다. SHIFT 키를 누른 채로 사용하면 예상 비용을 볼 수 있습니다
 
@@ -3049,10 +3102,13 @@ STR_TREES_MODE_FOREST_LG_TOOLTIP                                :{BLACK}지면�
 
 # Land generation window (SE)
 STR_TERRAFORM_TOOLBAR_LAND_GENERATION_CAPTION                   :{WHITE}지형 만들기
-STR_TERRAFORM_TOOLTIP_PLACE_ROCKY_AREAS_ON_LANDSCAPE            :{BLACK}암석 지역을 지정합니다
+STR_TERRAFORM_TOOLTIP_PLACE_ROCKY_AREAS_ON_LANDSCAPE            :{BLACK}암석 지역을 지정합니다.{}CTRL+클릭하면 암석 지역을 제거합니다
+STR_TERRAFORM_TOOLTIP_PLACE_ROUGH_AREAS_ON_LANDSCAPE            :{BLACK}거친 표면 지역을 지정합니다.{}CTRL + 클릭하면 거친 표면 지역을 제거합니다
 STR_TERRAFORM_TOOLTIP_DEFINE_DESERT_AREA                        :{BLACK}사막 지역을 지정합니다.{}CTRL+클릭하면 사막 지역을 제거할 수 있습니다
 STR_TERRAFORM_TOOLTIP_INCREASE_SIZE_OF_LAND_AREA                :{BLACK}지형 편집툴의 크기를 키움
 STR_TERRAFORM_TOOLTIP_DECREASE_SIZE_OF_LAND_AREA                :{BLACK}지형 편집툴의 크기를 줄임
+STR_TERRAFORM_TOOLTIP_LOWER_A_CORNER_OF_LAND                    :{BLACK}모퉁이나 땅의 영역을 낮춥니다. 클릭+드래그하면 시작점의 땅을 낮추고 선택한 영역의 도착점까지 지형을 적절히 맞춥니다. CTRL+클릭+드래그하면 대각선 방향의 영역을 선택할 수 있습니다. SHIFT 키를 누른 채로 사용하면 예상 비용을 볼 수 있습니다
+STR_TERRAFORM_TOOLTIP_RAISE_A_CORNER_OF_LAND                    :{BLACK}모퉁이나 땅의 영역을 높입니다. 크기가 1x1인 경우, 클릭+드래그하면 시작점의 땅을 높이고 선택한 영역의 도착점까지 지형을 적절히 맞춥니다. CTRL+클릭+드래그하면 대각선 방향의 영역을 선택할 수 있습니다. SHIFT 키를 누른 채로 사용하면 예상 비용을 볼 수 있습니다
 STR_TERRAFORM_TOOLTIP_GENERATE_RANDOM_LAND                      :{BLACK}무작위로 지형 만들기
 STR_TERRAFORM_SE_NEW_WORLD                                      :{BLACK}새 시나리오 만들기
 STR_TERRAFORM_RESET_LANDSCAPE                                   :{BLACK}지형만 남기기
@@ -3120,21 +3176,20 @@ STR_FUND_INDUSTRY_REMOVE_ALL_INDUSTRIES_CAPTION                 :{WHITE}모든 �
 STR_FUND_INDUSTRY_REMOVE_ALL_INDUSTRIES_QUERY                   :{YELLOW}정말 모든 산업시설을 제거하시겠습니까?
 
 # Industry cargoes window
-STR_INDUSTRY_CARGOES_INDUSTRY_CAPTION                           :{WHITE}화물 연계도 - {STRING}
-STR_INDUSTRY_CARGOES_CARGO_CAPTION                              :{WHITE}화물 연계망 - {STRING}
-STR_INDUSTRY_CARGOES_PRODUCERS                                  :{WHITE}생산 산업시설
-STR_INDUSTRY_CARGOES_CUSTOMERS                                  :{WHITE}소비 산업시설
-STR_INDUSTRY_CARGOES_HOUSES                                     :{WHITE}도시 가구
-STR_INDUSTRY_CARGOES_INDUSTRY_TOOLTIP                           :{BLACK}이 산업시설의 공급자와 고객을 보려면 클릭하세요
-STR_INDUSTRY_CARGOES_CARGO_TOOLTIP                              :{BLACK}{STRING}{}이 화물의 공급자와 고객을 보려면 클릭하세요
-STR_INDUSTRY_DISPLAY_CHAIN                                      :{BLACK}산업시설 연계도
-STR_INDUSTRY_DISPLAY_CHAIN_TOOLTIP                              :{BLACK}이 산업시설에서 생산/소비하는 화물을 보여줍니다
-STR_INDUSTRY_CARGOES_NOTIFY_SMALLMAP                            :{BLACK}지도에 표시
-STR_INDUSTRY_CARGOES_NOTIFY_SMALLMAP_TOOLTIP                    :{BLACK}위 산업망에 표시된 산업을 소형 지도에서 볼 수 있게 합니다
-STR_INDUSTRY_CARGOES_SELECT_CARGO                               :{BLACK}화물 선택
-STR_INDUSTRY_CARGOES_SELECT_CARGO_TOOLTIP                       :{BLACK}표시할 화물을 선택하세요
-STR_INDUSTRY_CARGOES_SELECT_INDUSTRY                            :{BLACK}산업시설 선택
-STR_INDUSTRY_CARGOES_SELECT_INDUSTRY_TOOLTIP                    :{BLACK}표시할 산업시설을 선택하세요
+STR_INDUSTRY_CARGOES_INDUSTRY_CAPTION                           :화물 연계도 - {STRING}
+STR_INDUSTRY_CARGOES_CARGO_CAPTION                              :화물 연계망 - {STRING}
+STR_INDUSTRY_CARGOES_SOURCES                                    :원재료
+STR_INDUSTRY_CARGOES_DESTINATIONS                               :목적지
+STR_INDUSTRY_CARGOES_HOUSES                                     :도시 가구
+STR_INDUSTRY_CARGOES_ACCEPTS_PRODUCES_TOOLTIP                   :{STRING}{}받음: {CARGO_LIST}{}생산: {CARGO_LIST}
+STR_INDUSTRY_DISPLAY_CHAIN                                      :산업시설 연계도
+STR_INDUSTRY_DISPLAY_CHAIN_TOOLTIP                              :이 산업시설에서 생산/소비하는 화물을 보여줍니다
+STR_INDUSTRY_CARGOES_NOTIFY_SMALLMAP                            :지도에 표시
+STR_INDUSTRY_CARGOES_NOTIFY_SMALLMAP_TOOLTIP                    :위 산업망에 표시된 산업을 소형 지도에서 볼 수 있게 합니다
+STR_INDUSTRY_CARGOES_SELECT_CARGO                               :화물 선택
+STR_INDUSTRY_CARGOES_SELECT_CARGO_TOOLTIP                       :표시할 화물을 선택하세요
+STR_INDUSTRY_CARGOES_SELECT_INDUSTRY                            :산업시설 선택
+STR_INDUSTRY_CARGOES_SELECT_INDUSTRY_TOOLTIP                    :표시할 산업시설을 선택하세요
 
 # Land area window
 STR_LAND_AREA_INFORMATION_CAPTION                               :{WHITE}이 지역의 지형 정보
@@ -3233,6 +3288,8 @@ STR_LAI_WATER_DESCRIPTION_LOCK                                  :갑문
 STR_LAI_WATER_DESCRIPTION_RIVER                                 :강
 STR_LAI_WATER_DESCRIPTION_COAST_OR_RIVERBANK                    :해안 또는 강기슭
 STR_LAI_WATER_DESCRIPTION_SHIP_DEPOT                            :정박소
+STR_LAI_WATER_DESCRIPTION_WATER_ROCKS                           :암석
+STR_LAI_WATER_DESCRIPTION_COAST_ROCKS                           :암석이 있는 해안 또는 강기슭
 
 # Industries come directly from their industry names
 
@@ -3346,6 +3403,9 @@ STR_SAVELOAD_LOAD_BUTTON                                        :{BLACK}불러�
 STR_SAVELOAD_LOAD_TOOLTIP                                       :{BLACK}선택한 게임을 불러옵니다
 STR_SAVELOAD_LOAD_HEIGHTMAP_TOOLTIP                             :{BLACK}선택한 높이맵을 불러옵니다
 STR_SAVELOAD_LOAD_TOWN_DATA_TOOLTIP                             :{BLACK}선택한 도시 데이터를 불러옵니다
+STR_SAVELOAD_NEW_DIRECTORY_BUTTON                               :{BLACK}새 폴더
+STR_SAVELOAD_NEW_DIRECTORY_TOOLTIP                              :{BLACK}현재 위치에 새로운 폴더를 만듭니다
+STR_SAVELOAD_NEW_DIRECTORY_QUERY_CAPTION                        :{WHITE}새 폴더 이름을 입력하세요
 STR_SAVELOAD_DETAIL_CAPTION                                     :{BLACK}게임 상세 정보
 STR_SAVELOAD_DETAIL_NOT_AVAILABLE                               :{BLACK}사용 가능한 정보 없음
 STR_SAVELOAD_DETAIL_COMPANY_INDEX                               :{SILVER}{COMMA}: {WHITE}{STRING}
@@ -3385,7 +3445,8 @@ STR_MAPGEN_DESERT_COVERAGE                                      :{BLACK}사막 �
 STR_MAPGEN_DESERT_COVERAGE_UP_TOOLTIP                           :{BLACK}눈이 내린 곳의 비율을 10%p 줄입니다.
 STR_MAPGEN_DESERT_COVERAGE_DOWN_TOOLTIP                         :{BLACK}사막 지역의 비율을 10%p 줄입니다.
 STR_MAPGEN_DESERT_COVERAGE_TEXT                                 :{BLACK}{NUM}%
-STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}지형 종류:
+STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}최대 고도:
+STR_MAPGEN_AVERAGE_HEIGHT                                       :{BLACK}평균 고도:
 STR_MAPGEN_SEA_LEVEL                                            :{BLACK}해수면:
 STR_MAPGEN_SEA_LEVEL_TOOLTIP                                    :{BLACK}해수면 높이를 선택합니다
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}강:
@@ -3489,12 +3550,12 @@ STR_GENERATION_PREPARING_TILELOOP                               :{BLACK}타일 �
 STR_GENERATION_PREPARING_SCRIPT                                 :{BLACK}스크립트 생성 중
 STR_GENERATION_PREPARING_GAME                                   :{BLACK}게임 준비 중
 
-STR_TOWN_DATA_ERROR_LOAD_FAILED                                 :{WHITE}도시 데이터 불러오기 실패
-STR_TOWN_DATA_ERROR_JSON_FORMATTED_INCORRECTLY                  :{WHITE}JSON 파일 형식이 올바르지 않습니다
-STR_TOWN_DATA_ERROR_TOWN_FORMATTED_INCORRECTLY                  :{WHITE}{STRING} 데이터 형식이 올바르지 않습니다
-STR_TOWN_DATA_ERROR_BAD_COORDINATE                              :{WHITE}{STRING} 좌표 형식이 올바르지 않습니다. 전체 높이맵 크기에 대한 0 ~ 1 사이의 비율 값이어야 합니다
+STR_TOWN_DATA_ERROR_LOAD_FAILED                                 :도시 데이터 불러오기 실패
+STR_TOWN_DATA_ERROR_JSON_FORMATTED_INCORRECTLY                  :JSON 파일 형식이 올바르지 않습니다
+STR_TOWN_DATA_ERROR_TOWN_FORMATTED_INCORRECTLY                  :{STRING} 데이터 형식이 올바르지 않습니다
+STR_TOWN_DATA_ERROR_BAD_COORDINATE                              :{STRING} 좌표 형식이 올바르지 않습니다. 전체 높이맵 크기에 대한 0 ~ 1 사이의 비율 값이어야 합니다
 
-STR_TOWN_DATA_ERROR_FAILED_TO_FOUND_TOWN                        :{WHITE}{NUM}개의 도시를 세울 적절한 장소를 찾지 못했습니다. 대신 세우려고 했던 자리에 팻말을 생성하였습니다
+STR_TOWN_DATA_ERROR_FAILED_TO_FOUND_TOWN                        :{NUM}개의 도시를 세울 적절한 장소를 찾지 못했습니다. 대신 세우려고 했던 자리에 팻말을 생성하였습니다
 
 # NewGRF settings
 STR_NEWGRF_SETTINGS_CAPTION                                     :{WHITE}NewGRF 설정
@@ -3612,8 +3673,8 @@ STR_NEWGRF_ERROR_MSG_INFO                                       :{SILVER}{STRING
 STR_NEWGRF_ERROR_MSG_WARNING                                    :{RED}경고: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_ERROR                                      :{RED}오류: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_FATAL                                      :{RED}치명적 오류: {SILVER}{STRING}
-STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}NewGRF "{STRING}"에서 치명적인 오류가 발생했습니다:{}{STRING}
-STR_NEWGRF_ERROR_POPUP                                          :{WHITE}NewGRF  "{STRING}"에서 오류가 발생했습니다:{}{STRING}
+STR_NEWGRF_ERROR_FATAL_POPUP                                    :NewGRF "{STRING}"에서 치명적인 오류가 발생했습니다:{}{STRING}
+STR_NEWGRF_ERROR_POPUP                                          :NewGRF  "{STRING}"에서 오류가 발생했습니다:{}{STRING}
 STR_NEWGRF_ERROR_VERSION_NUMBER                                 :{1:STRING}{G 1 "은" "는"} OpenTTD에서 보고된 TTDPatch 버전에서 작동하지 않을 것입니다
 STR_NEWGRF_ERROR_DOS_OR_WINDOWS                                 :{1:STRING}{G 1 "은" "는"} {2:STRING} 버전의 TTD를 위한 것입니다
 STR_NEWGRF_ERROR_UNSET_SWITCH                                   :{1:STRING}{G 1 "은" "는"} {2:STRING}{G 1 "와" "과"} 같이 사용해야 합니다
@@ -3640,12 +3701,12 @@ STR_NEWGRF_ERROR_INDPROD_CALLBACK                               :유효하지 �
 STR_NEWGRF_POPUP_CAUTION_CAPTION                                :{WHITE}경고!
 STR_NEWGRF_CONFIRMATION_TEXT                                    :{YELLOW}게임 진행중에 설정을 변경하면 게임이 충돌할 수도 있습니다.{}정말로 설정을 변경하시겠습니까?
 
-STR_NEWGRF_DUPLICATE_GRFID                                      :{WHITE}파일 추가 불가: 중복된 NewGRF 아이디
+STR_NEWGRF_DUPLICATE_GRFID                                      :파일을 추가할 수 없습니다 - 중복된 NewGRF 아이디
 STR_NEWGRF_COMPATIBLE_LOADED                                    :{ORANGE}해당 파일을 찾을 수 없습니다. (대체 NewGRF를 불러옵니다)
-STR_NEWGRF_TOO_MANY_NEWGRFS                                     :{WHITE}파일을 추가할 수 없습니다: NewGRF 파일이 너무 많습니다
+STR_NEWGRF_TOO_MANY_NEWGRFS                                     :파일을 추가할 수 없습니다 - NewGRF 파일이 너무 많습니다
 
-STR_NEWGRF_COMPATIBLE_LOAD_WARNING                              :{WHITE}대체할 수 있는 NewGRF를 불러왔습니다
-STR_NEWGRF_DISABLED_WARNING                                     :{WHITE}없는 NewGRF 파일은 비활성화됩니다
+STR_NEWGRF_COMPATIBLE_LOAD_WARNING                              :대체할 수 있는 NewGRF를 불러왔습니다
+STR_NEWGRF_DISABLED_WARNING                                     :없는 NewGRF 파일은 비활성화됩니다
 STR_NEWGRF_UNPAUSE_WARNING_TITLE                                :{YELLOW}NewGRF 파일 없음
 STR_NEWGRF_UNPAUSE_WARNING                                      :{WHITE}일시 정지 해제 시 오류가 발생하거나 게임이 종료될 수 있으며, 이와 관련된 버그 리포트는 접수받지 않습니다.{}정말로 일시 정지를 해제하시겠습니까?
 
@@ -3657,17 +3718,17 @@ STR_NEWGRF_LIST_COMPATIBLE                                      :{YELLOW}호환�
 STR_NEWGRF_LIST_MISSING                                         :{RED}파일 없음
 
 # NewGRF 'it's broken' warnings
-STR_NEWGRF_BROKEN                                               :{WHITE}'{0:STRING}' NewGRF가 적용되는 과정에서 비동기화나 충돌이 일어날 수 있습니다
-STR_NEWGRF_BROKEN_POWERED_WAGON                                 :{WHITE}차고지 안에 있지 않은 '{1:ENGINE}' 동력 차량의 상태가 바뀌었습니다
-STR_NEWGRF_BROKEN_VEHICLE_LENGTH                                :{WHITE}'{1:ENGINE}'{G 1 "이" "가"} 차고지 안에 있지 않으면 차량 길이가 바뀝니다
-STR_NEWGRF_BROKEN_CAPACITY                                      :{WHITE}차량이 기지 안에 있지 않거나 개조가 불가능한 상태에서 '{1:ENGINE}'의 수송량이 변경되었습니다
-STR_BROKEN_VEHICLE_LENGTH                                       :{WHITE}'{1:COMPANY}'에 속한 열차 '{0:VEHICLE}'의 길이가 잘못된 값을 가지고 있습니다. NewGRF에 의한 문제로 보입니다. 게임이 비동기화 또는 충돌을 일으킬 수 있습니다
+STR_NEWGRF_BROKEN                                               :'{0:STRING}' NewGRF가 적용되는 과정에서 비동기화나 충돌이 일어날 수 있습니다
+STR_NEWGRF_BROKEN_POWERED_WAGON                                 :차고지 안에 있지 않은 '{1:ENGINE}' 동력 차량의 상태가 바뀌었습니다
+STR_NEWGRF_BROKEN_VEHICLE_LENGTH                                :'{1:ENGINE}'{G 1 "이" "가"} 차고지 안에 있지 않으면 차량 길이가 바뀝니다
+STR_NEWGRF_BROKEN_CAPACITY                                      :차량이 기지 안에 있지 않거나 개조가 불가능한 상태에서 '{1:ENGINE}'의 수송량이 변경되었습니다
+STR_BROKEN_VEHICLE_LENGTH                                       :'{1:COMPANY}'에 속한 열차 '{0:VEHICLE}'의 길이가 잘못된 값을 가지고 있습니다. NewGRF에 의한 문제로 보입니다. 게임이 비동기화 또는 충돌을 일으킬 수 있습니다
 
-STR_NEWGRF_BUGGY                                                :{WHITE}NewGRF '{0:STRING}'에서 잘못된 정보를 제공하고 있습니다
-STR_NEWGRF_BUGGY_ARTICULATED_CARGO                              :{WHITE}{1:ENGINE}의 구매 이전과 이후의 화물/개조 정보가 현재의 구매 목록과 다릅니다. 이 경우 자동 교체시 열차 개조에 실패할 수도 있습니다
-STR_NEWGRF_BUGGY_ENDLESS_PRODUCTION_CALLBACK                    :{WHITE}'{1:STRING}' 때문에 결과물 콜백 과정에서 무한 루프가 발생하고 있습니다
-STR_NEWGRF_BUGGY_UNKNOWN_CALLBACK_RESULT                        :{WHITE}콜백 함수({1:HEX})가 알 수 없거나 잘못된 결과 값({2:HEX})을 반환했습니다
-STR_NEWGRF_BUGGY_INVALID_CARGO_PRODUCTION_CALLBACK              :{WHITE}'{1:STRING}' - 생산 콜백 함수의 {2:HEX}에서 잘못된 화물 종류를 반환했습니다
+STR_NEWGRF_BUGGY                                                :NewGRF '{0:STRING}'에서 잘못된 정보를 제공하고 있습니다
+STR_NEWGRF_BUGGY_ARTICULATED_CARGO                              :{1:ENGINE}의 구매 이전과 이후의 화물/개조 정보가 현재의 구매 목록과 다릅니다. 이 경우 자동 교체시 열차 개조에 실패할 수도 있습니다
+STR_NEWGRF_BUGGY_ENDLESS_PRODUCTION_CALLBACK                    :'{1:STRING}' 때문에 결과물 콜백 과정에서 무한 루프가 발생하고 있습니다
+STR_NEWGRF_BUGGY_UNKNOWN_CALLBACK_RESULT                        :콜백 함수({1:HEX})가 알 수 없거나 잘못된 결과 값({2:HEX})을 반환했습니다
+STR_NEWGRF_BUGGY_INVALID_CARGO_PRODUCTION_CALLBACK              :'{1:STRING}' - 생산 콜백 함수의 {2:HEX}에서 잘못된 화물 종류를 반환했습니다
 
 # 'User removed essential NewGRFs'-placeholders for stuff without specs
 STR_NEWGRF_INVALID_CARGO                                        :<알 수 없는 화물>
@@ -3694,6 +3755,7 @@ STR_EDIT_SIGN_CAPTION                                           :{WHITE}팻말 �
 STR_EDIT_SIGN_LOCATION_TOOLTIP                                  :{BLACK}이 팻말의 위치로 이동합니다. CTRL+클릭하면 이 팻말 위치를 기준으로 새로운 외부 화면을 엽니다
 STR_EDIT_SIGN_NEXT_SIGN_TOOLTIP                                 :{BLACK}다음 팻말로 가기
 STR_EDIT_SIGN_PREVIOUS_SIGN_TOOLTIP                             :{BLACK}이전 팻말로 가기
+STR_EDIT_SIGN_TEXT_COLOUR_TOOLTIP                               :{BLACK}팻말 글씨의 색상
 
 STR_EDIT_SIGN_SIGN_OSKTITLE                                     :{BLACK}팻말 이름을 입력하세요
 
@@ -3787,6 +3849,7 @@ STR_GOALS_PROGRESS_COMPLETE                                     :{GREEN}{STRING}
 STR_GOALS_TOOLTIP_CLICK_ON_SERVICE_TO_CENTER                    :{BLACK}산업시설/도시/칸의 위치로 화면을 이동하려면 클릭하세요. CTRL+클릭하면 산업시설/도시/칸의 위치를 기준으로 새로운 외부 화면을 엽니다
 
 # Goal question window
+###length 4
 STR_GOAL_QUESTION_CAPTION_QUESTION                              :{BLACK}질의
 STR_GOAL_QUESTION_CAPTION_INFORMATION                           :{BLACK}정보
 STR_GOAL_QUESTION_CAPTION_WARNING                               :{BLACK}경고
@@ -4200,6 +4263,19 @@ STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}항속�
 STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}항공기 종류: {GOLD}{STRING}
 STR_PURCHASE_INFO_RAILTYPES                                     :{BLACK}철도 종류: {GOLD}{STRING}
 
+# Vehicle sort details
+STR_PURCHASE_SORT_DETAILS_COST                                  :{CURRENCY_LONG}
+STR_PURCHASE_SORT_DETAILS_SPEED                                 :{VELOCITY}
+STR_PURCHASE_SORT_DETAILS_POWER                                 :{POWER}
+STR_PURCHASE_SORT_DETAILS_MAX_TE                                :{FORCE}
+STR_PURCHASE_SORT_DETAILS_INTRO_DATE                            :{NUM}
+STR_PURCHASE_SORT_DETAILS_RUNNINGCOST_YEAR                      :{CURRENCY_LONG}/년
+STR_PURCHASE_SORT_DETAILS_RUNNINGCOST_PERIOD                    :{CURRENCY_LONG}/기간
+STR_PURCHASE_SORT_DETAILS_RELIABILITY                           :{COMMA}%
+STR_PURCHASE_SORT_DETAILS_POWER_VS_RUNNING_COST                 :{DECIMAL}
+STR_PURCHASE_SORT_DETAILS_AIRCRAFT_RANGE                        :{COMMA}칸
+STR_PURCHASE_SORT_DETAILS_CAPACITY                              :{COMMA}
+
 ###length 3
 STR_CARGO_TYPE_FILTER_ALL                                       :모든 화물
 STR_CARGO_TYPE_FILTER_FREIGHT                                   :화물
@@ -4359,7 +4435,15 @@ STR_DEPOT_SELL_CONFIRMATION_TEXT                                :{YELLOW}이 안
 
 # Engine preview window
 STR_ENGINE_PREVIEW_CAPTION                                      :{WHITE}차량 개발자가 보낸 메시지
+STR_ENGINE_PREVIEW_CAPTION_COUNT                                :{WHITE}차량 제조사가 보낸 메시지 ({COMMA}/{COMMA})
 STR_ENGINE_PREVIEW_MESSAGE                                      :{GOLD}저희는 이제 막 새로운 {STRING}{G 0 "을" "를"} 개발했습니다. 1년 먼저 이 차량을 사용하셔서 모두에게 공개되기 전에 잘 작동하는지 확인해주시겠습니까?
+
+STR_ENGINE_PREVIEW_PREVIOUS                                     :이전
+STR_ENGINE_PREVIEW_PREVIOUS_TOOLTIP                             :이전 새 차량으로 넘어가려면 클릭하세요
+STR_ENGINE_PREVIEW_NEXT                                         :다음
+STR_ENGINE_PREVIEW_NEXT_TOOLTIP                                 :다음 새 차량으로 넘어가려면 클릭하세요
+STR_ENGINE_PREVIEW_ENGINE_LIST                                  :{COMMA}: {ENGINE}
+STR_ENGINE_PREVIEW_ENGINE_LIST_TOOLTIP                          :새 차량으로 넘어가려면 클릭하세요
 
 STR_ENGINE_PREVIEW_RAILROAD_LOCOMOTIVE                          :{G=f}철도 기관차
 STR_ENGINE_PREVIEW_ELRAIL_LOCOMOTIVE                            :{G=f}전기선로 기관차
@@ -4522,8 +4606,8 @@ STR_VEHICLE_DETAILS_ROAD_VEHICLE_RENAME                         :{BLACK}차량 �
 STR_VEHICLE_DETAILS_SHIP_RENAME                                 :{BLACK}선박 이름 변경
 STR_VEHICLE_DETAILS_AIRCRAFT_RENAME                             :{BLACK}항공기 이름 변경
 
-STR_VEHICLE_INFO_AGE                                            :{COMMA}년 ({COMMA})
-STR_VEHICLE_INFO_AGE_RED                                        :{RED}{COMMA}년 ({COMMA})
+STR_VEHICLE_INFO_AGE                                            :{COMMA}년 (수명: {COMMA}년)
+STR_VEHICLE_INFO_AGE_RED                                        :{RED}{COMMA}년 (수명: {COMMA}년)
 STR_VEHICLE_INFO_AGE_RUNNING_COST_YR                            :{BLACK}연령: {LTBLUE}{STRING}{BLACK}   유지비: {LTBLUE}{CURRENCY_LONG}/년
 STR_VEHICLE_INFO_AGE_RUNNING_COST_PERIOD                        :{BLACK}연령: {LTBLUE}{STRING}{BLACK}   유지비: {LTBLUE}{CURRENCY_LONG}/기간
 
@@ -4537,12 +4621,10 @@ STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR                     :{BLACK}올해 �
 STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR_MIN_PERFORMANCE     :{BLACK}올해 이익: {LTBLUE}{CURRENCY_LONG} (작년: {CURRENCY_LONG}) {BLACK}최소 성능: {LTBLUE}{POWER_TO_WEIGHT}
 STR_VEHICLE_INFO_PROFIT_THIS_PERIOD_LAST_PERIOD                 :{BLACK}지난 기간 이익: {LTBLUE}{CURRENCY_LONG} (지난 기간: {CURRENCY_LONG})
 STR_VEHICLE_INFO_PROFIT_THIS_PERIOD_LAST_PERIOD_MIN_PERFORMANCE :{BLACK}이번 기간 이익: {LTBLUE}{CURRENCY_LONG} (지난 기간: {CURRENCY_LONG}) {BLACK}최소 성능: {LTBLUE}{POWER_TO_WEIGHT}
-STR_VEHICLE_INFO_RELIABILITY_BREAKDOWNS                         :{BLACK}신뢰도: {LTBLUE}{COMMA}%  {BLACK}최근 점검 이후 고장 횟수: {LTBLUE}{COMMA}
+STR_VEHICLE_INFO_RELIABILITY_BREAKDOWNS                         :{BLACK}신뢰도: {LTBLUE}{COMMA}% (최대: {COMMA}%) {BLACK}최근 점검 이후 고장 횟수: {LTBLUE}{COMMA}
 
 STR_VEHICLE_INFO_BUILT_VALUE                                    :{LTBLUE}{ENGINE} {BLACK}생산: {LTBLUE}{NUM}{BLACK} 가격: {LTBLUE}{CURRENCY_LONG}
-STR_VEHICLE_INFO_NO_CAPACITY                                    :{BLACK}수송량: {LTBLUE}없음{STRING}
 STR_VEHICLE_INFO_CAPACITY                                       :{BLACK}수송량: {LTBLUE}{CARGO_LONG}{STRING}
-STR_VEHICLE_INFO_CAPACITY_MULT                                  :{BLACK}수송량: {LTBLUE}{CARGO_LONG}{STRING} (x{NUM})
 STR_VEHICLE_INFO_CAPACITY_CAPACITY                              :{BLACK}수송량: {LTBLUE}{CARGO_LONG}, {CARGO_LONG}{STRING}
 
 STR_VEHICLE_INFO_FEEDER_CARGO_VALUE                             :{BLACK}환승 수익: {LTBLUE}{CURRENCY_LONG}
@@ -4575,22 +4657,23 @@ STR_QUERY_RENAME_AIRCRAFT_CAPTION                               :{WHITE}항공�
 STR_VEHICLE_DETAILS_TRAIN_ENGINE_BUILT_AND_VALUE                :{LTBLUE}{ENGINE}{BLACK}   생산: {LTBLUE}{NUM}{BLACK} 가격: {LTBLUE}{CURRENCY_LONG}
 STR_VEHICLE_DETAILS_TRAIN_WAGON_VALUE                           :{LTBLUE}{ENGINE}{BLACK}   가격: {LTBLUE}{CURRENCY_LONG}
 
-STR_VEHICLE_DETAILS_TRAIN_TOTAL_CAPACITY_TEXT                   :{BLACK}이 열차의 총 수송량:
-STR_VEHICLE_DETAILS_TRAIN_TOTAL_CAPACITY                        :{LTBLUE}{CARGO_LONG} ({CARGO_SHORT})
-STR_VEHICLE_DETAILS_TRAIN_TOTAL_CAPACITY_MULT                   :{LTBLUE}{CARGO_LONG} ({CARGO_SHORT}) (x{NUM})
+STR_VEHICLE_DETAILS_TRAIN_LENGTH                                :{BLACK}열차 길이: {LTBLUE}{DECIMAL}칸
 
-STR_VEHICLE_DETAILS_CARGO_EMPTY                                 :{LTBLUE}비어있음
+STR_VEHICLE_DETAILS_TRAIN_TOTAL_CAPACITY_TEXT                   :{BLACK}이 열차의 전체 화물:
+STR_VEHICLE_DETAILS_TRAIN_TOTAL_CAPACITY                        :{LTBLUE}{CARGO_LONG} ({CARGO_SHORT})
+
+STR_VEHICLE_DETAILS_TRAIN_CARGO_EMPTY                           :{LTBLUE}비어 있음 ({CARGO_LONG}){STRING}
+STR_VEHICLE_DETAILS_TRAIN_CARGO_FROM                            :{LTBLUE}{2:STATION}{3:STRING}에서 출발한 {0:CARGO_LONG} ({1:CARGO_SHORT})
+
+STR_VEHICLE_DETAILS_CARGO_EMPTY                                 :{LTBLUE}비어 있음
 STR_VEHICLE_DETAILS_CARGO_FROM                                  :{LTBLUE}{CARGO_LONG} (출발지: {STATION})
-STR_VEHICLE_DETAILS_CARGO_FROM_MULT                             :{LTBLUE}{CARGO_LONG} (출발지: {STATION}) (x{NUM})
 
 STR_VEHICLE_DETAIL_TAB_CARGO                                    :{BLACK}화물
 STR_VEHICLE_DETAILS_TRAIN_CARGO_TOOLTIP                         :{BLACK}현재 싣고 있는 화물 정보를 보여줍니다
 STR_VEHICLE_DETAIL_TAB_INFORMATION                              :{BLACK}정보
 STR_VEHICLE_DETAILS_TRAIN_INFORMATION_TOOLTIP                   :{BLACK}각 차량의 상세 정보를 보여줍니다
-STR_VEHICLE_DETAIL_TAB_CAPACITIES                               :{BLACK}수송량
-STR_VEHICLE_DETAILS_TRAIN_CAPACITIES_TOOLTIP                    :{BLACK}각 차량의 수송량 정보를 보여줍니다
-STR_VEHICLE_DETAIL_TAB_TOTAL_CARGO                              :{BLACK}총 화물량
-STR_VEHICLE_DETAILS_TRAIN_TOTAL_CARGO_TOOLTIP                   :{BLACK}각 화물 종류에 따른 총 수송량을 보여줍니다
+STR_VEHICLE_DETAIL_TAB_TOTALS                                   :{BLACK}전체
+STR_VEHICLE_DETAILS_TRAIN_TOTALS_TOOLTIP                        :{BLACK}열차의 전체 화물, 수송량, 길이를 보여줍니다
 
 STR_VEHICLE_DETAILS_TRAIN_ARTICULATED_RV_CAPACITY               :{BLACK}수송량: {LTBLUE}{STRING}
 
@@ -4647,9 +4730,9 @@ STR_ORDER_DROP_FULL_LOAD_ANY                                    :아무 화물�
 STR_ORDER_DROP_NO_LOADING                                       :싣지 않기
 STR_ORDER_TOOLTIP_FULL_LOAD                                     :{BLACK}선택한 목적지에서 화물을 적재할 방식을 변경합니다
 
-STR_ORDER_TOGGLE_UNLOAD                                         :{BLACK}모든 화물 하차
+STR_ORDER_TOGGLE_UNLOAD                                         :{BLACK}모든 화물 강제 하차
 STR_ORDER_DROP_UNLOAD_IF_ACCEPTED                               :화물을 받는경우 하차
-STR_ORDER_DROP_UNLOAD                                           :모든 화물 하차
+STR_ORDER_DROP_UNLOAD                                           :화물을 받지 않아도 모든 화물 강제 하차
 STR_ORDER_DROP_TRANSFER                                         :환승
 STR_ORDER_DROP_NO_UNLOADING                                     :화물을 하차시키지 않음
 STR_ORDER_TOOLTIP_UNLOAD                                        :{BLACK}선택한 목적지에서 화물을 하차할 방식을 변경합니다
@@ -4677,7 +4760,7 @@ STR_ORDER_HANGAR_ACTION_TOOLTIP                                 :{BLACK}격납�
 STR_ORDER_CONDITIONAL_VARIABLE_TOOLTIP                          :{BLACK}경로를 건너뛰기 위한 비교 조건을 선택합니다
 
 # Conditional order variables, must follow order of OrderConditionVariable enum
-###length 8
+###length 9
 STR_ORDER_CONDITIONAL_LOAD_PERCENTAGE                           :적재율
 STR_ORDER_CONDITIONAL_RELIABILITY                               :신뢰도
 STR_ORDER_CONDITIONAL_MAX_SPEED                                 :최고 속력
@@ -4686,6 +4769,7 @@ STR_ORDER_CONDITIONAL_REQUIRES_SERVICE                          :점검 필요�
 STR_ORDER_CONDITIONAL_UNCONDITIONALLY                           :항상
 STR_ORDER_CONDITIONAL_REMAINING_LIFETIME                        :남은 수명 (년)
 STR_ORDER_CONDITIONAL_MAX_RELIABILITY                           :최대 신뢰도
+STR_ORDER_CONDITIONAL_DRIVING_BACKWARDS                         :저속으로 뒤로 이동할 때
 ###next-name-looks-similar
 
 STR_ORDER_CONDITIONAL_COMPARATOR_TOOLTIP                        :{BLACK}왼쪽의 비교조건과 오른쪽의 입력값을 비교할 연산자를 선택합니다
@@ -4705,6 +4789,7 @@ STR_ORDERS_SKIP_BUTTON                                          :{BLACK}건너�
 STR_ORDERS_SKIP_TOOLTIP                                         :{BLACK}현재 경로를 건너뛰고, 다음 경로를 시작합니다. CTRL+클릭하면 현재 선택된 경로로 건너뜁니다
 
 STR_ORDERS_DELETE_BUTTON                                        :{BLACK}삭제
+STR_ORDERS_DELETE_ALL_BUTTON                                    :{BLACK}전부 삭제
 STR_ORDERS_DELETE_TOOLTIP                                       :{BLACK}선택된 경로를 삭제합니다
 STR_ORDERS_DELETE_ALL_TOOLTIP                                   :{BLACK}모든 경로 삭제
 STR_ORDERS_STOP_SHARING_BUTTON                                  :{BLACK}경로 공유 해제
@@ -4750,10 +4835,10 @@ STR_ORDER_IMPLICIT                                              :{SPACE}(자동)
 STR_ORDER_FULL_LOAD                                             :{SPACE}(모든 화물을 가득 싣기)
 STR_ORDER_FULL_LOAD_ANY                                         :{SPACE}(아무 화물이나 가득 싣기)
 STR_ORDER_NO_LOAD                                               :{SPACE}(싣지 않기)
-STR_ORDER_UNLOAD                                                :{SPACE}(화물 하차 후 적재)
-STR_ORDER_UNLOAD_FULL_LOAD                                      :{SPACE}(화물 하차 후 모든 화물을 가득 싣기)
-STR_ORDER_UNLOAD_FULL_LOAD_ANY                                  :{SPACE}(화물 하차 후 아무 화물이나 가득 싣기)
-STR_ORDER_UNLOAD_NO_LOAD                                        :{SPACE}(화물 하차 후 빈 차로 출발)
+STR_ORDER_UNLOAD                                                :{SPACE}(화물 강제 하차 후 적재)
+STR_ORDER_UNLOAD_FULL_LOAD                                      :{SPACE}(화물 강제 하차 후 모든 화물을 가득 싣기)
+STR_ORDER_UNLOAD_FULL_LOAD_ANY                                  :{SPACE}(화물 강제 하차 후 아무 화물이나 가득 싣기)
+STR_ORDER_UNLOAD_NO_LOAD                                        :{SPACE}(화물 강제 하차 후 빈 차로 출발)
 STR_ORDER_TRANSFER                                              :{SPACE}(환승 후 화물 적재)
 STR_ORDER_TRANSFER_FULL_LOAD                                    :{SPACE}(환승 후 모든 화물을 가득 싣기)
 STR_ORDER_TRANSFER_FULL_LOAD_ANY                                :{SPACE}(환승 후 아무 화물이나 가득 싣기)
@@ -4766,9 +4851,9 @@ STR_ORDER_NO_UNLOAD_NO_LOAD                                     :{SPACE}(적재 
 STR_ORDER_AUTO_REFIT                                            :{SPACE}({STRING}{G 0 "으" ""}로 개조)
 STR_ORDER_FULL_LOAD_REFIT                                       :{SPACE}({STRING}{G 0 "으" ""}로 개조하며 모든 화물을 가득 싣기)
 STR_ORDER_FULL_LOAD_ANY_REFIT                                   :{SPACE}({STRING}{G 0 "으" ""}로 개조하며 아무 화물이나 가득 싣기)
-STR_ORDER_UNLOAD_REFIT                                          :{SPACE}({STRING}{G 0 "으" ""}로 개조하며 화물 하차 후 적재)
-STR_ORDER_UNLOAD_FULL_LOAD_REFIT                                :{SPACE}({STRING}{G 0 "으" ""}로 개조하며 화물 하차 후 모든 화물을 가득 싣기)
-STR_ORDER_UNLOAD_FULL_LOAD_ANY_REFIT                            :{SPACE}({STRING}{G 0 "으" ""}로 개조하며 화물 하차 후 아무 화물이나 가득 싣기)
+STR_ORDER_UNLOAD_REFIT                                          :{SPACE}({STRING}{G 0 "으" ""}로 개조하며 화물 강제 하차 후 적재)
+STR_ORDER_UNLOAD_FULL_LOAD_REFIT                                :{SPACE}({STRING}{G 0 "으" ""}로 개조하며 화물 강제 하차 후 모든 화물을 가득 싣기)
+STR_ORDER_UNLOAD_FULL_LOAD_ANY_REFIT                            :{SPACE}({STRING}{G 0 "으" ""}로 개조하며 화물 강제 하차 후 아무 화물이나 가득 싣기)
 STR_ORDER_TRANSFER_REFIT                                        :{SPACE}({STRING}{G 0 "으" ""}로 개조하며 환승 후 화물 적재)
 STR_ORDER_TRANSFER_FULL_LOAD_REFIT                              :{SPACE}({STRING}{G 0 "으" ""}로 개조하며 환승 후 모든 화물을 가득 싣기)
 STR_ORDER_TRANSFER_FULL_LOAD_ANY_REFIT                          :{SPACE}({STRING}{G 0 "으" ""}로 개조하며 환승 후 아무 화물이나 가득 싣기)
@@ -4886,7 +4971,7 @@ STR_AI_GAME_SCRIPT                                              :{BLACK}게임 �
 STR_AI_GAME_SCRIPT_TOOLTIP                                      :{BLACK}게임 스크립트 기록을 확인합니다. CTRL+클릭하면 새 창으로 엽니다
 
 STR_ERROR_AI_NO_AI_FOUND                                        :사용할 수 있는 인공지능이 없습니다.{}따라서 이 경쟁사는 아무 것도 하지 못하는 회사입니다.{}'온라인 컨텐츠 다운로드'에서 새로운 인공지능을 다운로드받으세요
-STR_ERROR_AI_PLEASE_REPORT_CRASH                                :{WHITE}작동 중이던 스크립트 중 하나에서 오류가 발생하여 중단되었습니다. 인공지능/게임 스크립트 디버그 창에서 스크린샷을 찍어 스크립트 제작자에게 보고하십시오
+STR_ERROR_AI_PLEASE_REPORT_CRASH                                :작동 중이던 스크립트 중 하나에서 오류가 발생하여 중단되었습니다. 인공지능/게임 스크립트 디버그 창에서 스크린샷을 찍어 스크립트 제작자에게 보고하세요
 STR_ERROR_AI_DEBUG_SERVER_ONLY                                  :{YELLOW}인공지능/게임 스크립트 디버그창은 오직 서버만 사용 가능합니다
 
 # AI configuration window
@@ -4982,12 +5067,17 @@ STR_MESSAGE_ESTIMATED_COST                                      :{WHITE}예상 �
 STR_MESSAGE_ESTIMATED_INCOME                                    :{WHITE}예상 수익: {CURRENCY_LONG}
 
 # Saveload messages
-STR_ERROR_SAVE_STILL_IN_PROGRESS                                :{WHITE}저장 중입니다.{}끝날 때까지 기다려주세요!
-STR_ERROR_AUTOSAVE_FAILED                                       :{WHITE}자동 저장 실패
+STR_ERROR_SAVE_STILL_IN_PROGRESS                                :저장 중입니다.{}끝날 때까지 기다려주세요!
+STR_ERROR_AUTOSAVE_FAILED                                       :자동 저장 실패
 STR_ERROR_UNABLE_TO_READ_DRIVE                                  :{BLACK}드라이브를 읽을 수 없습니다
-STR_ERROR_GAME_SAVE_FAILED                                      :{WHITE}게임을 저장하지 못 했습니다...
-STR_ERROR_UNABLE_TO_DELETE_FILE                                 :{WHITE}파일을 삭제할 수 없습니다
-STR_ERROR_GAME_LOAD_FAILED                                      :{WHITE}게임을 불러오지 못 했습니다...
+STR_ERROR_GAME_SAVE_FAILED                                      :게임을 저장하지 못 했습니다...
+STR_ERROR_UNABLE_TO_DELETE_FILE                                 :파일을 삭제할 수 없습니다
+STR_ERROR_CANNOT_CREATE_DIRECTORY                               :폴더를 생성할 수 없습니다...
+STR_ERROR_DIRECTORY_NAME_IN_USE                                 :이미 존재하는 폴더나 파일 이름입니다
+STR_ERROR_DIRECTORY_ILLEGAL_NAME                                :폴더 이름에는 특수 문자를 사용할 수 없습니다
+STR_ERROR_DIRECTORY_LEADING_DOT                                 :폴더 이름은 점(.)으로 시작할 수 없습니다
+STR_ERROR_DIRECTORY_PERMISSION_DENIED                           :이 위치에 폴더를 생성할 수 있는 권한이 없습니다
+STR_ERROR_GAME_LOAD_FAILED                                      :게임을 불러오지 못 했습니다...
 STR_GAME_SAVELOAD_ERROR_BROKEN_INTERNAL_ERROR                   :내부 오류: {STRING}
 STR_GAME_SAVELOAD_ERROR_BROKEN_SAVEGAME                         :손상된 게임 저장 파일 - {STRING}
 STR_GAME_SAVELOAD_ERROR_TOO_NEW_SAVEGAME                        :상위 버전의 게임 저장 파일입니다
@@ -4999,18 +5089,18 @@ STR_GAME_SAVELOAD_NOT_AVAILABLE                                 :<사용 불가�
 STR_WARNING_LOADGAME_REMOVED_TRAMS                              :{WHITE}전차를 지원하지 않는 버전으로 게임이 저장되었습니다. 모든 전차는 제거되었습니다.
 
 # Map generation messages
-STR_ERROR_COULD_NOT_CREATE_TOWN                                 :{WHITE}지도 생성이 중단되었습니다...{}{}... 도시를 건설할 만한 적절한 곳이 존재하지 않습니다
-STR_ERROR_NO_TOWN_IN_SCENARIO                                   :{WHITE}... 시나리오에 도시가 없습니다
+STR_ERROR_COULD_NOT_CREATE_TOWN                                 :지도 생성이 중단되었습니다...{}{}... 도시를 건설할 만한 적절한 곳이 존재하지 않습니다
+STR_ERROR_NO_TOWN_IN_SCENARIO                                   :시나리오에 도시가 없습니다
 
-STR_ERROR_PNGMAP                                                :{WHITE}PNG 파일에서 지형을 불러올 수 없습니다...
-STR_ERROR_PNGMAP_FILE_NOT_FOUND                                 :{WHITE}... 파일이 없습니다
-STR_ERROR_PNGMAP_IMAGE_TYPE                                     :{WHITE}... 이미지 타입을 변경할 수 없습니다. 8bit 또는 24bit의 PNG 이미지가 필요합니다
-STR_ERROR_PNGMAP_MISC                                           :{WHITE}... 뭔가가 잘못되었습니다 (파일이 손상된 것으로 추정됨)
+STR_ERROR_PNGMAP                                                :PNG 파일에서 지형을 불러올 수 없습니다...
+STR_ERROR_PNGMAP_FILE_NOT_FOUND                                 :파일이 없습니다
+STR_ERROR_PNGMAP_IMAGE_TYPE                                     :변환할 수 없는 이미지 종류입니다. 8bit 또는 24bit의 PNG 이미지가 필요합니다
+STR_ERROR_PNGMAP_MISC                                           :뭔가가 잘못되었습니다 (파일이 손상된 것으로 추정됩니다)
 
-STR_ERROR_BMPMAP                                                :{WHITE}BMP 파일에서 지형을 불러올 수 없습니다...
-STR_ERROR_BMPMAP_IMAGE_TYPE                                     :{WHITE}... 이미지 타입을 변경할 수 없습니다
+STR_ERROR_BMPMAP                                                :BMP 파일에서 지형을 불러올 수 없습니다...
+STR_ERROR_BMPMAP_IMAGE_TYPE                                     :이미지 타입을 변경할 수 없습니다
 
-STR_ERROR_HEIGHTMAP_TOO_LARGE                                   :{WHITE}... 이미지가 너무 큽니다
+STR_ERROR_HEIGHTMAP_TOO_LARGE                                   :이미지가 너무 큽니다
 
 STR_WARNING_HEIGHTMAP_SCALE_CAPTION                             :{WHITE}지도 크기 경고
 STR_WARNING_HEIGHTMAP_SCALE_MESSAGE                             :{YELLOW}원본 지도의 크기를 너무 많이 조절하는 것은 좋지 않습니다. 그래도 계속하시겠습니까?
@@ -5022,443 +5112,448 @@ STR_WARNING_FALLBACK_SOUNDSET                                   :{WHITE}게임�
 STR_WARNING_SCREENSHOT_SIZE_CAPTION                             :{WHITE}대형 스크린 샷
 STR_WARNING_SCREENSHOT_SIZE_MESSAGE                             :{YELLOW}스크린 샷의 이미지 크기는 {COMMA} x {COMMA} 픽셀이 될 것입니다. 스크린 샷을 찍는 데에는 시간이 다소 걸릴 수 있습니다. 계속하시겠습니까?
 
-STR_MESSAGE_HEIGHTMAP_SUCCESSFULLY                              :{WHITE}높이맵이 '{STRING}' 파일로 성공적으로 저장되었습니다. 가장 높은 지점은 {NUM}입니다.
-STR_MESSAGE_SCREENSHOT_SUCCESSFULLY                             :{WHITE}스크린 샷이 '{STRING}'로 저장되었습니다
-STR_ERROR_SCREENSHOT_FAILED                                     :{WHITE}스크린 샷을 찍지 못했습니다!
+STR_MESSAGE_HEIGHTMAP_SUCCESSFULLY                              :높이맵이 '{STRING}' 파일로 성공적으로 저장되었습니다. 가장 높은 지점은 {NUM}입니다
+STR_MESSAGE_SCREENSHOT_SUCCESSFULLY                             :스크린 샷이 '{STRING}'로 저장되었습니다
+STR_ERROR_SCREENSHOT_FAILED                                     :스크린 샷을 찍지 못했습니다!
 
 # Error message titles
 STR_ERROR_MESSAGE_CAPTION                                       :{YELLOW}알림
 STR_ERROR_MESSAGE_CAPTION_OTHER_COMPANY                         :{YELLOW}{COMPANY} 회사가 보낸 메시지
 
 # Generic construction errors
-STR_ERROR_OFF_EDGE_OF_MAP                                       :{WHITE}지도 가장자리에서 너무 멉니다
-STR_ERROR_TOO_CLOSE_TO_EDGE_OF_MAP                              :{WHITE}지도 가장자리와 너무 가깝습니다
-STR_ERROR_NOT_ENOUGH_CASH_REQUIRES_CURRENCY                     :{WHITE}재정이 부족합니다 - {CURRENCY_LONG} 만큼의 돈이 필요합니다
-STR_ERROR_FLAT_LAND_REQUIRED                                    :{WHITE}평지가 필요합니다
-STR_ERROR_LAND_SLOPED_IN_WRONG_DIRECTION                        :{WHITE}잘못된 방향으로 땅이 기울어졌습니다
-STR_ERROR_CAN_T_DO_THIS                                         :{WHITE}그렇게 할 수 없습니다...
-STR_ERROR_BUILDING_MUST_BE_DEMOLISHED                           :{WHITE}건물을 먼저 제거해야 합니다
-STR_ERROR_BUILDING_IS_PROTECTED                                 :{WHITE}... 건물이 보호되어 있습니다
-STR_ERROR_CAN_T_CLEAR_THIS_AREA                                 :{WHITE}이 지역을 파괴할 수 없습니다...
-STR_ERROR_SITE_UNSUITABLE                                       :{WHITE}... 알맞지 않은 장소입니다
-STR_ERROR_ALREADY_BUILT                                         :{WHITE}... 이미 지어져있습니다
-STR_ERROR_OWNED_BY                                              :{WHITE}... {STRING}의 소유입니다
-STR_ERROR_AREA_IS_OWNED_BY_ANOTHER                              :{WHITE}... 다른 회사의 소유지입니다
-STR_ERROR_TERRAFORM_LIMIT_REACHED                               :{WHITE}... 지형 편집 제한에 다다랐습니다
-STR_ERROR_CLEARING_LIMIT_REACHED                                :{WHITE}... 칸 제거 제한에 다다랐습니다
-STR_ERROR_TREE_PLANT_LIMIT_REACHED                              :{WHITE}... 나무 심기 제한에 다다랐습니다
-STR_ERROR_NAME_MUST_BE_UNIQUE                                   :{WHITE}이름은 유일해야 합니다
-STR_ERROR_GENERIC_OBJECT_IN_THE_WAY                             :{WHITE}중간에 {0:STRING}{G 0 "이" "가"} 있습니다
-STR_ERROR_NOT_ALLOWED_WHILE_PAUSED                              :{WHITE}일시 정지 중에는 할 수 없습니다
+STR_ERROR_OFF_EDGE_OF_MAP                                       :지도 가장자리에서 너무 멉니다
+STR_ERROR_TOO_CLOSE_TO_EDGE_OF_MAP                              :지도 가장자리와 너무 가깝습니다
+STR_ERROR_NOT_ENOUGH_CASH_REQUIRES_CURRENCY                     :재정이 부족합니다 - {CURRENCY_LONG} 만큼의 돈이 필요합니다
+STR_ERROR_FLAT_LAND_REQUIRED                                    :평지가 필요합니다
+STR_ERROR_LAND_SLOPED_IN_WRONG_DIRECTION                        :잘못된 방향으로 땅이 기울어졌습니다
+STR_ERROR_CAN_T_DO_THIS                                         :그렇게 할 수 없습니다...
+STR_ERROR_BUILDING_MUST_BE_DEMOLISHED                           :건물을 먼저 제거해야 합니다
+STR_ERROR_BUILDING_IS_PROTECTED                                 :건물이 보호되어 있습니다
+STR_ERROR_CAN_T_CLEAR_THIS_AREA                                 :이 지역을 파괴할 수 없습니다...
+STR_ERROR_SITE_UNSUITABLE                                       :알맞지 않은 장소입니다
+STR_ERROR_ALREADY_BUILT                                         :이미 지어져있습니다
+STR_ERROR_OWNED_BY                                              :{STRING}의 소유입니다
+STR_ERROR_AREA_IS_OWNED_BY_ANOTHER                              :다른 회사의 소유지입니다
+STR_ERROR_TERRAFORM_LIMIT_REACHED                               :지형 편집 제한에 다다랐습니다
+STR_ERROR_CLEARING_LIMIT_REACHED                                :칸 제거 제한에 다다랐습니다
+STR_ERROR_TREE_PLANT_LIMIT_REACHED                              :나무 심기 제한에 다다랐습니다
+STR_ERROR_NAME_MUST_BE_UNIQUE                                   :이름은 유일해야 합니다
+STR_ERROR_GENERIC_OBJECT_IN_THE_WAY                             :중간에 {0:STRING}{G 0 "이" "가"} 있습니다
+STR_ERROR_NOT_ALLOWED_WHILE_PAUSED                              :일시 정지 중에는 할 수 없습니다
 
 # Local authority errors
-STR_ERROR_LOCAL_AUTHORITY_REFUSES_TO_ALLOW_THIS                 :{WHITE}{TOWN} 지역 당국이 이 행동을 거부했습니다.
-STR_ERROR_LOCAL_AUTHORITY_REFUSES_AIRPORT                       :{WHITE}{TOWN} 지역 당국이 이 도시에 다른 공항이 들어서는 것을 거부하였습니다
-STR_ERROR_LOCAL_AUTHORITY_REFUSES_NOISE                         :{WHITE}{TOWN} 지역 당국이 소음 문제로 인해 공항 건설을 거부하였습니다
-STR_ERROR_BRIBE_FAILED                                          :{WHITE}당신의 뇌물 수수 행위가 지역 당국에 의해 발각되었습니다
+STR_ERROR_LOCAL_AUTHORITY_REFUSES_TO_ALLOW_THIS                 :{TOWN} 지역 당국이 이 행동을 거부했습니다.
+STR_ERROR_LOCAL_AUTHORITY_REFUSES_AIRPORT                       :{TOWN} 지역 당국이 이 도시에 다른 공항이 들어서는 것을 거부하였습니다
+STR_ERROR_LOCAL_AUTHORITY_REFUSES_NOISE                         :{TOWN} 지역 당국이 소음 문제로 인해 공항 건설을 거부하였습니다
+STR_ERROR_BRIBE_FAILED                                          :뇌물 수수 행위가 지역 당국에 의해 발각되었습니다
 
 # Levelling errors
-STR_ERROR_CAN_T_RAISE_LAND_HERE                                 :{WHITE}이곳의 땅을 올릴 수 없습니다...
-STR_ERROR_CAN_T_LOWER_LAND_HERE                                 :{WHITE}이곳의 땅을 내릴 수 없습니다...
-STR_ERROR_CAN_T_LEVEL_LAND_HERE                                 :{WHITE}이 땅의 높이를 조절할 수 없습니다...
-STR_ERROR_EXCAVATION_WOULD_DAMAGE                               :{WHITE}터널 때문에 지형을 편집할 수 없습니다
-STR_ERROR_ALREADY_AT_SEA_LEVEL                                  :{WHITE}... 이미 해수면에 도달했습니다
-STR_ERROR_TOO_HIGH                                              :{WHITE}... 너무 높습니다
-STR_ERROR_ALREADY_LEVELLED                                      :{WHITE}... 이미 평평합니다
-STR_ERROR_BRIDGE_TOO_HIGH_AFTER_LOWER_LAND                      :{WHITE}다리가 끝나는 부분의 높이가 너무 높습니다
+STR_ERROR_CAN_T_RAISE_LAND_HERE                                 :이곳의 땅을 올릴 수 없습니다...
+STR_ERROR_CAN_T_LOWER_LAND_HERE                                 :이곳의 땅을 내릴 수 없습니다...
+STR_ERROR_CAN_T_LEVEL_LAND_HERE                                 :이 땅의 높이를 조절할 수 없습니다...
+STR_ERROR_EXCAVATION_WOULD_DAMAGE                               :터널 때문에 지형을 편집할 수 없습니다
+STR_ERROR_ALREADY_AT_SEA_LEVEL                                  :이미 해수면에 도달했습니다
+STR_ERROR_TOO_HIGH                                              :너무 높습니다
+STR_ERROR_ALREADY_LEVELLED                                      :이미 평평합니다
+STR_ERROR_BRIDGE_TOO_HIGH_AFTER_LOWER_LAND                      :다리가 끝나는 부분의 높이가 너무 높습니다
+STR_ERROR_MUST_DEMOLISH_RIVER_FIRST                             :강을 먼저 제거하세요
 
 # Company related errors
-STR_ERROR_CAN_T_CHANGE_COMPANY_NAME                             :{WHITE}회사 이름을 바꿀 수 없습니다...
-STR_ERROR_CAN_T_CHANGE_PRESIDENT                                :{WHITE}사장의 이름을 바꿀 수 없습니다...
+STR_ERROR_CAN_T_CHANGE_COMPANY_NAME                             :회사 이름을 바꿀 수 없습니다...
+STR_ERROR_CAN_T_CHANGE_PRESIDENT                                :사장의 이름을 바꿀 수 없습니다...
 
-STR_ERROR_MAXIMUM_PERMITTED_LOAN                                :{WHITE}... 최대로 빌릴 수 있는 대출금은 {CURRENCY_LONG} 입니다
-STR_ERROR_CAN_T_BORROW_ANY_MORE_MONEY                           :{WHITE}돈을 더 빌릴 수 없습니다...
-STR_ERROR_LOAN_ALREADY_REPAID                                   :{WHITE}... 값아야 할 대출금이 없습니다
-STR_ERROR_CURRENCY_REQUIRED                                     :{WHITE}... {CURRENCY_LONG} 만큼의 돈이 필요합니다
-STR_ERROR_CAN_T_REPAY_LOAN                                      :{WHITE}대출금을 갚을 수 없습니다...
-STR_ERROR_INSUFFICIENT_FUNDS                                    :{WHITE}은행에서 빌린 돈은 송금할 수 없습니다...
-STR_ERROR_CAN_T_GIVE_MONEY                                      :{WHITE}이 회사에 돈을 보낼 수 없습니다...
-STR_ERROR_CAN_T_BUY_COMPANY                                     :{WHITE}회사를 인수할 수 없습니다...
-STR_ERROR_CAN_T_BUILD_COMPANY_HEADQUARTERS                      :{WHITE}본사를 건설할 수 없습니다...
+STR_ERROR_MAXIMUM_PERMITTED_LOAN                                :최대로 빌릴 수 있는 대출금은 {CURRENCY_LONG} 입니다
+STR_ERROR_CAN_T_BORROW_ANY_MORE_MONEY                           :돈을 더 빌릴 수 없습니다...
+STR_ERROR_LOAN_ALREADY_REPAID                                   :값아야 할 대출금이 없습니다
+STR_ERROR_CURRENCY_REQUIRED                                     :{CURRENCY_LONG} 만큼의 돈이 필요합니다
+STR_ERROR_CAN_T_REPAY_LOAN                                      :대출금을 갚을 수 없습니다...
+STR_ERROR_INSUFFICIENT_FUNDS                                    :은행에서 빌린 돈은 송금할 수 없습니다...
+STR_ERROR_CAN_T_GIVE_MONEY                                      :이 회사에 돈을 보낼 수 없습니다...
+STR_ERROR_CAN_T_BUY_COMPANY                                     :회사를 인수할 수 없습니다...
+STR_ERROR_CAN_T_BUILD_COMPANY_HEADQUARTERS                      :본사를 건설할 수 없습니다...
 
 # Town related errors
-STR_ERROR_CAN_T_GENERATE_TOWN                                   :{WHITE}도시를 만들 수 없습니다...
-STR_ERROR_CAN_T_RENAME_TOWN                                     :{WHITE}도시 이름을 바꿀 수 없습니다...
-STR_ERROR_CAN_T_FOUND_TOWN_HERE                                 :{WHITE}여기에 도시를 건설할 수 없습니다...
-STR_ERROR_CAN_T_EXPAND_TOWN                                     :{WHITE}도시를 확장할 수 없습니다...
-STR_ERROR_TOO_CLOSE_TO_EDGE_OF_MAP_SUB                          :{WHITE}... 지도 가장자리와 너무 가깝습니다
-STR_ERROR_TOO_CLOSE_TO_ANOTHER_TOWN                             :{WHITE}... 다른 도시와 너무 가깝습니다
-STR_ERROR_TOO_MANY_TOWNS                                        :{WHITE}... 도시가 너무 많습니다
-STR_ERROR_NO_SPACE_FOR_TOWN                                     :{WHITE}... 지도에 더 이상 공간이 없습니다
-STR_ERROR_ROAD_WORKS_IN_PROGRESS                                :{WHITE}도로 작업이 진행 중입니다
-STR_ERROR_TOWN_CAN_T_DELETE                                     :{WHITE}이 도시를 삭제할 수 없습니다...{}{}도시나 도시 소유의 땅에 역, 정류장, 항구, 공항 또는 차량기지, 차고지, 정박소 등이 존재하면 도시를 삭제할 수 없습니다.
-STR_ERROR_STATUE_NO_SUITABLE_PLACE                              :{WHITE}... 이 도시의 중심에 동상을 세우기 적합한 장소가 없습니다
-STR_ERROR_CAN_T_BUILD_HOUSE                                     :{WHITE}건물을 지을 수 없습니다...
+STR_ERROR_CAN_T_GENERATE_TOWN                                   :도시를 만들 수 없습니다...
+STR_ERROR_CAN_T_RENAME_TOWN                                     :도시 이름을 바꿀 수 없습니다...
+STR_ERROR_CAN_T_FOUND_TOWN_HERE                                 :여기에 도시를 건설할 수 없습니다...
+STR_ERROR_CAN_T_EXPAND_TOWN                                     :도시를 확장할 수 없습니다...
+STR_ERROR_TOO_CLOSE_TO_ANOTHER_TOWN                             :다른 도시와 너무 가깝습니다
+STR_ERROR_TOO_MANY_TOWNS                                        :도시가 너무 많습니다
+STR_ERROR_NO_SPACE_FOR_TOWN                                     :지도에 더 이상 공간이 없습니다
+STR_ERROR_ROAD_WORKS_IN_PROGRESS                                :도로 작업이 진행 중입니다
+STR_ERROR_TOWN_CAN_T_DELETE                                     :이 도시를 삭제할 수 없습니다...{}{}도시나 도시 소유의 땅에 역, 정류장, 항구, 공항 또는 차량기지, 차고지, 정박소 등이 존재하면 도시를 삭제할 수 없습니다
+STR_ERROR_STATUE_NO_SUITABLE_PLACE                              :이 도시의 중심에 동상을 세우기 적합한 장소가 없습니다
+STR_ERROR_CAN_T_BUILD_HOUSE                                     :건물을 지을 수 없습니다...
 
 # Industry related errors
-STR_ERROR_TOO_MANY_INDUSTRIES                                   :{WHITE}... 산업시설이 너무 많습니다
-STR_ERROR_CAN_T_GENERATE_INDUSTRIES                             :{WHITE}산업시설을 생성할 수 없습니다...
-STR_ERROR_CAN_T_BUILD_HERE                                      :{WHITE}여기에 {STRING}{G 0 "을" "를"} 건설할 수 없습니다...
-STR_ERROR_CAN_T_CONSTRUCT_THIS_INDUSTRY                         :{WHITE}여기에 산업시설을 건설할 수 없습니다...
-STR_ERROR_CAN_T_PROSPECT_INDUSTRY                               :{WHITE}산업시설에 투자할 수 없습니다...
-STR_ERROR_INDUSTRY_TOO_CLOSE                                    :{WHITE}... 다른 산업시설과 너무 가깝습니다
-STR_ERROR_MUST_FOUND_TOWN_FIRST                                 :{WHITE}... 도시를 먼저 만들어야 합니다
-STR_ERROR_ONLY_ONE_ALLOWED_PER_TOWN                             :{WHITE}... 한 도시에 하나만 지을 수 있습니다
-STR_ERROR_CAN_ONLY_BE_BUILT_IN_TOWNS_WITH_POPULATION_OF_1200    :{WHITE}... 인구 1200명 이상의 도시에만 지을 수 있습니다
-STR_ERROR_CAN_ONLY_BE_BUILT_IN_RAINFOREST                       :{WHITE}... 열대우림 지역에만 지을 수 있습니다
-STR_ERROR_CAN_ONLY_BE_BUILT_IN_DESERT                           :{WHITE}... 사막 지역에만 지을 수 있습니다
-STR_ERROR_CAN_ONLY_BE_BUILT_IN_TOWNS                            :{WHITE}... 도시 안의 건물이 있는 위치에만 지을 수 있습니다
-STR_ERROR_CAN_ONLY_BE_BUILT_NEAR_TOWN_CENTER                    :{WHITE}... 도시의 가운데 근처에만 지을 수 있습니다
-STR_ERROR_CAN_ONLY_BE_BUILT_IN_LOW_AREAS                        :{WHITE}... 낮은 지역에만 지을 수 있습니다
-STR_ERROR_CAN_ONLY_BE_POSITIONED                                :{WHITE}... 지도 가장자리 근처에만 놓을 수 있습니다
-STR_ERROR_FOREST_CAN_ONLY_BE_PLANTED                            :{WHITE}... 숲은 만년설 높이 이상의 고도에만 지을 수 있습니다
-STR_ERROR_CAN_ONLY_BE_BUILT_ABOVE_SNOW_LINE                     :{WHITE}... 만년설 고도 위에만 지을 수 있습니다
-STR_ERROR_CAN_ONLY_BE_BUILT_BELOW_SNOW_LINE                     :{WHITE}... 만년설 고도 아래에만 지을 수 있습니다
+STR_ERROR_TOO_MANY_INDUSTRIES                                   :산업시설이 너무 많습니다
+STR_ERROR_CAN_T_GENERATE_INDUSTRIES                             :산업시설을 생성할 수 없습니다...
+STR_ERROR_CAN_T_BUILD_HERE                                      :여기에 {STRING}{G 0 "을" "를"} 건설할 수 없습니다...
+STR_ERROR_CAN_T_CONSTRUCT_THIS_INDUSTRY                         :여기에 산업시설을 건설할 수 없습니다...
+STR_ERROR_CAN_T_PROSPECT_INDUSTRY                               :산업시설에 투자할 수 없습니다...
+STR_ERROR_INDUSTRY_TOO_CLOSE                                    :다른 산업시설과 너무 가깝습니다
+STR_ERROR_MUST_FOUND_TOWN_FIRST                                 :도시를 먼저 만들어야 합니다
+STR_ERROR_ONLY_ONE_ALLOWED_PER_TOWN                             :한 도시에 하나만 지을 수 있습니다
+STR_ERROR_CAN_ONLY_BE_BUILT_IN_TOWNS_WITH_POPULATION_OF_1200    :인구 1200명 이상의 도시에만 지을 수 있습니다
+STR_ERROR_CAN_ONLY_BE_BUILT_IN_RAINFOREST                       :열대우림 지역에만 지을 수 있습니다
+STR_ERROR_CAN_ONLY_BE_BUILT_IN_DESERT                           :사막 지역에만 지을 수 있습니다
+STR_ERROR_CAN_ONLY_BE_BUILT_IN_TOWNS                            :도시 안의 건물이 있는 위치에만 지을 수 있습니다
+STR_ERROR_CAN_ONLY_BE_BUILT_NEAR_TOWN_CENTER                    :도시의 가운데 근처에만 지을 수 있습니다
+STR_ERROR_CAN_ONLY_BE_BUILT_IN_LOW_AREAS                        :낮은 지역에만 지을 수 있습니다
+STR_ERROR_CAN_ONLY_BE_POSITIONED                                :지도 가장자리 근처에만 놓을 수 있습니다
+STR_ERROR_FOREST_CAN_ONLY_BE_PLANTED                            :숲은 만년설 높이 이상의 고도에만 지을 수 있습니다
+STR_ERROR_CAN_ONLY_BE_BUILT_ABOVE_SNOW_LINE                     :만년설 고도 위에만 지을 수 있습니다
+STR_ERROR_CAN_ONLY_BE_BUILT_BELOW_SNOW_LINE                     :만년설 고도 아래에만 지을 수 있습니다
 
-STR_ERROR_PROSPECTING_WAS_UNLUCKY                               :{WHITE}운이 나빠 투자에 실패했습니다. 다시 시도해주세요.
-STR_ERROR_NO_SUITABLE_PLACES_FOR_PROSPECTING                    :{WHITE}이 산업시설을 투자하기에 적합한 장소가 없습니다
-STR_ERROR_NO_SUITABLE_PLACES_FOR_INDUSTRIES                     :{WHITE}적당한 장소가 없어 '{STRING}'{G 0 "이" "가"} 지어지지 않았습니다
-STR_ERROR_NO_SUITABLE_PLACES_FOR_INDUSTRIES_EXPLANATION         :{WHITE}더 나은 지도가 생성되도록 설정 값을 변경해보십시오
+STR_ERROR_PROSPECTING_WAS_UNLUCKY                               :운이 나빠 투자에 실패했습니다 - 다시 시도해주세요
+STR_ERROR_NO_SUITABLE_PLACES_FOR_PROSPECTING                    :이 산업시설을 투자하기에 적합한 장소가 없습니다
+STR_ERROR_NO_SUITABLE_PLACES_FOR_INDUSTRIES                     :적당한 장소가 없어 '{STRING}'{G 0 "이" "가"} 지어지지 않았습니다
+STR_ERROR_NO_SUITABLE_PLACES_FOR_INDUSTRIES_EXPLANATION         :더 나은 지도가 생성되도록 설정 값을 변경해보세요
 
 # Station construction related errors
-STR_ERROR_CAN_T_BUILD_RAILROAD_STATION                          :{WHITE}여기에 역을 지을 수 없습니다...
-STR_ERROR_CAN_T_BUILD_BUS_STATION                               :{WHITE}버스 정류장을 지을 수 없습니다...
-STR_ERROR_CAN_T_BUILD_TRUCK_STATION                             :{WHITE}트럭 적하장을 지을 수 없습니다...
-STR_ERROR_CAN_T_BUILD_PASSENGER_TRAM_STATION                    :{WHITE}여기에 여객 전차역을 지을 수 없습니다...
-STR_ERROR_CAN_T_BUILD_CARGO_TRAM_STATION                        :{WHITE}여기에 화물 전차역을 지을 수 없습니다...
-STR_ERROR_CAN_T_BUILD_DOCK_HERE                                 :{WHITE}여기에 항구를 지을 수 없습니다...
-STR_ERROR_CAN_T_BUILD_AIRPORT_HERE                              :{WHITE}여기에 공항을 지을 수 없습니다...
+STR_ERROR_CAN_T_BUILD_RAILROAD_STATION                          :여기에 역을 지을 수 없습니다...
+STR_ERROR_CAN_T_BUILD_BUS_STATION                               :버스 정류장을 지을 수 없습니다...
+STR_ERROR_CAN_T_BUILD_TRUCK_STATION                             :트럭 적하장을 지을 수 없습니다...
+STR_ERROR_CAN_T_BUILD_PASSENGER_TRAM_STATION                    :여기에 여객 전차역을 지을 수 없습니다...
+STR_ERROR_CAN_T_BUILD_CARGO_TRAM_STATION                        :여기에 화물 전차역을 지을 수 없습니다...
+STR_ERROR_CAN_T_BUILD_DOCK_HERE                                 :여기에 항구를 지을 수 없습니다...
+STR_ERROR_CAN_T_BUILD_AIRPORT_HERE                              :여기에 공항을 지을 수 없습니다...
 
-STR_ERROR_ADJOINS_MORE_THAN_ONE_EXISTING                        :{WHITE}두 개 이상의 역이 인접합니다
-STR_ERROR_STATION_TOO_SPREAD_OUT                                :{WHITE}... 역이 너무 크게 퍼져있습니다
-STR_ERROR_STATION_DISALLOWED_NUMBER_TRACKS                      :{WHITE}... 지원하지 않는 선로 수입니다
-STR_ERROR_STATION_DISALLOWED_LENGTH                             :{WHITE}... 지원하지 않는 길이입니다
-STR_ERROR_TOO_MANY_STATIONS_LOADING                             :{WHITE}역이 너무 많습니다
-STR_ERROR_TOO_MANY_STATION_SPECS                                :{WHITE}철도역 조각이 너무 많습니다
-STR_ERROR_TOO_MANY_BUS_STOPS                                    :{WHITE}버스 정류장이 너무 많습니다
-STR_ERROR_TOO_MANY_TRUCK_STOPS                                  :{WHITE}트럭 적하장이 너무 많습니다
-STR_ERROR_TOO_CLOSE_TO_ANOTHER_DOCK                             :{WHITE}다른 항구와 너무 가깝습니다
-STR_ERROR_TOO_CLOSE_TO_ANOTHER_AIRPORT                          :{WHITE}다른 공항과 너무 가깝습니다
-STR_ERROR_CAN_T_RENAME_STATION                                  :{WHITE}역 이름을 바꿀 수 없습니다...
-STR_ERROR_CAN_T_MOVE_STATION_NAME                               :{WHITE}역 팻말 위치를 옮길 수 없습니다...
-STR_ERROR_DRIVE_THROUGH_ON_TOWN_ROAD                            :{WHITE}... 도시 소유의 도로입니다
-STR_ERROR_DRIVE_THROUGH_DIRECTION                               :{WHITE}... 도로의 방향과 일치하지 않습니다
-STR_ERROR_DRIVE_THROUGH_CORNER                                  :{WHITE}... 통과식 도로 정류장은 굽은 도로에 건설할 수 없습니다
-STR_ERROR_DRIVE_THROUGH_JUNCTION                                :{WHITE}... 통과식 도로 정류장은 교차로에 건설할 수 없습니다
+STR_ERROR_ADJOINS_MORE_THAN_ONE_EXISTING                        :두 개 이상의 역이 인접합니다
+STR_ERROR_STATION_TOO_SPREAD_OUT                                :역이 너무 크게 퍼져있습니다
+STR_ERROR_STATION_DISALLOWED_NUMBER_TRACKS                      :지원하지 않는 선로 수입니다
+STR_ERROR_STATION_DISALLOWED_LENGTH                             :지원하지 않는 길이입니다
+STR_ERROR_TOO_MANY_STATIONS_LOADING                             :역이 너무 많습니다
+STR_ERROR_TOO_MANY_STATION_SPECS                                :철도역 조각이 너무 많습니다
+STR_ERROR_TOO_MANY_BUS_STOPS                                    :버스 정류장이 너무 많습니다
+STR_ERROR_TOO_MANY_TRUCK_STOPS                                  :트럭 적하장이 너무 많습니다
+STR_ERROR_TOO_CLOSE_TO_ANOTHER_DOCK                             :다른 항구와 너무 가깝습니다
+STR_ERROR_TOO_CLOSE_TO_ANOTHER_AIRPORT                          :다른 공항과 너무 가깝습니다
+STR_ERROR_CAN_T_RENAME_STATION                                  :역 이름을 바꿀 수 없습니다...
+STR_ERROR_CAN_T_MOVE_STATION_NAME                               :역 팻말 위치를 옮길 수 없습니다...
+STR_ERROR_DRIVE_THROUGH_ON_TOWN_ROAD                            :도시 소유의 도로입니다
+STR_ERROR_DRIVE_THROUGH_DIRECTION                               :도로의 방향과 일치하지 않습니다
+STR_ERROR_DRIVE_THROUGH_CORNER                                  :통과식 도로 정류장은 굽은 도로에 건설할 수 없습니다
+STR_ERROR_DRIVE_THROUGH_JUNCTION                                :통과식 도로 정류장은 교차로에 건설할 수 없습니다
 
 # Station destruction related errors
-STR_ERROR_CAN_T_REMOVE_PART_OF_STATION                          :{WHITE}역의 일부를 제거할 수 없습니다...
-STR_ERROR_MUST_REMOVE_RAILWAY_STATION_FIRST                     :{WHITE}철도역을 먼저 제거하세요
-STR_ERROR_CAN_T_REMOVE_BUS_STATION                              :{WHITE}버스 정류장을 제거할 수 없습니다...
-STR_ERROR_CAN_T_REMOVE_TRUCK_STATION                            :{WHITE}트럭 적하장을 제거할 수 없습니다...
-STR_ERROR_CAN_T_REMOVE_PASSENGER_TRAM_STATION                   :{WHITE}여객 전차역을 제거할 수 없습니다...
-STR_ERROR_CAN_T_REMOVE_CARGO_TRAM_STATION                       :{WHITE}화물 전차역을 제거할 수 없습니다...
-STR_ERROR_MUST_REMOVE_ROAD_STOP_FIRST                           :{WHITE}정류장을 먼저 제거하세요
-STR_ERROR_THERE_IS_NO_STATION                                   :{WHITE}... 여기에는 정거장이 없습니다
+STR_ERROR_CAN_T_REMOVE_PART_OF_STATION                          :역의 일부를 제거할 수 없습니다...
+STR_ERROR_MUST_REMOVE_RAILWAY_STATION_FIRST                     :철도역을 먼저 제거하세요
+STR_ERROR_CAN_T_REMOVE_BUS_STATION                              :버스 정류장을 제거할 수 없습니다...
+STR_ERROR_CAN_T_REMOVE_TRUCK_STATION                            :트럭 적하장을 제거할 수 없습니다...
+STR_ERROR_CAN_T_REMOVE_PASSENGER_TRAM_STATION                   :여객 전차역을 제거할 수 없습니다...
+STR_ERROR_CAN_T_REMOVE_CARGO_TRAM_STATION                       :화물 전차역을 제거할 수 없습니다...
+STR_ERROR_MUST_REMOVE_ROAD_STOP_FIRST                           :정류장을 먼저 제거하세요
+STR_ERROR_THERE_IS_NO_STATION                                   :여기에는 정거장이 없습니다
 
-STR_ERROR_MUST_DEMOLISH_RAILROAD                                :{WHITE}철도역을 먼저 제거하세요
-STR_ERROR_MUST_DEMOLISH_BUS_STATION_FIRST                       :{WHITE}버스 정류장을 먼저 제거하세요
-STR_ERROR_MUST_DEMOLISH_TRUCK_STATION_FIRST                     :{WHITE}트럭 적하장을 먼저 제거하세요
-STR_ERROR_MUST_DEMOLISH_PASSENGER_TRAM_STATION_FIRST            :{WHITE}여객 전차역을 먼저 제거하세요
-STR_ERROR_MUST_DEMOLISH_CARGO_TRAM_STATION_FIRST                :{WHITE}화물 전차역을 먼저 제거하세요
-STR_ERROR_MUST_DEMOLISH_DOCK_FIRST                              :{WHITE}항구를 먼저 제거하세요
-STR_ERROR_MUST_DEMOLISH_AIRPORT_FIRST                           :{WHITE}공항을 먼저 제거하세요
+STR_ERROR_MUST_DEMOLISH_RAILROAD                                :철도역을 먼저 제거하세요
+STR_ERROR_MUST_DEMOLISH_BUS_STATION_FIRST                       :버스 정류장을 먼저 제거하세요
+STR_ERROR_MUST_DEMOLISH_TRUCK_STATION_FIRST                     :트럭 적하장을 먼저 제거하세요
+STR_ERROR_MUST_DEMOLISH_PASSENGER_TRAM_STATION_FIRST            :여객 전차역을 먼저 제거하세요
+STR_ERROR_MUST_DEMOLISH_CARGO_TRAM_STATION_FIRST                :화물 전차역을 먼저 제거하세요
+STR_ERROR_MUST_DEMOLISH_DOCK_FIRST                              :항구를 먼저 제거하세요
+STR_ERROR_MUST_DEMOLISH_AIRPORT_FIRST                           :공항을 먼저 제거하세요
 
 # Waypoint related errors
-STR_ERROR_WAYPOINT_ADJOINS_MORE_THAN_ONE_EXISTING               :{WHITE}최소한 하나 이상의 경유지와 연결하십시오
-STR_ERROR_TOO_CLOSE_TO_ANOTHER_WAYPOINT                         :{WHITE}다른 경유지와 너무 가깝습니다!
+STR_ERROR_WAYPOINT_ADJOINS_MORE_THAN_ONE_EXISTING               :최소한 하나 이상의 경유지와 연결하십시오
+STR_ERROR_TOO_CLOSE_TO_ANOTHER_WAYPOINT                         :다른 경유지와 너무 가깝습니다
 
-STR_ERROR_CAN_T_BUILD_RAIL_WAYPOINT                             :{WHITE}여기에 열차 경유지를 지을 수 없습니다...
-STR_ERROR_CAN_T_BUILD_ROAD_WAYPOINT                             :{WHITE}여기에 도로 경유지를 지을 수 없습니다...
-STR_ERROR_CAN_T_POSITION_BUOY_HERE                              :{WHITE}여기에 부표를 설치할 수 없습니다...
-STR_ERROR_CAN_T_CHANGE_WAYPOINT_NAME                            :{WHITE}경유지의 이름을 변경할 수 없습니다...
-STR_ERROR_CAN_T_MOVE_WAYPOINT_NAME                              :{WHITE}경유지 팻말 위치를 옮길 수 없습니다...
+STR_ERROR_CAN_T_BUILD_RAIL_WAYPOINT                             :여기에 열차 경유지를 지을 수 없습니다...
+STR_ERROR_CAN_T_BUILD_ROAD_WAYPOINT                             :여기에 도로 경유지를 지을 수 없습니다...
+STR_ERROR_CAN_T_POSITION_BUOY_HERE                              :여기에 부표를 설치할 수 없습니다...
+STR_ERROR_CAN_T_CHANGE_WAYPOINT_NAME                            :경유지의 이름을 변경할 수 없습니다...
+STR_ERROR_CAN_T_MOVE_WAYPOINT_NAME                              :경유지 팻말 위치를 옮길 수 없습니다...
 
-STR_ERROR_CAN_T_REMOVE_RAIL_WAYPOINT                            :{WHITE}이 열차 경유지를 제거할 수 없습니다...
-STR_ERROR_CAN_T_REMOVE_ROAD_WAYPOINT                            :{WHITE}이 도로 경유지를 제거할 수 없습니다...
-STR_ERROR_MUST_REMOVE_RAILWAYPOINT_FIRST                        :{WHITE}열차 경유지를 먼저 제거하세요
-STR_ERROR_MUST_REMOVE_ROADWAYPOINT_FIRST                        :{WHITE}도로 경유지를 먼저 제거하세요
-STR_ERROR_BUOY_IN_THE_WAY                                       :{WHITE}... 도중에 부표가 있습니다
-STR_ERROR_BUOY_IS_IN_USE                                        :{WHITE}... 다른 회사에서 사용 중인 부표입니다!
+STR_ERROR_CAN_T_REMOVE_RAIL_WAYPOINT                            :이 열차 경유지를 제거할 수 없습니다...
+STR_ERROR_CAN_T_REMOVE_ROAD_WAYPOINT                            :이 도로 경유지를 제거할 수 없습니다...
+STR_ERROR_MUST_REMOVE_RAILWAYPOINT_FIRST                        :열차 경유지를 먼저 제거하세요
+STR_ERROR_MUST_REMOVE_ROADWAYPOINT_FIRST                        :도로 경유지를 먼저 제거하세요
+STR_ERROR_BUOY_IN_THE_WAY                                       :도중에 부표가 있습니다
+STR_ERROR_BUOY_IS_IN_USE                                        :다른 회사에서 사용 중인 부표입니다!
 
 # Depot related errors
-STR_ERROR_CAN_T_BUILD_TRAIN_DEPOT                               :{WHITE}여기에 차량기지를 지을 수 없습니다...
-STR_ERROR_CAN_T_BUILD_ROAD_DEPOT                                :{WHITE}여기에 차고지를 지을 수 없습니다...
-STR_ERROR_CAN_T_BUILD_TRAM_DEPOT                                :{WHITE}여기에 차량기지를 지을 수 없습니다...
-STR_ERROR_CAN_T_BUILD_SHIP_DEPOT                                :{WHITE}여기에 정박소를 지을 수 없습니다...
+STR_ERROR_CAN_T_BUILD_TRAIN_DEPOT                               :여기에 차량기지를 지을 수 없습니다...
+STR_ERROR_CAN_T_BUILD_ROAD_DEPOT                                :여기에 차고지를 지을 수 없습니다...
+STR_ERROR_CAN_T_BUILD_TRAM_DEPOT                                :여기에 차량기지를 지을 수 없습니다...
+STR_ERROR_CAN_T_BUILD_SHIP_DEPOT                                :여기에 정박소를 지을 수 없습니다...
 
-STR_ERROR_CAN_T_RENAME_DEPOT                                    :{WHITE}차량기지의 이름을 바꿀 수 없습니다...
+STR_ERROR_CAN_T_RENAME_DEPOT                                    :차량기지의 이름을 바꿀 수 없습니다...
 
-STR_ERROR_TRAIN_MUST_BE_STOPPED_INSIDE_DEPOT                    :{WHITE}... 차량기지 안에 정지해 있어야 합니다
-STR_ERROR_ROAD_VEHICLE_MUST_BE_STOPPED_INSIDE_DEPOT             :{WHITE}... 차고지 안에 정지해 있어야 합니다
-STR_ERROR_SHIP_MUST_BE_STOPPED_INSIDE_DEPOT                     :{WHITE}... 정박소 안에 정지해 있어야 합니다
-STR_ERROR_AIRCRAFT_MUST_BE_STOPPED_INSIDE_HANGAR                :{WHITE}... 격납고 안에 정지해 있어야 합니다
+STR_ERROR_TRAIN_MUST_BE_STOPPED_INSIDE_DEPOT                    :차량기지 안에 정지해 있어야 합니다
+STR_ERROR_ROAD_VEHICLE_MUST_BE_STOPPED_INSIDE_DEPOT             :차고지 안에 정지해 있어야 합니다
+STR_ERROR_SHIP_MUST_BE_STOPPED_INSIDE_DEPOT                     :정박소 안에 정지해 있어야 합니다
+STR_ERROR_AIRCRAFT_MUST_BE_STOPPED_INSIDE_HANGAR                :격납고 안에 정지해 있어야 합니다
 
-STR_ERROR_TRAINS_CAN_ONLY_BE_ALTERED_INSIDE_A_DEPOT             :{WHITE}차량기지 내에서 정지한 경우에만 개조할 수 있습니다
-STR_ERROR_TRAIN_TOO_LONG                                        :{WHITE}열차가 너무 깁니다!
-STR_ERROR_CAN_T_REVERSE_DIRECTION_RAIL_VEHICLE                  :{WHITE}차량을 뒤집을 수 없습니다...
-STR_ERROR_CAN_T_REVERSE_DIRECTION_RAIL_VEHICLE_MULTIPLE_UNITS   :{WHITE}여러 대가 연결된 차량은 뒤집을 수 없습니다...
+STR_ERROR_TRAINS_CAN_ONLY_BE_ALTERED_INSIDE_A_DEPOT             :차량기지 내에서 정지한 경우에만 개조할 수 있습니다
+STR_ERROR_TRAIN_TOO_LONG                                        :열차가 너무 깁니다
+STR_ERROR_CAN_T_REVERSE_DIRECTION_RAIL_VEHICLE                  :차량을 뒤집을 수 없습니다...
+STR_ERROR_CAN_T_REVERSE_DIRECTION_RAIL_VEHICLE_MULTIPLE_UNITS   :여러 대가 연결된 차량은 뒤집을 수 없습니다...
 STR_ERROR_INCOMPATIBLE_RAIL_TYPES                               :알맞지 않은 철도 종류입니다
 
-STR_ERROR_CAN_T_MOVE_VEHICLE                                    :{WHITE}차량을 옮길 수 없습니다...
-STR_ERROR_REAR_ENGINE_FOLLOW_FRONT                              :{WHITE}뒷쪽 기관차는 앞쪽 기관차와 항상 붙어있어야 합니다
-STR_ERROR_UNABLE_TO_FIND_ROUTE_TO                               :{WHITE}근처에 있는 차량기지로 가는 길을 찾을 수 없습니다
-STR_ERROR_UNABLE_TO_FIND_LOCAL_DEPOT                            :{WHITE}근처에 있는 차고지를 찾을 수 없습니다
+STR_ERROR_CAN_T_MOVE_VEHICLE                                    :차량을 옮길 수 없습니다...
+STR_ERROR_REAR_ENGINE_FOLLOW_FRONT                              :뒷쪽 기관차는 앞쪽 기관차와 항상 붙어있어야 합니다
+STR_ERROR_UNABLE_TO_FIND_ROUTE_TO                               :근처에 있는 차량기지로 가는 길을 찾을 수 없습니다
+STR_ERROR_UNABLE_TO_FIND_LOCAL_DEPOT                            :근처에 있는 차고지를 찾을 수 없습니다
+STR_ERROR_UNABLE_TO_FIND_LOCAL_HANGAR                           :근처에 있는 격납고를 찾을 수 없습니다
 
 STR_ERROR_DEPOT_WRONG_DEPOT_TYPE                                :잘못된 차량기지 종류입니다
 
 # Depot unbunching related errors
-STR_ERROR_UNBUNCHING_ONLY_ONE_ALLOWED                           :{WHITE}... 배차 간격 유지 경로는 하나만 사용 가능합니다
-STR_ERROR_UNBUNCHING_NO_FULL_LOAD                               :{WHITE}... 차량에 배차 간격 유지 경로가 있으면 가득 싣기 경로를 사용할 수 없습니다
-STR_ERROR_UNBUNCHING_NO_UNBUNCHING_FULL_LOAD                    :{WHITE}... 가득 싣기 경로가 있는 차량에는 배차 간격 유지를 사용할 수 없습니다
-STR_ERROR_UNBUNCHING_NO_CONDITIONAL                             :{WHITE}... 차량에 배차 간격 유지 경로가 있으면 조건부 경로를 사용할 수 없습니다
-STR_ERROR_UNBUNCHING_NO_UNBUNCHING_CONDITIONAL                  :{WHITE}... 조건부 경로가 있는 차량에는 배차 간격 유지를 사용할 수 없습니다
+STR_ERROR_UNBUNCHING_ONLY_ONE_ALLOWED                           :배차 간격 유지 경로는 하나만 사용 가능합니다
+STR_ERROR_UNBUNCHING_NO_FULL_LOAD                               :차량에 배차 간격 유지 경로가 있으면 가득 싣기 경로를 사용할 수 없습니다
+STR_ERROR_UNBUNCHING_NO_UNBUNCHING_FULL_LOAD                    :가득 싣기 경로가 있는 차량에는 배차 간격 유지를 사용할 수 없습니다
+STR_ERROR_UNBUNCHING_NO_CONDITIONAL                             :차량에 배차 간격 유지 경로가 있으면 조건부 경로를 사용할 수 없습니다
+STR_ERROR_UNBUNCHING_NO_UNBUNCHING_CONDITIONAL                  :조건부 경로가 있는 차량에는 배차 간격 유지를 사용할 수 없습니다
 
 # Autoreplace related errors
-STR_ERROR_TRAIN_TOO_LONG_AFTER_REPLACEMENT                      :{WHITE}{VEHICLE} : 교체된지 너무 오래되었습니다
-STR_ERROR_AUTOREPLACE_NOTHING_TO_DO                             :{WHITE}자동 교체/갱신 규칙이 적용되지 않았습니다
+STR_ERROR_TRAIN_TOO_LONG_AFTER_REPLACEMENT                      :{VEHICLE} - 교체된지 너무 오래되었습니다
+STR_ERROR_AUTOREPLACE_NOTHING_TO_DO                             :자동 교체/갱신 규칙이 적용되지 않았습니다
 STR_ERROR_AUTOREPLACE_MONEY_LIMIT                               :(자금 부족)
-STR_ERROR_AUTOREPLACE_INCOMPATIBLE_CARGO                        :{WHITE}새로 교체된 차량이 {0:STRING}{G 0 "을" "를"} 실을 수 없습니다
-STR_ERROR_AUTOREPLACE_INCOMPATIBLE_REFIT                        :{WHITE}새로 교체된 차량이 경로 {NUM} 대로 개조될 수 없습니다
+STR_ERROR_AUTOREPLACE_INCOMPATIBLE_CARGO                        :새로 교체된 차량이 {0:STRING}{G 0 "을" "를"} 실을 수 없습니다
+STR_ERROR_AUTOREPLACE_INCOMPATIBLE_REFIT                        :새로 교체된 차량은 경로 {0:NUM}{P 0 "을" "를"} 따라 개조될 수 없습니다
 
 # Rail construction errors
-STR_ERROR_IMPOSSIBLE_TRACK_COMBINATION                          :{WHITE}불가능한 트랙 조합입니다
-STR_ERROR_MUST_REMOVE_SIGNALS_FIRST                             :{WHITE}신호기를 먼저 제거하세요
-STR_ERROR_NO_SUITABLE_RAILROAD_TRACK                            :{WHITE}적합한 철도 선로가 없습니다
-STR_ERROR_MUST_REMOVE_RAILROAD_TRACK                            :{WHITE}선로를 먼저 제거하세요
-STR_ERROR_CROSSING_ON_ONEWAY_ROAD                               :{WHITE}도로가 일방통행이거나 막혔습니다
-STR_ERROR_CROSSING_DISALLOWED_RAIL                              :{WHITE}이 선로에는 건널목을 만들 수 없습니다
-STR_ERROR_CROSSING_DISALLOWED_ROAD                              :{WHITE}이 도로에는 건널목을 만들 수 없습니다
-STR_ERROR_CAN_T_BUILD_SIGNALS_HERE                              :{WHITE}여기에 신호기를 건설할 수 없습니다...
-STR_ERROR_CAN_T_BUILD_RAILROAD_TRACK                            :{WHITE}여기에 선로를 건설할 수 없습니다...
-STR_ERROR_CAN_T_REMOVE_RAILROAD_TRACK                           :{WHITE}이 선로를 제거할 수 없습니다...
-STR_ERROR_CAN_T_REMOVE_SIGNALS_FROM                             :{WHITE}이곳의 신호기를 제거할 수 없습니다...
-STR_ERROR_SIGNAL_CAN_T_CONVERT_SIGNALS_HERE                     :{WHITE}이곳의 신호기를 바꿀 수 없습니다...
-STR_ERROR_THERE_IS_NO_RAILROAD_TRACK                            :{WHITE}... 선로가 없습니다
-STR_ERROR_THERE_ARE_NO_SIGNALS                                  :{WHITE}... 신호기가 없습니다
+STR_ERROR_IMPOSSIBLE_TRACK_COMBINATION                          :불가능한 트랙 조합입니다
+STR_ERROR_MUST_REMOVE_SIGNALS_FIRST                             :신호기를 먼저 제거하세요
+STR_ERROR_NO_SUITABLE_RAILROAD_TRACK                            :적합한 철도 선로가 없습니다
+STR_ERROR_MUST_REMOVE_RAILROAD_TRACK                            :선로를 먼저 제거하세요
+STR_ERROR_CROSSING_ON_ONEWAY_ROAD                               :도로가 일방통행이거나 막혔습니다
+STR_ERROR_CROSSING_DISALLOWED_RAIL                              :이 선로에는 건널목을 만들 수 없습니다
+STR_ERROR_CROSSING_DISALLOWED_ROAD                              :이 도로에는 건널목을 만들 수 없습니다
+STR_ERROR_CAN_T_BUILD_SIGNALS_HERE                              :여기에 신호기를 건설할 수 없습니다...
+STR_ERROR_CAN_T_BUILD_RAILROAD_TRACK                            :여기에 선로를 건설할 수 없습니다...
+STR_ERROR_CAN_T_REMOVE_RAILROAD_TRACK                           :이 선로를 제거할 수 없습니다...
+STR_ERROR_CAN_T_REMOVE_SIGNALS_FROM                             :이 신호기를 제거할 수 없습니다...
+STR_ERROR_SIGNAL_CAN_T_CONVERT_SIGNALS_HERE                     :이곳의 신호기를 바꿀 수 없습니다...
+STR_ERROR_THERE_IS_NO_RAILROAD_TRACK                            :선로가 없습니다
+STR_ERROR_THERE_ARE_NO_SIGNALS                                  :신호기가 없습니다
 
-STR_ERROR_CAN_T_CONVERT_RAIL                                    :{WHITE}이곳의 선로를 바꿀 수 없습니다...
+STR_ERROR_CAN_T_CONVERT_RAIL                                    :이곳의 선로를 바꿀 수 없습니다...
 
 # Road construction errors
-STR_ERROR_MUST_REMOVE_ROAD_FIRST                                :{WHITE}도로를 먼저 제거하세요
-STR_ERROR_ONEWAY_ROADS_CAN_T_HAVE_JUNCTION                      :{WHITE}... 일방통행로에는 교차로를 만들 수 없습니다.
-STR_ERROR_CAN_T_BUILD_ROAD_HERE                                 :{WHITE}도로를 건설할 수 없습니다...
-STR_ERROR_CAN_T_BUILD_TRAMWAY_HERE                              :{WHITE}여기에 전찻길을 건설할 수 없습니다...
-STR_ERROR_CAN_T_REMOVE_ROAD_FROM                                :{WHITE}이 도로를 제거할 수 없습니다...
-STR_ERROR_CAN_T_REMOVE_TRAMWAY_FROM                             :{WHITE}이 전찻길을 제거할 수 없습니다...
-STR_ERROR_THERE_IS_NO_ROAD                                      :{WHITE}... 도로가 없습니다
-STR_ERROR_THERE_IS_NO_TRAMWAY                                   :{WHITE}... 전찻길이 없습니다
-STR_ERROR_CAN_T_CONVERT_ROAD                                    :{WHITE}이곳의 도로를 바꿀 수 없습니다...
-STR_ERROR_CAN_T_CONVERT_TRAMWAY                                 :{WHITE}이곳의 전찻길을 바꿀 수 없습니다...
-STR_ERROR_NO_SUITABLE_ROAD                                      :{WHITE}적합한 도로가 없습니다
-STR_ERROR_NO_SUITABLE_TRAMWAY                                   :{WHITE}적합한 전찻길이 없습니다
+STR_ERROR_MUST_REMOVE_ROAD_FIRST                                :도로를 먼저 제거하세요
+STR_ERROR_ONEWAY_ROADS_CAN_T_HAVE_JUNCTION                      :일방통행로에는 교차로를 만들 수 없습니다.
+STR_ERROR_CAN_T_BUILD_ROAD_HERE                                 :도로를 건설할 수 없습니다...
+STR_ERROR_CAN_T_BUILD_TRAMWAY_HERE                              :여기에 전찻길을 건설할 수 없습니다...
+STR_ERROR_CAN_T_REMOVE_ROAD_FROM                                :이 도로를 제거할 수 없습니다...
+STR_ERROR_CAN_T_REMOVE_TRAMWAY_FROM                             :이 전찻길을 제거할 수 없습니다...
+STR_ERROR_THERE_IS_NO_ROAD                                      :도로가 없습니다
+STR_ERROR_THERE_IS_NO_TRAMWAY                                   :전찻길이 없습니다
+STR_ERROR_CAN_T_CONVERT_ROAD                                    :이곳의 도로를 바꿀 수 없습니다...
+STR_ERROR_CAN_T_CONVERT_TRAMWAY                                 :이곳의 전찻길을 바꿀 수 없습니다...
+STR_ERROR_NO_SUITABLE_ROAD                                      :적합한 도로가 없습니다
+STR_ERROR_NO_SUITABLE_TRAMWAY                                   :적합한 전찻길이 없습니다
 
 # Waterway construction errors
-STR_ERROR_CAN_T_BUILD_CANALS                                    :{WHITE}여기에 운하를 건설할 수 없습니다...
-STR_ERROR_CAN_T_BUILD_LOCKS                                     :{WHITE}여기에 갑문을 지을 수 없습니다...
-STR_ERROR_CAN_T_PLACE_RIVERS                                    :{WHITE}여기에 강을 만들 수 없습니다...
-STR_ERROR_MUST_BE_BUILT_ON_WATER                                :{WHITE}... 물 위에 지어야 합니다!
-STR_ERROR_CAN_T_BUILD_ON_WATER                                  :{WHITE}... 물 위에 지을 수 없습니다
-STR_ERROR_CAN_T_BUILD_ON_SEA                                    :{WHITE}... 바다 위에 지을 수 없습니다
-STR_ERROR_CAN_T_BUILD_ON_CANAL                                  :{WHITE}... 운하 위에 지을 수 없습니다
-STR_ERROR_CAN_T_BUILD_ON_RIVER                                  :{WHITE}... 강 위에 지을 수 없습니다
-STR_ERROR_MUST_DEMOLISH_CANAL_FIRST                             :{WHITE}운하를 먼저 제거하세요
-STR_ERROR_CAN_T_BUILD_AQUEDUCT_HERE                             :{WHITE}여기에 수도교를 지을 수 없습니다...
+STR_ERROR_CAN_T_BUILD_CANALS                                    :여기에 운하를 건설할 수 없습니다...
+STR_ERROR_CAN_T_BUILD_LOCKS                                     :여기에 갑문을 지을 수 없습니다...
+STR_ERROR_CAN_T_PLACE_RIVERS                                    :여기에 강을 만들 수 없습니다...
+STR_ERROR_MUST_BE_BUILT_ON_WATER                                :물 위에 지어야 합니다
+STR_ERROR_CAN_T_BUILD_ON_WATER                                  :물 위에 지을 수 없습니다
+STR_ERROR_CAN_T_BUILD_ON_SEA                                    :바다 위에 지을 수 없습니다
+STR_ERROR_CAN_T_BUILD_ON_CANAL                                  :운하 위에 지을 수 없습니다
+STR_ERROR_CAN_T_BUILD_ON_RIVER                                  :강 위에 지을 수 없습니다
+STR_ERROR_MUST_DEMOLISH_CANAL_FIRST                             :운하를 먼저 제거하세요
+STR_ERROR_CAN_T_BUILD_AQUEDUCT_HERE                             :여기에 수도교를 지을 수 없습니다...
 
 # Tree related errors
-STR_ERROR_TREE_ALREADY_HERE                                     :{WHITE}... 이미 나무가 심어져 있습니다
-STR_ERROR_TREE_WRONG_TERRAIN_FOR_TREE_TYPE                      :{WHITE}... 지형에 맞지 않는 나무 종류입니다
-STR_ERROR_CAN_T_PLANT_TREE_HERE                                 :{WHITE}여기에 나무를 심을 수 없습니다...
+STR_ERROR_TREE_ALREADY_HERE                                     :이미 나무가 심어져 있습니다
+STR_ERROR_TREE_WRONG_TERRAIN_FOR_TREE_TYPE                      :지형에 맞지 않는 나무 종류입니다
+STR_ERROR_CAN_T_PLANT_TREE_HERE                                 :여기에 나무를 심을 수 없습니다...
 
 # Bridge related errors
-STR_ERROR_CAN_T_BUILD_BRIDGE_HERE                               :{WHITE}여기에 다리를 지을 수 없습니다...
-STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST                            :{WHITE}다리를 먼저 제거하세요
-STR_ERROR_CAN_T_START_AND_END_ON                                :{WHITE}같은 위치에서 시작하고 끝낼 수 없습니다
-STR_ERROR_BRIDGEHEADS_NOT_SAME_HEIGHT                           :{WHITE}다리는 같은 높이를 연결해야 합니다
-STR_ERROR_BRIDGE_TOO_LOW_FOR_TERRAIN                            :{WHITE}이 지형에 다리를 설치하기에는 고도가 너무 낮습니다.
-STR_ERROR_BRIDGE_TOO_HIGH_FOR_TERRAIN                           :{WHITE}이 지형에 다리를 설치하기에는 고도가 너무 높습니다.
-STR_ERROR_START_AND_END_MUST_BE_IN                              :{WHITE}시작과 끝 지점은 일직선 상에 있어야 합니다
-STR_ERROR_ENDS_OF_BRIDGE_MUST_BOTH                              :{WHITE}... 다리의 양 끝은 모두 땅이어야 합니다
-STR_ERROR_BRIDGE_TOO_LONG                                       :{WHITE}... 다리가 너무 깁니다!
-STR_ERROR_BRIDGE_THROUGH_MAP_BORDER                             :{WHITE}다리 끝이 지도 밖을 넘어갑니다
-STR_ERROR_BRIDGE_TOO_LOW_FOR_STATION                            :{WHITE}다리 밑에 역을 두기에는 다리 높이가 {HEIGHT}만큼 낮습니다
-STR_ERROR_BRIDGE_TOO_LOW_FOR_ROADSTOP                           :{WHITE}다리 밑에 도로 정류장을 두기에는 다리 높이가 {HEIGHT}만큼 낮습니다
-STR_ERROR_BRIDGE_TOO_LOW_FOR_DOCK                               :{WHITE}다리 밑에 항구를 두기에는 다리 높이가 {HEIGHT}만큼 낮습니다
-STR_ERROR_BRIDGE_TOO_LOW_FOR_BUOY                               :{WHITE}다리 밑에 부표를 두기에는 다리 높이가 {HEIGHT}만큼 낮습니다
-STR_ERROR_BRIDGE_TOO_LOW_FOR_RAIL_WAYPOINT                      :{WHITE}다리 밑에 철도 경유지를 두기에는 다리 높이가 {HEIGHT}만큼 낮습니다
-STR_ERROR_BRIDGE_TOO_LOW_FOR_ROAD_WAYPOINT                      :{WHITE}다리 밑에 도로 경유지를 두기에는 다리 높이가 {HEIGHT}만큼 낮습니다
-STR_ERROR_BRIDGE_TOO_LOW_FOR_LOCK                               :{WHITE}다리 밑에 항구를 두기에는 다리 높이가 {HEIGHT}만큼 낮습니다
+STR_ERROR_CAN_T_BUILD_BRIDGE_HERE                               :여기에 다리를 지을 수 없습니다...
+STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST                            :다리를 먼저 제거하세요
+STR_ERROR_CAN_T_START_AND_END_ON                                :같은 위치에서 시작하고 끝낼 수 없습니다
+STR_ERROR_BRIDGEHEADS_NOT_SAME_HEIGHT                           :다리는 같은 높이를 연결해야 합니다
+STR_ERROR_BRIDGE_TOO_LOW_FOR_TERRAIN                            :이 지형에 다리를 설치하기에는 고도가 너무 낮습니다.
+STR_ERROR_BRIDGE_TOO_HIGH_FOR_TERRAIN                           :이 지형에 다리를 설치하기에는 고도가 너무 높습니다.
+STR_ERROR_START_AND_END_MUST_BE_IN                              :시작과 끝 지점은 일직선 상에 있어야 합니다
+STR_ERROR_ENDS_OF_BRIDGE_MUST_BOTH                              :다리의 양 끝은 모두 땅이어야 합니다
+STR_ERROR_BRIDGE_TOO_LONG                                       :다리가 너무 깁니다
+STR_ERROR_BRIDGE_THROUGH_MAP_BORDER                             :다리 끝이 지도 밖을 넘어갑니다
+STR_ERROR_BRIDGE_TOO_LOW_FOR_STATION                            :다리 밑에 역을 두기에는 다리 높이가 {HEIGHT}만큼 낮습니다
+STR_ERROR_BRIDGE_TOO_LOW_FOR_ROADSTOP                           :다리 밑에 도로 정류장을 두기에는 다리 높이가 {HEIGHT}만큼 낮습니다
+STR_ERROR_BRIDGE_TOO_LOW_FOR_DOCK                               :다리 밑에 항구를 두기에는 다리 높이가 {HEIGHT}만큼 낮습니다
+STR_ERROR_BRIDGE_TOO_LOW_FOR_BUOY                               :다리 밑에 부표를 두기에는 다리 높이가 {HEIGHT}만큼 낮습니다
+STR_ERROR_BRIDGE_TOO_LOW_FOR_RAIL_WAYPOINT                      :다리 밑에 철도 경유지를 두기에는 다리 높이가 {HEIGHT}만큼 낮습니다
+STR_ERROR_BRIDGE_TOO_LOW_FOR_ROAD_WAYPOINT                      :다리 밑에 도로 경유지를 두기에는 다리 높이가 {HEIGHT}만큼 낮습니다
+STR_ERROR_BRIDGE_TOO_LOW_FOR_LOCK                               :다리 밑에 항구를 두기에는 다리 높이가 {HEIGHT}만큼 낮습니다
+STR_ERROR_BRIDGE_TOO_LOW_FOR_TRAIN_DEPOT                        :다리 밑에 차량기지를 두기에는 다리 높이가 {HEIGHT}만큼 낮습니다
+STR_ERROR_BRIDGE_TOO_LOW_FOR_ROADVEH_DEPOT                      :다리 밑에 차고지를 두기에는 다리 높이가 {HEIGHT}만큼 낮습니다
+STR_ERROR_BRIDGE_TOO_LOW_FOR_SHIP_DEPOT                         :다리 밑에 정박소를 두기에는 다리 높이가 {HEIGHT}만큼 낮습니다
+STR_ERROR_BRIDGE_TOO_LOW_FOR_OBJECT                             :다리 밑에 오브젝트를 두기에는 다리 높이가 {HEIGHT}만큼 낮습니다
 
 # Tunnel related errors
-STR_ERROR_CAN_T_BUILD_TUNNEL_HERE                               :{WHITE}여기에 터널을 지을 수 없습니다...
-STR_ERROR_SITE_UNSUITABLE_FOR_TUNNEL                            :{WHITE}터널 입구를 짓기에 적절하지 않은 장소입니다
-STR_ERROR_MUST_DEMOLISH_TUNNEL_FIRST                            :{WHITE}터널을 먼저 제거하세요
-STR_ERROR_ANOTHER_TUNNEL_IN_THE_WAY                             :{WHITE}중간에 다른 터널이 있습니다
-STR_ERROR_TUNNEL_THROUGH_MAP_BORDER                             :{WHITE}터널을 지도 맨 끝까지 건설할 수 없습니다
-STR_ERROR_UNABLE_TO_EXCAVATE_LAND                               :{WHITE}지형 문제로 터널의 반대쪽 출구를 만들 수 없습니다
-STR_ERROR_TUNNEL_TOO_LONG                                       :{WHITE}... 터널이 너무 깁니다!
+STR_ERROR_CAN_T_BUILD_TUNNEL_HERE                               :여기에 터널을 지을 수 없습니다...
+STR_ERROR_SITE_UNSUITABLE_FOR_TUNNEL                            :터널 입구를 짓기에 적절하지 않은 장소입니다
+STR_ERROR_MUST_DEMOLISH_TUNNEL_FIRST                            :터널을 먼저 제거하세요
+STR_ERROR_ANOTHER_TUNNEL_IN_THE_WAY                             :중간에 다른 터널이 있습니다
+STR_ERROR_TUNNEL_THROUGH_MAP_BORDER                             :터널을 지도 맨 끝까지 건설할 수 없습니다
+STR_ERROR_UNABLE_TO_EXCAVATE_LAND                               :지형 문제로 터널의 반대쪽 출구를 만들 수 없습니다
+STR_ERROR_TUNNEL_TOO_LONG                                       :터널이 너무 깁니다
 
 # Object related errors
-STR_ERROR_TOO_MANY_OBJECTS                                      :{WHITE}... 오브젝트가 너무 많습니다
-STR_ERROR_CAN_T_BUILD_OBJECT                                    :{WHITE}오브젝트를 건설할 수 없습니다...
-STR_ERROR_OBJECT_IN_THE_WAY                                     :{WHITE}중간에 오브젝트가 있습니다
-STR_ERROR_COMPANY_HEADQUARTERS_IN                               :{WHITE}... 중간에 회사 본사가 있습니다
-STR_ERROR_CAN_T_PURCHASE_THIS_LAND                              :{WHITE}이 지역을 매입할 수 없습니다...
-STR_ERROR_YOU_ALREADY_OWN_IT                                    :{WHITE}... 이미 소유중입니다!
-STR_ERROR_BUILD_OBJECT_LIMIT_REACHED                            :{WHITE}... 오브젝트 건설 제한에 다다랐습니다
+STR_ERROR_TOO_MANY_OBJECTS                                      :오브젝트가 너무 많습니다
+STR_ERROR_CAN_T_BUILD_OBJECT                                    :오브젝트를 건설할 수 없습니다...
+STR_ERROR_OBJECT_IN_THE_WAY                                     :중간에 오브젝트가 있습니다
+STR_ERROR_COMPANY_HEADQUARTERS_IN                               :중간에 회사 본사가 있습니다
+STR_ERROR_CAN_T_PURCHASE_THIS_LAND                              :이 지역을 구입할 수 없습니다...
+STR_ERROR_YOU_ALREADY_OWN_IT                                    :이미 소유중입니다!
+STR_ERROR_BUILD_OBJECT_LIMIT_REACHED                            :오브젝트 건설 제한에 다다랐습니다
 
 # Group related errors
-STR_ERROR_GROUP_CAN_T_CREATE                                    :{WHITE}그룹을 만들 수 없습니다...
-STR_ERROR_GROUP_CAN_T_DELETE                                    :{WHITE}이 그룹을 지울 수 없습니다...
-STR_ERROR_GROUP_CAN_T_RENAME                                    :{WHITE}그룹의 이름을 바꿀 수 없습니다
-STR_ERROR_GROUP_CAN_T_SET_PARENT                                :{WHITE}상위 그룹으로 설정할 수 없습니다...
-STR_ERROR_GROUP_CAN_T_SET_PARENT_RECURSION                      :{WHITE}... 상위 그룹을 하위 그룹 아래로 옮길 수 없습니다
-STR_ERROR_GROUP_CAN_T_REMOVE_ALL_VEHICLES                       :{WHITE}이 그룹의 모든 차량을 제거할 수 없습니다
-STR_ERROR_GROUP_CAN_T_ADD_VEHICLE                               :{WHITE}이 그룹에 차량을 추가할 수 없습니다...
-STR_ERROR_GROUP_CAN_T_ADD_SHARED_VEHICLE                        :{WHITE}이 그룹에 공유된 차량을 추가할 수 없습니다...
+STR_ERROR_GROUP_CAN_T_CREATE                                    :그룹을 만들 수 없습니다...
+STR_ERROR_GROUP_CAN_T_DELETE                                    :이 그룹을 지울 수 없습니다...
+STR_ERROR_GROUP_CAN_T_RENAME                                    :그룹의 이름을 바꿀 수 없습니다
+STR_ERROR_GROUP_CAN_T_SET_PARENT                                :상위 그룹으로 설정할 수 없습니다...
+STR_ERROR_GROUP_CAN_T_SET_PARENT_RECURSION                      :상위 그룹을 하위 그룹 아래로 옮길 수 없습니다
+STR_ERROR_GROUP_CAN_T_REMOVE_ALL_VEHICLES                       :이 그룹의 모든 차량을 제거할 수 없습니다
+STR_ERROR_GROUP_CAN_T_ADD_VEHICLE                               :이 그룹에 차량을 추가할 수 없습니다...
+STR_ERROR_GROUP_CAN_T_ADD_SHARED_VEHICLE                        :이 그룹에 공유된 차량을 추가할 수 없습니다...
 
 # Generic vehicle errors
 
 ###length VEHICLE_TYPES
-STR_ERROR_TRAIN_IN_THE_WAY                                      :{WHITE}중간에 열차가 있습니다
-STR_ERROR_ROAD_VEHICLE_IN_THE_WAY                               :{WHITE}중간에 차량이 있습니다
-STR_ERROR_SHIP_IN_THE_WAY                                       :{WHITE}중간에 선박이 있습니다
-STR_ERROR_AIRCRAFT_IN_THE_WAY                                   :{WHITE}중간에 항공기가 있습니다
+STR_ERROR_TRAIN_IN_THE_WAY                                      :중간에 열차가 있습니다
+STR_ERROR_ROAD_VEHICLE_IN_THE_WAY                               :중간에 차량이 있습니다
+STR_ERROR_SHIP_IN_THE_WAY                                       :중간에 선박이 있습니다
+STR_ERROR_AIRCRAFT_IN_THE_WAY                                   :중간에 항공기가 있습니다
 
 ###length VEHICLE_TYPES
-STR_ERROR_RAIL_VEHICLE_NOT_AVAILABLE                            :{WHITE}이 열차는 사용할 수 없는 상태입니다
-STR_ERROR_ROAD_VEHICLE_NOT_AVAILABLE                            :{WHITE}이 차량은 사용할 수 없는 상태입니다
-STR_ERROR_SHIP_NOT_AVAILABLE                                    :{WHITE}이 선박은 사용할 수 없는 상태입니다
-STR_ERROR_AIRCRAFT_NOT_AVAILABLE                                :{WHITE}이 항공기는 사용할 수 없는 상태입니다
+STR_ERROR_RAIL_VEHICLE_NOT_AVAILABLE                            :이 열차는 사용할 수 없는 상태입니다
+STR_ERROR_ROAD_VEHICLE_NOT_AVAILABLE                            :이 차량은 사용할 수 없는 상태입니다
+STR_ERROR_SHIP_NOT_AVAILABLE                                    :이 선박은 사용할 수 없는 상태입니다
+STR_ERROR_AIRCRAFT_NOT_AVAILABLE                                :이 항공기는 사용할 수 없는 상태입니다
 
 ###length VEHICLE_TYPES
-STR_ERROR_CAN_T_REFIT_TRAIN                                     :{WHITE}열차를 개조할 수 없습니다...
-STR_ERROR_CAN_T_REFIT_ROAD_VEHICLE                              :{WHITE}차량을 개조할 수 없습니다...
-STR_ERROR_CAN_T_REFIT_SHIP                                      :{WHITE}선박을 개조할 수 없습니다...
-STR_ERROR_CAN_T_REFIT_AIRCRAFT                                  :{WHITE}항공기를 개조할 수 없습니다...
+STR_ERROR_CAN_T_REFIT_TRAIN                                     :열차를 개조할 수 없습니다...
+STR_ERROR_CAN_T_REFIT_ROAD_VEHICLE                              :차량을 개조할 수 없습니다...
+STR_ERROR_CAN_T_REFIT_SHIP                                      :선박을 개조할 수 없습니다...
+STR_ERROR_CAN_T_REFIT_AIRCRAFT                                  :항공기를 개조할 수 없습니다...
 
 ###length VEHICLE_TYPES
-STR_ERROR_CAN_T_RENAME_TRAIN                                    :{WHITE}열차 이름을 바꿀 수 없습니다...
-STR_ERROR_CAN_T_RENAME_ROAD_VEHICLE                             :{WHITE}차량의 이름을 바꿀 수 없습니다...
-STR_ERROR_CAN_T_RENAME_SHIP                                     :{WHITE}선박의 이름을 바꿀 수 없습니다...
-STR_ERROR_CAN_T_RENAME_AIRCRAFT                                 :{WHITE}항공기의 이름을 바꿀 수 없습니다...
+STR_ERROR_CAN_T_RENAME_TRAIN                                    :열차 이름을 바꿀 수 없습니다...
+STR_ERROR_CAN_T_RENAME_ROAD_VEHICLE                             :차량의 이름을 바꿀 수 없습니다...
+STR_ERROR_CAN_T_RENAME_SHIP                                     :선박의 이름을 바꿀 수 없습니다...
+STR_ERROR_CAN_T_RENAME_AIRCRAFT                                 :항공기의 이름을 바꿀 수 없습니다...
 
 ###length VEHICLE_TYPES
-STR_ERROR_CAN_T_STOP_START_TRAIN                                :{WHITE}열차를 운행/정지시킬 수 없습니다...
-STR_ERROR_CAN_T_STOP_START_ROAD_VEHICLE                         :{WHITE}차량을 운행/정지시킬 수 없습니다...
-STR_ERROR_CAN_T_STOP_START_SHIP                                 :{WHITE}선박을 운행/정지시킬 수 없습니다...
-STR_ERROR_CAN_T_STOP_START_AIRCRAFT                             :{WHITE}항공기를 운행/정지시킬 수 없습니다...
+STR_ERROR_CAN_T_STOP_START_TRAIN                                :열차를 운행/정지시킬 수 없습니다...
+STR_ERROR_CAN_T_STOP_START_ROAD_VEHICLE                         :차량을 운행/정지시킬 수 없습니다...
+STR_ERROR_CAN_T_STOP_START_SHIP                                 :선박을 운행/정지시킬 수 없습니다...
+STR_ERROR_CAN_T_STOP_START_AIRCRAFT                             :항공기를 운행/정지시킬 수 없습니다...
 
 ###length VEHICLE_TYPES
-STR_ERROR_CAN_T_SEND_TRAIN_TO_DEPOT                             :{WHITE}열차를 차량기지로 보낼 수 없습니다...
-STR_ERROR_CAN_T_SEND_ROAD_VEHICLE_TO_DEPOT                      :{WHITE}차량을 차고지로 보낼 수 없습니다...
-STR_ERROR_CAN_T_SEND_SHIP_TO_DEPOT                              :{WHITE}선박을 정박소로 보낼 수 없습니다...
-STR_ERROR_CAN_T_SEND_AIRCRAFT_TO_HANGAR                         :{WHITE}항공기를 격납고로 보낼 수 없습니다...
+STR_ERROR_CAN_T_SEND_TRAIN_TO_DEPOT                             :열차를 차량기지로 보낼 수 없습니다...
+STR_ERROR_CAN_T_SEND_ROAD_VEHICLE_TO_DEPOT                      :차량을 차고지로 보낼 수 없습니다...
+STR_ERROR_CAN_T_SEND_SHIP_TO_DEPOT                              :선박을 정박소로 보낼 수 없습니다...
+STR_ERROR_CAN_T_SEND_AIRCRAFT_TO_HANGAR                         :항공기를 격납고로 보낼 수 없습니다...
 
 ###length VEHICLE_TYPES
-STR_ERROR_CAN_T_BUY_TRAIN                                       :{WHITE}열차를 구입할 수 없습니다...
-STR_ERROR_CAN_T_BUY_ROAD_VEHICLE                                :{WHITE}차량을 구입할 수 없습니다...
-STR_ERROR_CAN_T_BUY_SHIP                                        :{WHITE}선박을 구입할 수 없습니다...
-STR_ERROR_CAN_T_BUY_AIRCRAFT                                    :{WHITE}항공기를 구입할 수 없습니다...
+STR_ERROR_CAN_T_BUY_TRAIN                                       :열차를 구입할 수 없습니다...
+STR_ERROR_CAN_T_BUY_ROAD_VEHICLE                                :차량을 구입할 수 없습니다...
+STR_ERROR_CAN_T_BUY_SHIP                                        :선박을 구입할 수 없습니다...
+STR_ERROR_CAN_T_BUY_AIRCRAFT                                    :항공기를 구입할 수 없습니다...
 
 ###length VEHICLE_TYPES
-STR_ERROR_CAN_T_RENAME_TRAIN_TYPE                               :{WHITE}열차의 모델명을 다시 지정할 수 없습니다...
-STR_ERROR_CAN_T_RENAME_ROAD_VEHICLE_TYPE                        :{WHITE}차종의 이름을 바꿀 수 없습니다...
-STR_ERROR_CAN_T_RENAME_SHIP_TYPE                                :{WHITE}선박의 차량 이름을 다시 지정할 수 없습니다...
-STR_ERROR_CAN_T_RENAME_AIRCRAFT_TYPE                            :{WHITE}항공기의 차량 이름을 다시 지정할 수 없습니다...
+STR_ERROR_CAN_T_RENAME_TRAIN_TYPE                               :열차의 모델명을 다시 지정할 수 없습니다...
+STR_ERROR_CAN_T_RENAME_ROAD_VEHICLE_TYPE                        :차종의 이름을 바꿀 수 없습니다...
+STR_ERROR_CAN_T_RENAME_SHIP_TYPE                                :선박의 차량 이름을 다시 지정할 수 없습니다...
+STR_ERROR_CAN_T_RENAME_AIRCRAFT_TYPE                            :항공기의 차량 이름을 다시 지정할 수 없습니다...
 
 ###length VEHICLE_TYPES
-STR_ERROR_CAN_T_SELL_TRAIN                                      :{WHITE}열차를 팔 수 없습니다...
-STR_ERROR_CAN_T_SELL_ROAD_VEHICLE                               :{WHITE}차량을 팔 수 없습니다...
-STR_ERROR_CAN_T_SELL_SHIP                                       :{WHITE}선박을 팔 수 없습니다...
-STR_ERROR_CAN_T_SELL_AIRCRAFT                                   :{WHITE}항공기를 팔 수 없습니다...
+STR_ERROR_CAN_T_SELL_TRAIN                                      :열차를 팔 수 없습니다...
+STR_ERROR_CAN_T_SELL_ROAD_VEHICLE                               :차량을 팔 수 없습니다...
+STR_ERROR_CAN_T_SELL_SHIP                                       :선박을 팔 수 없습니다...
+STR_ERROR_CAN_T_SELL_AIRCRAFT                                   :항공기를 팔 수 없습니다...
 
 ###length VEHICLE_TYPES
-STR_ERROR_CAN_T_SELL_ALL_TRAIN                                  :{WHITE}열차 차량을 모두 팔 수 없습니다...
-STR_ERROR_CAN_T_SELL_ALL_ROAD_VEHICLE                           :{WHITE}차량을 모두 팔 수 없습니다...
-STR_ERROR_CAN_T_SELL_ALL_SHIP                                   :{WHITE}선박을 모두 팔 수 없습니다...
-STR_ERROR_CAN_T_SELL_ALL_AIRCRAFT                               :{WHITE}항공기를 모두 팔 수 없습니다...
+STR_ERROR_CAN_T_SELL_ALL_TRAIN                                  :열차 차량을 모두 팔 수 없습니다...
+STR_ERROR_CAN_T_SELL_ALL_ROAD_VEHICLE                           :차량을 모두 팔 수 없습니다...
+STR_ERROR_CAN_T_SELL_ALL_SHIP                                   :선박을 모두 팔 수 없습니다...
+STR_ERROR_CAN_T_SELL_ALL_AIRCRAFT                               :항공기를 모두 팔 수 없습니다...
 
 ###length VEHICLE_TYPES
-STR_ERROR_CAN_T_AUTOREPLACE_TRAIN                               :{WHITE}열차 차량을 자동 교체할 수 없습니다...
-STR_ERROR_CAN_T_AUTOREPLACE_ROAD_VEHICLE                        :{WHITE}차량을 자동 교체할 수 없습니다...
-STR_ERROR_CAN_T_AUTOREPLACE_SHIP                                :{WHITE}선박을 자동 교체할 수 없습니다...
-STR_ERROR_CAN_T_AUTOREPLACE_AIRCRAFT                            :{WHITE}항공기를 자동 교체할 수 없습니다...
+STR_ERROR_CAN_T_AUTOREPLACE_TRAIN                               :열차 차량을 자동 교체할 수 없습니다...
+STR_ERROR_CAN_T_AUTOREPLACE_ROAD_VEHICLE                        :차량을 자동 교체할 수 없습니다...
+STR_ERROR_CAN_T_AUTOREPLACE_SHIP                                :선박을 자동 교체할 수 없습니다...
+STR_ERROR_CAN_T_AUTOREPLACE_AIRCRAFT                            :항공기를 자동 교체할 수 없습니다...
 
-STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}게임에 차량이 너무 많습니다!
-STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}점검 간격 설정을 바꿀 수 없습니다...
+STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :게임에 차량이 너무 많습니다
+STR_ERROR_CAN_T_CHANGE_SERVICING                                :점검 간격 설정을 바꿀 수 없습니다...
 
-STR_ERROR_VEHICLE_IS_DESTROYED                                  :{WHITE}... 차량이 파괴되었습니다
+STR_ERROR_VEHICLE_IS_DESTROYED                                  :차량이 파괴되었습니다
 
-STR_ERROR_CAN_T_CLONE_VEHICLE_LIST                              :{WHITE}... 동일한 구성이 아닌 차량이 있습니다
+STR_ERROR_CAN_T_CLONE_VEHICLE_LIST                              :동일한 구성이 아닌 차량이 있습니다
 
-STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL                          :{WHITE}사용할 수 있는 차량이 모두 없어질 것입니다
-STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL_EXPLANATION              :{WHITE}NewGRF 설정을 변경하세요
-STR_ERROR_NO_VEHICLES_AVAILABLE_YET                             :{WHITE}사용할 수 있는 차량이 하나도 없습니다
-STR_ERROR_NO_VEHICLES_AVAILABLE_YET_EXPLANATION                 :{WHITE}{DATE_SHORT}년 이후에 새로운 게임을 시작하거나 차량이 더 빨리 개발되는 NewGRF을 사용하세요
+STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL                          :사용할 수 있는 차량이 모두 없어질 것입니다
+STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL_EXPLANATION              :NewGRF 설정을 변경하세요
+STR_ERROR_NO_VEHICLES_AVAILABLE_YET                             :사용할 수 있는 차량이 하나도 없습니다
+STR_ERROR_NO_VEHICLES_AVAILABLE_YET_EXPLANATION                 :{DATE_SHORT}년 이후에 새로운 게임을 시작하거나 차량이 더 빨리 개발되는 NewGRF을 사용하세요
 
-STR_ERROR_NO_TOWN_ROADTYPES_AVAILABLE_AT_ALL                    :{WHITE}도시가 만들 수 있는 도로 종류가 없습니다
-STR_ERROR_NO_TOWN_ROADTYPES_AVAILABLE_AT_ALL_EXPLANATION        :{WHITE}NewGRF 설정을 변경하세요
-STR_ERROR_NO_TOWN_ROADTYPES_AVAILABLE_YET                       :{WHITE}아직 도시가 만들 수 있는 도로 종류가 없습니다
-STR_ERROR_NO_TOWN_ROADTYPES_AVAILABLE_YET_EXPLANATION           :{WHITE}{DATE_SHORT}년 이후에 새로운 게임을 시작하거나 도시가 더 빨리 사용할 수 있는 도로 종류를 추가하는 NewGRF를 사용하세요
+STR_ERROR_NO_TOWN_ROADTYPES_AVAILABLE_AT_ALL                    :도시가 만들 수 있는 도로 종류가 없습니다
+STR_ERROR_NO_TOWN_ROADTYPES_AVAILABLE_AT_ALL_EXPLANATION        :NewGRF 설정을 변경하세요
+STR_ERROR_NO_TOWN_ROADTYPES_AVAILABLE_YET                       :아직 도시가 만들 수 있는 도로 종류가 없습니다
+STR_ERROR_NO_TOWN_ROADTYPES_AVAILABLE_YET_EXPLANATION           :{DATE_SHORT}년 이후에 새로운 게임을 시작하거나 도시가 더 빨리 사용할 수 있는 도로 종류를 추가하는 NewGRF를 사용하세요
 
 # Specific vehicle errors
-STR_ERROR_CAN_T_MAKE_TRAIN_PASS_SIGNAL                          :{WHITE}너무 위험해서 신호를 무시할 수 없습니다...
-STR_ERROR_CAN_T_REVERSE_DIRECTION_TRAIN                         :{WHITE}열차를 회차시킬 수 없습니다...
+STR_ERROR_CAN_T_MAKE_TRAIN_PASS_SIGNAL                          :너무 위험하므로 신호를 무시할 수 없습니다...
+STR_ERROR_CAN_T_REVERSE_DIRECTION_TRAIN                         :열차를 회차시킬 수 없습니다...
 STR_ERROR_TRAIN_START_NO_POWER                                  :동력이 없습니다
 
-STR_ERROR_CAN_T_MAKE_ROAD_VEHICLE_TURN                          :{WHITE}차량을 유턴시킬 수 없습니다...
+STR_ERROR_CAN_T_MAKE_ROAD_VEHICLE_TURN                          :차량을 유턴시킬 수 없습니다...
 
-STR_ERROR_AIRCRAFT_IS_IN_FLIGHT                                 :{WHITE}항공기가 운항중입니다
+STR_ERROR_AIRCRAFT_IS_IN_FLIGHT                                 :항공기가 운항중입니다
 
 # Order related errors
-STR_ERROR_NO_MORE_SPACE_FOR_ORDERS                              :{WHITE}더 이상 경로를 지정할 공간이 없습니다
-STR_ERROR_TOO_MANY_ORDERS                                       :{WHITE}경로가 너무 많습니다!
-STR_ERROR_CAN_T_INSERT_NEW_ORDER                                :{WHITE}새 경로를 삽입할 수 없습니다...
-STR_ERROR_CAN_T_DELETE_THIS_ORDER                               :{WHITE}이 경로를 제거할 수 없습니다...
-STR_ERROR_CAN_T_MODIFY_THIS_ORDER                               :{WHITE}이 경로를 수정할 수 없습니다...
-STR_ERROR_CAN_T_MOVE_THIS_ORDER                                 :{WHITE}이 경로를 옮길 수 없습니다...
-STR_ERROR_CAN_T_SKIP_ORDER                                      :{WHITE}현재 경로를 건너 뛸 수 없습니다...
-STR_ERROR_CAN_T_SKIP_TO_ORDER                                   :{WHITE}선택한 경로로 건너 뛸 수 없습니다...
-STR_ERROR_CAN_T_COPY_SHARE_ORDER                                :{WHITE}... 차량이 모든 정거장에 갈 수 없습니다
-STR_ERROR_CAN_T_ADD_ORDER                                       :{WHITE}... 차량이 그 정거장에 갈 수 없습니다
-STR_ERROR_CAN_T_ADD_ORDER_SHARED                                :{WHITE}... 경로를 공유하고 있는 차량이 그 정거장에 갈 수 없습니다
-STR_ERROR_CAN_T_COPY_ORDER_VEHICLE_LIST                         :{WHITE}... 같은 경로를 가지고 있지 않은 차량이 하나 이상 있습니다
-STR_ERROR_CAN_T_SHARE_ORDER_VEHICLE_LIST                        :{WHITE}... 경로를 공유하지 않은 차량이 하나 이상 있습니다
+STR_ERROR_NO_MORE_SPACE_FOR_ORDERS                              :더 이상 경로를 지정할 공간이 없습니다
+STR_ERROR_TOO_MANY_ORDERS                                       :경로가 너무 많습니다
+STR_ERROR_CAN_T_INSERT_NEW_ORDER                                :새 경로를 삽입할 수 없습니다...
+STR_ERROR_CAN_T_DELETE_THIS_ORDER                               :이 경로를 제거할 수 없습니다...
+STR_ERROR_CAN_T_MODIFY_THIS_ORDER                               :이 경로를 수정할 수 없습니다...
+STR_ERROR_CAN_T_MOVE_THIS_ORDER                                 :이 경로를 옮길 수 없습니다...
+STR_ERROR_CAN_T_SKIP_ORDER                                      :현재 경로를 건너 뛸 수 없습니다...
+STR_ERROR_CAN_T_SKIP_TO_ORDER                                   :선택한 경로로 건너 뛸 수 없습니다...
+STR_ERROR_CAN_T_COPY_SHARE_ORDER                                :차량이 모든 정거장에 갈 수 없습니다
+STR_ERROR_CAN_T_ADD_ORDER                                       :차량이 그 정거장에 갈 수 없습니다
+STR_ERROR_CAN_T_ADD_ORDER_SHARED                                :경로를 공유하고 있는 차량이 그 정거장에 갈 수 없습니다
+STR_ERROR_CAN_T_COPY_ORDER_VEHICLE_LIST                         :같은 경로를 가지고 있지 않은 차량이 하나 이상 있습니다
+STR_ERROR_CAN_T_SHARE_ORDER_VEHICLE_LIST                        :경로를 공유하지 않은 차량이 하나 이상 있습니다
 
-STR_ERROR_CAN_T_SHARE_ORDER_LIST                                :{WHITE}경로를 공유할 수 없습니다...
-STR_ERROR_CAN_T_STOP_SHARING_ORDER_LIST                         :{WHITE}경로 공유를 중단할 수 없습니다...
-STR_ERROR_CAN_T_COPY_ORDER_LIST                                 :{WHITE}경로를 복사할 수 없습니다...
-STR_ERROR_TOO_FAR_FROM_PREVIOUS_DESTINATION                     :{WHITE}... 이전 목적지에서 너무 멀리 떨어져 있습니다
-STR_ERROR_AIRCRAFT_NOT_ENOUGH_RANGE                             :{WHITE}... 항공기의 항속거리가 충분하지 않습니다.
+STR_ERROR_CAN_T_SHARE_ORDER_LIST                                :경로를 공유할 수 없습니다...
+STR_ERROR_CAN_T_STOP_SHARING_ORDER_LIST                         :경로 공유를 중단할 수 없습니다...
+STR_ERROR_CAN_T_COPY_ORDER_LIST                                 :경로를 복사할 수 없습니다...
+STR_ERROR_TOO_FAR_FROM_PREVIOUS_DESTINATION                     :이전 목적지에서 너무 멀리 떨어져 있습니다
+STR_ERROR_AIRCRAFT_NOT_ENOUGH_RANGE                             :항공기의 항속거리가 충분하지 않습니다
 
 # Extra messages which go on the third line of errors, explaining why orders failed
-STR_ERROR_NO_RAIL_STATION                                       :{WHITE}철도 역이 없습니다
-STR_ERROR_NO_BUS_STATION                                        :{WHITE}버스 정류장이 없습니다
-STR_ERROR_NO_TRUCK_STATION                                      :{WHITE}트럭 적하장이 없습니다
-STR_ERROR_NO_DOCK                                               :{WHITE}항구가 없습니다
-STR_ERROR_NO_AIRPORT                                            :{WHITE}공항/헬리포트가 없습니다
-STR_ERROR_NO_STOP_COMPATIBLE_ROAD_TYPE                          :{WHITE}이 도로 종류와 호환 가능한 정류장이 없습니다
-STR_ERROR_NO_STOP_COMPATIBLE_TRAM_TYPE                          :{WHITE}이 전차 선로 종류와 호환 가능한 정류장이 없습니다
-STR_ERROR_NO_STOP_ARTICULATED_VEHICLE                           :{WHITE}굴절형 자동차가 이용할 수 있는 정류장이 없습니다.{}굴절형 자동차는 터미널식 정류장이 아니라 통과식 정류장을 사용해야 합니다
-STR_ERROR_AIRPORT_NO_PLANES                                     :{WHITE}이 항공기는 이 공항에 착륙할 수 없습니다
-STR_ERROR_AIRPORT_NO_HELICOPTERS                                :{WHITE}이 헬리콥터는 이 공항에 착륙할 수 없습니다
-STR_ERROR_NO_RAIL_WAYPOINT                                      :{WHITE}철도 경유지가 없습니다
-STR_ERROR_NO_ROAD_WAYPOINT                                      :{WHITE}도로 경유지가 없습니다
-STR_ERROR_NO_BUOY                                               :{WHITE}부표가 없습니다
+STR_ERROR_NO_RAIL_STATION                                       :철도 역이 없습니다
+STR_ERROR_NO_BUS_STATION                                        :버스 정류장이 없습니다
+STR_ERROR_NO_TRUCK_STATION                                      :트럭 적하장이 없습니다
+STR_ERROR_NO_DOCK                                               :항구가 없습니다
+STR_ERROR_NO_AIRPORT                                            :공항/헬리포트가 없습니다
+STR_ERROR_NO_STOP_COMPATIBLE_ROAD_TYPE                          :이 도로 종류와 호환 가능한 정류장이 없습니다
+STR_ERROR_NO_STOP_COMPATIBLE_TRAM_TYPE                          :이 전차 선로 종류와 호환 가능한 정류장이 없습니다
+STR_ERROR_NO_STOP_ARTICULATED_VEHICLE                           :굴절형 자동차가 이용할 수 있는 정류장이 없습니다.{}굴절형 자동차는 터미널식 정류장이 아니라 통과식 정류장을 사용해야 합니다
+STR_ERROR_AIRPORT_NO_PLANES                                     :이 항공기는 이 공항에 착륙할 수 없습니다
+STR_ERROR_AIRPORT_NO_HELICOPTERS                                :이 헬리콥터는 이 공항에 착륙할 수 없습니다
+STR_ERROR_NO_RAIL_WAYPOINT                                      :철도 경유지가 없습니다
+STR_ERROR_NO_ROAD_WAYPOINT                                      :도로 경유지가 없습니다
+STR_ERROR_NO_BUOY                                               :부표가 없습니다
 
 # Timetable related errors
-STR_ERROR_CAN_T_TIMETABLE_VEHICLE                               :{WHITE}차량의 시간표를 정할 수 없습니다...
-STR_ERROR_TIMETABLE_ONLY_WAIT_AT_STATIONS                       :{WHITE}차량은 정거장에서만 기다릴 수 있습니다
-STR_ERROR_TIMETABLE_NOT_STOPPING_HERE                           :{WHITE}이 차량은 이 정거장에 서지 않습니다
-STR_ERROR_TIMETABLE_INCOMPLETE                                  :{WHITE}... 시간표가 모두 작성되지 않았습니다
-STR_ERROR_TIMETABLE_NOT_STARTED                                 :{WHITE}... 시간표가 아직 시작되지 않았습니다
+STR_ERROR_CAN_T_TIMETABLE_VEHICLE                               :차량의 시간표를 정할 수 없습니다...
+STR_ERROR_TIMETABLE_ONLY_WAIT_AT_STATIONS                       :차량은 정거장에서만 기다릴 수 있습니다
+STR_ERROR_TIMETABLE_NOT_STOPPING_HERE                           :이 차량은 이 정거장에 서지 않습니다
+STR_ERROR_TIMETABLE_INCOMPLETE                                  :시간표가 모두 작성되지 않았습니다
+STR_ERROR_TIMETABLE_NOT_STARTED                                 :시간표가 아직 시작되지 않았습니다
 
 # Sign related errors
-STR_ERROR_TOO_MANY_SIGNS                                        :{WHITE}... 팻말 수가 너무 많습니다
-STR_ERROR_CAN_T_PLACE_SIGN_HERE                                 :{WHITE}여기에 팻말을 달 수 없습니다...
-STR_ERROR_CAN_T_CHANGE_SIGN_NAME                                :{WHITE}팻말 내용을 고칠 수 없습니다...
-STR_ERROR_CAN_T_DELETE_SIGN                                     :{WHITE}팻말을 삭제할 수 없습니다...
+STR_ERROR_TOO_MANY_SIGNS                                        :팻말 수가 너무 많습니다
+STR_ERROR_CAN_T_PLACE_SIGN_HERE                                 :여기에 팻말을 달 수 없습니다...
+STR_ERROR_CAN_T_CHANGE_SIGN_NAME                                :팻말 내용을 고칠 수 없습니다...
+STR_ERROR_CAN_T_DELETE_SIGN                                     :팻말을 삭제할 수 없습니다...
 
 # Translatable comment for OpenTTD's desktop shortcut
 ###external 1
@@ -5966,7 +6061,8 @@ STR_LORRY                                                       :{G=m}{BLACK}{LO
 STR_PLANE                                                       :{G=f}{BLACK}{PLANE}
 STR_SHIP                                                        :{G=f}{BLACK}{SHIP}
 
-STR_TOOLBAR_RAILTYPE_VELOCITY                                   :{STRING} ({VELOCITY})
+STR_TOOLBAR_RAILTYPE_VELOCITY                                   :{STRING} {YELLOW}({VELOCITY})
+STR_TOOLBAR_ROADTYPE_VELOCITY                                   :{STRING} {YELLOW}({VELOCITY})
 
 STR_BADGE_NAME_LIST                                             :{STRING}: {GOLD}{STRING}
 STR_BADGE_CONFIG_MENU_TOOLTIP                                   :배지 설정을 엽니다
@@ -5976,4 +6072,3 @@ STR_BADGE_CONFIG_FILTERS                                        :{WHITE}배지 �
 STR_BADGE_CONFIG_PREVIEW                                        :미리보기 이미지
 STR_BADGE_CONFIG_NAME                                           :이름
 STR_BADGE_FILTER_ANY_LABEL                                      :모든 {STRING}
-STR_BADGE_FILTER_IS_LABEL                                       :{STRING} = {STRING}

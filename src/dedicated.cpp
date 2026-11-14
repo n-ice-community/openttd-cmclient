@@ -8,7 +8,7 @@
 /** @file dedicated.cpp Forking support for dedicated servers. */
 
 #include "stdafx.h"
-#include "fileio_func.h"
+#include "fileio_type.h"
 #include "debug.h"
 
 std::string _log_file; ///< Filename to reroute output of a forked OpenTTD to
@@ -50,8 +50,8 @@ void DedicatedFork()
 
 		default:
 			/* We're the parent */
-			Debug(net, 0, "Loading dedicated server...");
-			Debug(net, 0, "  - Forked to background with pid {}", pid);
+			Debug(Facility::Net, Severity::Critical, "Loading dedicated server...");
+			Debug(Facility::Net, Severity::Critical, "  - Forked to background with pid {}", pid);
 			exit(0);
 	}
 }

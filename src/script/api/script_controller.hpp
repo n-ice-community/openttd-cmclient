@@ -10,7 +10,6 @@
 #ifndef SCRIPT_CONTROLLER_HPP
 #define SCRIPT_CONTROLLER_HPP
 
-#include "script_types.hpp"
 #include "../../string_func.h"
 #include "../../company_type.h"
 
@@ -119,6 +118,12 @@ public:
 	 *   be allowed to run.
 	 */
 	static int GetOpsTillSuspend();
+
+	/**
+	 * Remove \c amount ops from the number of ops till suspend.
+	 * @api none
+	 */
+	static void DecreaseOps(int amount);
 
 	/**
 	 * Get the value of one of your settings you set via info.nut.

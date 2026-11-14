@@ -5,7 +5,7 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <https://www.gnu.org/licenses/old-licenses/gpl-2.0>.
  */
 
-/** @file league_sl.cpp Code handling saving and loading of league tables */
+/** @file league_sl.cpp Code handling saving and loading of league tables. */
 
 #include "../stdafx.h"
 
@@ -16,18 +16,18 @@
 #include "../safeguards.h"
 
 static const SaveLoad _league_table_elements_desc[] = {
-	    SLE_VAR(LeagueTableElement, table,       SLE_UINT8),
-	SLE_CONDVAR(LeagueTableElement, rating,      SLE_FILE_U64 | SLE_VAR_I64, SL_MIN_VERSION, SLV_LINKGRAPH_EDGES),
-	SLE_CONDVAR(LeagueTableElement, rating,      SLE_INT64,                  SLV_LINKGRAPH_EDGES, SL_MAX_VERSION),
-	    SLE_VAR(LeagueTableElement, company,     SLE_UINT8),
-	   SLE_SSTR(LeagueTableElement, text,        SLE_STR | SLF_ALLOW_CONTROL),
-	   SLE_SSTR(LeagueTableElement, score,       SLE_STR | SLF_ALLOW_CONTROL),
-	    SLE_VAR(LeagueTableElement, link.type,   SLE_UINT8),
-	    SLE_VAR(LeagueTableElement, link.target, SLE_UINT32),
+	SaveLoad::Variable<VarFileType::U8>("table", SLE_OBJECT_ADDRESS(LeagueTableElement, table)),
+	SaveLoad::Variable<VarFileType::U64>("rating", SLE_OBJECT_ADDRESS(LeagueTableElement, rating), SaveLoadVersion::MinVersion, SaveLoadVersion::LinkgraphEdges),
+	SaveLoad::Variable<VarFileType::I64>("rating", SLE_OBJECT_ADDRESS(LeagueTableElement, rating), SaveLoadVersion::LinkgraphEdges),
+	SaveLoad::Variable<VarFileType::U8>("company", SLE_OBJECT_ADDRESS(LeagueTableElement, company)),
+	SaveLoad::String("text", SLE_OBJECT_ADDRESS(LeagueTableElement, text), StringValidationSetting::AllowControlCode),
+	SaveLoad::String("score", SLE_OBJECT_ADDRESS(LeagueTableElement, score), StringValidationSetting::AllowControlCode),
+	SaveLoad::Variable<VarFileType::U8>("link.type", SLE_OBJECT_ADDRESS(LeagueTableElement, link.type)),
+	SaveLoad::Variable<VarFileType::U32>("link.target", SLE_OBJECT_ADDRESS(LeagueTableElement, link.target)),
 };
 
 struct LEAEChunkHandler : ChunkHandler {
-	LEAEChunkHandler() : ChunkHandler('LEAE', CH_TABLE) {}
+	LEAEChunkHandler() : ChunkHandler("LEAE", ChunkType::Table) {}
 
 	void Save() const override
 	{
@@ -45,20 +45,20 @@ struct LEAEChunkHandler : ChunkHandler {
 
 		int index;
 		while ((index = SlIterateArray()) != -1) {
-			LeagueTableElement *lte = new (LeagueTableElementID(index)) LeagueTableElement();
+			LeagueTableElement *lte = LeagueTableElement::CreateAtIndex(LeagueTableElementID(index));
 			SlObject(lte, slt);
 		}
 	}
 };
 
 static const SaveLoad _league_tables_desc[] = {
-	SLE_SSTR(LeagueTable, title, SLE_STR | SLF_ALLOW_CONTROL),
-	SLE_SSTR(LeagueTable, header, SLE_STR | SLF_ALLOW_CONTROL),
-	SLE_SSTR(LeagueTable, footer, SLE_STR | SLF_ALLOW_CONTROL),
+	SaveLoad::String("title", SLE_OBJECT_ADDRESS(LeagueTable, title), StringValidationSetting::AllowControlCode),
+	SaveLoad::String("header", SLE_OBJECT_ADDRESS(LeagueTable, header), StringValidationSetting::AllowControlCode),
+	SaveLoad::String("footer", SLE_OBJECT_ADDRESS(LeagueTable, footer), StringValidationSetting::AllowControlCode),
 };
 
 struct LEATChunkHandler : ChunkHandler {
-	LEATChunkHandler() : ChunkHandler('LEAT', CH_TABLE) {}
+	LEATChunkHandler() : ChunkHandler("LEAT", ChunkType::Table) {}
 
 	void Save() const override
 	{
@@ -76,7 +76,7 @@ struct LEATChunkHandler : ChunkHandler {
 
 		int index;
 		while ((index = SlIterateArray()) != -1) {
-			LeagueTable *lt = new (LeagueTableID(index)) LeagueTable();
+			LeagueTable *lt = LeagueTable::CreateAtIndex(LeagueTableID(index));
 			SlObject(lt, slt);
 		}
 	}

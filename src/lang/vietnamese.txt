@@ -525,6 +525,7 @@ STR_AIRCRAFT_MENU_AIRPORT_CONSTRUCTION                          :Công trình s�
 STR_LANDSCAPING_MENU_LANDSCAPING                                :Phong cảnh
 STR_LANDSCAPING_MENU_PLANT_TREES                                :Trồng cây
 STR_LANDSCAPING_MENU_PLACE_SIGN                                 :Đặt ký hiệu
+STR_LANDSCAPING_MENU_PLACE_OBJECT                               :Đặt đối tượng
 
 # Music menu
 STR_TOOLBAR_SOUND_MUSIC                                         :Âm thanh/nhạc
@@ -537,6 +538,7 @@ STR_NEWS_MENU_DELETE_ALL_MESSAGES                               :Xoá tất cả
 # About menu
 STR_ABOUT_MENU_LAND_BLOCK_INFO                                  :Thông tin vùng đất
 STR_ABOUT_MENU_HELP                                             :Trợ Giúp & Hướng Dẫn
+STR_ABOUT_MENU_ENTER_SCREENSAVER_MODE                           :Bật/tắt trình bảo vệ màn hình
 STR_ABOUT_MENU_TOGGLE_CONSOLE                                   :Bật/tắt bảng lệnh
 STR_ABOUT_MENU_AI_DEBUG                                         :Gỡ rối AI / Game script
 STR_ABOUT_MENU_SCREENSHOT                                       :Ảnh chụp màn hình
@@ -630,7 +632,6 @@ STR_GRAPH_LAST_24_MONTHS                                        :{TINY_FONT}{BLA
 STR_GRAPH_LAST_24_QUARTERS                                      :{TINY_FONT}{BLACK}6 năm (theo từng quý)
 STR_GRAPH_LAST_24_YEARS                                         :{TINY_FONT}{BLACK}24 năm (theo từng năm)
 
-STR_GRAPH_TOGGLE_RANGE                                          :Bật/tắt đồ thị cho khoảng dữ liệu này
 STR_GRAPH_SELECT_SCALE                                          :Chỉnh tỷ lệ chiều ngang của đồ thị
 
 STR_GRAPH_CARGO_PAYMENT_RATES_CAPTION                           :{WHITE}Bảng Giá Cước Vận Chuyển Hàng Hóa
@@ -646,13 +647,21 @@ STR_GRAPH_CARGO_PAYMENT_CARGO                                   :{TINY_FONT}{BLA
 
 STR_GRAPH_INDUSTRY_CAPTION                                      :{WHITE}{INDUSTRY} - Lịch sử hàng hóa
 STR_GRAPH_INDUSTRY_RANGE_PRODUCED                               :Đã cung cấp
+STR_GRAPH_INDUSTRY_RANGE_PRODUCED_TOOLTIP                       :Bật/tắt đồ thị hàng hóa được sản xuất bởi ngành này
 STR_GRAPH_INDUSTRY_RANGE_TRANSPORTED                            :Đã vận chuyển
+STR_GRAPH_INDUSTRY_RANGE_TRANSPORTED_TOOLTIP                    :Bật/tắt đồ thị hàng hóa được vận chuyển từ ngành này
 STR_GRAPH_INDUSTRY_RANGE_DELIVERED                              :Đã giao
+STR_GRAPH_INDUSTRY_RANGE_DELIVERED_TOOLTIP                      :Bật/tắt đồ thị hàng hóa được vận chuyển đến ngành này
 STR_GRAPH_INDUSTRY_RANGE_WAITING                                :Đang chờ...
+STR_GRAPH_INDUSTRY_RANGE_WAITING_TOOLTIP                        :Bật/tắt đồ thị hàng hóa đang chờ xử lý ở ngành này
 
 STR_GRAPH_TOWN_CARGO_CAPTION                                    :{WHITE}{TOWN} - Lịch sử hàng hoá
-STR_GRAPH_TOWN_RANGE_PRODUCED                                   :Nguồn cung
+STR_GRAPH_TOWN_RANGE_PRODUCED                                   :Đã sản xuất
+STR_GRAPH_TOWN_RANGE_PRODUCED_TOOLTIP                           :Bật/tắt đồ thị hàng hóa được sản xuất bởi thị trấn này
 STR_GRAPH_TOWN_RANGE_TRANSPORTED                                :Đã vận chuyển
+STR_GRAPH_TOWN_RANGE_TRANSPORTED_TOOLTIP                        :Bật/tắt đồ thị hàng hóa được vận chuyển từ thị trấn này
+STR_GRAPH_TOWN_RANGE_DELIVERED                                  :Đã vận chuyển
+STR_GRAPH_TOWN_RANGE_DELIVERED_TOOLTIP                          :Bật/tắt đồ thị hàng hóa được vận chuyển tới thị trấn này
 
 STR_GRAPH_PERFORMANCE_DETAIL_TOOLTIP                            :{BLACK}Hiện chi tiết đánh giá chỉ số năng suất
 
@@ -923,7 +932,7 @@ STR_NEWS_AIRCRAFT_IS_WAITING                                    :{WHITE}{VEHICLE
 
 # Order review system / warnings
 STR_NEWS_VEHICLE_HAS_TOO_FEW_ORDERS                             :{WHITE}{VEHICLE} có quá ít lệnh trong lộ trình
-STR_NEWS_VEHICLE_HAS_VOID_ORDER                                 :{WHITE}{VEHICLE} chưa có lệnh
+STR_NEWS_VEHICLE_HAS_VOID_ORDER                                 :{WHITE}{VEHICLE} có lệnh không hợp lệ
 STR_NEWS_VEHICLE_HAS_DUPLICATE_ENTRY                            :{WHITE}{VEHICLE} có các lệnh trùng lặp
 STR_NEWS_VEHICLE_HAS_INVALID_ENTRY                              :{WHITE}{VEHICLE} có trạm bất hợp lệ trong lệnh
 STR_NEWS_PLANE_USES_TOO_SHORT_RUNWAY                            :{WHITE}{VEHICLE} có trong lộ trình một sân bay có đường băng quá ngắn
@@ -1141,8 +1150,8 @@ STR_GAME_OPTIONS_SOCIAL_PLUGIN_STATE_INVALID_SIGNATURE          :{RED}Chữ ký 
 
 STR_BASESET_STATUS                                              :{STRING} {RED}({NUM} file bị hỏng/thiếu
 
-STR_ERROR_RESOLUTION_LIST_FAILED                                :{WHITE}Không thể lấy danh sách độ phân giải được hỗ trợ
-STR_ERROR_FULLSCREEN_FAILED                                     :{WHITE}Thất bại khi bật chế độ fullscreen
+STR_ERROR_RESOLUTION_LIST_FAILED                                :Không thể lấy danh sách độ phân giải được hỗ trợ
+STR_ERROR_FULLSCREEN_FAILED                                     :Không thể bật chế độ toàn màn hình
 
 # Custom currency window
 
@@ -1209,9 +1218,9 @@ STR_RIVERS_MODERATE                                             :Bình Thường
 STR_RIVERS_LOT                                                  :Nhiều
 
 ###length 3
-STR_DISASTER_NONE                                               :Không Có
-STR_DISASTER_REDUCED                                            :Giảm
-STR_DISASTER_NORMAL                                             :Thường
+STR_BREAKDOWNS_NONE                                             :Không Có
+STR_BREAKDOWNS_REDUCED                                          :Giảm
+STR_BREAKDOWNS_NORMAL                                           :Thường
 
 ###length 4
 STR_SUBSIDY_X1_5                                                :x1.5
@@ -1351,8 +1360,13 @@ STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HIGH                      :Cao
 STR_CONFIG_SETTING_RECESSIONS                                   :Suy thoái: {STRING}
 STR_CONFIG_SETTING_RECESSIONS_HELPTEXT                          :Nếu bật, thì các đợt suy thoái sẽ xảy ra vài năm một lần. Trong suy thoái tất cả sản xuất sẽ giảm mạnh (và sẽ trở lại như cũ sau khi suy thoái kết thúc)
 
-STR_CONFIG_SETTING_TRAIN_REVERSING                              :Không cho phép tàu hỏa quay đầu ở ga: {STRING}
-STR_CONFIG_SETTING_TRAIN_REVERSING_HELPTEXT                     :Nếu bật thì tàu hỏa sẽ không quay đẩu đối với ga không phải đầu cuối, kể cả khi đó là đường ngắn nhất đến nơi tiếp theo khi quay đầu
+STR_CONFIG_SETTING_TRAIN_FLIP_REVERSE                           :Cho phép tàu quay đầu khi đảo chiều: {STRING}
+STR_CONFIG_SETTING_TRAIN_FLIP_REVERSE_HELPTEXT                  :Chọn nơi tàu có thể quay đầu để đổi chiều. Với "Tất cả", tàu có thể quay đầu ở bất kỳ đâu. Với "Chỉ ở cuối tuyến", tàu sẽ không quay đầu trong ga nếu vẫn còn đường đi tiếp. Với "Không", tàu không thể quay đầu và sẽ chạy lùi nếu cần, nhưng sẽ bị giảm tốc độ nếu toa phía sau không có buồng lái
+
+###length 3
+STR_CONFIG_SETTING_TRAIN_FLIP_REVERSE_ALL                       :Tất cả
+STR_CONFIG_SETTING_TRAIN_FLIP_REVERSE_END_OF_LINE_ONLY          :Chỉ ở cuối tuyến
+STR_CONFIG_SETTING_TRAIN_FLIP_REVERSE_NONE                      :Không
 
 STR_CONFIG_SETTING_DISASTERS                                    :Thảm họa: {STRING}
 STR_CONFIG_SETTING_DISASTERS_HELPTEXT                           :Thay đổi tùy chọn để thảm họa đôi lúc ngăn chặn hoặc phá hủy phương tiện và công trình hạ tầng
@@ -1365,7 +1379,7 @@ STR_CONFIG_SETTING_MAP_HEIGHT_LIMIT_HELPTEXT                    :Tùy chỉnh đ
 STR_CONFIG_SETTING_MAP_HEIGHT_LIMIT_VALUE                       :{NUM}
 ###setting-zero-is-special
 STR_CONFIG_SETTING_MAP_HEIGHT_LIMIT_AUTO                        :(tự động)
-STR_CONFIG_SETTING_TOO_HIGH_MOUNTAIN                            :{WHITE}Bạn không thể đặt giới hạn độ cao này cho bản đồ địa hình. Đang có ít nhất một ngọn núi trên bản đồ địa hình cao hơn giá trị được chọn
+STR_CONFIG_SETTING_TOO_HIGH_MOUNTAIN                            :Bạn không thể đặt giới hạn độ cao này cho bản đồ địa hình. Đang có ít nhất một ngọn núi trên bản đồ địa hình cao hơn giá trị được chọn
 
 STR_CONFIG_SETTING_AUTOSLOPE                                    :Cho phép thay đổi nền đất dưới công trình, đường.. (tự làm dốc): {STRING}
 STR_CONFIG_SETTING_AUTOSLOPE_HELPTEXT                           :Cho phép thay đổi nền đất dưới công trình và đường mà không cần phá hủy chúng
@@ -1503,7 +1517,7 @@ STR_CONFIG_SETTING_STOP_ON_TOWN_ROAD                            :Cho phép xây 
 STR_CONFIG_SETTING_STOP_ON_TOWN_ROAD_HELPTEXT                   :Cho phép xây dựng điểm dừng xe buýt trên đường thuộc sở hữu của địa phương
 STR_CONFIG_SETTING_STOP_ON_COMPETITOR_ROAD                      :Cho phép xây điểm dừng xe buýt trên đường của đối thủ: {STRING}
 STR_CONFIG_SETTING_STOP_ON_COMPETITOR_ROAD_HELPTEXT             :Cho phép xây dựng điểm dừng xe buýt trên đường sở hữu bởi công ty khác
-STR_CONFIG_SETTING_DYNAMIC_ENGINES_EXISTING_VEHICLES            :{WHITE}Không thể đổi thiết đặt này khi vẫn còn các phương tiện giao thông.
+STR_CONFIG_SETTING_DYNAMIC_ENGINES_EXISTING_VEHICLES            :Không thể đổi thiết đặt này khi vẫn còn các phương tiện giao thông
 
 STR_CONFIG_SETTING_INFRASTRUCTURE_MAINTENANCE                   :Phí bảo trì cơ sở hạ tầng: {STRING}
 STR_CONFIG_SETTING_INFRASTRUCTURE_MAINTENANCE_HELPTEXT          :Khi mở, thì hạ tầng công ty sẽ sinh ra chi phí bảo trì. Chi phí sẽ tăng theo mạng lưới giao thông bạn xây dựng, và sẽ tiêu tốn của công ty lớn nhiều hơn công ty nhỏ
@@ -1556,6 +1570,12 @@ STR_CONFIG_SETTING_TOWN_CARGO_SCALE_HELPTEXT                    :Co dãn sản l
 STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE                         :Dãn tỉ lệ vận chuyển sản lượng của nhà máy: {STRING}
 STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE_HELPTEXT                :Dãn sản lượng vận chuyển của các nhà máy bằng tỉ lệ phần trăm này
 STR_CONFIG_SETTING_CARGO_SCALE_VALUE                            :{NUM}%
+
+STR_CONFIG_SETTING_CARGO_AGING_RATE                             :Tốc độ mất giá cước vận chuyển hàng hóa: {STRING}
+STR_CONFIG_SETTING_CARGO_AGING_RATE_HELPTEXT                    :Lựa chọn tốc độ mất giá theo thời gian của hàng hóa được chất lên phương tiện
+STR_CONFIG_SETTING_CARGO_AGING_RATE_VALUE                       :{NUM}%
+###setting-zero-is-special
+STR_CONFIG_SETTING_CARGO_AGING_RATE_ZERO                        :Không bị mất giá
 
 STR_CONFIG_SETTING_AUTORENEW_VEHICLE                            :Tự thay mới phương tiện nếu hết hạn sử dụng: {STRING}
 STR_CONFIG_SETTING_AUTORENEW_VEHICLE_HELPTEXT                   :Nếu bật, phương tiện gần hết hạn sẽ được tự động thay mới và điều kiện thay mới được thỏa mãn
@@ -1626,6 +1646,14 @@ STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_SMOOTH                  :Phẳng
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_ROUGH                   :Gồ Ghề
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_VERY_ROUGH              :Rất Gồ Ghề
 
+STR_CONFIG_SETTING_AVERAGE_HEIGHT                               :Độ cao trung bình: {STRING}
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_HELPTEXT                      :Chọn độ cao trung bình của nền đất. 'Tự động' sử dụng nền mặc định dựa trên khí hậu: 'Đất thấp' cho vùng khí hậu Cận nhiệt đới, 'Bình thường' cho Ôn hoà và Đồ chơi, và 'Cao nguyên' cho khi hậu Bắc Cực.
+###length 4
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_AUTO                          :Tự động
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_LOWLANDS                      :Đất thấp
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_NORMAL                        :Bình thường
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_PLATEAUS                      :Cao nguyên
+
 STR_CONFIG_SETTING_VARIETY                                      :Phân bổ sự đa dạng: {STRING}
 STR_CONFIG_SETTING_VARIETY_HELPTEXT                             :Điều chỉnh liệu rằng bản đồ gồm cả vùng núi cao và vùng đồng bằng. Độ đa dạng càng cao thì sự chênh lệch về độ cao giữa vùng núi và vùng đồng bằng càng nhiều
 
@@ -1639,12 +1667,12 @@ STR_CONFIG_SETTING_TREE_PLACER_NONE                             :Không
 STR_CONFIG_SETTING_TREE_PLACER_ORIGINAL                         :Nguyên bản
 STR_CONFIG_SETTING_TREE_PLACER_IMPROVED                         :Tối Ưu Hóa
 
-STR_CONFIG_SETTING_ROAD_SIDE                                    :Xe cộ: {STRING}
-STR_CONFIG_SETTING_ROAD_SIDE_HELPTEXT                           :Chọn phía xe chạy
+STR_CONFIG_SETTING_ROAD_SIDE                                    :Phía xe chạy: {STRING}
+STR_CONFIG_SETTING_ROAD_SIDE_HELPTEXT                           :Chọn phía xe chạy.{}Việc này có thể ảnh hưởng tới phía đèn tín hiệu và đồ họa cột tín hiệu.{}Có thể cần khởi động lại ván để sự thay đổi có hiệu lực
 
 ###length 2
-STR_CONFIG_SETTING_ROAD_SIDE_LEFT                               :Lái bên trái
-STR_CONFIG_SETTING_ROAD_SIDE_RIGHT                              :Lái bên phải
+STR_CONFIG_SETTING_ROAD_SIDE_LEFT                               :Trái
+STR_CONFIG_SETTING_ROAD_SIDE_RIGHT                              :Phải
 
 STR_CONFIG_SETTING_HEIGHTMAP_ROTATION                           :Xoay bản đồ địa hình: {STRING}
 STR_CONFIG_SETTING_HEIGHTMAP_ROTATION_TOOLTIP                   :Chọn chiều xoay của ảnh địa hình để dùng trong thế giới của trò chơi
@@ -1654,8 +1682,8 @@ STR_CONFIG_SETTING_HEIGHTMAP_ROTATION_CLOCKWISE                 :Xuôi chiều �
 
 STR_CONFIG_SETTING_SE_FLAT_WORLD_HEIGHT                         :Độ cao của một màn chơi đồng bằng là: {STRING}
 ###length 2
-STR_CONFIG_SETTING_EDGES_NOT_EMPTY                              :{WHITE}Một hoặc nhiều ô đất ở mép bản đồ phía bắc không được trống
-STR_CONFIG_SETTING_EDGES_NOT_WATER                              :{WHITE}Một hoặc nhiều ô đất ở mép bản không phải là biển
+STR_CONFIG_SETTING_EDGES_NOT_EMPTY                              :Một hoặc nhiều ô đất ở mép bản đồ phía bắc không được trống
+STR_CONFIG_SETTING_EDGES_NOT_WATER                              :Một hoặc nhiều ô đất ở mép bản đồ không phải là biển
 
 STR_CONFIG_SETTING_STATION_SPREAD                               :Độ trải rộng của ga/bến tối đa: {STRING}
 STR_CONFIG_SETTING_STATION_SPREAD_HELPTEXT                      :Khoảng diện tích tối đa mà mỗi ga/bến đơn có thể trả rộng. Giá trị cao quá sẽ làm chậm trò chơi
@@ -1784,12 +1812,12 @@ STR_CONFIG_SETTING_TIMETABLE_SHOW_ARRIVAL_DEPARTURE_HELPTEXT    :Hiển thị th
 STR_CONFIG_SETTING_QUICKGOTO                                    :Tạo nhanh lộ trình cho phương tiện: {STRING}
 STR_CONFIG_SETTING_QUICKGOTO_HELPTEXT                           :Lựa chọn trước 'đi tới con trỏ' khi mở cửa số lập lộ trình
 
-STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE                            :Loại đường ray mặc định (sau game mới/nạp game): {STRING}
-STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_HELPTEXT                   :Kiểu đường ray được chọn khi bắt đầu hoặc tải một ván chơi. 'sẵn có đầu tiên' chọn loại ray cũ nhất, 'sẵn có cuối cùng' chọn loại ray mới nhất, và 'dùng nhiều nhất' chọn loại ray đang được sử dụng nhiều nhất trong ván chơi
+STR_CONFIG_SETTING_DEFAULT_RAIL_ROAD_TYPE                       :Loại đường sắt, đường bộ và đường xe điện mặc định (sau khi tạo/tải trò chơi): {STRING}
+STR_CONFIG_SETTING_DEFAULT_RAIL_ROAD_TYPE_HELPTEXT              :Loại đường sắt, đường bộ và đường xe điện sẽ được chọn sau khi bắt đầu hoặc tải trò chơi. Tùy chọn 'đầu tiên có sẵn' sẽ chọn loại đường cũ nhất, 'mới nhất có sẵn' sẽ chọn loại đường mới nhất, và 'dùng nhiều nhất' sẽ chọn loại đường hiện đang được sử dụng nhiều nhất trên bản đồ
 ###length 3
-STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_FIRST                      :Có trước tiên
-STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_LAST                       :Có sau cùng
-STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_MOST_USED                  :Dùng nhiều
+STR_CONFIG_SETTING_DEFAULT_RAIL_ROAD_TYPE_FIRST                 :Đầu tiên có sẵn
+STR_CONFIG_SETTING_DEFAULT_RAIL_ROAD_TYPE_LAST                  :Mới nhất có sẵn
+STR_CONFIG_SETTING_DEFAULT_RAIL_ROAD_TYPE_MOST_USED             :Dùng nhiều nhất
 
 STR_CONFIG_SETTING_SHOW_TRACK_RESERVATION                       :Hiện đường ray dành trước: {STRING}
 STR_CONFIG_SETTING_SHOW_TRACK_RESERVATION_HELPTEXT              :Lựa chọn đường dành riêng với màu khác để thấy rõ vấn đề với việc tài không vào khu vực tìm đường path-based
@@ -1895,6 +1923,9 @@ STR_CONFIG_SETTING_STATION_LENGTH_LOADING_PENALTY_HELPTEXT      :Khi bật, đo�
 
 STR_CONFIG_SETTING_WAGONSPEEDLIMITS                             :Bật giới hạn tốc độ toa tàu: {STRING}
 STR_CONFIG_SETTING_WAGONSPEEDLIMITS_HELPTEXT                    :Nếu bật, sử dụng giới hạn tốc độ của toa xe để hạn chế tốc độ của cả đoàn tàu
+
+STR_CONFIG_SETTING_AIRCRAFT_RANGE                               :Bật tầm bay tối đa của máy bay: {STRING}
+STR_CONFIG_SETTING_AIRCRAFT_RANGE_HELPTEXT                      :Khi được bật, các NewGRF sẽ có thể giới hạn tầm bay tối đa của máy bay
 
 STR_CONFIG_SETTING_DISABLE_ELRAILS                              :Không dùng tàu điện: {STRING}
 STR_CONFIG_SETTING_DISABLE_ELRAILS_HELPTEXT                     :Bật tùy chọn này sẽ ngăn việc bắt buộc có ray tàu điện mới tạo được đầu máy chạy điện
@@ -2090,6 +2121,8 @@ STR_CONFIG_SETTING_LARGER_TOWNS_VALUE                           :1 trong {COMMA}
 STR_CONFIG_SETTING_LARGER_TOWNS_DISABLED                        :Không
 STR_CONFIG_SETTING_CITY_SIZE_MULTIPLIER                         :Hệ số quy mô đô thị coi là thành phố: {STRING}
 STR_CONFIG_SETTING_CITY_SIZE_MULTIPLIER_HELPTEXT                :Kích thước trung bình của thành phố tỉ lệ với đô thị lúc bắt đầu trò chơi
+STR_CONFIG_SETTING_TOWN_MIN_DISTANCE                            :Khoảng cách tối thiểu giữa các thị trấn: {STRING}
+STR_CONFIG_SETTING_TOWN_MIN_DISTANCE_HELPTEXT                   :Thiết lập khoảng cách tối thiểu (tính bằng ô) giữa các thị trấn trong quá trình khởi tạo bản đồ và thành lập ngẫu nhiên
 
 STR_CONFIG_SETTING_LINKGRAPH_RECALC_INTERVAL                    :Cập nhật biểu đồ phân phối mỗi {STRING}
 STR_CONFIG_SETTING_LINKGRAPH_RECALC_INTERVAL_HELPTEXT           :Thời gian giữa các lần tính toán lại tiếp theo của biểu đồ liên kết. Mỗi lần tính toán lại sẽ tính toán các kế hoạch cho một thành phần của biểu đồ. Điều đó có nghĩa là giá trị X cho cài đặt này không có nghĩa là toàn bộ biểu đồ sẽ được cập nhật X giây một lần. Chỉ một số thành phần sẽ làm như vậy. Bạn đặt nó càng ngắn thì càng cần nhiều thời gian CPU để tính toán nó. Bạn đặt càng lâu thì càng mất nhiều thời gian cho đến khi việc phân phối hàng hóa bắt đầu trên các tuyến đường mới
@@ -2171,7 +2204,7 @@ STR_CONFIG_SETTING_GRAPHICS                                     :Đồ họa
 STR_CONFIG_SETTING_SOUND                                        :Âm thanh
 STR_CONFIG_SETTING_INTERFACE                                    :Giao diện
 STR_CONFIG_SETTING_INTERFACE_GENERAL                            :Tổng quát
-STR_CONFIG_SETTING_INTERFACE_VIEWPORTS                          :Vùng nhìn
+STR_CONFIG_SETTING_INTERFACE_VIEWPORTS                          :Cửa sổ
 STR_CONFIG_SETTING_INTERFACE_CONSTRUCTION                       :Xây Dựng
 STR_CONFIG_SETTING_ADVISORS                                     :Tin tức / Cố vấn
 STR_CONFIG_SETTING_COMPANY                                      :Công ty
@@ -2200,27 +2233,27 @@ STR_CONFIG_SETTING_REVERSE_AT_SIGNALS_HELPTEXT                  :Cho phép xe l�
 STR_CONFIG_SETTING_QUERY_CAPTION                                :{WHITE}Thay đổi giá trị
 
 # Config errors
-STR_CONFIG_ERROR                                                :{WHITE}lỗi trong file cấu hình...
-STR_CONFIG_ERROR_ARRAY                                          :{WHITE}... lỗi trong mảng '{STRING}'
-STR_CONFIG_ERROR_INVALID_VALUE                                  :{WHITE}... giá trị không hợp lệ của '{STRING}' đối với '{STRING}'
-STR_CONFIG_ERROR_TRAILING_CHARACTERS                            :{WHITE}... thừa ký tự ở cuối tùy chọn '{STRING}'
-STR_CONFIG_ERROR_DUPLICATE_GRFID                                :{WHITE}... bỏ qua NewGRF '{STRING}': trùng lặp NewGRF ID với '{STRING}'
-STR_CONFIG_ERROR_INVALID_GRF                                    :{WHITE}... bỏ qua NewGRF '{STRING}' không hợp lệ: {STRING}
+STR_CONFIG_ERROR                                                :Lỗi trong file cấu hình...
+STR_CONFIG_ERROR_ARRAY                                          :... lỗi trong mảng '{STRING}'
+STR_CONFIG_ERROR_INVALID_VALUE                                  :giá trị không hợp lệ '{STRING}' ở thiết lập '{STRING}'
+STR_CONFIG_ERROR_TRAILING_CHARACTERS                            :thừa ký tự ở cuối tùy chọn '{STRING}'
+STR_CONFIG_ERROR_DUPLICATE_GRFID                                :bỏ qua NewGRF '{STRING}': trùng lặp NewGRF ID với '{STRING}'
+STR_CONFIG_ERROR_INVALID_GRF                                    :bỏ qua NewGRF '{STRING}' không hợp lệ: {STRING}
 STR_CONFIG_ERROR_INVALID_GRF_NOT_FOUND                          :không tìm thấy
 STR_CONFIG_ERROR_INVALID_GRF_UNSAFE                             :không an toàn để dùng tĩnh
 STR_CONFIG_ERROR_INVALID_GRF_SYSTEM                             :Hệ thống NewGRF
 STR_CONFIG_ERROR_INVALID_GRF_INCOMPATIBLE                       :không tương thích phiên bản với OpenTTD
 STR_CONFIG_ERROR_INVALID_GRF_UNKNOWN                            :không rõ
-STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_LEVEL             :{WHITE}... mức độ nén '{STRING}' không hợp lệ
-STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_ALGORITHM         :{WHITE}... không thể lưu game dạng '{STRING}'. Lưu dạng '{STRING}'
-STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :{WHITE}... từ chối gói đồ họa chuẩn '{STRING}': không tìm thấy
-STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE}... từ chối gói âm thanh chuẩn '{STRING}': không tìm thấy
-STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... từ chối gói nhạc chuẩn '{STRING}': không tìm thấy
+STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_LEVEL             :mức độ nén '{STRING}' không hợp lệ
+STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_ALGORITHM         :không thể lưu game dạng '{STRING}'. Trở về dạng '{STRING}'
+STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :từ chối gói đồ họa chuẩn '{STRING}': không tìm thấy
+STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :từ chối gói âm thanh chuẩn '{STRING}': không tìm thấy
+STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :từ chối gói nhạc chuẩn '{STRING}': không tìm thấy
 
-# Video initalization errors
-STR_VIDEO_DRIVER_ERROR                                          :{WHITE}Lỗi ở thiết lập hình ảnh...
-STR_VIDEO_DRIVER_ERROR_NO_HARDWARE_ACCELERATION                 :{WHITE}... không tìm thấy GPU tương thích. Tăng tốc phần cứng đã được tắt
-STR_VIDEO_DRIVER_ERROR_HARDWARE_ACCELERATION_CRASH              :{WHITE}... trình điều khiển GPU đã làm trò chơi bị lỗi. Tăng tốc phần cứng đã được tắt
+# Video initialization errors
+STR_VIDEO_DRIVER_ERROR                                          :Lỗi ở thiết lập hình ảnh...
+STR_VIDEO_DRIVER_ERROR_NO_HARDWARE_ACCELERATION                 :không tìm thấy GPU tương thích. Tăng tốc phần cứng đã được tắt
+STR_VIDEO_DRIVER_ERROR_HARDWARE_ACCELERATION_CRASH              :Trình điều khiển GPU đã làm trò chơi bị lỗi. Tăng tốc phần cứng đã được tắt
 
 # Intro window
 STR_INTRO_CAPTION                                               :{WHITE}OpenTTD
@@ -2228,8 +2261,8 @@ STR_INTRO_VERSION                                               :OpenTTD {REV}
 
 STR_INTRO_NEW_GAME                                              :{BLACK}Màn Chơi Mới
 STR_INTRO_LOAD_GAME                                             :{BLACK}Nạp Ván Chơi
-STR_INTRO_PLAY_SCENARIO                                         :{BLACK}Chơi Kịch Bản Này
-STR_INTRO_PLAY_HEIGHTMAP                                        :{BLACK}Chơi Bằng Bản Đồ Địa Hình
+STR_INTRO_PLAY_SCENARIO                                         :{BLACK}Nạp Màn Chơi Kịch Bản
+STR_INTRO_PLAY_HEIGHTMAP                                        :{BLACK}Nạp Bản Đồ Địa Hình
 STR_INTRO_SCENARIO_EDITOR                                       :{BLACK}Biên Tập Màn Chơi Kịch Bản
 STR_INTRO_MULTIPLAYER                                           :{BLACK}Ván Chơi Mạng
 
@@ -2357,15 +2390,15 @@ STR_FACE_SIMPLE                                                 :{BLACK}Đơn gi
 STR_FACE_SIMPLE_TOOLTIP                                         :{BLACK}Trình chọn vẻ mặt đơn giản.
 STR_FACE_LOAD                                                   :{BLACK}Nạp
 STR_FACE_LOAD_TOOLTIP                                           :{BLACK}Chọn vẻ mặt ưa thích
-STR_FACE_LOAD_DONE                                              :{WHITE}Vẻ mặt ưa thích đã được nạp từ file thiết lập của OpenTTD.
+STR_FACE_LOAD_DONE                                              :Gương mặt ưa thích đã được nạp từ file thiết lập của OpenTTD
 STR_FACE_FACECODE                                               :{BLACK}Mã số khuôn mặt
 STR_FACE_FACECODE_TOOLTIP                                       :{BLACK}Xem và/hoặc sửa mã số gương mặt của chủ tịch công ty
-STR_FACE_FACECODE_CAPTION                                       :{WHITE}Xem và/hoặc chọn mã số gương mặt người chơi
-STR_FACE_FACECODE_SET                                           :{WHITE}Gương mặt người chơi mới được thiết lập.
-STR_FACE_FACECODE_ERR                                           :{WHITE}Không thể thiết lập mã số gương mặt - Nhãn và mã số phải hợp lệ
+STR_FACE_FACECODE_CAPTION                                       :{WHITE}Xem và/hoặc chọn mã số gương mặt chủ tịch
+STR_FACE_FACECODE_SET                                           :Gương mặt chủ tịch đã được thiết lập
+STR_FACE_FACECODE_ERR                                           :Không thể thiết lập mã số gương mặt - nhãn và mã số phải hợp lệ
 STR_FACE_SAVE                                                   :{BLACK}Lưu
 STR_FACE_SAVE_TOOLTIP                                           :{BLACK}Lưu gương mặt yêu thích
-STR_FACE_SAVE_DONE                                              :{WHITE}Gương mặt yêu thích này sẽ được lưu lại trong tập tin cấu hình OpenTTD .
+STR_FACE_SAVE_DONE                                              :Gương mặt yêu thích này sẽ được lưu lại trong tập tin cấu hình OpenTTD
 STR_FACE_SETTING_TOGGLE                                         :{STRING} {ORANGE}{STRING}
 STR_FACE_SETTING_NUMERIC                                        :{STRING} {ORANGE}{NUM} / {NUM}
 STR_FACE_YES                                                    :Đồng ý
@@ -2475,15 +2508,13 @@ STR_NETWORK_CONNECTING_WAITING                                  :{BLACK}{NUM} m�
 STR_NETWORK_CONNECTING_DOWNLOADING_1                            :{BLACK}đã tải được {BYTES}
 STR_NETWORK_CONNECTING_DOWNLOADING_2                            :{BLACK}đã tải xong {BYTES} / {BYTES}
 
-###length 8
+###length 6
 STR_NETWORK_CONNECTING_1                                        :{BLACK}(1/6) Tạo kết nối..
 STR_NETWORK_CONNECTING_2                                        :{BLACK}(2/6) Xác thực..
 STR_NETWORK_CONNECTING_3                                        :{BLACK}(3/6) Đợi..
 STR_NETWORK_CONNECTING_4                                        :{BLACK}(4/6) Tải bản đồ..
 STR_NETWORK_CONNECTING_5                                        :{BLACK}(5/6) Xử lý..
 STR_NETWORK_CONNECTING_6                                        :{BLACK}(6/6) Đăng nhập..
-STR_NETWORK_CONNECTING_SPECIAL_1                                :{BLACK}Tải thông tin ván chơi..
-STR_NETWORK_CONNECTING_SPECIAL_2                                :{BLACK}Tải thông tin công ty..
 
 STR_NETWORK_CONNECTION_DISCONNECT                               :{BLACK}Ngắt kết nối
 
@@ -2537,6 +2568,8 @@ STR_NETWORK_CLIENT_LIST_SERVER_CONNECTION_TYPE_TURN             :{BLACK}Thông q
 STR_NETWORK_CLIENT_LIST_ADMIN_CLIENT_KICK                       :Đá ra
 STR_NETWORK_CLIENT_LIST_ADMIN_CLIENT_BAN                        :Cấm
 STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_RESET                     :Xoá
+STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_ALLOW_ANY                 :Cho phép bất kỳ máy trạm nào
+STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_ALLOW_LISTED              :Cho phép những máy trạm trong danh sách
 
 STR_NETWORK_CLIENT_LIST_ASK_CAPTION                             :{WHITE}Tác vụ quản lý
 STR_NETWORK_CLIENT_LIST_ASK_CLIENT_KICK                         :{YELLOW}Bạn có muốn đá người chơi '{STRING}' ra?
@@ -2577,33 +2610,33 @@ STR_NETWORK_CHAT_EXTERNAL                                       :[{STRING}] {STR
 STR_NETWORK_CHAT_OSKTITLE                                       :{BLACK}Nhập thông điệp tán gẫu
 
 # Network messages
-STR_NETWORK_ERROR_NOTAVAILABLE                                  :{WHITE}Không có thiết bị kết nối mạng
-STR_NETWORK_ERROR_NOCONNECTION                                  :{WHITE}Kết nối tới máy chủ bị quá hạn hoặc bị từ chối
-STR_NETWORK_ERROR_NEWGRF_MISMATCH                               :{WHITE}Không thể kết nối vì NewGRF không hợp
-STR_NETWORK_ERROR_DESYNC                                        :{WHITE}Đồng bộ ván chơi mạng bị lỗi
-STR_NETWORK_ERROR_LOSTCONNECTION                                :{WHITE}Ván chơi mạng mất kết nối
-STR_NETWORK_ERROR_SAVEGAMEERROR                                 :{WHITE}Không thể nạp savegame
-STR_NETWORK_ERROR_SERVER_START                                  :{WHITE}Không thể bắt đầu chạy server
-STR_NETWORK_ERROR_SERVER_ERROR                                  :{WHITE}Có lỗi trong giao thức và kết nối bị đóng
-STR_NETWORK_ERROR_BAD_PLAYER_NAME                               :{WHITE}Bạn chưa đặt tên người chơi. Bạn có thể đặt tên này tại phía trên của cửa sổ Chơi trên mạng
-STR_NETWORK_ERROR_BAD_SERVER_NAME                               :{WHITE}Bạn chưa đặt tên server. Bạn có thể đặt tên này tại phía trên của cửa sổ Chơi trên mạng
-STR_NETWORK_ERROR_WRONG_REVISION                                :{WHITE}Phiên bản của máy trạm không hợp với phiên bản máy server
-STR_NETWORK_ERROR_WRONG_PASSWORD                                :{WHITE}Sai mật khẩu
-STR_NETWORK_ERROR_NOT_ON_ALLOW_LIST                             :{WHITE}Bạn không có trong danh sách máy khách được cho phép
-STR_NETWORK_ERROR_SERVER_FULL                                   :{WHITE}Server bị đầy
-STR_NETWORK_ERROR_SERVER_BANNED                                 :{WHITE}Bạn bị từ chối ở server này
-STR_NETWORK_ERROR_KICKED                                        :{WHITE}Bạn bị đá khỏi ván chơi
-STR_NETWORK_ERROR_KICK_MESSAGE                                  :{WHITE}Lý do: {STRING}
-STR_NETWORK_ERROR_CHEATER                                       :{WHITE}Cheat không được phép ở server này
-STR_NETWORK_ERROR_TOO_MANY_COMMANDS                             :{WHITE}Bạn vừa gửi lên máy chủ quá nhiều lệnh
-STR_NETWORK_ERROR_TIMEOUT_PASSWORD                              :{WHITE}Bạn nhập mật khẩu quá trễ
-STR_NETWORK_ERROR_TIMEOUT_COMPUTER                              :{WHITE}Máy của bạn quá chậm để có thể theo kịp máy chủ
-STR_NETWORK_ERROR_TIMEOUT_MAP                                   :{WHITE}Thời gian tải bản đồ quá lâu
-STR_NETWORK_ERROR_TIMEOUT_JOIN                                  :{WHITE}Thời gian tham gia máy chủ quá lâu
-STR_NETWORK_ERROR_INVALID_CLIENT_NAME                           :{WHITE}Tên người chơi không hợp lệ
+STR_NETWORK_ERROR_NOTAVAILABLE                                  :Không có thiết bị kết nối mạng
+STR_NETWORK_ERROR_NOCONNECTION                                  :Kết nối tới máy chủ bị quá hạn hoặc bị từ chối
+STR_NETWORK_ERROR_NEWGRF_MISMATCH                               :Không thể kết nối vì NewGRF không hợp
+STR_NETWORK_ERROR_DESYNC                                        :Đồng bộ ván chơi mạng bị lỗi
+STR_NETWORK_ERROR_LOSTCONNECTION                                :Ván chơi mạng đã bị mất kết nối
+STR_NETWORK_ERROR_SAVEGAMEERROR                                 :Không thể nạp bản lưu
+STR_NETWORK_ERROR_SERVER_START                                  :Không thể bắt đầu máy chủ
+STR_NETWORK_ERROR_SERVER_ERROR                                  :Phát hiện lỗi trong giao thức và kết nối đã bị đóng
+STR_NETWORK_ERROR_BAD_PLAYER_NAME                               :Bạn chưa đặt tên người chơi. Bạn có thể đặt tên này tại phía trên của cửa sổ Ván chơi mạng
+STR_NETWORK_ERROR_BAD_SERVER_NAME                               :Bạn chưa đặt tên server. Bạn có thể đặt tên này tại phía trên của cửa sổ Ván chơi mạng
+STR_NETWORK_ERROR_WRONG_REVISION                                :Phiên bản của máy trạm không khớp với phiên bản máy chủ
+STR_NETWORK_ERROR_WRONG_PASSWORD                                :Sai mật khẩu
+STR_NETWORK_ERROR_NOT_ON_ALLOW_LIST                             :Bạn không có trong danh sách máy khách được cho phép
+STR_NETWORK_ERROR_SERVER_FULL                                   :Máy chủ đã đầy
+STR_NETWORK_ERROR_SERVER_BANNED                                 :Bạn bị cấm vào máy chủ này
+STR_NETWORK_ERROR_KICKED                                        :Bạn bị đá khỏi ván chơi
+STR_NETWORK_ERROR_KICK_MESSAGE                                  :Lý do: {STRING}
+STR_NETWORK_ERROR_CHEATER                                       :Cheat không được phép sử dụng ở máy chủ này
+STR_NETWORK_ERROR_TOO_MANY_COMMANDS                             :Bạn vừa gửi lên máy chủ quá nhiều lệnh
+STR_NETWORK_ERROR_TIMEOUT_PASSWORD                              :Bạn nhập mật khẩu quá lâu
+STR_NETWORK_ERROR_TIMEOUT_COMPUTER                              :Máy của bạn quá chậm để có thể theo kịp máy chủ
+STR_NETWORK_ERROR_TIMEOUT_MAP                                   :Thời gian tải bản đồ quá lâu
+STR_NETWORK_ERROR_TIMEOUT_JOIN                                  :Máy tính của bạn mất quá lâu để vào máy chủ
+STR_NETWORK_ERROR_INVALID_CLIENT_NAME                           :Tên người chơi không hợp lệ
 
-STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION_CAPTION            :{WHITE}Kết nối có thể đã bị mất
-STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION                    :{WHITE}Trong khoảng{NUM} giây gần đây, không có dữ liệu nào được nhận từ máy chủ
+STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION_CAPTION            :Kết nối có thể đã bị mất
+STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION                    :Trong khoảng {NUM} giây gần đây, không nhận được dữ liệu nào từ máy chủ
 
 ###length 23
 STR_NETWORK_ERROR_CLIENT_GENERAL                                :lỗi chung
@@ -2656,14 +2689,14 @@ STR_NETWORK_MESSAGE_CLIENT_COMPANY_NEW                          :*** {STRING} kh
 STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {STRING} rời bỏ ván chơi ({STRING})
 STR_NETWORK_MESSAGE_NAME_CHANGE                                 :*** {STRING} đã đổi tên thành {STRING}
 STR_NETWORK_MESSAGE_GIVE_MONEY                                  :*** {STRING} tặng {CURRENCY_LONG} cho {STRING}
-STR_NETWORK_MESSAGE_SERVER_SHUTDOWN                             :{WHITE}Server kết thúc phiên
-STR_NETWORK_MESSAGE_SERVER_REBOOT                               :{WHITE}Server khởi động lại...{}{}Xin chờ...
+STR_NETWORK_MESSAGE_SERVER_SHUTDOWN                             :Máy chủ đã kết thúc phiên
+STR_NETWORK_MESSAGE_SERVER_REBOOT                               :Máy chủ đang khởi động lại...{}{}Xin chờ...
 STR_NETWORK_MESSAGE_KICKED                                      :*** {STRING} đã bị đá khỏi ván chơi. Lý do: ({STRING})
 
-STR_NETWORK_ERROR_COORDINATOR_REGISTRATION_FAILED               :{WHITE}Đăng ký server thất bại
-STR_NETWORK_ERROR_COORDINATOR_REUSE_OF_INVITE_CODE              :{WHITE}Một máy chủ khác đã tự nó đăng ký mã tham gia rồi. Hãy chuyển về chế độ game "local"
-STR_NETWORK_ERROR_COORDINATOR_ISOLATED                          :{WHITE}Server của bạn không cho phép kết nối bên ngoài
-STR_NETWORK_ERROR_COORDINATOR_ISOLATED_DETAIL                   :{WHITE}Những người chơi khác sẽ không kết nối được vào server của bạn
+STR_NETWORK_ERROR_COORDINATOR_REGISTRATION_FAILED               :Đăng ký máy chủ thất bại
+STR_NETWORK_ERROR_COORDINATOR_REUSE_OF_INVITE_CODE              :Một máy chủ khác đã tự nó đăng ký mã tham gia rồi. Hãy chuyển về chế độ game "nội bộ"
+STR_NETWORK_ERROR_COORDINATOR_ISOLATED                          :Máy chủ của bạn không cho phép kết nối bên ngoài
+STR_NETWORK_ERROR_COORDINATOR_ISOLATED_DETAIL                   :Những người chơi khác sẽ không kết nối được vào máy chủ của bạn
 
 # Content downloading window
 STR_CONTENT_TITLE                                               :{WHITE}Nội Dung Trực Tuyến
@@ -2707,8 +2740,8 @@ STR_CONTENT_DETAIL_FILESIZE                                     :{SILVER}Kích t
 STR_CONTENT_DETAIL_SELECTED_BECAUSE_OF                          :{SILVER}Được chọn vì: {WHITE}{STRING}
 STR_CONTENT_DETAIL_DEPENDENCIES                                 :{SILVER}Các phụ thuộc: {WHITE}{STRING}
 STR_CONTENT_DETAIL_TAGS                                         :{SILVER}Tags: {WHITE}{STRING}
-STR_CONTENT_NO_ZLIB                                             :{WHITE}OpenTTD không thiết lập hỗ trợ "zlib"...
-STR_CONTENT_NO_ZLIB_SUB                                         :{WHITE}... không thể tải nội dung này
+STR_CONTENT_NO_ZLIB                                             :OpenTTD được biên dịch mà không có hỗ trợ 'zlib'...
+STR_CONTENT_NO_ZLIB_SUB                                         :không thể tải nội dung này!
 
 # Order of these is important!
 STR_CONTENT_TYPE_BASE_GRAPHICS                                  :Đồ hoạ cơ sở
@@ -2730,10 +2763,10 @@ STR_CONTENT_DOWNLOAD_COMPLETE                                   :{WHITE}Tải ho
 STR_CONTENT_DOWNLOAD_PROGRESS_SIZE                              :{WHITE}{BYTES} trên {BYTES} đã tải xong ({NUM} %)
 
 # Content downloading error messages
-STR_CONTENT_ERROR_COULD_NOT_CONNECT                             :{WHITE}Không thể kết nối tới server nội dung...
-STR_CONTENT_ERROR_COULD_NOT_DOWNLOAD                            :{WHITE}Tải bất thành...
-STR_CONTENT_ERROR_COULD_NOT_DOWNLOAD_FILE_NOT_WRITABLE          :{WHITE}... không ghi được file
-STR_CONTENT_ERROR_COULD_NOT_EXTRACT                             :{WHITE}Không thể giải nén file đã tải
+STR_CONTENT_ERROR_COULD_NOT_CONNECT                             :Không thể kết nối tới máy chủ nội dung...
+STR_CONTENT_ERROR_COULD_NOT_DOWNLOAD                            :Tải thất bại...
+STR_CONTENT_ERROR_COULD_NOT_DOWNLOAD_FILE_NOT_WRITABLE          :không ghi được file
+STR_CONTENT_ERROR_COULD_NOT_EXTRACT                             :Không thể giải nén file đã tải
 
 STR_MISSING_GRAPHICS_SET_CAPTION                                :{WHITE}Thiếu thành phần đồ họa
 STR_MISSING_GRAPHICS_SET_MESSAGE                                :{BLACK}OpenTTD cần các thành phần đồ họa để hoạt động nhưng hiện tại chưa có sẵn. Bạn có cho phép OpenTTD tải về và cài đặt chúng?
@@ -2848,18 +2881,38 @@ STR_PICKER_PREVIEW_SHRINK_TOOLTIP                               :Giảm chiều 
 STR_PICKER_PREVIEW_EXPAND                                       :+
 STR_PICKER_PREVIEW_EXPAND_TOOLTIP                               :Tăng chiều cao của ảnh xem trước. Ctrl+Click để tăng đến mức tối đa
 
-STR_PICKER_STATION_CLASS_TOOLTIP                                :Chọn loại ga bến cần hiển thị
+STR_PICKER_DEFAULT_COLLECTION                                   :Nhóm mặc định
+STR_PICKER_SELECT_COLLECTION_TOOLTIP                            :Chọn nhóm
+STR_PICKER_COLLECTION_ADD                                       :Thêm
+STR_PICKER_COLLECTION_ADD_TOOLTIP                               :Tạo nhóm mới
+STR_PICKER_COLLECTION_RENAME                                    :Thay tên
+STR_PICKER_COLLECTION_RENAME_TOOLTIP                            :Thay tên nhóm
+STR_PICKER_COLLECTION_DELETE                                    :Xóa
+STR_PICKER_COLLECTION_DELETE_TOOLTIP                            :Xóa nhóm
+
+STR_PICKER_COLLECTION_RENAME_QUERY                              :Thay tên nhóm này
+STR_PICKER_COLLECTION_DELETE_QUERY                              :Xóa nhóm
+STR_PICKER_COLLECTION_DELETE_QUERY_TEXT                         :{YELLOW}Bạn có chắc chắn muốn xóa nhóm này?
+STR_PICKER_COLLECTION_DELETE_QUERY_DISABLED_TEXT                :{YELLOW}Bạn có chắc chắn muốn xóa nhóm này? Nhóm có chứa các mục từ các NewGRFs bị vô hiệu hóa!
+
+STR_PICKER_STATION_CLASS_TOOLTIP                                :Chọn loại ga bến cần hiển thị. Ctrl+Click để thêm hoặc bớt vào danh sách lưu
 STR_PICKER_STATION_TYPE_TOOLTIP                                 :Chọn loại ga bến để xây. Ctrl+Click để thêm hoặc bớt vào danh sách lưu
-STR_PICKER_WAYPOINT_CLASS_TOOLTIP                               :Chọn loại điểm mốc cần hiển thị
+STR_PICKER_STATION_COLLECTION_TOOLTIP                           :Chọn một nhóm trạm tàu hỏa để hiển thị
+STR_PICKER_WAYPOINT_CLASS_TOOLTIP                               :Chọn loại điểm mốc cần hiển thị. Ctrl+Click để thêm hoặc bớt vào danh sách lưu
 STR_PICKER_WAYPOINT_TYPE_TOOLTIP                                :Chọn loại điểm mốc để xây. Ctrl+Click để thêm hoặc xóa trong danh sách lưu
-STR_PICKER_ROADSTOP_BUS_CLASS_TOOLTIP                           :Chọn loại bến xe để hiển thị
+STR_PICKER_WAYPOINT_COLLECTION_TOOLTIP                          :Chọn một nhóm điểm mốc để hiển thị
+STR_PICKER_ROADSTOP_BUS_CLASS_TOOLTIP                           :Chọn loại bến xe để hiển thị. Ctrl+Click để thêm hoặc bớt vào danh sách lưu
 STR_PICKER_ROADSTOP_BUS_TYPE_TOOLTIP                            :Chọn loại bến xe khách để xây. Ctrl+Click để thêm hoặc bớt vào danh sách lưu
-STR_PICKER_ROADSTOP_TRUCK_CLASS_TOOLTIP                         :Chọn loại bến xe tải để hiển thị
+STR_PICKER_ROADSTOP_BUS_COLLECTION_TOOLTIP                      :Chọn một nhóm trạm xe buýt để hiển thị
+STR_PICKER_ROADSTOP_TRUCK_CLASS_TOOLTIP                         :Chọn loại bến xe tải để hiển thị. Ctrl+Click để thêm hoặc bớt vào danh sách lưu
 STR_PICKER_ROADSTOP_TRUCK_TYPE_TOOLTIP                          :Chọn loại bến xe tải để xây. Ctrl+Click để thêm hoặc bớt vào danh sách lưu
-STR_PICKER_OBJECT_CLASS_TOOLTIP                                 :Chọn loại đối tượng để hiển thị
+STR_PICKER_ROADSTOP_TRUCK_COLLECTION_TOOLTIP                    :Chọn một nhóm xe tải để hiển thị
+STR_PICKER_OBJECT_CLASS_TOOLTIP                                 :Chọn loại đối tượng để hiển thị. Ctrl+Click để thêm hoặc bớt vào danh sách lưu
 STR_PICKER_OBJECT_TYPE_TOOLTIP                                  :Chọn kiểu đối tượng để xây. Ctrl+Click để thêm hoặc bớt vào danh sách lưu. Ctrl+Click+Drag để chọn khu vực theo đường chéo. Bấm Shift để xem ước tính chi phí
-STR_PICKER_HOUSE_CLASS_TOOLTIP                                  :Chọn vùng đô thị để xem
+STR_PICKER_OBJECT_COLLECTION_TOOLTIP                            :Chọn một nhóm vật thể để hiển thị
+STR_PICKER_HOUSE_CLASS_TOOLTIP                                  :Chọn vùng đô thị để xem. Ctrl+Click để thêm hoặc bớt vào danh sách lưu
 STR_PICKER_HOUSE_TYPE_TOOLTIP                                   :Chọn kiểu nhà để xây. Ctrl+Click để thêm hoặc xóa trong danh sách lưu
+STR_PICKER_HOUSE_COLLECTION_TOOLTIP                             :Chọn một nhóm nhà cửa để hiển thị
 
 STR_HOUSE_PICKER_CAPTION                                        :Chọn Kiểu Nhà
 STR_HOUSE_PICKER_NAME                                           :{BLACK}Tên: {GOLD}{STRING}
@@ -3048,10 +3101,13 @@ STR_TREES_MODE_FOREST_LG_TOOLTIP                                :{BLACK}Trồng 
 
 # Land generation window (SE)
 STR_TERRAFORM_TOOLBAR_LAND_GENERATION_CAPTION                   :{WHITE}San Lấp Đất
-STR_TERRAFORM_TOOLTIP_PLACE_ROCKY_AREAS_ON_LANDSCAPE            :{BLACK}Đặt các nền đá trong vùng
+STR_TERRAFORM_TOOLTIP_PLACE_ROCKY_AREAS_ON_LANDSCAPE            :{BLACK}Đặt các nền đá trong vùng.{}Ctrl+Click để phá bỏ nền đá
+STR_TERRAFORM_TOOLTIP_PLACE_ROUGH_AREAS_ON_LANDSCAPE            :{BLACK}Đặt các nền gồ ghề trong vùng.{}Ctrl+Click để phá bỏ nền gồ ghề
 STR_TERRAFORM_TOOLTIP_DEFINE_DESERT_AREA                        :{BLACK}Đặt tên hoang mạc.{}Ctrl + Click để xoá bỏ tên
 STR_TERRAFORM_TOOLTIP_INCREASE_SIZE_OF_LAND_AREA                :{BLACK}Tăng diện tích vùng đất để nâng/hạ
 STR_TERRAFORM_TOOLTIP_DECREASE_SIZE_OF_LAND_AREA                :{BLACK}Giảm diện tích vùng đất để nâng/hạ
+STR_TERRAFORM_TOOLTIP_LOWER_A_CORNER_OF_LAND                    :{BLACK}Hạ thấp một góc hoặc một vùng đất. Nếu kích thước là 1x1, Nhấp+Kéo để hạ thấp góc được chọn đầu tiên và san bằng vùng được chọn theo độ cao của góc mới. Ctrl+Nhấp+Kéo để chọn vùng theo đường chéo. Nhấn thêm phím Shift để chỉ hiển thị ước tính chi phí
+STR_TERRAFORM_TOOLTIP_RAISE_A_CORNER_OF_LAND                    :{BLACK}Nâng một góc hoặc một vùng đất. Nếu kích thước là 1x1, Nhấp+Kéo để nâng góc được chọn đầu tiên và san bằng vùng được chọn theo độ cao của góc mới. Ctrl+Nhấp+Kéo để chọn vùng theo đường chéo. Nhấn thêm phím Shift để chỉ hiển thị ước tính chi phí
 STR_TERRAFORM_TOOLTIP_GENERATE_RANDOM_LAND                      :{BLACK}Tạo vùng đất ngẫu nhiên
 STR_TERRAFORM_SE_NEW_WORLD                                      :{BLACK}Tạo màn chơi kịch bản mới
 STR_TERRAFORM_RESET_LANDSCAPE                                   :{BLACK}Thiết lập lại nền đất
@@ -3119,21 +3175,20 @@ STR_FUND_INDUSTRY_REMOVE_ALL_INDUSTRIES_CAPTION                 :{WHITE}Loại b
 STR_FUND_INDUSTRY_REMOVE_ALL_INDUSTRIES_QUERY                   :{YELLOW}Bạn có chắc chắn muốn loại bỏ tất cả các nhà máy?
 
 # Industry cargoes window
-STR_INDUSTRY_CARGOES_INDUSTRY_CAPTION                           :{WHITE}Chuỗi cung ứng - {STRING}
-STR_INDUSTRY_CARGOES_CARGO_CAPTION                              :{WHITE}Chuỗi cung ứng hàng hoá - {STRING}
-STR_INDUSTRY_CARGOES_PRODUCERS                                  :{WHITE}Nhà máy sản xuất
-STR_INDUSTRY_CARGOES_CUSTOMERS                                  :{WHITE}Nhà máy nhận
-STR_INDUSTRY_CARGOES_HOUSES                                     :{WHITE}Nhà kho
-STR_INDUSTRY_CARGOES_INDUSTRY_TOOLTIP                           :{BLACK}Click vào nhà máy để xem nhà cung cấp cho nó và khách hàng của nó
-STR_INDUSTRY_CARGOES_CARGO_TOOLTIP                              :{BLACK}{STRING}{}Click vào hàng hoá để xem nhà sản xuất và khách hàng
-STR_INDUSTRY_DISPLAY_CHAIN                                      :{BLACK}Chuỗi cung ứng
-STR_INDUSTRY_DISPLAY_CHAIN_TOOLTIP                              :{BLACK}Hiển thị khả năng cung ứng và chấp nhận hàng hoá của nhà máy
-STR_INDUSTRY_CARGOES_NOTIFY_SMALLMAP                            :{BLACK}Liên kết với bản đồ nhỏ
-STR_INDUSTRY_CARGOES_NOTIFY_SMALLMAP_TOOLTIP                    :{BLACK}Chọn các nhà máy hiển thị ở bản đồ nhỏ luôn thể
-STR_INDUSTRY_CARGOES_SELECT_CARGO                               :{BLACK}Chọn hàng hóa
-STR_INDUSTRY_CARGOES_SELECT_CARGO_TOOLTIP                       :{BLACK}Chọn loại hàng hóa mà bạn muốn hiển thị
-STR_INDUSTRY_CARGOES_SELECT_INDUSTRY                            :{BLACK}Chọn nhà máy
-STR_INDUSTRY_CARGOES_SELECT_INDUSTRY_TOOLTIP                    :{BLACK}Chọn loại nhà máy mà bạn muốn hiển thị
+STR_INDUSTRY_CARGOES_INDUSTRY_CAPTION                           :Chuỗi cung ứng - {STRING}
+STR_INDUSTRY_CARGOES_CARGO_CAPTION                              :Chuỗi cung ứng hàng hoá - {STRING}
+STR_INDUSTRY_CARGOES_SOURCES                                    :Nguồn
+STR_INDUSTRY_CARGOES_DESTINATIONS                               :Điểm đến
+STR_INDUSTRY_CARGOES_HOUSES                                     :Nhà kho
+STR_INDUSTRY_CARGOES_ACCEPTS_PRODUCES_TOOLTIP                   :{STRING}{}Chấp nhận: {CARGO_LIST}{}Sản phẩm: {CARGO_LIST}
+STR_INDUSTRY_DISPLAY_CHAIN                                      :Chuỗi cung ứng
+STR_INDUSTRY_DISPLAY_CHAIN_TOOLTIP                              :Hiển thị khả năng cung ứng và chấp nhận hàng hoá của nhà máy
+STR_INDUSTRY_CARGOES_NOTIFY_SMALLMAP                            :Liên kết với bản đồ nhỏ
+STR_INDUSTRY_CARGOES_NOTIFY_SMALLMAP_TOOLTIP                    :Chọn các nhà máy hiển thị ở bản đồ nhỏ luôn thể
+STR_INDUSTRY_CARGOES_SELECT_CARGO                               :Chọn hàng hóa
+STR_INDUSTRY_CARGOES_SELECT_CARGO_TOOLTIP                       :Chọn loại hàng hóa mà bạn muốn hiển thị
+STR_INDUSTRY_CARGOES_SELECT_INDUSTRY                            :Chọn nhà máy
+STR_INDUSTRY_CARGOES_SELECT_INDUSTRY_TOOLTIP                    :Chọn loại nhà máy mà bạn muốn hiển thị
 
 # Land area window
 STR_LAND_AREA_INFORMATION_CAPTION                               :{WHITE}Thông Tin Địa Lý
@@ -3232,6 +3287,8 @@ STR_LAI_WATER_DESCRIPTION_LOCK                                  :Cửa kênh
 STR_LAI_WATER_DESCRIPTION_RIVER                                 :Sông
 STR_LAI_WATER_DESCRIPTION_COAST_OR_RIVERBANK                    :Bờ biển hoặc bờ sông
 STR_LAI_WATER_DESCRIPTION_SHIP_DEPOT                            :Xưởng tàu thuỷ
+STR_LAI_WATER_DESCRIPTION_WATER_ROCKS                           :Đá
+STR_LAI_WATER_DESCRIPTION_COAST_ROCKS                           :Bờ biển hoặc bờ sông với đá
 
 # Industries come directly from their industry names
 
@@ -3329,8 +3386,8 @@ STR_FRAMETIME_CAPTION_AI                                        :AI {NUM} {STRIN
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Lưu Ván Chơi
 STR_SAVELOAD_LOAD_CAPTION                                       :{WHITE}Nạp Ván Chơi
 STR_SAVELOAD_SAVE_SCENARIO                                      :{WHITE}Lưu màn chơi kịch bản
-STR_SAVELOAD_LOAD_SCENARIO                                      :{WHITE}Nạp màn chơi kịch bản
-STR_SAVELOAD_LOAD_HEIGHTMAP                                     :{WHITE}Nạp bản đồ địa hình
+STR_SAVELOAD_LOAD_SCENARIO                                      :{WHITE}Nạp Màn Chơi Kịch Bản
+STR_SAVELOAD_LOAD_HEIGHTMAP                                     :{WHITE}Nạp Bản Đồ Địa Hình
 STR_SAVELOAD_SAVE_HEIGHTMAP                                     :{WHITE}Lưu bản đồ địa hình
 STR_SAVELOAD_LOAD_TOWN_DATA                                     :{WHITE}Nạp Dữ Liệu Đô Thị
 STR_SAVELOAD_HOME_BUTTON_TOOLTIP                                :{BLACK}Nháy vào đây để tới thư mục mặc định hiện thời để nạp/lưu
@@ -3345,6 +3402,9 @@ STR_SAVELOAD_LOAD_BUTTON                                        :{BLACK}Nạp
 STR_SAVELOAD_LOAD_TOOLTIP                                       :{BLACK}Nạp ván chơi được chọn
 STR_SAVELOAD_LOAD_HEIGHTMAP_TOOLTIP                             :{BLACK}Nạp bản đồ địa hình đang chọn
 STR_SAVELOAD_LOAD_TOWN_DATA_TOOLTIP                             :{BLACK}Nạp dữ liệu đô thị được chọn
+STR_SAVELOAD_NEW_DIRECTORY_BUTTON                               :{BLACK}Thư mục mới
+STR_SAVELOAD_NEW_DIRECTORY_TOOLTIP                              :{BLACK}Tạo thư mục mới ở đây
+STR_SAVELOAD_NEW_DIRECTORY_QUERY_CAPTION                        :{WHITE}Nhập tên thư mục mới
 STR_SAVELOAD_DETAIL_CAPTION                                     :{BLACK}Chi Tiết Trò Chơi
 STR_SAVELOAD_DETAIL_NOT_AVAILABLE                               :{BLACK}Không có thông tin gì cả.
 STR_SAVELOAD_DETAIL_COMPANY_INDEX                               :{SILVER}{COMMA}: {WHITE}{STRING}
@@ -3385,18 +3445,19 @@ STR_MAPGEN_DESERT_COVERAGE_UP_TOOLTIP                           :{BLACK}Tăng đ
 STR_MAPGEN_DESERT_COVERAGE_DOWN_TOOLTIP                         :{BLACK}Giảm độ phủ sa mạc đi mười phần trăm
 STR_MAPGEN_DESERT_COVERAGE_TEXT                                 :{BLACK}{NUM}%
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Kiểu nền đất:
+STR_MAPGEN_AVERAGE_HEIGHT                                       :{BLACK}Độ cao trung bình:
 STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Mực nước biển:
 STR_MAPGEN_SEA_LEVEL_TOOLTIP                                    :{BLACK}Chọn mực nước biển
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Số sông/suối:
 STR_MAPGEN_SMOOTHNESS                                           :{BLACK}Độ phẳng phiu:
 STR_MAPGEN_VARIETY                                              :{BLACK}Phân bổ sự đa dạng:
-STR_MAPGEN_GENERATE                                             :{WHITE}Khởi Tạo
+STR_MAPGEN_GENERATE                                             :{WHITE}Khởi tạo
 STR_MAPGEN_GENERATE_TOOLTIP                                     :{BLACK}Kiến tạo thế giới và chơi với OpenTTD!
-STR_MAPGEN_NEWGRF_SETTINGS                                      :{BLACK}Thiết Lập NewGRF
+STR_MAPGEN_NEWGRF_SETTINGS                                      :{BLACK}Thiết lập NewGRF
 STR_MAPGEN_NEWGRF_SETTINGS_TOOLTIP                              :{BLACK}Hiển thị tùy chỉnh NewGRF
 STR_MAPGEN_AI_SETTINGS                                          :{BLACK}Thiết lập AI
 STR_MAPGEN_AI_SETTINGS_TOOLTIP                                  :{BLACK}Hiển thị tùy chỉnh AI
-STR_MAPGEN_GS_SETTINGS                                          :{BLACK}Thiết Lập Tập Lệnh Trò Chơi
+STR_MAPGEN_GS_SETTINGS                                          :{BLACK}Thiết lập Game Script
 STR_MAPGEN_GS_SETTINGS_TOOLTIP                                  :{BLACK}Hiển thị thiết lập tập lệnh trò chơi
 
 ###length 21
@@ -3435,12 +3496,12 @@ STR_MAPGEN_SOUTHEAST_TOOLTIP                                    :Bật/tắt mé
 STR_MAPGEN_SOUTHWEST_TOOLTIP                                    :Bật/tắt mép nước hoặc mép tự do ở cạnh tây nam bản đồ
 STR_MAPGEN_BORDER_FREEFORM                                      :{BLACK}Dạng Tự Do
 STR_MAPGEN_BORDER_WATER                                         :{BLACK}Nước
-STR_MAPGEN_BORDER_RANDOM                                        :{BLACK}Ngẫu Nhiên
+STR_MAPGEN_BORDER_RANDOM                                        :{BLACK}Ngẫu nhiên
 
 ###length 3
-STR_MAPGEN_BORDER_RANDOMIZE                                     :Ngẫu Nhiên
-STR_MAPGEN_BORDER_MANUAL                                        :Điều Chỉnh
-STR_MAPGEN_BORDER_INFINITE_WATER                                :Xung Quanh Toàn Nước
+STR_MAPGEN_BORDER_RANDOMIZE                                     :Ngẫu nhiên
+STR_MAPGEN_BORDER_MANUAL                                        :Thủ công
+STR_MAPGEN_BORDER_INFINITE_WATER                                :Xung quanh là nước
 
 STR_MAPGEN_HEIGHTMAP_ROTATION                                   :{BLACK}Xoay bản đồ địa hình:
 STR_MAPGEN_HEIGHTMAP_NAME                                       :{BLACK}Tên bản đồ địa hình:
@@ -3488,12 +3549,12 @@ STR_GENERATION_PREPARING_TILELOOP                               :{BLACK}Đang ch
 STR_GENERATION_PREPARING_SCRIPT                                 :{BLACK}Đang chạy tập lệnh
 STR_GENERATION_PREPARING_GAME                                   :{BLACK}Chuẩn bị ván chơi
 
-STR_TOWN_DATA_ERROR_LOAD_FAILED                                 :{WHITE}Nạp dữ liệu đô thị thất bại
-STR_TOWN_DATA_ERROR_JSON_FORMATTED_INCORRECTLY                  :{WHITE}Định dạng file JSON không đúng
-STR_TOWN_DATA_ERROR_TOWN_FORMATTED_INCORRECTLY                  :{WHITE}Định dạng dữ liệu {STRING} không đúng
-STR_TOWN_DATA_ERROR_BAD_COORDINATE                              :{WHITE}{STRING} định dạng tọa độ không đúng, phải là từ 0 đến 1 theo tỷ lệ của tổng kích thước bản đồ địa hình
+STR_TOWN_DATA_ERROR_LOAD_FAILED                                 :Nạp dữ liệu đô thị thất bại
+STR_TOWN_DATA_ERROR_JSON_FORMATTED_INCORRECTLY                  :Định dạng file JSON không đúng
+STR_TOWN_DATA_ERROR_TOWN_FORMATTED_INCORRECTLY                  :định dạng dữ liệu {STRING} không đúng
+STR_TOWN_DATA_ERROR_BAD_COORDINATE                              :{STRING} định dạng tọa độ không đúng, phải là từ 0 đến 1 theo tỷ lệ của tổng kích thước bản đồ địa hình
 
-STR_TOWN_DATA_ERROR_FAILED_TO_FOUND_TOWN                        :{WHITE}Không thể tìm được vị trí phù hợp để xây dựng {NUM} đô thị. Để xây dựng, hãy tạo biển báo tại vị trí bạn muốn
+STR_TOWN_DATA_ERROR_FAILED_TO_FOUND_TOWN                        :Không thể tìm được vị trí phù hợp để xây dựng {NUM} đô thị. Để xây dựng, hãy tạo biển báo tại vị trí bạn muốn
 
 # NewGRF settings
 STR_NEWGRF_SETTINGS_CAPTION                                     :{WHITE}Thiết Lập NewGRF
@@ -3611,8 +3672,8 @@ STR_NEWGRF_ERROR_MSG_INFO                                       :{SILVER}{STRING
 STR_NEWGRF_ERROR_MSG_WARNING                                    :{RED}Cảnh báo: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_ERROR                                      :{RED}Lỗi: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_FATAL                                      :{RED}Lỗi nghiêm trọng: {SILVER}{STRING}
-STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}NewGRF "{STRING}" đã xảy ra một lỗi nghiêm trọng:{}{STRING}
-STR_NEWGRF_ERROR_POPUP                                          :{WHITE}NewGRF "{STRING}" đã xảy ra lỗi:{}{STRING}
+STR_NEWGRF_ERROR_FATAL_POPUP                                    :NewGRF "{STRING}" đã xảy ra một lỗi nghiêm trọng:{}{STRING}
+STR_NEWGRF_ERROR_POPUP                                          :NewGRF "{STRING}" đã xảy ra lỗi:{}{STRING}
 STR_NEWGRF_ERROR_VERSION_NUMBER                                 :{1:STRING} sẽ không hoạt động với phiên bản TTDPatch version theo như báo cáo của OpenTTD.
 STR_NEWGRF_ERROR_DOS_OR_WINDOWS                                 :{1:STRING} để dành cho phiên bản {2:STRING} của TTD.
 STR_NEWGRF_ERROR_UNSET_SWITCH                                   :{1:STRING} được thiết kế để dùng với {2:STRING}
@@ -3639,12 +3700,12 @@ STR_NEWGRF_ERROR_INDPROD_CALLBACK                               :Lại nhà máy
 STR_NEWGRF_POPUP_CAUTION_CAPTION                                :{WHITE}Chú Ý!
 STR_NEWGRF_CONFIRMATION_TEXT                                    :{YELLOW}Bạn định tiến hành thay đổi cho ván chơi đang chơi; việc này có thể làm lỗi hoặc treo OpenTTD. Đừng thông báo vễ những lỗi dạng này.{}Bạn có chắc sẽ thực hiện không?
 
-STR_NEWGRF_DUPLICATE_GRFID                                      :{WHITE}Không thể thêm file: trùng lặp GRF ID
+STR_NEWGRF_DUPLICATE_GRFID                                      :Không thể thêm file: trùng lặp NewGRF ID
 STR_NEWGRF_COMPATIBLE_LOADED                                    :{ORANGE}File hợp lệ không tìm thấy (GRF tương thích được nạp thay)
-STR_NEWGRF_TOO_MANY_NEWGRFS                                     :{WHITE}Không thể thêm: đã chạm số lượng NewGRF giới hạn
+STR_NEWGRF_TOO_MANY_NEWGRFS                                     :Không thể thêm: đã chạm số lượng NewGRF giới hạn
 
-STR_NEWGRF_COMPATIBLE_LOAD_WARNING                              :{WHITE}GRF tương thích được nạp thay cho các file thiếu.
-STR_NEWGRF_DISABLED_WARNING                                     :{WHITE}Các GRF file thiếu bị bỏ qua
+STR_NEWGRF_COMPATIBLE_LOAD_WARNING                              :GRF tương thích được nạp thay cho các file thiếu
+STR_NEWGRF_DISABLED_WARNING                                     :Các GRF file thiếu đã bị bỏ qua
 STR_NEWGRF_UNPAUSE_WARNING_TITLE                                :{YELLOW}Thiếu NewGRF file
 STR_NEWGRF_UNPAUSE_WARNING                                      :{WHITE}Tiếp tục có thể làm treo OpenTTD. Không nên báo cáo lỗi sau khi bị treo.{}Bạn có chắc là tiếp tục chơi?
 
@@ -3656,17 +3717,17 @@ STR_NEWGRF_LIST_COMPATIBLE                                      :{YELLOW}Đã t�
 STR_NEWGRF_LIST_MISSING                                         :{RED}Thiếu files
 
 # NewGRF 'it's broken' warnings
-STR_NEWGRF_BROKEN                                               :{WHITE}Hoạt động của NewGRF '{0:STRING}' có thể gây mất đồng bộ hoặc bị treo
-STR_NEWGRF_BROKEN_POWERED_WAGON                                 :{WHITE}Trạng thái đầu kéo '{1:ENGINE}' được thay đổi khi không ở trong xưởng sửa chữa
-STR_NEWGRF_BROKEN_VEHICLE_LENGTH                                :{WHITE}Nó cắt ngắn độ dài của đoàn tàu '{1:ENGINE}' nếu không ở trong xưởng
-STR_NEWGRF_BROKEN_CAPACITY                                      :{WHITE}Sức chứa của phương tiện bị thay đổi {1:ENGINE}' khi không ở trong xưởng hoặc vì cải biến
-STR_BROKEN_VEHICLE_LENGTH                                       :{WHITE}Đoàn tàu '{VEHICLE}' của '{COMPANY}' có độ dài không hợp lệ. Sự cố có thể có căn nguyên từ NewGRFs. Ván chơi có thể mất đồng bộ hoặc bị treo
+STR_NEWGRF_BROKEN                                               :Hoạt động của NewGRF '{0:STRING}' có thể gây mất đồng bộ hoặc bị treo
+STR_NEWGRF_BROKEN_POWERED_WAGON                                 :Trạng thái đầu kéo '{1:ENGINE}' được thay đổi khi không ở trong xưởng sửa chữa
+STR_NEWGRF_BROKEN_VEHICLE_LENGTH                                :Nó thay đổi độ dài của đoàn tàu '{1:ENGINE}' nếu không ở trong xưởng
+STR_NEWGRF_BROKEN_CAPACITY                                      :Sức chứa của phương tiện bị thay đổi {1:ENGINE}' khi không ở trong xưởng hoặc vì cải biến
+STR_BROKEN_VEHICLE_LENGTH                                       :Đoàn tàu '{VEHICLE}' của '{COMPANY}' có độ dài không hợp lệ. Sự cố có thể có căn nguyên từ NewGRFs. Ván chơi có thể mất đồng bộ hoặc bị treo
 
-STR_NEWGRF_BUGGY                                                :{WHITE}NewGRF '{0:STRING}' không hợp lệ
-STR_NEWGRF_BUGGY_ARTICULATED_CARGO                              :{WHITE}Danh mục hàng hoá/cải biến được cho '{1:ENGINE}' khác với danh mục mua được sau khi đã có. Việc này khiến cho việc tự thay thế hay là tự cải biến không chính xác
-STR_NEWGRF_BUGGY_ENDLESS_PRODUCTION_CALLBACK                    :{WHITE}'{1:STRING}' gây ra một vòng lặp vô tận khi gọi hàm callback
-STR_NEWGRF_BUGGY_UNKNOWN_CALLBACK_RESULT                        :{WHITE}Hàm callback {1:HEX} gửi trả kết quả sai/không rõ {2:HEX}
-STR_NEWGRF_BUGGY_INVALID_CARGO_PRODUCTION_CALLBACK              :{WHITE}'{1:STRING} trả về loại hàng hoá sản xuất không hợp lệ khi gọi lại tại {2:HEX}
+STR_NEWGRF_BUGGY                                                :NewGRF '{0:STRING}' cung cấp thông tin không hợp lệ
+STR_NEWGRF_BUGGY_ARTICULATED_CARGO                              :Danh mục hàng hoá/cải biến cho '{1:ENGINE}' sau khi chế tạo khác với danh sách mua. Điều này có thể khiến tính năng tự động gia hạn/thay thế không thể cải biến đúng cách
+STR_NEWGRF_BUGGY_ENDLESS_PRODUCTION_CALLBACK                    :'{1:STRING}' gây ra một vòng lặp vô tận khi gọi hàm callback
+STR_NEWGRF_BUGGY_UNKNOWN_CALLBACK_RESULT                        :Hàm callback {1:HEX} gửi trả kết quả sai/không rõ {2:HEX}
+STR_NEWGRF_BUGGY_INVALID_CARGO_PRODUCTION_CALLBACK              :'{1:STRING} trả về loại hàng hoá sản xuất không hợp lệ khi callback tại {2:HEX}
 
 # 'User removed essential NewGRFs'-placeholders for stuff without specs
 STR_NEWGRF_INVALID_CARGO                                        :<sai kiểu hàng>
@@ -3693,6 +3754,7 @@ STR_EDIT_SIGN_CAPTION                                           :{WHITE}Sửa bi
 STR_EDIT_SIGN_LOCATION_TOOLTIP                                  :{BLACK}Xem trung tâm của đèn tín hiệu. Ctrl+Click mở cửa sổ mới để xem
 STR_EDIT_SIGN_NEXT_SIGN_TOOLTIP                                 :{BLACK}Biển hiệu kế tiếp
 STR_EDIT_SIGN_PREVIOUS_SIGN_TOOLTIP                             :{BLACK}Biển hiệu kế trước
+STR_EDIT_SIGN_TEXT_COLOUR_TOOLTIP                               :{BLACK}Màu chữ trên biển hiệu
 
 STR_EDIT_SIGN_SIGN_OSKTITLE                                     :{BLACK}Nhập tên của biển hiệu
 
@@ -3786,6 +3848,7 @@ STR_GOALS_PROGRESS_COMPLETE                                     :{GREEN}{STRING}
 STR_GOALS_TOOLTIP_CLICK_ON_SERVICE_TO_CENTER                    :{BLACK}Click vào mục tiêu để canh giữa cửa sổ lớn chính vào ô/đô thị/nhà máy tương ứng. Ctrl+Click để mở bằng các cửa sổ ô/đô thị/nhà máy tương ứng
 
 # Goal question window
+###length 4
 STR_GOAL_QUESTION_CAPTION_QUESTION                              :{BLACK}Câu Hỏi
 STR_GOAL_QUESTION_CAPTION_INFORMATION                           :{BLACK}Thông Tin
 STR_GOAL_QUESTION_CAPTION_WARNING                               :{BLACK}Cảnh Báo
@@ -4045,7 +4108,7 @@ STR_INDUSTRY_DIRECTORY_ITEM_NOPROD                              :{ORANGE}{INDUST
 STR_INDUSTRY_DIRECTORY_ITEM_PROD1                               :{ORANGE}{INDUSTRY} {BLACK}{STRING}
 STR_INDUSTRY_DIRECTORY_ITEM_PROD2                               :{ORANGE}{INDUSTRY} {BLACK}{STRING}, {STRING}
 STR_INDUSTRY_DIRECTORY_ITEM_PROD3                               :{ORANGE}{INDUSTRY} {BLACK}{STRING}, {STRING}, {STRING}
-STR_INDUSTRY_DIRECTORY_ITEM_PRODMORE                            :{ORANGE}{INDUSTRY} {BLACK}{STRING}, {STRING}, {STRING} và hơn {NUM}...
+STR_INDUSTRY_DIRECTORY_ITEM_PRODMORE                            :{ORANGE}{INDUSTRY} {BLACK}{STRING}, {STRING}, {STRING} và thêm {NUM}...
 STR_INDUSTRY_DIRECTORY_LIST_TOOLTIP                             :{BLACK}Tên các nhà máy - nháy vào tên để xem vị trí nhà máy. Ctrl+Click mở cửa sổ mới để xem
 STR_INDUSTRY_DIRECTORY_ACCEPTED_CARGO_FILTER                    :{BLACK}Chấp nhận hàng hóa: {SILVER}{STRING}
 STR_INDUSTRY_DIRECTORY_PRODUCED_CARGO_FILTER                    :{BLACK}Hàng hóa cung cấp: {SILVER}{STRING}
@@ -4198,6 +4261,19 @@ STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}Lực k�
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Tầm xa: {GOLD}{COMMA} ô
 STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}Kiểu máy bay: {GOLD}{STRING}
 STR_PURCHASE_INFO_RAILTYPES                                     :{BLACK}Kiểu đường ray: {GOLD}{STRING}
+
+# Vehicle sort details
+STR_PURCHASE_SORT_DETAILS_COST                                  :{CURRENCY_LONG}
+STR_PURCHASE_SORT_DETAILS_SPEED                                 :{VELOCITY}
+STR_PURCHASE_SORT_DETAILS_POWER                                 :{POWER}
+STR_PURCHASE_SORT_DETAILS_MAX_TE                                :{FORCE}
+STR_PURCHASE_SORT_DETAILS_INTRO_DATE                            :{NUM}
+STR_PURCHASE_SORT_DETAILS_RUNNINGCOST_YEAR                      :{CURRENCY_LONG}/năm
+STR_PURCHASE_SORT_DETAILS_RUNNINGCOST_PERIOD                    :{CURRENCY_LONG}/chu kỳ
+STR_PURCHASE_SORT_DETAILS_RELIABILITY                           :{COMMA}%
+STR_PURCHASE_SORT_DETAILS_POWER_VS_RUNNING_COST                 :{DECIMAL}
+STR_PURCHASE_SORT_DETAILS_AIRCRAFT_RANGE                        :{COMMA} ô
+STR_PURCHASE_SORT_DETAILS_CAPACITY                              :{COMMA}
 
 ###length 3
 STR_CARGO_TYPE_FILTER_ALL                                       :Tất cả hàng hóa
@@ -4358,7 +4434,15 @@ STR_DEPOT_SELL_CONFIRMATION_TEXT                                :{YELLOW}Bạn �
 
 # Engine preview window
 STR_ENGINE_PREVIEW_CAPTION                                      :{WHITE}Thông cáo từ nhà sản xuất phương tiện vận tải
+STR_ENGINE_PREVIEW_CAPTION_COUNT                                :{WHITE}Thông cáo từ nhà sản xuất phương tiện vận tải ({COMMA} của {COMMA})
 STR_ENGINE_PREVIEW_MESSAGE                                      :{GOLD}Chúng tôi vừa thiết kế một {STRING} mới - bạn có muốn mua nó trước khi chúng tôi hoàn thiện 1 năm, để chúng tôi đánh giá nó trước khi bán rộng rãi?
+
+STR_ENGINE_PREVIEW_PREVIOUS                                     :Trước
+STR_ENGINE_PREVIEW_PREVIOUS_TOOLTIP                             :Nháy chuột để trở lại phương tiện mới trước
+STR_ENGINE_PREVIEW_NEXT                                         :Tiếp
+STR_ENGINE_PREVIEW_NEXT_TOOLTIP                                 :Nháy chuột để đi đến phương tiện mới tiếp theo
+STR_ENGINE_PREVIEW_ENGINE_LIST                                  :{COMMA}: {ENGINE}
+STR_ENGINE_PREVIEW_ENGINE_LIST_TOOLTIP                          :Nháy chuột để xem một phương tiện mới
 
 STR_ENGINE_PREVIEW_RAILROAD_LOCOMOTIVE                          :đầu máy tàu hoả
 STR_ENGINE_PREVIEW_ELRAIL_LOCOMOTIVE                            :ngành vận tải đường sắt điện lực
@@ -4521,8 +4605,8 @@ STR_VEHICLE_DETAILS_ROAD_VEHICLE_RENAME                         :{BLACK}Đổi t
 STR_VEHICLE_DETAILS_SHIP_RENAME                                 :{BLACK}Đổi tên tàu thuỷ
 STR_VEHICLE_DETAILS_AIRCRAFT_RENAME                             :{BLACK}Đổi tên máy bay
 
-STR_VEHICLE_INFO_AGE                                            :{COMMA} năm ({COMMA})
-STR_VEHICLE_INFO_AGE_RED                                        :{RED}{COMMA} năm ({COMMA})
+STR_VEHICLE_INFO_AGE                                            :{COMMA} năm (vòng đời: {COMMA} năm)
+STR_VEHICLE_INFO_AGE_RED                                        :{RED}{COMMA} năm (vòng đời: {COMMA} năm)
 STR_VEHICLE_INFO_AGE_RUNNING_COST_YR                            :{BLACK}Tuổi: {LTBLUE}{STRING}{BLACK} Chi phí hoạt động: {LTBLUE}{CURRENCY_LONG}/năm
 STR_VEHICLE_INFO_AGE_RUNNING_COST_PERIOD                        :{BLACK}Tuổi: {LTBLUE}{STRING}{BLACK}   Chi phí hoạt động: {LTBLUE}{CURRENCY_LONG}/kỳ
 
@@ -4536,12 +4620,10 @@ STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR                     :{BLACK}Lợi nh
 STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR_MIN_PERFORMANCE     :{BLACK}Lợi nhuận năm nay: {LTBLUE}{CURRENCY_LONG} (năm ngoái: {CURRENCY_LONG}) {BLACK}Hiệu suất tối thiểu: {LTBLUE}{POWER_TO_WEIGHT}
 STR_VEHICLE_INFO_PROFIT_THIS_PERIOD_LAST_PERIOD                 :{BLACK}Lợi nhuận kỳ này: {LTBLUE}{CURRENCY_LONG} (kỳ trước: {CURRENCY_LONG})
 STR_VEHICLE_INFO_PROFIT_THIS_PERIOD_LAST_PERIOD_MIN_PERFORMANCE :{BLACK}Lợi nhuận kỳ này: {LTBLUE}{CURRENCY_LONG} (kỳ trước: {CURRENCY_LONG}) {BLACK}Hiệu suất tối thiểu: {LTBLUE}{POWER_TO_WEIGHT}
-STR_VEHICLE_INFO_RELIABILITY_BREAKDOWNS                         :{BLACK}Độ tin cậy: {LTBLUE}{COMMA}%  {BLACK}Hỏng hóc kể từ lần bảo trì cuối: {LTBLUE}{COMMA}
+STR_VEHICLE_INFO_RELIABILITY_BREAKDOWNS                         :{BLACK}Độ tin cậy: {LTBLUE}{COMMA}% (tối đa: {COMMA}%) {BLACK}Số lần hỏng hóc kể từ lần bảo trì cuối: {LTBLUE}{COMMA}
 
 STR_VEHICLE_INFO_BUILT_VALUE                                    :{LTBLUE}{ENGINE} {BLACK}Mua lúc: {LTBLUE}{NUM}{BLACK} Giá trị: {LTBLUE}{CURRENCY_LONG}
-STR_VEHICLE_INFO_NO_CAPACITY                                    :{BLACK}Sức chứa: {LTBLUE}Không{STRING}
 STR_VEHICLE_INFO_CAPACITY                                       :{BLACK}Sức chứa: {LTBLUE}{CARGO_LONG}{STRING}
-STR_VEHICLE_INFO_CAPACITY_MULT                                  :{BLACK}Sức chứa: {LTBLUE}{CARGO_LONG}{STRING} (x{NUM})
 STR_VEHICLE_INFO_CAPACITY_CAPACITY                              :{BLACK}Sức chứa: {LTBLUE}{CARGO_LONG}, {CARGO_LONG}{STRING}
 
 STR_VEHICLE_INFO_FEEDER_CARGO_VALUE                             :{BLACK}Cước trung chuyển: {LTBLUE}{CURRENCY_LONG}
@@ -4574,22 +4656,23 @@ STR_QUERY_RENAME_AIRCRAFT_CAPTION                               :{WHITE}Đổi t
 STR_VEHICLE_DETAILS_TRAIN_ENGINE_BUILT_AND_VALUE                :{LTBLUE}{ENGINE}{BLACK} Mua lúc: {LTBLUE}{NUM}{BLACK} Giá trị: {LTBLUE}{CURRENCY_LONG}
 STR_VEHICLE_DETAILS_TRAIN_WAGON_VALUE                           :{LTBLUE}{ENGINE}{BLACK}   Giá trị: {LTBLUE}{CURRENCY_LONG}
 
+STR_VEHICLE_DETAILS_TRAIN_LENGTH                                :{BLACK}Chiều dài tàu hỏa: {LTBLUE}{DECIMAL} ô
+
 STR_VEHICLE_DETAILS_TRAIN_TOTAL_CAPACITY_TEXT                   :{BLACK}Tổng sức chứa hàng của đoàn tàu:
 STR_VEHICLE_DETAILS_TRAIN_TOTAL_CAPACITY                        :{LTBLUE}{CARGO_LONG} ({CARGO_SHORT})
-STR_VEHICLE_DETAILS_TRAIN_TOTAL_CAPACITY_MULT                   :{LTBLUE}{CARGO_LONG} ({CARGO_SHORT}) (x{NUM})
+
+STR_VEHICLE_DETAILS_TRAIN_CARGO_EMPTY                           :{LTBLUE}Trống ({CARGO_LONG}){STRING}
+STR_VEHICLE_DETAILS_TRAIN_CARGO_FROM                            :{LTBLUE}{CARGO_LONG} ({CARGO_SHORT}) từ {STATION}{STRING}
 
 STR_VEHICLE_DETAILS_CARGO_EMPTY                                 :{LTBLUE}Trống rỗng
 STR_VEHICLE_DETAILS_CARGO_FROM                                  :{LTBLUE}{CARGO_LONG} từ {STATION}
-STR_VEHICLE_DETAILS_CARGO_FROM_MULT                             :{LTBLUE}{CARGO_LONG} từ {STATION} (x{NUM})
 
 STR_VEHICLE_DETAIL_TAB_CARGO                                    :{BLACK}Hàng hoá
 STR_VEHICLE_DETAILS_TRAIN_CARGO_TOOLTIP                         :{BLACK}Hiện chi tiết hàng hoá đang chở
 STR_VEHICLE_DETAIL_TAB_INFORMATION                              :{BLACK}Thông tin
 STR_VEHICLE_DETAILS_TRAIN_INFORMATION_TOOLTIP                   :{BLACK}Hiện thông tin chi tiết về tàu
-STR_VEHICLE_DETAIL_TAB_CAPACITIES                               :{BLACK}Sức chứa
-STR_VEHICLE_DETAILS_TRAIN_CAPACITIES_TOOLTIP                    :{BLACK}Hiện sức chứa của từng phương tiện
-STR_VEHICLE_DETAIL_TAB_TOTAL_CARGO                              :{BLACK}Tổng sức chứa
-STR_VEHICLE_DETAILS_TRAIN_TOTAL_CARGO_TOOLTIP                   :{BLACK}Xem tổng sức chứa của tàu, phân chia bởi loại hàng hoá
+STR_VEHICLE_DETAIL_TAB_TOTALS                                   :{BLACK}Tổng
+STR_VEHICLE_DETAILS_TRAIN_TOTALS_TOOLTIP                        :{BLACK}Hiển thị tổng sức chứa và chiều dài đoàn tàu
 
 STR_VEHICLE_DETAILS_TRAIN_ARTICULATED_RV_CAPACITY               :{BLACK}Sức chứa: {LTBLUE}{STRING}
 
@@ -4646,9 +4729,9 @@ STR_ORDER_DROP_FULL_LOAD_ANY                                    :Chất đầy l
 STR_ORDER_DROP_NO_LOADING                                       :Không chất hàng
 STR_ORDER_TOOLTIP_FULL_LOAD                                     :{BLACK}Thay đổi cách thức chất hàng hoá tại ga/bến đang được chọn
 
-STR_ORDER_TOGGLE_UNLOAD                                         :{BLACK}Chất xuống tất cả
+STR_ORDER_TOGGLE_UNLOAD                                         :{BLACK}Buốc dỡ tất cả
 STR_ORDER_DROP_UNLOAD_IF_ACCEPTED                               :Chất xuống nếu được chấp nhận
-STR_ORDER_DROP_UNLOAD                                           :Chất xuống tất cả
+STR_ORDER_DROP_UNLOAD                                           :Buộc dỡ hàng kể cả khi không được chấp nhận
 STR_ORDER_DROP_TRANSFER                                         :Chuyển
 STR_ORDER_DROP_NO_UNLOADING                                     :Không chất hàng xuống
 STR_ORDER_TOOLTIP_UNLOAD                                        :{BLACK}Thay đổi cách thức chất hàng xuống tại ga/bến đang được chọn
@@ -4676,7 +4759,7 @@ STR_ORDER_HANGAR_ACTION_TOOLTIP                                 :{BLACK}Chọn m
 STR_ORDER_CONDITIONAL_VARIABLE_TOOLTIP                          :{BLACK}Dữ kiện của phương tiện để xác định
 
 # Conditional order variables, must follow order of OrderConditionVariable enum
-###length 8
+###length 9
 STR_ORDER_CONDITIONAL_LOAD_PERCENTAGE                           :Tiến độ bốc xếp
 STR_ORDER_CONDITIONAL_RELIABILITY                               :Độ tin cậy
 STR_ORDER_CONDITIONAL_MAX_SPEED                                 :Tốc độ tối đa
@@ -4685,6 +4768,7 @@ STR_ORDER_CONDITIONAL_REQUIRES_SERVICE                          :Yêu cầu bả
 STR_ORDER_CONDITIONAL_UNCONDITIONALLY                           :Luôn luôn
 STR_ORDER_CONDITIONAL_REMAINING_LIFETIME                        :Thời gian sử dụng còn lại (năm)
 STR_ORDER_CONDITIONAL_MAX_RELIABILITY                           :Mức độ tin cậy tối đa
+STR_ORDER_CONDITIONAL_DRIVING_BACKWARDS                         :Chạy lùi với tốc độ thấp hơn
 ###next-name-looks-similar
 
 STR_ORDER_CONDITIONAL_COMPARATOR_TOOLTIP                        :{BLACK}Cách so sánh dữ kiện của phương tiện với giá trị cho trước
@@ -4704,6 +4788,7 @@ STR_ORDERS_SKIP_BUTTON                                          :{BLACK}Nhảy q
 STR_ORDERS_SKIP_TOOLTIP                                         :{BLACK}Nhảy qua điểm lộ trình, và tới điểm kế tiếp. Ctrl+Click để bỏ qua tới điểm đang chọn
 
 STR_ORDERS_DELETE_BUTTON                                        :{BLACK}Xoá
+STR_ORDERS_DELETE_ALL_BUTTON                                    :{BLACK}Xóa tất cả
 STR_ORDERS_DELETE_TOOLTIP                                       :{BLACK}Xoá điểm lộ trình đang chọn
 STR_ORDERS_DELETE_ALL_TOOLTIP                                   :{BLACK}XOá tất cả lịch trình
 STR_ORDERS_STOP_SHARING_BUTTON                                  :{BLACK}Ngừng chia sẻ
@@ -4749,10 +4834,10 @@ STR_ORDER_IMPLICIT                                              :{SPACE}(Chạy 
 STR_ORDER_FULL_LOAD                                             :{SPACE}(Bốc đầy hàng)
 STR_ORDER_FULL_LOAD_ANY                                         :{SPACE}(Bốc đủ bất kỳ hàng nào)
 STR_ORDER_NO_LOAD                                               :{SPACE}(Không bốc xếp)
-STR_ORDER_UNLOAD                                                :{SPACE}(Dỡ và lấy hàng khác)
-STR_ORDER_UNLOAD_FULL_LOAD                                      :{SPACE}(Dỡ tất hàng và chờ bốc đầy hàng)
-STR_ORDER_UNLOAD_FULL_LOAD_ANY                                  :{SPACE}(Dỡ tất hàng và chờ bốc đủ bất kỳ hàng nào)
-STR_ORDER_UNLOAD_NO_LOAD                                        :{SPACE}(Dỡ tất hàng và để trống)
+STR_ORDER_UNLOAD                                                :{SPACE}(Buộc dỡ và lấy hàng khác)
+STR_ORDER_UNLOAD_FULL_LOAD                                      :{SPACE}(Buộc dỡ hàng và chờ bốc đầy hàng)
+STR_ORDER_UNLOAD_FULL_LOAD_ANY                                  :{SPACE}(Buộc dỡ hàng và chờ bốc đủ bất kỳ hàng nào)
+STR_ORDER_UNLOAD_NO_LOAD                                        :{SPACE}(Buộc dỡ hàng và để trống)
 STR_ORDER_TRANSFER                                              :{SPACE}(Trung chuyển hàng và lấy hàng khác)
 STR_ORDER_TRANSFER_FULL_LOAD                                    :{SPACE}(Trung chuyển và chờ bốc đầy hàng)
 STR_ORDER_TRANSFER_FULL_LOAD_ANY                                :{SPACE}(Trung chuyển và chờ bốc đủ hàng bất kỳ)
@@ -4765,9 +4850,9 @@ STR_ORDER_NO_UNLOAD_NO_LOAD                                     :{SPACE}(Không 
 STR_ORDER_AUTO_REFIT                                            :{SPACE}(Tự cải biến thành {STRING})
 STR_ORDER_FULL_LOAD_REFIT                                       :{SPACE}(Tự cải biến và chất đầy {STRING})
 STR_ORDER_FULL_LOAD_ANY_REFIT                                   :{SPACE}(Tự cải biến và chất đầy bất kỳ {STRING})
-STR_ORDER_UNLOAD_REFIT                                          :{SPACE}(Dỡ hàng và tự cải biến để lấy {STRING})
-STR_ORDER_UNLOAD_FULL_LOAD_REFIT                                :{SPACE}(Dỡ hàng và tự cải biến đề bốc đầy {STRING})
-STR_ORDER_UNLOAD_FULL_LOAD_ANY_REFIT                            :{SPACE}(Dỡ hàng và tự cải biến để bốc đầy bất kỳ {STRING})
+STR_ORDER_UNLOAD_REFIT                                          :{SPACE}(Buộc dỡ hàng và tự cải biến để lấy {STRING})
+STR_ORDER_UNLOAD_FULL_LOAD_REFIT                                :{SPACE}(Buộc dỡ hàng và tự cải biến đề bốc đầy {STRING})
+STR_ORDER_UNLOAD_FULL_LOAD_ANY_REFIT                            :{SPACE}(Buộc dỡ hàng và tự cải biến để bốc đầy bất kỳ {STRING})
 STR_ORDER_TRANSFER_REFIT                                        :{SPACE}(Trung chuyển và tự cải biến để lấy {STRING})
 STR_ORDER_TRANSFER_FULL_LOAD_REFIT                              :{SPACE}(Trung chuyển và tự cải biến đề bốc đầy {STRING})
 STR_ORDER_TRANSFER_FULL_LOAD_ANY_REFIT                          :{SPACE}(Trung chuyển và tự cải biến để bốc đầy bất kỳ {STRING})
@@ -4885,7 +4970,7 @@ STR_AI_GAME_SCRIPT                                              :{BLACK}Tập L�
 STR_AI_GAME_SCRIPT_TOOLTIP                                      :{BLACK}Kiểm tra lịch sử Tập Lệnh Trò Chơi. Ctrl+Click mở cửa sổ mới
 
 STR_ERROR_AI_NO_AI_FOUND                                        :Không có AI phù hợp để nạp.{}AI này là AI giả và sẽ không làm gì cả.{}Bạn có thể tải các AI tại mục 'Nội dung trực tuyến'.
-STR_ERROR_AI_PLEASE_REPORT_CRASH                                :{WHITE}Có một tập lệnh bị treo. Hãy báo cho tác giả tập lệnh kèm với màn hình chụp cửa sổ gỡ lỗi AI/tập lệnh trò chơi
+STR_ERROR_AI_PLEASE_REPORT_CRASH                                :Có một tập lệnh bị treo. Hãy báo cho tác giả tập lệnh kèm với màn hình chụp cửa sổ gỡ lỗi AI/tập lệnh trò chơi
 STR_ERROR_AI_DEBUG_SERVER_ONLY                                  :{YELLOW}Cửa sổ gỡ lỗi AI/tập lệnh trò chơi chỉ có trên máy chủ
 
 # AI configuration window
@@ -4981,12 +5066,17 @@ STR_MESSAGE_ESTIMATED_COST                                      :{WHITE}Chi phí
 STR_MESSAGE_ESTIMATED_INCOME                                    :{WHITE}Thu nhập ước tính: {CURRENCY_LONG}
 
 # Saveload messages
-STR_ERROR_SAVE_STILL_IN_PROGRESS                                :{WHITE}Đang lưu vào đĩa,{}hãy chờ cho đến khi hoàn thành!
-STR_ERROR_AUTOSAVE_FAILED                                       :{WHITE}Tự lưu gặp lỗi
+STR_ERROR_SAVE_STILL_IN_PROGRESS                                :Trò chơi vẫn đang lưu,{}vui lòng chờ cho đến khi hoàn tất!
+STR_ERROR_AUTOSAVE_FAILED                                       :Lưu tự động thất bại
 STR_ERROR_UNABLE_TO_READ_DRIVE                                  :{BLACK}Không đọc được đĩa
-STR_ERROR_GAME_SAVE_FAILED                                      :{WHITE}Lưu game thất bại...
-STR_ERROR_UNABLE_TO_DELETE_FILE                                 :{WHITE}Không thể xoá file
-STR_ERROR_GAME_LOAD_FAILED                                      :{WHITE}Khởi động game thất bại...
+STR_ERROR_GAME_SAVE_FAILED                                      :Lưu ván chơi thất bại...
+STR_ERROR_UNABLE_TO_DELETE_FILE                                 :Không thể xoá file
+STR_ERROR_CANNOT_CREATE_DIRECTORY                               :Không thể tạo thư mục...
+STR_ERROR_DIRECTORY_NAME_IN_USE                                 :Tên trùng với tệp hay thư mục sẵn có
+STR_ERROR_DIRECTORY_ILLEGAL_NAME                                :Tên thư mục không thể có kí tự đặc biệt
+STR_ERROR_DIRECTORY_LEADING_DOT                                 :Tên thư mục không thể bắt đầu bằng dấu chấm
+STR_ERROR_DIRECTORY_PERMISSION_DENIED                           :Bạn không có quyền tạo thư mục ở đây
+STR_ERROR_GAME_LOAD_FAILED                                      :Khởi động ván chơi thất bại...
 STR_GAME_SAVELOAD_ERROR_BROKEN_INTERNAL_ERROR                   :Lỗi kỹ thuật: {STRING}
 STR_GAME_SAVELOAD_ERROR_BROKEN_SAVEGAME                         :Bản lưu ván chơi bị hỏng - {STRING}
 STR_GAME_SAVELOAD_ERROR_TOO_NEW_SAVEGAME                        :Bản lưu ván chơi dành cho phiên bản mới hơn
@@ -4998,18 +5088,18 @@ STR_GAME_SAVELOAD_NOT_AVAILABLE                                 :<không có s�
 STR_WARNING_LOADGAME_REMOVED_TRAMS                              :{WHITE}Lưu ván chơi sẽ không có xe điện. Những công trình cho xe điện sẽ bị xoá bỏ
 
 # Map generation messages
-STR_ERROR_COULD_NOT_CREATE_TOWN                                 :{WHITE}Sinh bản đồ bị ngưng...{}{}... không có nơi đặt đô thị
-STR_ERROR_NO_TOWN_IN_SCENARIO                                   :{WHITE}... không có đô thị nào ở màn chơi kịch bản này
+STR_ERROR_COULD_NOT_CREATE_TOWN                                 :Quá trình tạo bản đồ đã bị hủy...{}{}... không có vị trí nào phù hợp cho thị trấn
+STR_ERROR_NO_TOWN_IN_SCENARIO                                   :không có thị trấn nào ở màn chơi kịch bản này
 
-STR_ERROR_PNGMAP                                                :{WHITE}Không thể nạp nền từ file PNG...
-STR_ERROR_PNGMAP_FILE_NOT_FOUND                                 :{WHITE}... không tìm thấy file.
-STR_ERROR_PNGMAP_IMAGE_TYPE                                     :{WHITE}... không thể chuyển kiểu ảnh. Phải là ảnh PNG 8 hoặc 24-bit.
-STR_ERROR_PNGMAP_MISC                                           :{WHITE}... có lỗi gì đó, rất tiếc (có thể là hỏng file)
+STR_ERROR_PNGMAP                                                :Không thể nạp nền từ file PNG...
+STR_ERROR_PNGMAP_FILE_NOT_FOUND                                 :không tìm thấy file
+STR_ERROR_PNGMAP_IMAGE_TYPE                                     :không thể chuyển định dạng ảnh. Phải là ảnh PNG 8 hoặc 24-bit.
+STR_ERROR_PNGMAP_MISC                                           :có lỗi gì đó (có thể là file bị hỏng)
 
-STR_ERROR_BMPMAP                                                :{WHITE}Không thể nạp nền từ file BMP...
-STR_ERROR_BMPMAP_IMAGE_TYPE                                     :{WHITE}... không thể chuyển đổi kiểu ảnh.
+STR_ERROR_BMPMAP                                                :Không thể nạp nền từ file BMP...
+STR_ERROR_BMPMAP_IMAGE_TYPE                                     :không thể chuyển định dạng ảnh
 
-STR_ERROR_HEIGHTMAP_TOO_LARGE                                   :{WHITE}... ảnh quá lớn
+STR_ERROR_HEIGHTMAP_TOO_LARGE                                   :ảnh quá lớn
 
 STR_WARNING_HEIGHTMAP_SCALE_CAPTION                             :{WHITE}Sai tỉ lệ bản đồ
 STR_WARNING_HEIGHTMAP_SCALE_MESSAGE                             :{YELLOW}Co dãn bản đồ gốc quá nhiều là không nên làm. Bạn vẫn cứ thực hiện chứ?
@@ -5021,443 +5111,448 @@ STR_WARNING_FALLBACK_SOUNDSET                                   :{WHITE}Chỉ c�
 STR_WARNING_SCREENSHOT_SIZE_CAPTION                             :{WHITE}Ảnh chụp cực lớn
 STR_WARNING_SCREENSHOT_SIZE_MESSAGE                             :{YELLOW}Ảnh chụp màn hình có độ phân giải {COMMA} x {COMMA} điểm ảnh. Chụp ảnh màn hình sẽ ngưng trò chơi một vài giây, bạn có muốn không?
 
-STR_MESSAGE_HEIGHTMAP_SUCCESSFULLY                              :{WHITE}Bản đồ địa hình được lưu tại '{STRING}'. Đỉnh cao nhất cao {NUM}
-STR_MESSAGE_SCREENSHOT_SUCCESSFULLY                             :{WHITE}Chụp màn hình lưu thành file là '{STRING}'
-STR_ERROR_SCREENSHOT_FAILED                                     :{WHITE}Chụp màn hình bị lỗi!
+STR_MESSAGE_HEIGHTMAP_SUCCESSFULLY                              :Bản đồ địa hình được lưu tại '{STRING}'. Độ cao nhất là {NUM}
+STR_MESSAGE_SCREENSHOT_SUCCESSFULLY                             :Chụp màn hình đã lưu thành file '{STRING}'
+STR_ERROR_SCREENSHOT_FAILED                                     :Chụp màn hình thất bại!
 
 # Error message titles
 STR_ERROR_MESSAGE_CAPTION                                       :{YELLOW}Thông Điệp
 STR_ERROR_MESSAGE_CAPTION_OTHER_COMPANY                         :{YELLOW}Tin nhắn từ {COMPANY}
 
 # Generic construction errors
-STR_ERROR_OFF_EDGE_OF_MAP                                       :{WHITE}Vượt qua giới hạn bản đồ
-STR_ERROR_TOO_CLOSE_TO_EDGE_OF_MAP                              :{WHITE}Quá gần mép bản đồ
-STR_ERROR_NOT_ENOUGH_CASH_REQUIRES_CURRENCY                     :{WHITE}Không đủ tiền - cần {CURRENCY_LONG}
-STR_ERROR_FLAT_LAND_REQUIRED                                    :{WHITE}Yêu cầu nền đất phẳng
-STR_ERROR_LAND_SLOPED_IN_WRONG_DIRECTION                        :{WHITE}Tạo dốc bị sai hướng
-STR_ERROR_CAN_T_DO_THIS                                         :{WHITE}Không làm thế này được...
-STR_ERROR_BUILDING_MUST_BE_DEMOLISHED                           :{WHITE}Cần giải toả nhà cửa trước
-STR_ERROR_BUILDING_IS_PROTECTED                                 :{WHITE}... công trình được bảo vệ
-STR_ERROR_CAN_T_CLEAR_THIS_AREA                                 :{WHITE}Không thể dọn dẹp khu vực này...
-STR_ERROR_SITE_UNSUITABLE                                       :{WHITE}... điểm không phù hợp
-STR_ERROR_ALREADY_BUILT                                         :{WHITE}... đã xây rồi
-STR_ERROR_OWNED_BY                                              :{WHITE}... sở hữu bởi {STRING}
-STR_ERROR_AREA_IS_OWNED_BY_ANOTHER                              :{WHITE}... vùng này sở hữu bởi công ty khác
-STR_ERROR_TERRAFORM_LIMIT_REACHED                               :{WHITE}... giới hạn tôn hạ nền đất đã tới
-STR_ERROR_CLEARING_LIMIT_REACHED                                :{WHITE}... giới hạn xoá ô đã tới
-STR_ERROR_TREE_PLANT_LIMIT_REACHED                              :{WHITE}... số cây trồng đã tới giới hạn
-STR_ERROR_NAME_MUST_BE_UNIQUE                                   :{WHITE}Tên phải không trùng lặp
-STR_ERROR_GENERIC_OBJECT_IN_THE_WAY                             :{WHITE}{STRING} đang chắn đường
-STR_ERROR_NOT_ALLOWED_WHILE_PAUSED                              :{WHITE}Không cho phép trong khi dừng
+STR_ERROR_OFF_EDGE_OF_MAP                                       :vượt qua giới hạn bản đồ
+STR_ERROR_TOO_CLOSE_TO_EDGE_OF_MAP                              :quá gần mép bản đồ
+STR_ERROR_NOT_ENOUGH_CASH_REQUIRES_CURRENCY                     :không đủ tiền - cần {CURRENCY_LONG}
+STR_ERROR_FLAT_LAND_REQUIRED                                    :yêu cầu nền đất phẳng
+STR_ERROR_LAND_SLOPED_IN_WRONG_DIRECTION                        :mặt đất dốc sai hướng
+STR_ERROR_CAN_T_DO_THIS                                         :Không làm thế này được...
+STR_ERROR_BUILDING_MUST_BE_DEMOLISHED                           :cần giải toả nhà cửa trước
+STR_ERROR_BUILDING_IS_PROTECTED                                 :công trình được bảo vệ
+STR_ERROR_CAN_T_CLEAR_THIS_AREA                                 :Không thể dọn dẹp khu vực này...
+STR_ERROR_SITE_UNSUITABLE                                       :địa điểm không phù hợp
+STR_ERROR_ALREADY_BUILT                                         :đã xây rồi
+STR_ERROR_OWNED_BY                                              :sở hữu bởi {STRING}
+STR_ERROR_AREA_IS_OWNED_BY_ANOTHER                              :vùng này sở hữu bởi công ty khác
+STR_ERROR_TERRAFORM_LIMIT_REACHED                               :giới hạn tôn hạ nền đất đã tới
+STR_ERROR_CLEARING_LIMIT_REACHED                                :giới hạn xoá ô đất đã tới
+STR_ERROR_TREE_PLANT_LIMIT_REACHED                              :số cây trồng đã tới giới hạn
+STR_ERROR_NAME_MUST_BE_UNIQUE                                   :tên phải không trùng lặp
+STR_ERROR_GENERIC_OBJECT_IN_THE_WAY                             :{STRING} đang chắn đường
+STR_ERROR_NOT_ALLOWED_WHILE_PAUSED                              :không cho phép trong khi dừng
 
 # Local authority errors
-STR_ERROR_LOCAL_AUTHORITY_REFUSES_TO_ALLOW_THIS                 :{WHITE}Chính quyền {TOWN} từ chối bạn làm việc này
-STR_ERROR_LOCAL_AUTHORITY_REFUSES_AIRPORT                       :{WHITE}Chính quyền {TOWN} từ chối có thêm một sân bay nữa trong địa phận của họ
-STR_ERROR_LOCAL_AUTHORITY_REFUSES_NOISE                         :{WHITE}Chính quyền {TOWN} từ chối sân bay vì dân chúng phàn nàn là quá ồn ào
-STR_ERROR_BRIBE_FAILED                                          :{WHITE}Hành vi đút lót của bạn đã bị thanh tra viên khu vực phát hiện
+STR_ERROR_LOCAL_AUTHORITY_REFUSES_TO_ALLOW_THIS                 :Chính quyền {TOWN} từ chối bạn làm việc này
+STR_ERROR_LOCAL_AUTHORITY_REFUSES_AIRPORT                       :Chính quyền {TOWN} từ chối cấp phép xây thêm sân bay tại thị trấn này
+STR_ERROR_LOCAL_AUTHORITY_REFUSES_NOISE                         :Chính quyền {TOWN} không cấp phép xây sân bay vì vấn đề tiếng ồn
+STR_ERROR_BRIBE_FAILED                                          :Hành vi đút lót của bạn đã bị thanh tra viên khu vực phát hiện
 
 # Levelling errors
-STR_ERROR_CAN_T_RAISE_LAND_HERE                                 :{WHITE}Không thể nâng đất ở đây...
-STR_ERROR_CAN_T_LOWER_LAND_HERE                                 :{WHITE}Không thể hạ đất ở đây...
-STR_ERROR_CAN_T_LEVEL_LAND_HERE                                 :{WHITE}Không thể tạo bình địa ở đây
-STR_ERROR_EXCAVATION_WOULD_DAMAGE                               :{WHITE}Đào hố sẽ làm sập hầm
-STR_ERROR_ALREADY_AT_SEA_LEVEL                                  :{WHITE}... ở mức nước biển rồi
-STR_ERROR_TOO_HIGH                                              :{WHITE}... quá cao
-STR_ERROR_ALREADY_LEVELLED                                      :{WHITE}... đã bình địa rồi
-STR_ERROR_BRIDGE_TOO_HIGH_AFTER_LOWER_LAND                      :{WHITE}Cây cầu phía trên nền đất sau khi san lấp sẽ quá cao.
+STR_ERROR_CAN_T_RAISE_LAND_HERE                                 :Không thể nâng đất ở đây...
+STR_ERROR_CAN_T_LOWER_LAND_HERE                                 :Không thể hạ nền đất ở đây...
+STR_ERROR_CAN_T_LEVEL_LAND_HERE                                 :Không thể san lấp đất ở đây...
+STR_ERROR_EXCAVATION_WOULD_DAMAGE                               :việc đào đất sẽ làm hỏng đường hầm
+STR_ERROR_ALREADY_AT_SEA_LEVEL                                  :đang ở mực nước biển
+STR_ERROR_TOO_HIGH                                              :quá cao
+STR_ERROR_ALREADY_LEVELLED                                      :đã phẳng rồi
+STR_ERROR_BRIDGE_TOO_HIGH_AFTER_LOWER_LAND                      :cây cầu phía trên nền đất sau khi san lấp sẽ quá cao.
+STR_ERROR_MUST_DEMOLISH_RIVER_FIRST                             :phải phá dỡ sông trước
 
 # Company related errors
-STR_ERROR_CAN_T_CHANGE_COMPANY_NAME                             :{WHITE}Không thể đổi tên công ty...
-STR_ERROR_CAN_T_CHANGE_PRESIDENT                                :{WHITE}Không thể đổi tên giám đốc...
+STR_ERROR_CAN_T_CHANGE_COMPANY_NAME                             :Không thể đổi tên công ty...
+STR_ERROR_CAN_T_CHANGE_PRESIDENT                                :Không thể đổi tên giám đốc...
 
-STR_ERROR_MAXIMUM_PERMITTED_LOAN                                :{WHITE}... hạn mức vay tối đa là {CURRENCY_LONG}
-STR_ERROR_CAN_T_BORROW_ANY_MORE_MONEY                           :{WHITE}Không thể vay thêm được tiền...
-STR_ERROR_LOAN_ALREADY_REPAID                                   :{WHITE}... không vay đâu cần trả
-STR_ERROR_CURRENCY_REQUIRED                                     :{WHITE}... cần {CURRENCY_LONG}
-STR_ERROR_CAN_T_REPAY_LOAN                                      :{WHITE}Không thể trả nợ...
-STR_ERROR_INSUFFICIENT_FUNDS                                    :{WHITE}Không thể đem tặng tiền mà bạn vay từ ngân hàng...
-STR_ERROR_CAN_T_GIVE_MONEY                                      :{WHITE}Không thể tặng tiền cho công ty này...
-STR_ERROR_CAN_T_BUY_COMPANY                                     :{WHITE}Không mua được công ty...
-STR_ERROR_CAN_T_BUILD_COMPANY_HEADQUARTERS                      :{WHITE}Không thể xây trụ sở công ty...
+STR_ERROR_MAXIMUM_PERMITTED_LOAN                                :hạn mức vay tối đa là {CURRENCY_LONG}
+STR_ERROR_CAN_T_BORROW_ANY_MORE_MONEY                           :Không thể vay thêm được tiền...
+STR_ERROR_LOAN_ALREADY_REPAID                                   :không có khoản vay nào để trả
+STR_ERROR_CURRENCY_REQUIRED                                     :cần {CURRENCY_LONG}
+STR_ERROR_CAN_T_REPAY_LOAN                                      :Không thể trả nợ...
+STR_ERROR_INSUFFICIENT_FUNDS                                    :Không thể đem tặng tiền vay từ ngân hàng...
+STR_ERROR_CAN_T_GIVE_MONEY                                      :Không thể tặng tiền cho công ty này...
+STR_ERROR_CAN_T_BUY_COMPANY                                     :Không thể mua công ty...
+STR_ERROR_CAN_T_BUILD_COMPANY_HEADQUARTERS                      :Không thể xây trụ sở công ty...
 
 # Town related errors
-STR_ERROR_CAN_T_GENERATE_TOWN                                   :{WHITE}Không thể xây thêm đô thị...
-STR_ERROR_CAN_T_RENAME_TOWN                                     :{WHITE}Không thể đổi tên đô thị...
-STR_ERROR_CAN_T_FOUND_TOWN_HERE                                 :{WHITE}Không thấy thị trấn ở đây...
-STR_ERROR_CAN_T_EXPAND_TOWN                                     :{WHITE}Không thể mở rộng thành phố...
-STR_ERROR_TOO_CLOSE_TO_EDGE_OF_MAP_SUB                          :{WHITE}... quá gần mép bản đồ
-STR_ERROR_TOO_CLOSE_TO_ANOTHER_TOWN                             :{WHITE}... quá gần đô thị khác
-STR_ERROR_TOO_MANY_TOWNS                                        :{WHITE}... quá nhiều đô thị
-STR_ERROR_NO_SPACE_FOR_TOWN                                     :{WHITE}... không còn khoảng trống nào trên bản đồ
-STR_ERROR_ROAD_WORKS_IN_PROGRESS                                :{WHITE}Xây dựng cầu đường đang tiến hành
-STR_ERROR_TOWN_CAN_T_DELETE                                     :{WHITE}Không thể xoá đo thị này...{}{}Có một ga, bến hoặc xưởng thuộc đô thị hoặc là 1 ô đất của đô thị không thể xoá được.
-STR_ERROR_STATUE_NO_SUITABLE_PLACE                              :{WHITE}... không có nơi nào hợp lý để dựng tượng đài ở trung tâm đô thị này
-STR_ERROR_CAN_T_BUILD_HOUSE                                     :{WHITE}Không thể xây dựng nhà...
+STR_ERROR_CAN_T_GENERATE_TOWN                                   :Không thể xây thêm thị trấn...
+STR_ERROR_CAN_T_RENAME_TOWN                                     :Không thể đổi tên đô thị...
+STR_ERROR_CAN_T_FOUND_TOWN_HERE                                 :Không thể lập thị trấn ở đây...
+STR_ERROR_CAN_T_EXPAND_TOWN                                     :Không thể mở rộng thành phố...
+STR_ERROR_TOO_CLOSE_TO_ANOTHER_TOWN                             :quá gần đô thị khác
+STR_ERROR_TOO_MANY_TOWNS                                        :quá nhiều đô thị
+STR_ERROR_NO_SPACE_FOR_TOWN                                     :không còn khoảng trống nào trên bản đồ
+STR_ERROR_ROAD_WORKS_IN_PROGRESS                                :đang xây dựng cầu đường
+STR_ERROR_TOWN_CAN_T_DELETE                                     :Không thể xoá thị trấn này...{}{}Có một ga, bến hoặc xưởng thuộc thị trấn hoặc là 1 ô đất của thị trấn không thể xoá được.
+STR_ERROR_STATUE_NO_SUITABLE_PLACE                              :không có nơi nào hợp lý để dựng tượng đài ở trung tâm đô thị này
+STR_ERROR_CAN_T_BUILD_HOUSE                                     :Không thể xây dựng nhà...
 
 # Industry related errors
-STR_ERROR_TOO_MANY_INDUSTRIES                                   :{WHITE}... quá nhiều nhà máy
-STR_ERROR_CAN_T_GENERATE_INDUSTRIES                             :{WHITE}Không thể tạo nhà máy...
-STR_ERROR_CAN_T_BUILD_HERE                                      :{WHITE}Không thể xây {STRING} ở đây...
-STR_ERROR_CAN_T_CONSTRUCT_THIS_INDUSTRY                         :{WHITE}Không thể xây loại nhà máy này ở đây...
-STR_ERROR_CAN_T_PROSPECT_INDUSTRY                               :{WHITE}Không thể dò tìm nhà máy...
-STR_ERROR_INDUSTRY_TOO_CLOSE                                    :{WHITE}... quá gần nhà máy khác
-STR_ERROR_MUST_FOUND_TOWN_FIRST                                 :{WHITE}... phải có ở thị trấn cái đã
-STR_ERROR_ONLY_ONE_ALLOWED_PER_TOWN                             :{WHITE}... mỗi đô thị chỉ được có một cái
-STR_ERROR_CAN_ONLY_BE_BUILT_IN_TOWNS_WITH_POPULATION_OF_1200    :{WHITE}... chỉ có thể xây dựng ở đô thị có dân số hơn 1200
-STR_ERROR_CAN_ONLY_BE_BUILT_IN_RAINFOREST                       :{WHITE}... chỉ có thể xây dựng ở vùng rừng nhiệt đới
-STR_ERROR_CAN_ONLY_BE_BUILT_IN_DESERT                           :{WHITE}... chỉ có thể xây ở hoang mạc
-STR_ERROR_CAN_ONLY_BE_BUILT_IN_TOWNS                            :{WHITE}... chỉ có thể xây được ở trong thị trấn (xây đè lên nhà)
-STR_ERROR_CAN_ONLY_BE_BUILT_NEAR_TOWN_CENTER                    :{WHITE}... chỉ có thể xây dựng gần trung tâm thị trấn
-STR_ERROR_CAN_ONLY_BE_BUILT_IN_LOW_AREAS                        :{WHITE}... chỉ có thể xây ở vùng đất thấp
-STR_ERROR_CAN_ONLY_BE_POSITIONED                                :{WHITE}... chỉ có thể đặt ở gần mép bản đồ
-STR_ERROR_FOREST_CAN_ONLY_BE_PLANTED                            :{WHITE}... rừng này chỉ đặt ở trên vùng núi cao có tuyết
-STR_ERROR_CAN_ONLY_BE_BUILT_ABOVE_SNOW_LINE                     :{WHITE}... chỉ có thể xây phía trên núi cao có tuyết
-STR_ERROR_CAN_ONLY_BE_BUILT_BELOW_SNOW_LINE                     :{WHITE}... chỉ có thể xây phía dưới núi cao có tuyết
+STR_ERROR_TOO_MANY_INDUSTRIES                                   :quá nhiều nhà máy
+STR_ERROR_CAN_T_GENERATE_INDUSTRIES                             :Không thể tạo nhà máy...
+STR_ERROR_CAN_T_BUILD_HERE                                      :Không thể xây {STRING} ở đây...
+STR_ERROR_CAN_T_CONSTRUCT_THIS_INDUSTRY                         :Không thể xây loại nhà máy này ở đây...
+STR_ERROR_CAN_T_PROSPECT_INDUSTRY                               :Không thể thăm dò cơ sở công nghiệp...
+STR_ERROR_INDUSTRY_TOO_CLOSE                                    :quá gần nhà máy khác
+STR_ERROR_MUST_FOUND_TOWN_FIRST                                 :phải thành lập thị trấn trước
+STR_ERROR_ONLY_ONE_ALLOWED_PER_TOWN                             :mỗi thị trấn chỉ được phép có một
+STR_ERROR_CAN_ONLY_BE_BUILT_IN_TOWNS_WITH_POPULATION_OF_1200    :chỉ có thể xây dựng ở đô thị có dân số hơn 1200
+STR_ERROR_CAN_ONLY_BE_BUILT_IN_RAINFOREST                       :chỉ có thể xây dựng ở vùng rừng nhiệt đới
+STR_ERROR_CAN_ONLY_BE_BUILT_IN_DESERT                           :chỉ có thể xây ở hoang mạc
+STR_ERROR_CAN_ONLY_BE_BUILT_IN_TOWNS                            :chỉ có thể xây được ở trong thị trấn (xây đè lên nhà)
+STR_ERROR_CAN_ONLY_BE_BUILT_NEAR_TOWN_CENTER                    :chỉ có thể xây dựng gần trung tâm thị trấn
+STR_ERROR_CAN_ONLY_BE_BUILT_IN_LOW_AREAS                        :chỉ có thể xây ở vùng đất thấp
+STR_ERROR_CAN_ONLY_BE_POSITIONED                                :chỉ có thể đặt ở gần mép bản đồ
+STR_ERROR_FOREST_CAN_ONLY_BE_PLANTED                            :rừng này chỉ đặt ở trên vùng núi cao có tuyết
+STR_ERROR_CAN_ONLY_BE_BUILT_ABOVE_SNOW_LINE                     :chỉ có thể xây phía trên núi cao có tuyết
+STR_ERROR_CAN_ONLY_BE_BUILT_BELOW_SNOW_LINE                     :chỉ có thể được xây dưới ranh giới tuyết
 
-STR_ERROR_PROSPECTING_WAS_UNLUCKY                               :{WHITE}Không may là việc góp vốn cho tìm kiếm nhà máy thất bại; hãy thử lại
-STR_ERROR_NO_SUITABLE_PLACES_FOR_PROSPECTING                    :{WHITE}Không có một nơi phù hợp nào để dò tìm nhà máy này
-STR_ERROR_NO_SUITABLE_PLACES_FOR_INDUSTRIES                     :{WHITE}Không có vùng đất nào phù hợp với nhà máy '{STRING}'
-STR_ERROR_NO_SUITABLE_PLACES_FOR_INDUSTRIES_EXPLANATION         :{WHITE}Thay đổi thông số khởi tạo bản đồ để có được bản đồ tốt hơn
+STR_ERROR_PROSPECTING_WAS_UNLUCKY                               :việc tài trợ thăm dò đã thất bại do thiếu may mắn; hãy thử lại
+STR_ERROR_NO_SUITABLE_PLACES_FOR_PROSPECTING                    :không có một nơi phù hợp nào để thăm dò cho nhà máy này
+STR_ERROR_NO_SUITABLE_PLACES_FOR_INDUSTRIES                     :Không có vùng đất nào phù hợp với nhà máy '{STRING}'
+STR_ERROR_NO_SUITABLE_PLACES_FOR_INDUSTRIES_EXPLANATION         :Thay đổi thông số khởi tạo bản đồ để có được bản đồ tốt hơn
 
 # Station construction related errors
-STR_ERROR_CAN_T_BUILD_RAILROAD_STATION                          :{WHITE}Không thể xây ga tàu hoả ở đây...
-STR_ERROR_CAN_T_BUILD_BUS_STATION                               :{WHITE}Không thể xây bến xe buýt...
-STR_ERROR_CAN_T_BUILD_TRUCK_STATION                             :{WHITE}Không thể xây trạm bốc dỡ hàng xe tải...
-STR_ERROR_CAN_T_BUILD_PASSENGER_TRAM_STATION                    :{WHITE}Không thể xây bến xe điện...
-STR_ERROR_CAN_T_BUILD_CARGO_TRAM_STATION                        :{WHITE}Không thể xây trạm bốc dỡ hàng xe điện...
-STR_ERROR_CAN_T_BUILD_DOCK_HERE                                 :{WHITE}Không thể xây cảng ở đây...
-STR_ERROR_CAN_T_BUILD_AIRPORT_HERE                              :{WHITE}Không thể xây sân bay ở đây...
+STR_ERROR_CAN_T_BUILD_RAILROAD_STATION                          :Không thể xây ga tàu hoả ở đây...
+STR_ERROR_CAN_T_BUILD_BUS_STATION                               :Không thể xây bến xe buýt...
+STR_ERROR_CAN_T_BUILD_TRUCK_STATION                             :Không thể xây trạm bốc dỡ hàng xe tải...
+STR_ERROR_CAN_T_BUILD_PASSENGER_TRAM_STATION                    :Không thể xây bến xe điện...
+STR_ERROR_CAN_T_BUILD_CARGO_TRAM_STATION                        :Không thể xây trạm bốc dỡ hàng xe điện...
+STR_ERROR_CAN_T_BUILD_DOCK_HERE                                 :Không thể xây cảng ở đây...
+STR_ERROR_CAN_T_BUILD_AIRPORT_HERE                              :Không thể xây sân bay ở đây...
 
-STR_ERROR_ADJOINS_MORE_THAN_ONE_EXISTING                        :{WHITE}Nối thêm nhiều hơn một ga, bến, cảng đã tồn tại
-STR_ERROR_STATION_TOO_SPREAD_OUT                                :{WHITE}... ga, bến, cảng trải quá rộng
-STR_ERROR_STATION_DISALLOWED_NUMBER_TRACKS                      :{WHITE}... không hỗ trợ số lượng đường ray này
-STR_ERROR_STATION_DISALLOWED_LENGTH                             :{WHITE}... không hỗ trợ độ dài này
-STR_ERROR_TOO_MANY_STATIONS_LOADING                             :{WHITE}Quá nhiều ga, bến, cảng rồi
-STR_ERROR_TOO_MANY_STATION_SPECS                                :{WHITE}Quá nhiều mảnh của ga tàu hoả
-STR_ERROR_TOO_MANY_BUS_STOPS                                    :{WHITE}Quá nhiều điểm đừng xe buýt
-STR_ERROR_TOO_MANY_TRUCK_STOPS                                  :{WHITE}Quá nhiều trạm bốc dỡ hàng xe tải
-STR_ERROR_TOO_CLOSE_TO_ANOTHER_DOCK                             :{WHITE}Quá sát với hải cảng khác
-STR_ERROR_TOO_CLOSE_TO_ANOTHER_AIRPORT                          :{WHITE}Quá sát với sân bay khác
-STR_ERROR_CAN_T_RENAME_STATION                                  :{WHITE}Không thể đổi tên ga, bến,cảng...
-STR_ERROR_CAN_T_MOVE_STATION_NAME                               :{WHITE}Không thể di chuyển biển hiệu của trạm...
-STR_ERROR_DRIVE_THROUGH_ON_TOWN_ROAD                            :{WHITE}... đây là đường sở hữu bởi địa phương
-STR_ERROR_DRIVE_THROUGH_DIRECTION                               :{WHITE}... đường quay mặt sai hướng
-STR_ERROR_DRIVE_THROUGH_CORNER                                  :{WHITE}... đi qua điểm dừng không thể đi qua góc
-STR_ERROR_DRIVE_THROUGH_JUNCTION                                :{WHITE}... đi qua điểm dừng không thể có ngã rẽ
+STR_ERROR_ADJOINS_MORE_THAN_ONE_EXISTING                        :nối thêm nhiều hơn một ga, bến, cảng đã tồn tại
+STR_ERROR_STATION_TOO_SPREAD_OUT                                :ga, bến, cảng trải quá rộng
+STR_ERROR_STATION_DISALLOWED_NUMBER_TRACKS                      :không hỗ trợ số lượng đường ray này
+STR_ERROR_STATION_DISALLOWED_LENGTH                             :không hỗ trợ độ dài này
+STR_ERROR_TOO_MANY_STATIONS_LOADING                             :quá nhiều ga, bến, cảng
+STR_ERROR_TOO_MANY_STATION_SPECS                                :quá nhiều mảnh của ga tàu hoả
+STR_ERROR_TOO_MANY_BUS_STOPS                                    :quá nhiều điểm đừng xe buýt
+STR_ERROR_TOO_MANY_TRUCK_STOPS                                  :quá nhiều trạm bốc dỡ hàng xe tải
+STR_ERROR_TOO_CLOSE_TO_ANOTHER_DOCK                             :quá gần hải cảng khác
+STR_ERROR_TOO_CLOSE_TO_ANOTHER_AIRPORT                          :quá gần sân bay khác
+STR_ERROR_CAN_T_RENAME_STATION                                  :Không thể đổi tên ga, bến,cảng...
+STR_ERROR_CAN_T_MOVE_STATION_NAME                               :Không thể di chuyển biển hiệu của trạm...
+STR_ERROR_DRIVE_THROUGH_ON_TOWN_ROAD                            :đường sở hữu bởi địa phương
+STR_ERROR_DRIVE_THROUGH_DIRECTION                               :đường nằm sai hướng
+STR_ERROR_DRIVE_THROUGH_CORNER                                  :trạm xe chạy xuyên qua không thể nằm ở khúc cua
+STR_ERROR_DRIVE_THROUGH_JUNCTION                                :trạm xe chạy xuyên qua không thể nằm ở giao lộ
 
 # Station destruction related errors
-STR_ERROR_CAN_T_REMOVE_PART_OF_STATION                          :{WHITE}Không thể xoá bỏ một phần của ga...
-STR_ERROR_MUST_REMOVE_RAILWAY_STATION_FIRST                     :{WHITE}Phải bỏ ga tàu hoả trước
-STR_ERROR_CAN_T_REMOVE_BUS_STATION                              :{WHITE}Không thể xoá bến xe buýt...
-STR_ERROR_CAN_T_REMOVE_TRUCK_STATION                            :{WHITE}Không thể xoá trạm bốc dỡ...
-STR_ERROR_CAN_T_REMOVE_PASSENGER_TRAM_STATION                   :{WHITE}Không thể xoá bến xe điện...
-STR_ERROR_CAN_T_REMOVE_CARGO_TRAM_STATION                       :{WHITE}Không thể xoá trạm bốc dỡ xe điện...
-STR_ERROR_MUST_REMOVE_ROAD_STOP_FIRST                           :{WHITE}Phải dỡ bỏ bến xe buýt trước
-STR_ERROR_THERE_IS_NO_STATION                                   :{WHITE}... không có ga/bến ở đây
+STR_ERROR_CAN_T_REMOVE_PART_OF_STATION                          :Không thể xoá bỏ một phần của ga...
+STR_ERROR_MUST_REMOVE_RAILWAY_STATION_FIRST                     :phải bỏ ga tàu hoả trước
+STR_ERROR_CAN_T_REMOVE_BUS_STATION                              :Không thể xoá bến xe buýt...
+STR_ERROR_CAN_T_REMOVE_TRUCK_STATION                            :Không thể xoá trạm bốc dỡ...
+STR_ERROR_CAN_T_REMOVE_PASSENGER_TRAM_STATION                   :Không thể xoá bến xe điện...
+STR_ERROR_CAN_T_REMOVE_CARGO_TRAM_STATION                       :Không thể xoá trạm bốc dỡ xe điện...
+STR_ERROR_MUST_REMOVE_ROAD_STOP_FIRST                           :phải dỡ bỏ bến xe buýt trước
+STR_ERROR_THERE_IS_NO_STATION                                   :không có ga/bến ở đây
 
-STR_ERROR_MUST_DEMOLISH_RAILROAD                                :{WHITE}Phải bỏ nhà ga tàu hoả trước
-STR_ERROR_MUST_DEMOLISH_BUS_STATION_FIRST                       :{WHITE}Phải bỏ bến xe buýt trước
-STR_ERROR_MUST_DEMOLISH_TRUCK_STATION_FIRST                     :{WHITE}Phỉa bỏ trạm bốc dỡ xe tải trước
-STR_ERROR_MUST_DEMOLISH_PASSENGER_TRAM_STATION_FIRST            :{WHITE}Phải bỏ bến xe điện trước
-STR_ERROR_MUST_DEMOLISH_CARGO_TRAM_STATION_FIRST                :{WHITE}Phải bỏ trạm bốc dỡ hàng xe điện trước
-STR_ERROR_MUST_DEMOLISH_DOCK_FIRST                              :{WHITE}Phải bỏ cảng đi trước
-STR_ERROR_MUST_DEMOLISH_AIRPORT_FIRST                           :{WHITE}Phải bỏ sân bay đi trước
+STR_ERROR_MUST_DEMOLISH_RAILROAD                                :phải bỏ nhà ga tàu hoả trước
+STR_ERROR_MUST_DEMOLISH_BUS_STATION_FIRST                       :phải bỏ bến xe buýt trước
+STR_ERROR_MUST_DEMOLISH_TRUCK_STATION_FIRST                     :phải bỏ trạm bốc dỡ xe tải trước
+STR_ERROR_MUST_DEMOLISH_PASSENGER_TRAM_STATION_FIRST            :phải bỏ bến xe điện trước
+STR_ERROR_MUST_DEMOLISH_CARGO_TRAM_STATION_FIRST                :phải bỏ trạm bốc dỡ hàng xe điện trước
+STR_ERROR_MUST_DEMOLISH_DOCK_FIRST                              :phải dỡ bỏ cảng trước
+STR_ERROR_MUST_DEMOLISH_AIRPORT_FIRST                           :phải bỏ sân bay trước
 
 # Waypoint related errors
-STR_ERROR_WAYPOINT_ADJOINS_MORE_THAN_ONE_EXISTING               :{WHITE}Kết nối nhiều hơn một điểm mốc đã tồn tại
-STR_ERROR_TOO_CLOSE_TO_ANOTHER_WAYPOINT                         :{WHITE}Quá gần điểm mốc khác
+STR_ERROR_WAYPOINT_ADJOINS_MORE_THAN_ONE_EXISTING               :kết nối nhiều hơn một điểm mốc đã tồn tại
+STR_ERROR_TOO_CLOSE_TO_ANOTHER_WAYPOINT                         :quá gần điểm mốc khác
 
-STR_ERROR_CAN_T_BUILD_RAIL_WAYPOINT                             :{WHITE}Không thể xây điểm mốc tàu hoả ở đây...
-STR_ERROR_CAN_T_BUILD_ROAD_WAYPOINT                             :{WHITE}Không thể xây điểm mốc đường bộ ở đây...
-STR_ERROR_CAN_T_POSITION_BUOY_HERE                              :{WHITE}Không thể xây phao hàng hải ở đây...
-STR_ERROR_CAN_T_CHANGE_WAYPOINT_NAME                            :{WHITE}Không thể thay đổi tên điểm mốc...
-STR_ERROR_CAN_T_MOVE_WAYPOINT_NAME                              :{WHITE}Không thể di chuyển biển hiệu của điểm mốc...
+STR_ERROR_CAN_T_BUILD_RAIL_WAYPOINT                             :Không thể xây điểm mốc tàu hoả ở đây...
+STR_ERROR_CAN_T_BUILD_ROAD_WAYPOINT                             :Không thể xây điểm mốc đường bộ ở đây...
+STR_ERROR_CAN_T_POSITION_BUOY_HERE                              :Không thể xây phao hàng hải ở đây...
+STR_ERROR_CAN_T_CHANGE_WAYPOINT_NAME                            :Không thể thay đổi tên điểm mốc...
+STR_ERROR_CAN_T_MOVE_WAYPOINT_NAME                              :Không thể di chuyển biển hiệu của điểm mốc...
 
-STR_ERROR_CAN_T_REMOVE_RAIL_WAYPOINT                            :{WHITE}Không thể xoá bỏ điểm mốc tàu hoả...
-STR_ERROR_CAN_T_REMOVE_ROAD_WAYPOINT                            :{WHITE}Không thể xóa điểm mốc đường bộ ở đây...
-STR_ERROR_MUST_REMOVE_RAILWAYPOINT_FIRST                        :{WHITE}Phải bỏ điểm mốc trước
-STR_ERROR_MUST_REMOVE_ROADWAYPOINT_FIRST                        :{WHITE}Phải bỏ điểm mốc trước
-STR_ERROR_BUOY_IN_THE_WAY                                       :{WHITE}... phao hàng hải nằm cản đường
-STR_ERROR_BUOY_IS_IN_USE                                        :{WHITE}... phao hàng hải đã được dùng bởi công ty khác!
+STR_ERROR_CAN_T_REMOVE_RAIL_WAYPOINT                            :Không thể xoá bỏ điểm mốc tàu hoả...
+STR_ERROR_CAN_T_REMOVE_ROAD_WAYPOINT                            :Không thể xóa điểm mốc đường bộ ở đây...
+STR_ERROR_MUST_REMOVE_RAILWAYPOINT_FIRST                        :phải bỏ điểm mốc trước
+STR_ERROR_MUST_REMOVE_ROADWAYPOINT_FIRST                        :phải bỏ điểm mốc trước
+STR_ERROR_BUOY_IN_THE_WAY                                       :phao hàng hải nằm cản đường
+STR_ERROR_BUOY_IS_IN_USE                                        :phao hàng hải đã được dùng bởi công ty khác!
 
 # Depot related errors
-STR_ERROR_CAN_T_BUILD_TRAIN_DEPOT                               :{WHITE}Không thể xây xưởng tàu ở đây...
-STR_ERROR_CAN_T_BUILD_ROAD_DEPOT                                :{WHITE}Không thể xây bến xe buýt ở đây...
-STR_ERROR_CAN_T_BUILD_TRAM_DEPOT                                :{WHITE}Không thể xây bến xe điện ở đây...
-STR_ERROR_CAN_T_BUILD_SHIP_DEPOT                                :{WHITE}Không thể xây cảng ở đây...
+STR_ERROR_CAN_T_BUILD_TRAIN_DEPOT                               :Không thể xây xưởng tàu ở đây...
+STR_ERROR_CAN_T_BUILD_ROAD_DEPOT                                :Không thể xây bến xe buýt ở đây...
+STR_ERROR_CAN_T_BUILD_TRAM_DEPOT                                :Không thể xây bến xe điện ở đây...
+STR_ERROR_CAN_T_BUILD_SHIP_DEPOT                                :Không thể xây cảng ở đây...
 
-STR_ERROR_CAN_T_RENAME_DEPOT                                    :{WHITE}Không thể đổi tên xưởng...
+STR_ERROR_CAN_T_RENAME_DEPOT                                    :Không thể đổi tên xưởng...
 
-STR_ERROR_TRAIN_MUST_BE_STOPPED_INSIDE_DEPOT                    :{WHITE}... tàu phải dừng lại ở trong xưởng
-STR_ERROR_ROAD_VEHICLE_MUST_BE_STOPPED_INSIDE_DEPOT             :{WHITE}... phải dừng trong xưởng xe
-STR_ERROR_SHIP_MUST_BE_STOPPED_INSIDE_DEPOT                     :{WHITE}... tàu thuỷ phải dừng ở trong xưởng
-STR_ERROR_AIRCRAFT_MUST_BE_STOPPED_INSIDE_HANGAR                :{WHITE}... máy bay phải dừng lại trong xưởng
+STR_ERROR_TRAIN_MUST_BE_STOPPED_INSIDE_DEPOT                    :tàu phải dừng lại ở trong xưởng
+STR_ERROR_ROAD_VEHICLE_MUST_BE_STOPPED_INSIDE_DEPOT             :phải dừng trong xưởng xe
+STR_ERROR_SHIP_MUST_BE_STOPPED_INSIDE_DEPOT                     :tàu thuỷ phải dừng ở trong xưởng
+STR_ERROR_AIRCRAFT_MUST_BE_STOPPED_INSIDE_HANGAR                :máy bay phải dừng lại trong xưởng
 
-STR_ERROR_TRAINS_CAN_ONLY_BE_ALTERED_INSIDE_A_DEPOT             :{WHITE}Đoàn tàu chỉ có thể thay đổi khi dừng lại bên trong xưởng
-STR_ERROR_TRAIN_TOO_LONG                                        :{WHITE}Đoàn tàu quá dài
-STR_ERROR_CAN_T_REVERSE_DIRECTION_RAIL_VEHICLE                  :{WHITE}Không thể chuyển hướng đoàn tàu...
-STR_ERROR_CAN_T_REVERSE_DIRECTION_RAIL_VEHICLE_MULTIPLE_UNITS   :{WHITE}Không thể chuyển hướng đoàn tàu có nhiều đầu kéo...
-STR_ERROR_INCOMPATIBLE_RAIL_TYPES                               :Kiểu đường ray không phù hợp
+STR_ERROR_TRAINS_CAN_ONLY_BE_ALTERED_INSIDE_A_DEPOT             :đoàn tàu chỉ có thể thay đổi khi dừng lại bên trong xưởng
+STR_ERROR_TRAIN_TOO_LONG                                        :đoàn tàu quá dài
+STR_ERROR_CAN_T_REVERSE_DIRECTION_RAIL_VEHICLE                  :Không thể chuyển hướng phương tiện...
+STR_ERROR_CAN_T_REVERSE_DIRECTION_RAIL_VEHICLE_MULTIPLE_UNITS   :bao gồm nhiều toa
+STR_ERROR_INCOMPATIBLE_RAIL_TYPES                               :kiểu đường ray không phù hợp
 
-STR_ERROR_CAN_T_MOVE_VEHICLE                                    :{WHITE}Không thể chuyển phương tiện...
-STR_ERROR_REAR_ENGINE_FOLLOW_FRONT                              :{WHITE}Đầu đẩy phía sau luôn phải theo sau đầu kéo của nó
-STR_ERROR_UNABLE_TO_FIND_ROUTE_TO                               :{WHITE}Không tìm được đường tới xưởng địa phương
-STR_ERROR_UNABLE_TO_FIND_LOCAL_DEPOT                            :{WHITE}Không thể tìm được đường tới xưởng địa phương
+STR_ERROR_CAN_T_MOVE_VEHICLE                                    :Không thể chuyển phương tiện...
+STR_ERROR_REAR_ENGINE_FOLLOW_FRONT                              :đầu máy phía sau sẽ luôn đi theo đầu máy phía trước
+STR_ERROR_UNABLE_TO_FIND_ROUTE_TO                               :không tìm được đường tới xưởng địa phương
+STR_ERROR_UNABLE_TO_FIND_LOCAL_DEPOT                            :không thể tìm được đường tới xưởng địa phương
+STR_ERROR_UNABLE_TO_FIND_LOCAL_HANGAR                           :không thể tìm được đường tới sân bay địa phương
 
-STR_ERROR_DEPOT_WRONG_DEPOT_TYPE                                :Xưởng không hợp kiểu
+STR_ERROR_DEPOT_WRONG_DEPOT_TYPE                                :sai loại xưởng
 
 # Depot unbunching related errors
-STR_ERROR_UNBUNCHING_ONLY_ONE_ALLOWED                           :{WHITE}... có thể chỉ có 1 lộ trình không gộp
-STR_ERROR_UNBUNCHING_NO_FULL_LOAD                               :{WHITE}... không thể dùng lộ trình nạp đầy nếu phương tiện có một lộ trình tách lẻ
-STR_ERROR_UNBUNCHING_NO_UNBUNCHING_FULL_LOAD                    :{WHITE}... không thể bỏ gộp một xe ở lịch trình nạp đầy
-STR_ERROR_UNBUNCHING_NO_CONDITIONAL                             :{WHITE}... không thể dùng lộ trình có điều kiện đối với phương tiện đã gộp lộ trình
-STR_ERROR_UNBUNCHING_NO_UNBUNCHING_CONDITIONAL                  :{WHITE}... không thể bỏ gộp một xe ở lịch trình có điều kiện
+STR_ERROR_UNBUNCHING_ONLY_ONE_ALLOWED                           :có thể chỉ có 1 lộ trình không gộp
+STR_ERROR_UNBUNCHING_NO_FULL_LOAD                               :không thể dùng lộ trình nạp đầy nếu phương tiện có một lộ trình tách lẻ
+STR_ERROR_UNBUNCHING_NO_UNBUNCHING_FULL_LOAD                    :không thể bỏ gộp một xe ở lịch trình nạp đầy
+STR_ERROR_UNBUNCHING_NO_CONDITIONAL                             :không thể dùng lộ trình có điều kiện đối với phương tiện đã gộp lộ trình
+STR_ERROR_UNBUNCHING_NO_UNBUNCHING_CONDITIONAL                  :không thể bỏ gộp một xe ở lịch trình có điều kiện
 
 # Autoreplace related errors
-STR_ERROR_TRAIN_TOO_LONG_AFTER_REPLACEMENT                      :{WHITE}{VEHICLE} quá dài sau khi thay thế
-STR_ERROR_AUTOREPLACE_NOTHING_TO_DO                             :{WHITE}Không thể áp dụng cơ chế tự thay, tự làm đổi mới.
+STR_ERROR_TRAIN_TOO_LONG_AFTER_REPLACEMENT                      :{VEHICLE} quá dài sau khi thay thế
+STR_ERROR_AUTOREPLACE_NOTHING_TO_DO                             :Không thể áp dụng cơ chế tự thay, tự đổi mới
 STR_ERROR_AUTOREPLACE_MONEY_LIMIT                               :(tự thay vượt hạn mức tiền)
-STR_ERROR_AUTOREPLACE_INCOMPATIBLE_CARGO                        :{WHITE}Phương tiện mới không thể vận chuyển {STRING}
-STR_ERROR_AUTOREPLACE_INCOMPATIBLE_REFIT                        :{WHITE}Phương tiện mới không thể cải biên theo lộ trình {NUM}
+STR_ERROR_AUTOREPLACE_INCOMPATIBLE_CARGO                        :Phương tiện mới không thể vận chuyển {STRING}
+STR_ERROR_AUTOREPLACE_INCOMPATIBLE_REFIT                        :Phương tiện mới không thể cải biên theo lộ trình {NUM}
 
 # Rail construction errors
-STR_ERROR_IMPOSSIBLE_TRACK_COMBINATION                          :{WHITE}Không thể hoà trộn các đường ray
-STR_ERROR_MUST_REMOVE_SIGNALS_FIRST                             :{WHITE}Phải bỏ đèn báo trước
-STR_ERROR_NO_SUITABLE_RAILROAD_TRACK                            :{WHITE}Không có đường ray thích hợp
-STR_ERROR_MUST_REMOVE_RAILROAD_TRACK                            :{WHITE}Phải phá bỏ đường ray trước
-STR_ERROR_CROSSING_ON_ONEWAY_ROAD                               :{WHITE}Đường một chiều hoặc bị chặn
-STR_ERROR_CROSSING_DISALLOWED_RAIL                              :{WHITE}Đường giao nhau không cho phép với loại ray này
-STR_ERROR_CROSSING_DISALLOWED_ROAD                              :{WHITE}Tạo đường dốc khác độ cao không được phép với loại đường này
-STR_ERROR_CAN_T_BUILD_SIGNALS_HERE                              :{WHITE}Không thể xây đèn hiệu ở đây...
-STR_ERROR_CAN_T_BUILD_RAILROAD_TRACK                            :{WHITE}Không thể xây đường ray ở đây...
-STR_ERROR_CAN_T_REMOVE_RAILROAD_TRACK                           :{WHITE}Không thể phá bỏ đường ray ở đây...
-STR_ERROR_CAN_T_REMOVE_SIGNALS_FROM                             :{WHITE}Không thể phá bỏ đèn hiệu ở đây...
-STR_ERROR_SIGNAL_CAN_T_CONVERT_SIGNALS_HERE                     :{WHITE}Không thể chuyển đổi đèn hiệu ở đây...
-STR_ERROR_THERE_IS_NO_RAILROAD_TRACK                            :{WHITE}... không có đường ray xe lửa
-STR_ERROR_THERE_ARE_NO_SIGNALS                                  :{WHITE}... không có đèn hiệu nào
+STR_ERROR_IMPOSSIBLE_TRACK_COMBINATION                          :tổ hợp đường ray không hợp lệ
+STR_ERROR_MUST_REMOVE_SIGNALS_FIRST                             :phải bỏ đèn báo trước
+STR_ERROR_NO_SUITABLE_RAILROAD_TRACK                            :không có đường ray thích hợp
+STR_ERROR_MUST_REMOVE_RAILROAD_TRACK                            :phải phá bỏ đường ray trước
+STR_ERROR_CROSSING_ON_ONEWAY_ROAD                               :đường một chiều hoặc bị chặn
+STR_ERROR_CROSSING_DISALLOWED_RAIL                              :đường giao nhau không cho phép với loại ray này
+STR_ERROR_CROSSING_DISALLOWED_ROAD                              :đường giao nhau không cho phép với loại đường này
+STR_ERROR_CAN_T_BUILD_SIGNALS_HERE                              :Không thể xây đèn hiệu ở đây...
+STR_ERROR_CAN_T_BUILD_RAILROAD_TRACK                            :Không thể xây đường ray ở đây...
+STR_ERROR_CAN_T_REMOVE_RAILROAD_TRACK                           :Không thể phá dỡ đường ray ở đây...
+STR_ERROR_CAN_T_REMOVE_SIGNALS_FROM                             :Không thể phá bỏ đèn hiệu ở đây...
+STR_ERROR_SIGNAL_CAN_T_CONVERT_SIGNALS_HERE                     :Không thể chuyển đổi đèn hiệu ở đây...
+STR_ERROR_THERE_IS_NO_RAILROAD_TRACK                            :không có đường ray xe lửa
+STR_ERROR_THERE_ARE_NO_SIGNALS                                  :không có đèn hiệu nào
 
-STR_ERROR_CAN_T_CONVERT_RAIL                                    :{WHITE}Không thể đổi kiểu đường ray ở đây...
+STR_ERROR_CAN_T_CONVERT_RAIL                                    :Không thể đổi kiểu đường ray ở đây...
 
 # Road construction errors
-STR_ERROR_MUST_REMOVE_ROAD_FIRST                                :{WHITE}Phải bỏ đường bộ trước
-STR_ERROR_ONEWAY_ROADS_CAN_T_HAVE_JUNCTION                      :{WHITE}... đường một chiều không thể có ngả rẽ
-STR_ERROR_CAN_T_BUILD_ROAD_HERE                                 :{WHITE}Không thể xây đường bộ ở đây...
-STR_ERROR_CAN_T_BUILD_TRAMWAY_HERE                              :{WHITE}Không thể xây đường xe điện ở đây...
-STR_ERROR_CAN_T_REMOVE_ROAD_FROM                                :{WHITE}Không thể phá dỡ đường bộ ở đây...
-STR_ERROR_CAN_T_REMOVE_TRAMWAY_FROM                             :{WHITE}Không thể phá dỡ đường xe điện ở đây...
-STR_ERROR_THERE_IS_NO_ROAD                                      :{WHITE}... không có đường bộ
-STR_ERROR_THERE_IS_NO_TRAMWAY                                   :{WHITE}... không có đường ray xe điện
-STR_ERROR_CAN_T_CONVERT_ROAD                                    :{WHITE}Không thể chuyển đổi loại đường ở đây...
-STR_ERROR_CAN_T_CONVERT_TRAMWAY                                 :{WHITE}Không thể chuyển đổi kiểu xe điện ở đây...
-STR_ERROR_NO_SUITABLE_ROAD                                      :{WHITE}Không có đường bộ thích hợp
-STR_ERROR_NO_SUITABLE_TRAMWAY                                   :{WHITE}Không có đường xe điện phù hợp
+STR_ERROR_MUST_REMOVE_ROAD_FIRST                                :phải dỡ bỏ đường bộ trước
+STR_ERROR_ONEWAY_ROADS_CAN_T_HAVE_JUNCTION                      :đường một chiều không thể có ngả rẽ
+STR_ERROR_CAN_T_BUILD_ROAD_HERE                                 :Không thể xây đường bộ ở đây...
+STR_ERROR_CAN_T_BUILD_TRAMWAY_HERE                              :Không thể xây đường xe điện ở đây...
+STR_ERROR_CAN_T_REMOVE_ROAD_FROM                                :Không thể phá dỡ đường bộ ở đây...
+STR_ERROR_CAN_T_REMOVE_TRAMWAY_FROM                             :Không thể phá dỡ đường xe điện ở đây...
+STR_ERROR_THERE_IS_NO_ROAD                                      :không có đường bộ
+STR_ERROR_THERE_IS_NO_TRAMWAY                                   :không có đường ray xe điện
+STR_ERROR_CAN_T_CONVERT_ROAD                                    :Không thể chuyển đổi loại đường ở đây...
+STR_ERROR_CAN_T_CONVERT_TRAMWAY                                 :Không thể chuyển đổi kiểu xe điện ở đây...
+STR_ERROR_NO_SUITABLE_ROAD                                      :không có đường bộ thích hợp
+STR_ERROR_NO_SUITABLE_TRAMWAY                                   :không có đường xe điện phù hợp
 
 # Waterway construction errors
-STR_ERROR_CAN_T_BUILD_CANALS                                    :{WHITE}Không thể xây kênh đào ở đây...
-STR_ERROR_CAN_T_BUILD_LOCKS                                     :{WHITE}Không thể xây cửa kênh ở đây...
-STR_ERROR_CAN_T_PLACE_RIVERS                                    :{WHITE}Không thể đặt sông ở đây...
-STR_ERROR_MUST_BE_BUILT_ON_WATER                                :{WHITE}... phải xây trên mặt nước
-STR_ERROR_CAN_T_BUILD_ON_WATER                                  :{WHITE}... không thể xây trên nước
-STR_ERROR_CAN_T_BUILD_ON_SEA                                    :{WHITE}... không thể xây trên biển
-STR_ERROR_CAN_T_BUILD_ON_CANAL                                  :{WHITE}... không thể xây trên kênh
-STR_ERROR_CAN_T_BUILD_ON_RIVER                                  :{WHITE}... không thể xây trên sông
-STR_ERROR_MUST_DEMOLISH_CANAL_FIRST                             :{WHITE}Phải lấp kênh đào trước
-STR_ERROR_CAN_T_BUILD_AQUEDUCT_HERE                             :{WHITE}Không thể xây cống ở đây...
+STR_ERROR_CAN_T_BUILD_CANALS                                    :Không thể xây kênh đào ở đây...
+STR_ERROR_CAN_T_BUILD_LOCKS                                     :Không thể xây âu tàu ở đây...
+STR_ERROR_CAN_T_PLACE_RIVERS                                    :Không thể đặt sông ở đây...
+STR_ERROR_MUST_BE_BUILT_ON_WATER                                :phải xây trên mặt nước
+STR_ERROR_CAN_T_BUILD_ON_WATER                                  :không thể xây trên nước
+STR_ERROR_CAN_T_BUILD_ON_SEA                                    :không thể xây trên biển
+STR_ERROR_CAN_T_BUILD_ON_CANAL                                  :không thể xây trên kênh
+STR_ERROR_CAN_T_BUILD_ON_RIVER                                  :không thể xây trên sông
+STR_ERROR_MUST_DEMOLISH_CANAL_FIRST                             :phải lấp kênh đào trước
+STR_ERROR_CAN_T_BUILD_AQUEDUCT_HERE                             :Không thể xây cống ở đây...
 
 # Tree related errors
-STR_ERROR_TREE_ALREADY_HERE                                     :{WHITE}... có cây cối rồi
-STR_ERROR_TREE_WRONG_TERRAIN_FOR_TREE_TYPE                      :{WHITE}... loại đất không thích hợp cho cây
-STR_ERROR_CAN_T_PLANT_TREE_HERE                                 :{WHITE}Không thể trồng cây ở đây...
+STR_ERROR_TREE_ALREADY_HERE                                     :đã có cây ở đây
+STR_ERROR_TREE_WRONG_TERRAIN_FOR_TREE_TYPE                      :loại đất không thích hợp cho cây
+STR_ERROR_CAN_T_PLANT_TREE_HERE                                 :Không thể trồng cây ở đây...
 
 # Bridge related errors
-STR_ERROR_CAN_T_BUILD_BRIDGE_HERE                               :{WHITE}Không thể xây cầu ở đây...
-STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST                            :{WHITE}Phải phá dỡ cầu trước đã
-STR_ERROR_CAN_T_START_AND_END_ON                                :{WHITE}Không thể bắt đầu và kết thúc ở cùng một điểm
-STR_ERROR_BRIDGEHEADS_NOT_SAME_HEIGHT                           :{WHITE}Hai đầu cầu không ở cùng độ cao
-STR_ERROR_BRIDGE_TOO_LOW_FOR_TERRAIN                            :{WHITE}Cầu thấp quá so với mặt đất
-STR_ERROR_BRIDGE_TOO_HIGH_FOR_TERRAIN                           :{WHITE}Cầu quá cao đối với địa hình này.
-STR_ERROR_START_AND_END_MUST_BE_IN                              :{WHITE}Điểu đầu và cuối phải trên 1 đường thẳng
-STR_ERROR_ENDS_OF_BRIDGE_MUST_BOTH                              :{WHITE}... hai đầu cầu phải được gá vào đất
-STR_ERROR_BRIDGE_TOO_LONG                                       :{WHITE}... cầu quá dài
-STR_ERROR_BRIDGE_THROUGH_MAP_BORDER                             :{WHITE}Cầu có thể vượt quá phạm vi bản đồ
-STR_ERROR_BRIDGE_TOO_LOW_FOR_STATION                            :{WHITE}Cầu thấp hơn {HEIGHT} đơn vị cho ga
-STR_ERROR_BRIDGE_TOO_LOW_FOR_ROADSTOP                           :{WHITE}Cầu thấp hơn {HEIGHT} đơn vị cho điểm dừng chân
-STR_ERROR_BRIDGE_TOO_LOW_FOR_DOCK                               :{WHITE}Cầu thấp hơn {HEIGHT} đơn vị để xây dựng cảng
-STR_ERROR_BRIDGE_TOO_LOW_FOR_BUOY                               :{WHITE}Cầu thấp hơn {HEIGHT} đơn vị cho phao
-STR_ERROR_BRIDGE_TOO_LOW_FOR_RAIL_WAYPOINT                      :{WHITE}Cầu thấp hơn {HEIGHT} đơn vị cho điểm mốc đường ray
-STR_ERROR_BRIDGE_TOO_LOW_FOR_ROAD_WAYPOINT                      :{WHITE}Cầu thấp hơn {HEIGHT} đơn vị cho điểm mốc đường
-STR_ERROR_BRIDGE_TOO_LOW_FOR_LOCK                               :Cầu thấp hơn {HEIGHT} đơn vị, tàu không qua được khóa
+STR_ERROR_CAN_T_BUILD_BRIDGE_HERE                               :Không thể xây cầu ở đây...
+STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST                            :phải phá dỡ cầu trước
+STR_ERROR_CAN_T_START_AND_END_ON                                :không thể bắt đầu và kết thúc ở cùng một điểm
+STR_ERROR_BRIDGEHEADS_NOT_SAME_HEIGHT                           :hai đầu cầu không ở cùng độ cao
+STR_ERROR_BRIDGE_TOO_LOW_FOR_TERRAIN                            :cầu quá thấp so với mặt đất
+STR_ERROR_BRIDGE_TOO_HIGH_FOR_TERRAIN                           :cầu quá cao đối với địa hình này.
+STR_ERROR_START_AND_END_MUST_BE_IN                              :điểm đầu và cuối phải trên 1 đường thẳng
+STR_ERROR_ENDS_OF_BRIDGE_MUST_BOTH                              :hai đầu cầu phải được gá vào đất
+STR_ERROR_BRIDGE_TOO_LONG                                       :cầu quá dài
+STR_ERROR_BRIDGE_THROUGH_MAP_BORDER                             :cầu có thể vượt quá phạm vi bản đồ
+STR_ERROR_BRIDGE_TOO_LOW_FOR_STATION                            :cầu thấp hơn {HEIGHT} đơn vị cho ga
+STR_ERROR_BRIDGE_TOO_LOW_FOR_ROADSTOP                           :cầu thấp hơn {HEIGHT} đơn vị cho điểm dừng chân
+STR_ERROR_BRIDGE_TOO_LOW_FOR_DOCK                               :cầu thiếu {HEIGHT} chiều cao để xây bến tàu
+STR_ERROR_BRIDGE_TOO_LOW_FOR_BUOY                               :cầu thiếu {HEIGHT} chiều cao để đặt phao
+STR_ERROR_BRIDGE_TOO_LOW_FOR_RAIL_WAYPOINT                      :cầu thiếu {HEIGHT} chiều cao để xây điểm mốc đường sắt
+STR_ERROR_BRIDGE_TOO_LOW_FOR_ROAD_WAYPOINT                      :cầu thấp hơn {HEIGHT} đơn vị cho điểm mốc đường
+STR_ERROR_BRIDGE_TOO_LOW_FOR_LOCK                               :cầu thiếu {HEIGHT} chiều cao để xây âu tàu
+STR_ERROR_BRIDGE_TOO_LOW_FOR_TRAIN_DEPOT                        :chiều cao cầu {HEIGHT} quá thấp cho xưởng tàu hỏa
+STR_ERROR_BRIDGE_TOO_LOW_FOR_ROADVEH_DEPOT                      :chiều cao cầu {HEIGHT} quá thấp cho xưởng xe
+STR_ERROR_BRIDGE_TOO_LOW_FOR_SHIP_DEPOT                         :chiều cao cầu {HEIGHT} quá thấp cho xưởng tàu
+STR_ERROR_BRIDGE_TOO_LOW_FOR_OBJECT                             :chiều cao cầu {HEIGHT} quá thấp cho đối tượng
 
 # Tunnel related errors
-STR_ERROR_CAN_T_BUILD_TUNNEL_HERE                               :{WHITE}Không thể đào hầm ở đây...
-STR_ERROR_SITE_UNSUITABLE_FOR_TUNNEL                            :{WHITE}Vị trí không thích hợp cho cửa vào hầm
-STR_ERROR_MUST_DEMOLISH_TUNNEL_FIRST                            :{WHITE}Phải phá hầm trước
-STR_ERROR_ANOTHER_TUNNEL_IN_THE_WAY                             :{WHITE}Có hầm khác trên cùng đường
-STR_ERROR_TUNNEL_THROUGH_MAP_BORDER                             :{WHITE}Một đầu hầm kéo ra ngoài bản đồ
-STR_ERROR_UNABLE_TO_EXCAVATE_LAND                               :{WHITE}Không thể đào đất để làm đầu kia của hầm
-STR_ERROR_TUNNEL_TOO_LONG                                       :{WHITE}... đường hầm quá dài
+STR_ERROR_CAN_T_BUILD_TUNNEL_HERE                               :Không thể đào hầm ở đây...
+STR_ERROR_SITE_UNSUITABLE_FOR_TUNNEL                            :vị trí không thích hợp cho cửa vào hầm
+STR_ERROR_MUST_DEMOLISH_TUNNEL_FIRST                            :phải phá dỡ hầm trước
+STR_ERROR_ANOTHER_TUNNEL_IN_THE_WAY                             :có hầm khác trên cùng đường
+STR_ERROR_TUNNEL_THROUGH_MAP_BORDER                             :một đầu hầm kéo sẽ ra ngoài bản đồ
+STR_ERROR_UNABLE_TO_EXCAVATE_LAND                               :không thể đào đất để làm đầu kia của hầm
+STR_ERROR_TUNNEL_TOO_LONG                                       :đường hầm quá dài
 
 # Object related errors
-STR_ERROR_TOO_MANY_OBJECTS                                      :{WHITE}... quá nhiều đối tượng
-STR_ERROR_CAN_T_BUILD_OBJECT                                    :{WHITE}Không thể xây đối tượng này...
-STR_ERROR_OBJECT_IN_THE_WAY                                     :{WHITE}Có vật thể trên đường
-STR_ERROR_COMPANY_HEADQUARTERS_IN                               :{WHITE}... trụ sở công ty nằm trên đường
-STR_ERROR_CAN_T_PURCHASE_THIS_LAND                              :{WHITE}Không thể mua được mảnh đất này...
-STR_ERROR_YOU_ALREADY_OWN_IT                                    :{WHITE}... bạn đã có nó rồi!
-STR_ERROR_BUILD_OBJECT_LIMIT_REACHED                            :{WHITE}... đã đến giới hạn xây của đối tượng
+STR_ERROR_TOO_MANY_OBJECTS                                      :quá nhiều vật thể
+STR_ERROR_CAN_T_BUILD_OBJECT                                    :Không thể xây vật thể này...
+STR_ERROR_OBJECT_IN_THE_WAY                                     :có vật thể trên đường
+STR_ERROR_COMPANY_HEADQUARTERS_IN                               :trụ sở công ty nằm trên đường
+STR_ERROR_CAN_T_PURCHASE_THIS_LAND                              :Không thể mua mảnh đất này...
+STR_ERROR_YOU_ALREADY_OWN_IT                                    :bạn đã có nó rồi!
+STR_ERROR_BUILD_OBJECT_LIMIT_REACHED                            :đã đạt giới hạn xây dựng vật thể
 
 # Group related errors
-STR_ERROR_GROUP_CAN_T_CREATE                                    :{WHITE}Không thể tạo nhóm...
-STR_ERROR_GROUP_CAN_T_DELETE                                    :{WHITE}Không thể xoá bỏ nhóm...
-STR_ERROR_GROUP_CAN_T_RENAME                                    :{WHITE}Không thể đổi tên nhóm...
-STR_ERROR_GROUP_CAN_T_SET_PARENT                                :{WHITE}Không thể thiết đặt nhóm cha...
-STR_ERROR_GROUP_CAN_T_SET_PARENT_RECURSION                      :{WHITE}... lặp ở trong nhóm phân cấp là không được
-STR_ERROR_GROUP_CAN_T_REMOVE_ALL_VEHICLES                       :{WHITE}Không thể bỏ các phương tiện trong nhóm này...
-STR_ERROR_GROUP_CAN_T_ADD_VEHICLE                               :{WHITE}Không thể thêm phương tiện vào nhóm này...
-STR_ERROR_GROUP_CAN_T_ADD_SHARED_VEHICLE                        :{WHITE}Không thể thêm phương tiện được chia sẻ vào nhóm...
+STR_ERROR_GROUP_CAN_T_CREATE                                    :Không thể tạo nhóm...
+STR_ERROR_GROUP_CAN_T_DELETE                                    :Không thể xoá nhóm...
+STR_ERROR_GROUP_CAN_T_RENAME                                    :Không thể đổi tên nhóm...
+STR_ERROR_GROUP_CAN_T_SET_PARENT                                :Không thể thiết đặt nhóm cha...
+STR_ERROR_GROUP_CAN_T_SET_PARENT_RECURSION                      :không cho phép lặp ở trong nhóm phân cấp
+STR_ERROR_GROUP_CAN_T_REMOVE_ALL_VEHICLES                       :Không thể bỏ các phương tiện trong nhóm này...
+STR_ERROR_GROUP_CAN_T_ADD_VEHICLE                               :Không thể thêm phương tiện vào nhóm này...
+STR_ERROR_GROUP_CAN_T_ADD_SHARED_VEHICLE                        :Không thể thêm phương tiện được chia sẻ vào nhóm...
 
 # Generic vehicle errors
 
 ###length VEHICLE_TYPES
-STR_ERROR_TRAIN_IN_THE_WAY                                      :{WHITE}Tàu đang ở trên đường
-STR_ERROR_ROAD_VEHICLE_IN_THE_WAY                               :{WHITE}Xe đang ở trên đường
-STR_ERROR_SHIP_IN_THE_WAY                                       :{WHITE}Tàu thuỷ đang ở trên đường
-STR_ERROR_AIRCRAFT_IN_THE_WAY                                   :{WHITE}Máy bay đang ở trên đường
+STR_ERROR_TRAIN_IN_THE_WAY                                      :tàu hỏa đang cản đường
+STR_ERROR_ROAD_VEHICLE_IN_THE_WAY                               :có xe đang cản đường
+STR_ERROR_SHIP_IN_THE_WAY                                       :tàu thủy đang cản đường
+STR_ERROR_AIRCRAFT_IN_THE_WAY                                   :máy bay đang ở trên đường
 
 ###length VEHICLE_TYPES
-STR_ERROR_RAIL_VEHICLE_NOT_AVAILABLE                            :{WHITE}Đầu/toa xe không sẵn có
-STR_ERROR_ROAD_VEHICLE_NOT_AVAILABLE                            :{WHITE}Xe không sẵn có
-STR_ERROR_SHIP_NOT_AVAILABLE                                    :{WHITE}Tàu thuỷ không sẵn có
-STR_ERROR_AIRCRAFT_NOT_AVAILABLE                                :{WHITE}Máy bay không sẵn có
+STR_ERROR_RAIL_VEHICLE_NOT_AVAILABLE                            :phương tiện không có sẵn
+STR_ERROR_ROAD_VEHICLE_NOT_AVAILABLE                            :xe không sẵn có
+STR_ERROR_SHIP_NOT_AVAILABLE                                    :tàu thuỷ không có sẵn
+STR_ERROR_AIRCRAFT_NOT_AVAILABLE                                :máy bay không có sẵn
 
 ###length VEHICLE_TYPES
-STR_ERROR_CAN_T_REFIT_TRAIN                                     :{WHITE}Không thể cải biến tàu hoả...
-STR_ERROR_CAN_T_REFIT_ROAD_VEHICLE                              :{WHITE}Không thể cải biến xe...
-STR_ERROR_CAN_T_REFIT_SHIP                                      :{WHITE}Không thể cải biến tàu thuỷ...
-STR_ERROR_CAN_T_REFIT_AIRCRAFT                                  :{WHITE}Không thể cải biến máy bay...
+STR_ERROR_CAN_T_REFIT_TRAIN                                     :Không thể cải biến tàu hoả...
+STR_ERROR_CAN_T_REFIT_ROAD_VEHICLE                              :Không thể cải biến xe...
+STR_ERROR_CAN_T_REFIT_SHIP                                      :Không thể cải biến tàu thuỷ...
+STR_ERROR_CAN_T_REFIT_AIRCRAFT                                  :Không thể cải biến máy bay...
 
 ###length VEHICLE_TYPES
-STR_ERROR_CAN_T_RENAME_TRAIN                                    :{WHITE}Không thể đổi tên tàu hoả...
-STR_ERROR_CAN_T_RENAME_ROAD_VEHICLE                             :{WHITE}Không thể đổi tên xe...
-STR_ERROR_CAN_T_RENAME_SHIP                                     :{WHITE}Không thể đổi tên tàu thuỷ...
-STR_ERROR_CAN_T_RENAME_AIRCRAFT                                 :{WHITE}Không thể đổi tên máy bay...
+STR_ERROR_CAN_T_RENAME_TRAIN                                    :Không thể đổi tên tàu hoả...
+STR_ERROR_CAN_T_RENAME_ROAD_VEHICLE                             :Không thể đổi tên xe...
+STR_ERROR_CAN_T_RENAME_SHIP                                     :Không thể đổi tên tàu thuỷ...
+STR_ERROR_CAN_T_RENAME_AIRCRAFT                                 :Không thể đổi tên máy bay...
 
 ###length VEHICLE_TYPES
-STR_ERROR_CAN_T_STOP_START_TRAIN                                :{WHITE}Không thể chạy/dừng tàu hoả...
-STR_ERROR_CAN_T_STOP_START_ROAD_VEHICLE                         :{WHITE}Không thể dừng/chạy xe...
-STR_ERROR_CAN_T_STOP_START_SHIP                                 :{WHITE}Không thể chạy/dừng tàu thuỷ...
-STR_ERROR_CAN_T_STOP_START_AIRCRAFT                             :{WHITE}Không thể chạy/dừng máy bay...
+STR_ERROR_CAN_T_STOP_START_TRAIN                                :Không thể chạy/dừng tàu hoả...
+STR_ERROR_CAN_T_STOP_START_ROAD_VEHICLE                         :Không thể dừng/chạy xe...
+STR_ERROR_CAN_T_STOP_START_SHIP                                 :Không thể chạy/dừng tàu thuỷ...
+STR_ERROR_CAN_T_STOP_START_AIRCRAFT                             :Không thể chạy/dừng máy bay...
 
 ###length VEHICLE_TYPES
-STR_ERROR_CAN_T_SEND_TRAIN_TO_DEPOT                             :{WHITE}Không thể gửi tàu về xưởng...
-STR_ERROR_CAN_T_SEND_ROAD_VEHICLE_TO_DEPOT                      :{WHITE}Không thể gửi xe về xưởng...
-STR_ERROR_CAN_T_SEND_SHIP_TO_DEPOT                              :{WHITE}Không thể gửi tàu thuỷ về xưởng...
-STR_ERROR_CAN_T_SEND_AIRCRAFT_TO_HANGAR                         :{WHITE}Không thể gửi máy bay về xưởng...
+STR_ERROR_CAN_T_SEND_TRAIN_TO_DEPOT                             :Không thể gửi tàu về xưởng...
+STR_ERROR_CAN_T_SEND_ROAD_VEHICLE_TO_DEPOT                      :Không thể gửi xe về xưởng...
+STR_ERROR_CAN_T_SEND_SHIP_TO_DEPOT                              :Không thể gửi tàu thuỷ về xưởng...
+STR_ERROR_CAN_T_SEND_AIRCRAFT_TO_HANGAR                         :Không thể gửi máy bay về xưởng...
 
 ###length VEHICLE_TYPES
-STR_ERROR_CAN_T_BUY_TRAIN                                       :{WHITE}Không thể mua tàu hỏa này...
-STR_ERROR_CAN_T_BUY_ROAD_VEHICLE                                :{WHITE}Không thể mua xe này...
-STR_ERROR_CAN_T_BUY_SHIP                                        :{WHITE}Không thể mua tàu thủy này...
-STR_ERROR_CAN_T_BUY_AIRCRAFT                                    :{WHITE}Không thể mua máy bay này...
+STR_ERROR_CAN_T_BUY_TRAIN                                       :Không thể mua tàu hỏa...
+STR_ERROR_CAN_T_BUY_ROAD_VEHICLE                                :Không thể mua xe...
+STR_ERROR_CAN_T_BUY_SHIP                                        :Không thể mua tàu thủy...
+STR_ERROR_CAN_T_BUY_AIRCRAFT                                    :Không thể mua máy bay...
 
 ###length VEHICLE_TYPES
-STR_ERROR_CAN_T_RENAME_TRAIN_TYPE                               :{WHITE}Không thể đổi tên kiểu tàu hoả...
-STR_ERROR_CAN_T_RENAME_ROAD_VEHICLE_TYPE                        :{WHITE}Không thể đổi tên loại xe...
-STR_ERROR_CAN_T_RENAME_SHIP_TYPE                                :{WHITE}Không thể đổi tên loại tàu...
-STR_ERROR_CAN_T_RENAME_AIRCRAFT_TYPE                            :{WHITE}Không thể đổi tên kiểu máy bay...
+STR_ERROR_CAN_T_RENAME_TRAIN_TYPE                               :Không thể đổi tên kiểu tàu hoả...
+STR_ERROR_CAN_T_RENAME_ROAD_VEHICLE_TYPE                        :Không thể đổi tên loại xe...
+STR_ERROR_CAN_T_RENAME_SHIP_TYPE                                :Không thể đổi tên loại tàu...
+STR_ERROR_CAN_T_RENAME_AIRCRAFT_TYPE                            :Không thể đổi tên kiểu máy bay...
 
 ###length VEHICLE_TYPES
-STR_ERROR_CAN_T_SELL_TRAIN                                      :{WHITE}Không thể bán tàu hoả...
-STR_ERROR_CAN_T_SELL_ROAD_VEHICLE                               :{WHITE}Không thể bán xe...
-STR_ERROR_CAN_T_SELL_SHIP                                       :{WHITE}Không thể bán tàu thuỷ...
-STR_ERROR_CAN_T_SELL_AIRCRAFT                                   :{WHITE}Không thể bán máy bay...
+STR_ERROR_CAN_T_SELL_TRAIN                                      :Không thể bán tàu hoả...
+STR_ERROR_CAN_T_SELL_ROAD_VEHICLE                               :Không thể bán xe...
+STR_ERROR_CAN_T_SELL_SHIP                                       :Không thể bán tàu thuỷ...
+STR_ERROR_CAN_T_SELL_AIRCRAFT                                   :Không thể bán máy bay...
 
 ###length VEHICLE_TYPES
-STR_ERROR_CAN_T_SELL_ALL_TRAIN                                  :{WHITE}Không thể bán tất cả tàu hoả...
-STR_ERROR_CAN_T_SELL_ALL_ROAD_VEHICLE                           :{WHITE}Không thể bán tất cả các xe...
-STR_ERROR_CAN_T_SELL_ALL_SHIP                                   :{WHITE}Không thể bán tất cả tàu thủy...
-STR_ERROR_CAN_T_SELL_ALL_AIRCRAFT                               :{WHITE}Không thể bán tất cả máy bay...
+STR_ERROR_CAN_T_SELL_ALL_TRAIN                                  :Không thể bán tất cả tàu hoả...
+STR_ERROR_CAN_T_SELL_ALL_ROAD_VEHICLE                           :Không thể bán tất cả các xe...
+STR_ERROR_CAN_T_SELL_ALL_SHIP                                   :Không thể bán tất cả tàu thủy...
+STR_ERROR_CAN_T_SELL_ALL_AIRCRAFT                               :Không thể bán tất cả máy bay...
 
 ###length VEHICLE_TYPES
-STR_ERROR_CAN_T_AUTOREPLACE_TRAIN                               :{WHITE}Không thể tự động thay thế tàu hỏa...
-STR_ERROR_CAN_T_AUTOREPLACE_ROAD_VEHICLE                        :{WHITE}Không thể tự động thay thế xe...
-STR_ERROR_CAN_T_AUTOREPLACE_SHIP                                :{WHITE}Không thể tự động thay thế tàu thủy...
-STR_ERROR_CAN_T_AUTOREPLACE_AIRCRAFT                            :{WHITE}Không thể tự động thay thế máy bay...
+STR_ERROR_CAN_T_AUTOREPLACE_TRAIN                               :Không thể tự động thay thế tàu hỏa...
+STR_ERROR_CAN_T_AUTOREPLACE_ROAD_VEHICLE                        :Không thể tự động thay thế xe...
+STR_ERROR_CAN_T_AUTOREPLACE_SHIP                                :Không thể tự động thay thế tàu thủy...
+STR_ERROR_CAN_T_AUTOREPLACE_AIRCRAFT                            :Không thể tự động thay thế máy bay...
 
-STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}Quá nhiều phương tiện trong trò chơi
-STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}Không thể thay đổi tần suất bảo trì...
+STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :quá nhiều phương tiện trong ván chơi
+STR_ERROR_CAN_T_CHANGE_SERVICING                                :Không thể thay đổi tần suất bảo trì...
 
-STR_ERROR_VEHICLE_IS_DESTROYED                                  :{WHITE}... xe đã bị phá hủy
+STR_ERROR_VEHICLE_IS_DESTROYED                                  :phương tiện đã bị phá hủy
 
-STR_ERROR_CAN_T_CLONE_VEHICLE_LIST                              :{WHITE}... các phương tiện không như nhau
+STR_ERROR_CAN_T_CLONE_VEHICLE_LIST                              :các phương tiện không như nhau
 
-STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL                          :{WHITE}Không có phương tiện nào sẵn sàng cả
-STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL_EXPLANATION              :{WHITE}Thay đổi tham số NewGRF
-STR_ERROR_NO_VEHICLES_AVAILABLE_YET                             :{WHITE}Chưa có phương tiện nào có sẵn
-STR_ERROR_NO_VEHICLES_AVAILABLE_YET_EXPLANATION                 :{WHITE}Bắt đầu một màn chơi mới sau {DATE_SHORT} hoặc sử dụng một NewGRF cung cấp sớm phương tiện
+STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL                          :Không có phương tiện nào sẵn sàng cả
+STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL_EXPLANATION              :Thay đổi tham số NewGRF
+STR_ERROR_NO_VEHICLES_AVAILABLE_YET                             :Chưa có phương tiện nào có sẵn
+STR_ERROR_NO_VEHICLES_AVAILABLE_YET_EXPLANATION                 :Bắt đầu một màn chơi mới sau {DATE_SHORT} hoặc sử dụng một NewGRF cung cấp sớm phương tiện
 
-STR_ERROR_NO_TOWN_ROADTYPES_AVAILABLE_AT_ALL                    :{WHITE}Không có sẵn loại đường có thể xây dựng được trong thị trấn
-STR_ERROR_NO_TOWN_ROADTYPES_AVAILABLE_AT_ALL_EXPLANATION        :{WHITE}Thay đổi cấu hình NewGRF của bạn
-STR_ERROR_NO_TOWN_ROADTYPES_AVAILABLE_YET                       :{WHITE}Hiện tại chưa có các loại đường thị trấn
-STR_ERROR_NO_TOWN_ROADTYPES_AVAILABLE_YET_EXPLANATION           :{WHITE}Hãy bắt đầu trò chơi mới sau {DATE_SHORT} hoặc sử dụng NewGRF khác có hỗ trợ xây dựng sớm các loại đường đô thị
+STR_ERROR_NO_TOWN_ROADTYPES_AVAILABLE_AT_ALL                    :Không có sẵn loại đường có thể xây dựng được trong thị trấn
+STR_ERROR_NO_TOWN_ROADTYPES_AVAILABLE_AT_ALL_EXPLANATION        :Thay đổi cấu hình NewGRF của bạn
+STR_ERROR_NO_TOWN_ROADTYPES_AVAILABLE_YET                       :Hiện chưa có loại đường nào mà thị trấn có thể xây dựng
+STR_ERROR_NO_TOWN_ROADTYPES_AVAILABLE_YET_EXPLANATION           :Hãy bắt đầu ván chơi mới sau {DATE_SHORT} hoặc sử dụng NewGRF khác có hỗ trợ xây dựng sớm các loại đường đô thị
 
 # Specific vehicle errors
-STR_ERROR_CAN_T_MAKE_TRAIN_PASS_SIGNAL                          :{WHITE}Không thể để tàu hoả qua tín hiệu đèn khi nguy hiểm...
-STR_ERROR_CAN_T_REVERSE_DIRECTION_TRAIN                         :{WHITE}Không thể đổi hướng đoàn tàu...
-STR_ERROR_TRAIN_START_NO_POWER                                  :Tàu hỏa chưa có năng lượng
+STR_ERROR_CAN_T_MAKE_TRAIN_PASS_SIGNAL                          :Không thể để tàu hoả qua tín hiệu đèn khi nguy hiểm...
+STR_ERROR_CAN_T_REVERSE_DIRECTION_TRAIN                         :Không thể đổi hướng đoàn tàu...
+STR_ERROR_TRAIN_START_NO_POWER                                  :tàu hỏa không có nhiên liệu
 
-STR_ERROR_CAN_T_MAKE_ROAD_VEHICLE_TURN                          :{WHITE}Không thể làm xe quay lại được...
+STR_ERROR_CAN_T_MAKE_ROAD_VEHICLE_TURN                          :Không thể làm xe quay đầu được...
 
-STR_ERROR_AIRCRAFT_IS_IN_FLIGHT                                 :{WHITE}Máy bay đang bay
+STR_ERROR_AIRCRAFT_IS_IN_FLIGHT                                 :máy bay đang bay
 
 # Order related errors
-STR_ERROR_NO_MORE_SPACE_FOR_ORDERS                              :{WHITE}Không đủ chỗ cho đơn hàng
-STR_ERROR_TOO_MANY_ORDERS                                       :{WHITE}Quá nhiều lộ trình
-STR_ERROR_CAN_T_INSERT_NEW_ORDER                                :{WHITE}Không thể thêm điểm lộ trình...
-STR_ERROR_CAN_T_DELETE_THIS_ORDER                               :{WHITE}Không thể xoá điểm lộ trình này...
-STR_ERROR_CAN_T_MODIFY_THIS_ORDER                               :{WHITE}Không thể thay đổi điểm lộ trình...
-STR_ERROR_CAN_T_MOVE_THIS_ORDER                                 :{WHITE}Không thể chuyển điểm lộ trình này...
-STR_ERROR_CAN_T_SKIP_ORDER                                      :{WHITE}Không thể nhảy qua điểm lộ trình hiện tại...
-STR_ERROR_CAN_T_SKIP_TO_ORDER                                   :{WHITE}Không thể chuyển lộ trình tới điểm đã chọn...
-STR_ERROR_CAN_T_COPY_SHARE_ORDER                                :{WHITE}... phương tiện không thể tới được mọi ga, bến
-STR_ERROR_CAN_T_ADD_ORDER                                       :{WHITE}... phương tiện không thể tới ga, bến đó được
-STR_ERROR_CAN_T_ADD_ORDER_SHARED                                :{WHITE}... phương tiện dùng lộ trình chia sẻ này không tới được ga, bến đó
-STR_ERROR_CAN_T_COPY_ORDER_VEHICLE_LIST                         :{WHITE}... các phương tiện không có cùng lộ trình
-STR_ERROR_CAN_T_SHARE_ORDER_VEHICLE_LIST                        :{WHITE}... không phải tất cả phương tiện đang chia sẻ lộ trình
+STR_ERROR_NO_MORE_SPACE_FOR_ORDERS                              :không đủ chỗ cho đơn hàng
+STR_ERROR_TOO_MANY_ORDERS                                       :quá nhiều lộ trình
+STR_ERROR_CAN_T_INSERT_NEW_ORDER                                :Không thể thêm điểm lộ trình...
+STR_ERROR_CAN_T_DELETE_THIS_ORDER                               :Không thể xoá điểm lộ trình này...
+STR_ERROR_CAN_T_MODIFY_THIS_ORDER                               :Không thể thay đổi điểm lộ trình...
+STR_ERROR_CAN_T_MOVE_THIS_ORDER                                 :Không thể chuyển điểm lộ trình này...
+STR_ERROR_CAN_T_SKIP_ORDER                                      :Không thể bỏ qua điểm lộ trình hiện tại...
+STR_ERROR_CAN_T_SKIP_TO_ORDER                                   :Không thể chuyển lộ trình tới điểm đã chọn...
+STR_ERROR_CAN_T_COPY_SHARE_ORDER                                :phương tiện không thể tới được mọi ga, bến
+STR_ERROR_CAN_T_ADD_ORDER                                       :phương tiện không thể tới ga, bến đó được
+STR_ERROR_CAN_T_ADD_ORDER_SHARED                                :phương tiện dùng lộ trình chia sẻ này không tới được ga, bến đó
+STR_ERROR_CAN_T_COPY_ORDER_VEHICLE_LIST                         :các phương tiện không có cùng lộ trình
+STR_ERROR_CAN_T_SHARE_ORDER_VEHICLE_LIST                        :không phải tất cả phương tiện đang chia sẻ lộ trình
 
-STR_ERROR_CAN_T_SHARE_ORDER_LIST                                :{WHITE}Không thể chia sẻ lộ trình...
-STR_ERROR_CAN_T_STOP_SHARING_ORDER_LIST                         :{WHITE}Không thể dừng chia sẻ danh sách lịch trình...
-STR_ERROR_CAN_T_COPY_ORDER_LIST                                 :{WHITE}Không thể copy lộ trình...
-STR_ERROR_TOO_FAR_FROM_PREVIOUS_DESTINATION                     :{WHITE}... quá xa điểm lộ trình kế trước
-STR_ERROR_AIRCRAFT_NOT_ENOUGH_RANGE                             :{WHITE}... máy bay không đủ tầm xa
+STR_ERROR_CAN_T_SHARE_ORDER_LIST                                :Không thể chia sẻ lộ trình...
+STR_ERROR_CAN_T_STOP_SHARING_ORDER_LIST                         :Không thể dừng chia sẻ danh sách lịch trình...
+STR_ERROR_CAN_T_COPY_ORDER_LIST                                 :Không thể sao chép lộ trình...
+STR_ERROR_TOO_FAR_FROM_PREVIOUS_DESTINATION                     :quá xa điểm lộ trình kế trước
+STR_ERROR_AIRCRAFT_NOT_ENOUGH_RANGE                             :máy bay không đủ tầm xa
 
 # Extra messages which go on the third line of errors, explaining why orders failed
-STR_ERROR_NO_RAIL_STATION                                       :{WHITE}Không có ga xe lửa
-STR_ERROR_NO_BUS_STATION                                        :{WHITE}Không có trạm xe buýt
-STR_ERROR_NO_TRUCK_STATION                                      :{WHITE}Không có trạm xe tải
-STR_ERROR_NO_DOCK                                               :{WHITE}Không có bến cảng
-STR_ERROR_NO_AIRPORT                                            :{WHITE}Không có sân bay/bãi đỗ trực thăng
-STR_ERROR_NO_STOP_COMPATIBLE_ROAD_TYPE                          :{WHITE}Không có điểm dừng nào phù hợp với kiểu đường
-STR_ERROR_NO_STOP_COMPATIBLE_TRAM_TYPE                          :{WHITE}Không có điểm dừng phù hợp với kiểu tàu điện
-STR_ERROR_NO_STOP_ARTICULATED_VEHICLE                           :{WHITE}Không có điểm dừng phù hợp với xe kéo rơ moóc.{}Xe kéo rơ moóc cần điểm dừng ngắn trên đường, không phải bến dừng
-STR_ERROR_AIRPORT_NO_PLANES                                     :{WHITE}Không thể hạ cánh máy bay tại bãi đỗ trực thăng này
-STR_ERROR_AIRPORT_NO_HELICOPTERS                                :{WHITE}Không thể hạ cánh trực thăng ở sân bay này
-STR_ERROR_NO_RAIL_WAYPOINT                                      :{WHITE}Không có điểm mốc đường ray
-STR_ERROR_NO_ROAD_WAYPOINT                                      :{WHITE}Không có điểm mốc đường bộ
-STR_ERROR_NO_BUOY                                               :{WHITE}Không có cái phao nào
+STR_ERROR_NO_RAIL_STATION                                       :Không có ga xe lửa
+STR_ERROR_NO_BUS_STATION                                        :Không có trạm xe buýt
+STR_ERROR_NO_TRUCK_STATION                                      :Không có trạm xe tải
+STR_ERROR_NO_DOCK                                               :Không có bến cảng
+STR_ERROR_NO_AIRPORT                                            :Không có sân bay/bãi đỗ trực thăng
+STR_ERROR_NO_STOP_COMPATIBLE_ROAD_TYPE                          :Không có điểm dừng nào phù hợp với kiểu đường
+STR_ERROR_NO_STOP_COMPATIBLE_TRAM_TYPE                          :Không có điểm dừng phù hợp với kiểu tàu điện
+STR_ERROR_NO_STOP_ARTICULATED_VEHICLE                           :Không có trạm dừng phù hợp với xe kéo rơ moóc.{}Xe kéo rơ moóc cần trạm chạy xuyên qua, không phải trạm đỗ
+STR_ERROR_AIRPORT_NO_PLANES                                     :Máy bay này không thể hạ cánh tại bãi đỗ trực thăng này
+STR_ERROR_AIRPORT_NO_HELICOPTERS                                :Không thể hạ cánh trực thăng ở sân bay này
+STR_ERROR_NO_RAIL_WAYPOINT                                      :Không có điểm mốc đường ray
+STR_ERROR_NO_ROAD_WAYPOINT                                      :Không có điểm mốc đường bộ
+STR_ERROR_NO_BUOY                                               :Không có phao
 
 # Timetable related errors
-STR_ERROR_CAN_T_TIMETABLE_VEHICLE                               :{WHITE}Không thể lập lịch trình cho phương tiện...
-STR_ERROR_TIMETABLE_ONLY_WAIT_AT_STATIONS                       :{WHITE}Phương tiện chỉ có thể chờ ở nhà ga, bến, cảng.
-STR_ERROR_TIMETABLE_NOT_STOPPING_HERE                           :{WHITE}Phương tiện này không dừng lại tại ga, bến này theo lộ trình.
-STR_ERROR_TIMETABLE_INCOMPLETE                                  :{WHITE}... lịch trình chưa hoàn thiện
-STR_ERROR_TIMETABLE_NOT_STARTED                                 :{WHITE}... bảng lịch trình chưa bắt đầu
+STR_ERROR_CAN_T_TIMETABLE_VEHICLE                               :Không thể lập lịch trình cho phương tiện...
+STR_ERROR_TIMETABLE_ONLY_WAIT_AT_STATIONS                       :phương tiện chỉ có thể chờ ở nhà ga, bến, cảng
+STR_ERROR_TIMETABLE_NOT_STOPPING_HERE                           :phương tiện này không dừng lại tại ga, bến này theo lộ trình
+STR_ERROR_TIMETABLE_INCOMPLETE                                  :bảng lịch trình chưa hoàn thiện
+STR_ERROR_TIMETABLE_NOT_STARTED                                 :bảng lịch trình chưa bắt đầu
 
 # Sign related errors
-STR_ERROR_TOO_MANY_SIGNS                                        :{WHITE}... quá nhiều biển hiệu
-STR_ERROR_CAN_T_PLACE_SIGN_HERE                                 :{WHITE}Không thể đặt biển hiệu ở đây...
-STR_ERROR_CAN_T_CHANGE_SIGN_NAME                                :{WHITE}Không thể đổi tên biển hiệu...
-STR_ERROR_CAN_T_DELETE_SIGN                                     :{WHITE}Không thể xoá biển hiệu...
+STR_ERROR_TOO_MANY_SIGNS                                        :quá nhiều biển hiệu
+STR_ERROR_CAN_T_PLACE_SIGN_HERE                                 :không thể đặt biển hiệu ở đây...
+STR_ERROR_CAN_T_CHANGE_SIGN_NAME                                :Không thể đổi tên biển hiệu...
+STR_ERROR_CAN_T_DELETE_SIGN                                     :Không thể xoá biển hiệu...
 
 # Translatable comment for OpenTTD's desktop shortcut
 ###external 1
@@ -5965,7 +6060,8 @@ STR_LORRY                                                       :{BLACK}{LORRY}
 STR_PLANE                                                       :{BLACK}{PLANE}
 STR_SHIP                                                        :{BLACK}{SHIP}
 
-STR_TOOLBAR_RAILTYPE_VELOCITY                                   :{STRING} ({VELOCITY})
+STR_TOOLBAR_RAILTYPE_VELOCITY                                   :{STRING} {YELLOW}({VELOCITY})
+STR_TOOLBAR_ROADTYPE_VELOCITY                                   :{STRING} {YELLOW}({VELOCITY})
 
 STR_BADGE_NAME_LIST                                             :{STRING}: {GOLD}{STRING}
 STR_BADGE_CONFIG_MENU_TOOLTIP                                   :Mở thiết lập phù hiệu
@@ -5975,4 +6071,3 @@ STR_BADGE_CONFIG_FILTERS                                        :{WHITE}Bộ l�
 STR_BADGE_CONFIG_PREVIEW                                        :Ảnh xem trước
 STR_BADGE_CONFIG_NAME                                           :Tên
 STR_BADGE_FILTER_ANY_LABEL                                      :Bất cứ {STRING} nào
-STR_BADGE_FILTER_IS_LABEL                                       :{STRING} là {STRING}

@@ -40,9 +40,7 @@ protected:
 	virtual void RetargetIterator() = 0;
 
 public:
-	/**
-	 * Virtual dtor, needed to mute warnings.
-	 */
+	/** Ensure the destructor of the sub classes are called as well. */
 	virtual ~ScriptListSorter() = default;
 
 	/**
@@ -330,7 +328,7 @@ public:
 
 
 
-bool ScriptList::SaveObject(HSQUIRRELVM vm)
+bool ScriptList::SaveObject(HSQUIRRELVM vm) const
 {
 	sq_pushstring(vm, "List");
 	sq_newarray(vm, 0);
@@ -380,7 +378,7 @@ bool ScriptList::LoadObject(HSQUIRRELVM vm)
 	return true;
 }
 
-ScriptObject *ScriptList::CloneObject()
+ScriptObject *ScriptList::CloneObject() const
 {
 	ScriptList *clone = new ScriptList();
 	clone->CopyList(this);
@@ -404,11 +402,10 @@ ScriptList::ScriptList()
 	this->modifications  = 0;
 }
 
-ScriptList::~ScriptList()
-{
-}
+/** Needs to be manually defined due to incomplete definition of types in the header. */
+ScriptList::~ScriptList() = default;
 
-bool ScriptList::HasItem(SQInteger item)
+bool ScriptList::HasItem(SQInteger item) const
 {
 	return this->items.count(item) == 1;
 }
@@ -457,32 +454,32 @@ SQInteger ScriptList::Begin()
 SQInteger ScriptList::Next()
 {
 	if (!this->initialized) {
-		Debug(script, 0, "Next() is invalid as Begin() is never called");
+		Debug(Facility::Script, Severity::Critical, "Next() is invalid as Begin() is never called");
 		return 0;
 	}
 	return this->sorter->Next().value_or(0);
 }
 
-bool ScriptList::IsEmpty()
+bool ScriptList::IsEmpty() const
 {
 	return this->items.empty();
 }
 
-bool ScriptList::IsEnd()
+bool ScriptList::IsEnd() const
 {
 	if (!this->initialized) {
-		Debug(script, 0, "IsEnd() is invalid as Begin() is never called");
+		Debug(Facility::Script, Severity::Critical, "IsEnd() is invalid as Begin() is never called");
 		return true;
 	}
 	return this->sorter->IsEnd();
 }
 
-SQInteger ScriptList::Count()
+SQInteger ScriptList::Count() const
 {
 	return this->items.size();
 }
 
-SQInteger ScriptList::GetValue(SQInteger item)
+SQInteger ScriptList::GetValue(SQInteger item) const
 {
 	auto item_iter = this->items.find(item);
 	return item_iter == this->items.end() ? 0 : item_iter->second;
@@ -540,9 +537,9 @@ void ScriptList::Sort(SorterType sorter, bool ascending)
 	this->initialized    = false;
 }
 
-void ScriptList::AddList(ScriptList *list)
+bool ScriptList::AddList(ScriptList *list)
 {
-	if (list == this) return;
+	if (list == this) return false;
 
 	if (this->IsEmpty()) {
 		/* If this is empty, we can just take the items of the other list as is. */
@@ -550,11 +547,27 @@ void ScriptList::AddList(ScriptList *list)
 		this->values = list->values;
 		this->modifications++;
 	} else {
-		for (const auto &item : list->items) {
+		ScriptObject::DisableDoCommandScope disabler{};
+
+		auto begin = list->items.begin();
+		if (disabler.GetOriginalValue() && this->resume_item.has_value()) {
+			begin = list->items.lower_bound(this->resume_item.value());
+		}
+
+		for (const auto &item : std::ranges::subrange(begin, list->items.end())) {
+			if (disabler.GetOriginalValue() && item.first != this->resume_item && ScriptController::GetOpsTillSuspend() < 0) {
+				this->resume_item = item.first;
+				return true;
+			}
 			this->AddItem(item.first);
 			this->SetValue(item.first, item.second);
+			ScriptController::DecreaseOps(5);
 		}
+
+		this->resume_item.reset();
 	}
+
+	return false;
 }
 
 void ScriptList::SwapList(ScriptList *list)
@@ -572,184 +585,103 @@ void ScriptList::SwapList(ScriptList *list)
 	list->sorter->Retarget(list);
 }
 
-void ScriptList::RemoveAboveValue(SQInteger value)
+bool ScriptList::RemoveAboveValue(SQInteger value)
 {
-	this->modifications++;
-
-	for (ScriptListMap::iterator next_iter, iter = this->items.begin(); iter != this->items.end(); iter = next_iter) {
-		next_iter = std::next(iter);
-		if (iter->second > value) this->RemoveItem(iter->first);
-	}
+	return this->RemoveItems([&](const SQInteger &, const SQInteger &v) { return v > value; });
 }
 
-void ScriptList::RemoveBelowValue(SQInteger value)
+bool ScriptList::RemoveBelowValue(SQInteger value)
 {
-	this->modifications++;
-
-	for (ScriptListMap::iterator next_iter, iter = this->items.begin(); iter != this->items.end(); iter = next_iter) {
-		next_iter = std::next(iter);
-		if (iter->second < value) this->RemoveItem(iter->first);
-	}
+	return this->RemoveItems([&](const SQInteger &, const SQInteger &v) { return v < value; });
 }
 
-void ScriptList::RemoveBetweenValue(SQInteger start, SQInteger end)
+bool ScriptList::RemoveBetweenValue(SQInteger start, SQInteger end)
 {
-	this->modifications++;
-
-	for (ScriptListMap::iterator next_iter, iter = this->items.begin(); iter != this->items.end(); iter = next_iter) {
-		next_iter = std::next(iter);
-		if (iter->second > start && iter->second < end) this->RemoveItem(iter->first);
-	}
+	return this->RemoveItems([&](const SQInteger &, const SQInteger &v) { return v > start && v < end; });
 }
 
-void ScriptList::RemoveValue(SQInteger value)
+bool ScriptList::RemoveValue(SQInteger value)
 {
-	this->modifications++;
-
-	for (ScriptListMap::iterator next_iter, iter = this->items.begin(); iter != this->items.end(); iter = next_iter) {
-		next_iter = std::next(iter);
-		if (iter->second == value) this->RemoveItem(iter->first);
-	}
+	return this->RemoveItems([&](const SQInteger &, const SQInteger &v) { return v == value; });
 }
 
-void ScriptList::RemoveTop(SQInteger count)
+bool ScriptList::RemoveTop(SQInteger count)
 {
 	this->modifications++;
 
-	if (!this->sort_ascending) {
-		this->Sort(this->sorter_type, !this->sort_ascending);
-		this->RemoveBottom(count);
-		this->Sort(this->sorter_type, !this->sort_ascending);
-		return;
+	ScriptObject::DisableDoCommandScope disabler{};
+
+	if (disabler.GetOriginalValue() && this->resume_item.has_value()) {
+		count = this->resume_item.value();
+		this->resume_item.reset();
 	}
 
-	switch (this->sorter_type) {
-		default: NOT_REACHED();
-		case SORT_BY_VALUE:
-			for (auto iter = this->values.begin(); iter != this->values.end(); iter = this->values.begin()) {
-				if (--count < 0) return;
-				this->RemoveItem(iter->second);
-			}
-			break;
-
-		case SORT_BY_ITEM:
-			for (auto iter = this->items.begin(); iter != this->items.end(); iter = this->items.begin()) {
-				if (--count < 0) return;
-				this->RemoveItem(iter->first);
-			}
-			break;
-	}
-}
-
-void ScriptList::RemoveBottom(SQInteger count)
-{
-	this->modifications++;
-
-	if (!this->sort_ascending) {
-		this->Sort(this->sorter_type, !this->sort_ascending);
-		this->RemoveTop(count);
-		this->Sort(this->sorter_type, !this->sort_ascending);
-		return;
-	}
-
-	switch (this->sorter_type) {
-		default: NOT_REACHED();
-		case SORT_BY_VALUE:
-			for (auto iter = this->values.rbegin(); iter != this->values.rend(); iter = this->values.rbegin()) {
-				if (--count < 0) return;
-				this->RemoveItem(iter->second);
-			}
-			break;
-
-		case SORT_BY_ITEM:
-			for (auto iter = this->items.rbegin(); iter != this->items.rend(); iter = this->items.rbegin()) {
-				if (--count < 0) return;
-				this->RemoveItem(iter->first);
-			}
-			break;
-	}
-}
-
-void ScriptList::RemoveList(ScriptList *list)
-{
-	this->modifications++;
-
-	if (list == this) {
-		this->Clear();
-	} else {
-		for (const auto &item : list->items) {
-			this->RemoveItem(item.first);
+	while (--count >= 0 && !this->items.empty()) {
+		this->RemoveItem(this->sorter->Begin().value());
+		ScriptController::DecreaseOps(5);
+		if (disabler.GetOriginalValue() && count != 0 && ScriptController::GetOpsTillSuspend() < 0) {
+			this->resume_item = count;
+			return true;
 		}
 	}
+
+	return false;
 }
 
-void ScriptList::KeepAboveValue(SQInteger value)
+bool ScriptList::RemoveBottom(SQInteger count)
 {
-	this->modifications++;
+	this->Sort(this->sorter_type, !this->sort_ascending);
+	bool ret = this->RemoveTop(count);
+	this->Sort(this->sorter_type, !this->sort_ascending);
+	return ret;
+}
 
-	for (ScriptListMap::iterator next_iter, iter = this->items.begin(); iter != this->items.end(); iter = next_iter) {
-		next_iter = std::next(iter);
-		if (iter->second <= value) this->RemoveItem(iter->first);
+bool ScriptList::RemoveList(ScriptList *list)
+{
+	if (list == this) {
+		this->Clear();
+		return false;
 	}
+	return this->RemoveItems([&](const SQInteger &k, const SQInteger &) { return list->HasItem(k); });
 }
 
-void ScriptList::KeepBelowValue(SQInteger value)
+bool ScriptList::KeepAboveValue(SQInteger value)
 {
-	this->modifications++;
-
-	for (ScriptListMap::iterator next_iter, iter = this->items.begin(); iter != this->items.end(); iter = next_iter) {
-		next_iter = std::next(iter);
-		if (iter->second >= value) this->RemoveItem(iter->first);
-	}
+	return this->RemoveItems([&](const SQInteger &, const SQInteger &v) { return v <= value; });
 }
 
-void ScriptList::KeepBetweenValue(SQInteger start, SQInteger end)
+bool ScriptList::KeepBelowValue(SQInteger value)
 {
-	this->modifications++;
-
-	for (ScriptListMap::iterator next_iter, iter = this->items.begin(); iter != this->items.end(); iter = next_iter) {
-		next_iter = std::next(iter);
-		if (iter->second <= start || iter->second >= end) this->RemoveItem(iter->first);
-	}
+	return this->RemoveItems([&](const SQInteger &, const SQInteger &v) { return v >= value; });
 }
 
-void ScriptList::KeepValue(SQInteger value)
+bool ScriptList::KeepBetweenValue(SQInteger start, SQInteger end)
 {
-	this->modifications++;
-
-	for (ScriptListMap::iterator next_iter, iter = this->items.begin(); iter != this->items.end(); iter = next_iter) {
-		next_iter = std::next(iter);
-		if (iter->second != value) this->RemoveItem(iter->first);
-	}
+	return this->RemoveItems([&](const SQInteger &, const SQInteger &v) { return v <= start || v >= end; });
 }
 
-void ScriptList::KeepTop(SQInteger count)
+bool ScriptList::KeepValue(SQInteger value)
 {
-	this->modifications++;
-
-	this->RemoveBottom(this->Count() - count);
+	return this->RemoveItems([&](const SQInteger &, const SQInteger &v) { return v != value; });
 }
 
-void ScriptList::KeepBottom(SQInteger count)
+bool ScriptList::KeepTop(SQInteger count)
 {
-	this->modifications++;
-
-	this->RemoveTop(this->Count() - count);
+	return this->RemoveBottom(this->Count() - count);
 }
 
-void ScriptList::KeepList(ScriptList *list)
+bool ScriptList::KeepBottom(SQInteger count)
 {
-	if (list == this) return;
-
-	this->modifications++;
-
-	ScriptList tmp;
-	tmp.AddList(this);
-	tmp.RemoveList(list);
-	this->RemoveList(&tmp);
+	return this->RemoveTop(this->Count() - count);
 }
 
-SQInteger ScriptList::_get(HSQUIRRELVM vm)
+bool ScriptList::KeepList(ScriptList *list)
+{
+	if (list == this) return false;
+	return this->RemoveItems([&](const SQInteger &k, const SQInteger &) { return !list->HasItem(k); });
+}
+
+SQInteger ScriptList::_get(HSQUIRRELVM vm) const
 {
 	if (sq_gettype(vm, 2) != OT_INTEGER) return SQ_ERROR;
 
@@ -854,14 +786,27 @@ SQInteger ScriptList::Valuate(HSQUIRRELVM vm)
 	/* Push the function to call */
 	sq_push(vm, 2);
 
-	for (const auto &item : this->items) {
+	auto begin = this->items.begin();
+	if (disabler.GetOriginalValue() && this->resume_item.has_value()) {
+		begin = this->items.lower_bound(this->resume_item.value());
+	}
+
+	for (const auto &[item, _] : std::ranges::subrange(begin, this->items.end())) {
+		if (disabler.GetOriginalValue() && item != this->resume_item && ScriptController::GetOpsTillSuspend() < 0) {
+			this->resume_item = item;
+			/* Pop the valuator function. */
+			sq_poptop(vm);
+			sq_pushbool(vm, SQTrue);
+			return 1;
+		}
+
 		/* Check for changing of items. */
 		int previous_modification_count = this->modifications;
 
 		/* Push the root table as instance object, this is what squirrel does for meta-functions. */
 		sq_pushroottable(vm);
 		/* Push all arguments for the valuator function. */
-		sq_pushinteger(vm, item.first);
+		sq_pushinteger(vm, item);
 		for (int i = 0; i < nparam - 1; i++) {
 			sq_push(vm, i + 3);
 		}
@@ -887,8 +832,8 @@ SQInteger ScriptList::Valuate(HSQUIRRELVM vm)
 			}
 
 			default: {
-				/* See below for explanation. The extra pop is the return value. */
-				sq_pop(vm, nparam + 4);
+				/* Pop the valuator function and the return value. */
+				sq_pop(vm, 2);
 
 				return sq_throwerror(vm, "return value of valuator is not valid (not integer/bool)");
 			}
@@ -896,25 +841,24 @@ SQInteger ScriptList::Valuate(HSQUIRRELVM vm)
 
 		/* Was something changed? */
 		if (previous_modification_count != this->modifications) {
-			/* See below for explanation. The extra pop is the return value. */
-			sq_pop(vm, nparam + 4);
+			/* Pop the valuator function and the return value. */
+			sq_pop(vm, 2);
 
 			return sq_throwerror(vm, "modifying valuated list outside of valuator function");
 		}
 
-		this->SetValue(item.first, value);
+		this->SetValue(item, value);
 
 		/* Pop the return value. */
 		sq_poptop(vm);
 
 		Squirrel::DecreaseOps(vm, 5);
 	}
-	/* Pop from the squirrel stack:
-	 * 1. The root stable (as instance object).
-	 * 2. The valuator function.
-	 * 3. The parameters given to this function.
-	 * 4. The ScriptList instance object. */
-	sq_pop(vm, nparam + 3);
 
-	return 0;
+	/* Pop the valuator function from the squirrel stack. */
+	sq_poptop(vm);
+
+	this->resume_item.reset();
+	sq_pushbool(vm, SQFalse);
+	return 1;
 }

@@ -10,7 +10,6 @@
 #include "stdafx.h"
 #include "core/math_func.hpp"
 #include "debug.h"
-#include "fileio_func.h"
 #include "screenshot_type.h"
 #include "3rdparty/fmt/ranges.h"
 
@@ -21,7 +20,6 @@
 #include "newgrf_config.h"
 #include "ai/ai_info.hpp"
 #include "company_base.h"
-#include "base_media_base.h"
 #include "base_media_graphics.h"
 #endif /* PNG_TEXT_SUPPORTED */
 
@@ -85,9 +83,9 @@ public:
 		message.reserve(1024);
 		format_append(message, "Graphics set: {} ({})\n", BaseGraphics::GetUsedSet()->name, fmt::join(BaseGraphics::GetUsedSet()->version, "."));
 		message += "NewGRFs:\n";
-		if (_game_mode != GM_MENU) {
+		if (_game_mode != GameMode::Menu) {
 			for (const auto &c : _grfconfig) {
-				format_append(message, "{:08X} {} {}\n", std::byteswap(c->ident.grfid), FormatArrayAsHex(c->ident.md5sum), c->filename);
+				format_append(message, "{} {} {}\n", FormatArrayAsHex(c->ident.grfid), FormatArrayAsHex(c->ident.md5sum), c->filename);
 			}
 		}
 		message += "\nCompanies:\n";
@@ -169,13 +167,13 @@ public:
 private:
 	static void PNGAPI png_my_error(png_structp png_ptr, png_const_charp message)
 	{
-		Debug(misc, 0, "[libpng] error: {} - {}", message, *static_cast<std::string_view *>(png_get_error_ptr(png_ptr)));
+		Debug(Facility::Misc, Severity::Critical, "[libpng] error: {} - {}", message, *static_cast<std::string_view *>(png_get_error_ptr(png_ptr)));
 		longjmp(png_jmpbuf(png_ptr), 1);
 	}
 
 	static void PNGAPI png_my_warning(png_structp png_ptr, png_const_charp message)
 	{
-		Debug(misc, 1, "[libpng] warning: {} - {}", message, *static_cast<std::string_view *>(png_get_error_ptr(png_ptr)));
+		Debug(Facility::Misc, Severity::Error, "[libpng] warning: {} - {}", message, *static_cast<std::string_view *>(png_get_error_ptr(png_ptr)));
 	}
 
 private:

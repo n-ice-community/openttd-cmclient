@@ -5,26 +5,22 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <https://www.gnu.org/licenses/old-licenses/gpl-2.0>.
  */
 
-/** @file cocoa_v.mm Code related to the cocoa video driver(s). */
+/**
+ * @file cocoa_v.mm Code related to the cocoa video driver(s).
+ *
+ * @important Notice regarding all modifications!!!!!!!
+ * There are certain limitations because the file is objective C++.
+ * gdb has limitations.
+ * C++ and objective C code can't be joined in all cases (classes stuff).
+ * Read http://developer.apple.com/releasenotes/Cocoa/Objective-C++.html for more information.
+ */
 
-/******************************************************************************
- *                             Cocoa video driver                             *
- * Known things left to do:                                                   *
- *  Nothing at the moment.                                                    *
- ******************************************************************************/
-
-#ifdef WITH_COCOA
+#if defined(WITH_COCOA) || defined(DOXYGEN_API)
 
 #include "../../stdafx.h"
 #include "../../os/macosx/macos.h"
 
-#define Rect  OTTDRect
-#define Point OTTDPoint
-#import <Cocoa/Cocoa.h>
-#import <QuartzCore/QuartzCore.h>
-#undef Rect
-#undef Point
-
+#include "../../os/macosx/macos_objective_c.h"
 #include "../../openttd.h"
 #include "../../debug.h"
 #include "../../error_func.h"
@@ -47,29 +43,9 @@
 #import <sys/param.h> /* for MAXPATHLEN */
 #import <sys/time.h> /* gettimeofday */
 
-/* The 10.12 SDK added new names for some enum constants and
- * deprecated the old ones. As there's no functional change in any
- * way, just use a define for older SDKs to the old names. */
-#ifndef HAVE_OSX_1012_SDK
-#	define NSEventModifierFlagCommand NSCommandKeyMask
-#	define NSEventModifierFlagControl NSControlKeyMask
-#	define NSEventModifierFlagOption NSAlternateKeyMask
-#	define NSEventModifierFlagShift NSShiftKeyMask
-#	define NSEventModifierFlagCapsLock NSAlphaShiftKeyMask
-#endif
-
-/**
- * Important notice regarding all modifications!!!!!!!
- * There are certain limitations because the file is objective C++.
- * gdb has limitations.
- * C++ and objective C code can't be joined in all cases (classes stuff).
- * Read http://developer.apple.com/releasenotes/Cocoa/Objective-C++.html for more information.
- */
-
-bool _cocoa_video_started = false;
+bool _cocoa_video_started = false; ///< Is the Cocoa video driver running.
 static Palette _local_palette; ///< Current palette to use for drawing.
-
-extern bool _tab_is_down;
+extern bool _tab_is_down; ///< Is tab button pressed.
 
 
 /** List of common display/window sizes. */
@@ -89,8 +65,13 @@ static const Dimension _default_resolutions[] = {
 };
 
 
-VideoDriver_Cocoa::VideoDriver_Cocoa(bool uses_hardware_acceleration)
-	: VideoDriver(uses_hardware_acceleration)
+/**
+ * Create the video driver.
+ * @param uses_hardware_acceleration Whether hardware acceleration is used by this driver.
+ * @param supports_animation_buffer Whether this driver supports a hardware accelerated animation buffer.
+ */
+VideoDriver_Cocoa::VideoDriver_Cocoa(bool uses_hardware_acceleration, bool supports_animation_buffer)
+	: VideoDriver(uses_hardware_acceleration, supports_animation_buffer)
 {
 	this->setup         = false;
 	this->buffer_locked = false;
@@ -123,11 +104,12 @@ void VideoDriver_Cocoa::Stop()
 	_cocoa_video_started = false;
 }
 
-/** Common driver initialization. */
+/**
+ * Common driver initialization.
+ * @return Error message if one has occurred, std::nullopt otherwise.
+ */
 std::optional<std::string_view> VideoDriver_Cocoa::Initialize()
 {
-	if (!MacOSVersionIsAtLeast(10, 7, 0)) return "The Cocoa video driver requires Mac OS X 10.7 or later.";
-
 	if (_cocoa_video_started) return "Already started";
 	_cocoa_video_started = true;
 
@@ -142,7 +124,7 @@ std::optional<std::string_view> VideoDriver_Cocoa::Initialize()
 
 /**
  * Set dirty a rectangle managed by a cocoa video subdriver.
- * @param left Left x cooordinate of the dirty rectangle.
+ * @param left Left x coordinate of the dirty rectangle.
  * @param top Upper y coordinate of the dirty rectangle.
  * @param width Width of the dirty rectangle.
  * @param height Height of the dirty rectangle.
@@ -212,7 +194,7 @@ bool VideoDriver_Cocoa::ToggleFullscreen(bool full_screen)
 		[ NSMenu setMenuBarVisible:!full_screen ];
 
 		this->UpdateVideoModes();
-		InvalidateWindowClassesData(WC_GAME_OPTIONS, 3);
+		InvalidateWindowClassesData(WindowClass::GameOptions, 3);
 		return true;
 	}
 
@@ -254,23 +236,22 @@ void VideoDriver_Cocoa::EditBoxLostFocus()
 
 /**
  * Get refresh rates of all connected monitors.
+ * @return Refresh rates of all connected monitors.
  */
 std::vector<int> VideoDriver_Cocoa::GetListOfMonitorRefreshRates()
 {
 	std::vector<int> rates{};
 
-	if (MacOSVersionIsAtLeast(10, 6, 0)) {
-		std::array<CGDirectDisplayID, 16> displays;
+	std::array<CGDirectDisplayID, 16> displays;
 
-		uint32_t count = 0;
-		CGGetActiveDisplayList(displays.size(), displays.data(), &count);
+	uint32_t count = 0;
+	CGGetActiveDisplayList(displays.size(), displays.data(), &count);
 
-		for (uint32_t i = 0; i < count; i++) {
-			CGDisplayModeRef mode = CGDisplayCopyDisplayMode(displays[i]);
-			int rate = (int)CGDisplayModeGetRefreshRate(mode);
-			if (rate > 0) rates.push_back(rate);
-			CGDisplayModeRelease(mode);
-		}
+	for (uint32_t i = 0; i < count; i++) {
+		CGDisplayModeRef mode = CGDisplayCopyDisplayMode(displays[i]);
+		int rate = static_cast<int>(CGDisplayModeGetRefreshRate(mode));
+		if (rate > 0) rates.push_back(rate);
+		CGDisplayModeRelease(mode);
 	}
 
 	return rates;
@@ -278,6 +259,7 @@ std::vector<int> VideoDriver_Cocoa::GetListOfMonitorRefreshRates()
 
 /**
  * Get the resolution of the main screen.
+ * @return The resolution of the main screen.
  */
 Dimension VideoDriver_Cocoa::GetScreenSize() const
 {
@@ -285,7 +267,10 @@ Dimension VideoDriver_Cocoa::GetScreenSize() const
 	return { static_cast<uint>(NSWidth(frame)), static_cast<uint>(NSHeight(frame)) };
 }
 
-/** Lock video buffer for drawing if it isn't already mapped. */
+/**
+ * Lock video buffer for drawing if it isn't already mapped.
+ * @return True on success and false otherwise.
+ */
 bool VideoDriver_Cocoa::LockVideoBuffer()
 {
 	if (this->buffer_locked) return false;
@@ -364,6 +349,7 @@ void VideoDriver_Cocoa::UpdateVideoModes()
  * Build window and view with a given size.
  * @param width Window width.
  * @param height Window height.
+ * @return True on success and false otherwise.
  */
 bool VideoDriver_Cocoa::MakeWindow(int width, int height)
 {
@@ -377,14 +363,10 @@ bool VideoDriver_Cocoa::MakeWindow(int width, int height)
 	NSRect contentRect = NSMakeRect(0, 0, width, height);
 
 	/* Create main window. */
-#ifdef HAVE_OSX_1012_SDK
 	unsigned int style = NSWindowStyleMaskTitled | NSWindowStyleMaskResizable | NSWindowStyleMaskMiniaturizable | NSWindowStyleMaskClosable;
-#else
-	unsigned int style = NSTitledWindowMask | NSResizableWindowMask | NSMiniaturizableWindowMask | NSClosableWindowMask;
-#endif
 	this->window = [ [ OTTD_CocoaWindow alloc ] initWithContentRect:contentRect styleMask:style backing:NSBackingStoreBuffered defer:NO driver:this ];
 	if (this->window == nil) {
-		Debug(driver, 0, "Could not create the Cocoa window.");
+		Debug(Facility::Driver, Severity::Critical, "Could not create the Cocoa window.");
 		this->setup = false;
 		return false;
 	}
@@ -412,7 +394,7 @@ bool VideoDriver_Cocoa::MakeWindow(int width, int height)
 	NSRect view_frame = [ this->window contentRectForFrameRect:[ this->window frame ] ];
 	this->cocoaview = [ [ OTTD_CocoaView alloc ] initWithFrame:view_frame ];
 	if (this->cocoaview == nil) {
-		Debug(driver, 0, "Could not create the event wrapper view.");
+		Debug(Facility::Driver, Severity::Critical, "Could not create the event wrapper view.");
 		this->setup = false;
 		return false;
 	}
@@ -421,7 +403,7 @@ bool VideoDriver_Cocoa::MakeWindow(int width, int height)
 	/* Create content view. */
 	NSView *draw_view = this->AllocateDrawView();
 	if (draw_view == nil) {
-		Debug(driver, 0, "Could not create the drawing view.");
+		Debug(Facility::Driver, Severity::Critical, "Could not create the drawing view.");
 		this->setup = false;
 		return false;
 	}
@@ -451,11 +433,7 @@ bool VideoDriver_Cocoa::MakeWindow(int width, int height)
  */
 bool VideoDriver_Cocoa::PollEvent()
 {
-#ifdef HAVE_OSX_1012_SDK
 	NSEventMask mask = NSEventMaskAny;
-#else
-	NSEventMask mask = NSAnyEventMask;
-#endif
 	NSEvent *event = [ NSApp nextEventMatchingMask:mask untilDate:[ NSDate distantPast ] inMode:NSDefaultRunLoopMode dequeue:YES ];
 
 	if (event == nil) return false;
@@ -505,15 +483,21 @@ void VideoDriver_Cocoa::MainLoopReal()
 }
 
 
-/* Subclass of OTTD_CocoaView to fix Quartz rendering */
+/** Subclass of OTTD_CocoaView to fix Quartz rendering */
 @interface OTTD_QuartzView : NSView {
-	VideoDriver_CocoaQuartz *driver;
+	VideoDriver_CocoaQuartz *driver; ///< The driver to fix rendering for.
 }
 - (instancetype)initWithFrame:(NSRect)frameRect andDriver:(VideoDriver_CocoaQuartz *)drv;
 @end
 
 @implementation OTTD_QuartzView
 
+/**
+ * Construct new instance.
+ * @param frameRect Size of frame.
+ * @param drv Driver to fix rendering for.
+ * @return The newly created instance.
+ */
 - (instancetype)initWithFrame:(NSRect)frameRect andDriver:(VideoDriver_CocoaQuartz *)drv
 {
 	if (self = [ super initWithFrame:frameRect ]) {
@@ -529,21 +513,34 @@ void VideoDriver_Cocoa::MainLoopReal()
 	return self;
 }
 
+/**
+ * Specifies whether the view accepts first responder.
+ * @return Always no.
+ */
 - (BOOL)acceptsFirstResponder
 {
 	return NO;
 }
 
+/**
+ * Specifies whether the view is opaque.
+ * @return Always yes.
+ */
 - (BOOL)isOpaque
 {
 	return YES;
 }
 
+/**
+ * Specifies whether the view wants updates for layer.
+ * @return Always yes.
+ */
 - (BOOL)wantsUpdateLayer
 {
 	return YES;
 }
 
+/** Updates the layer based on driver data. */
 - (void)updateLayer
 {
 	if (driver->cgcontext == nullptr) return;
@@ -554,6 +551,7 @@ void VideoDriver_Cocoa::MainLoopReal()
 	CGImageRelease(fullImage);
 }
 
+/** Updates members with new values after changes in driver. */
 - (void)viewDidChangeBackingProperties
 {
 	[ super viewDidChangeBackingProperties ];
@@ -563,10 +561,15 @@ void VideoDriver_Cocoa::MainLoopReal()
 
 @end
 
-
+/** Register the cocoa video driver. */
 static FVideoDriver_CocoaQuartz iFVideoDriver_CocoaQuartz;
 
-/** Clear buffer to opaque black. */
+/**
+ * Clear buffer to opaque black.
+ * @param buffer Pointer to the buffer.
+ * @param pitch Width of the buffer.
+ * @param height Height of the buffer.
+ */
 static void ClearWindowBuffer(uint32_t *buffer, uint32_t pitch, uint32_t height)
 {
 	uint32_t fill = Colour(0, 0, 0).data;
@@ -634,8 +637,7 @@ NSView *VideoDriver_CocoaQuartz::AllocateDrawView()
 	return [ [ OTTD_QuartzView alloc ] initWithFrame:[ this->cocoaview bounds ] andDriver:this ];
 }
 
-/** Resize the window. */
-void VideoDriver_CocoaQuartz::AllocateBackingStore(bool)
+void VideoDriver_CocoaQuartz::AllocateBackingStore([[maybe_unused]] bool force)
 {
 	if (this->window == nil || this->cocoaview == nil || this->setup) return;
 
@@ -709,7 +711,11 @@ void VideoDriver_CocoaQuartz::BlitIndexedToView32(int left, int top, int right, 
 	}
 }
 
-/** Update the palette */
+/**
+ * Update the palette
+ * @param first_colour Index of first colour to update.
+ * @param num_colours How many colours to update, should be greater than 0.
+ */
 void VideoDriver_CocoaQuartz::UpdatePalette(uint first_colour, uint num_colours)
 {
 	if (this->buffer_depth != 8) return;
@@ -751,7 +757,7 @@ void VideoDriver_CocoaQuartz::CheckPaletteAnim()
 /** Draw window */
 void VideoDriver_CocoaQuartz::Paint()
 {
-	PerformanceMeasurer framerate(PFE_VIDEO);
+	PerformanceMeasurer framerate(PerformanceElement::Video);
 
 	/* Check if we need to do anything */
 	if (IsEmptyRect(this->dirty_rect) || [ this->window isMiniaturized ]) return;
@@ -781,4 +787,4 @@ void VideoDriver_CocoaQuartz::Paint()
 	this->dirty_rect = {};
 }
 
-#endif /* WITH_COCOA */
+#endif /* WITH_COCOA or DOXYGEN_API */

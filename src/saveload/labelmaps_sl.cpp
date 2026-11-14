@@ -5,7 +5,7 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <https://www.gnu.org/licenses/old-licenses/gpl-2.0>.
  */
 
-/** @file labelmaps_sl.cpp Code handling saving and loading of rail type label mappings */
+/** @file labelmaps_sl.cpp Code handling saving and loading of rail type label mappings. */
 
 #include "../stdafx.h"
 
@@ -34,10 +34,10 @@ void AfterLoadLabelMaps()
 }
 
 struct RAILChunkHandler : ChunkHandler {
-	RAILChunkHandler() : ChunkHandler('RAIL', CH_TABLE) {}
+	RAILChunkHandler() : ChunkHandler("RAIL", ChunkType::Table) {}
 
 	static inline const SaveLoad description[] = {
-		SLE_VAR(LabelObject<RailTypeLabel>, label, SLE_UINT32),
+		SaveLoad::Variable<VarFileType::Label>("label", SLE_OBJECT_ADDRESS(LabelObject<RailTypeLabel>, label)),
 	};
 
 	void Save() const override
@@ -45,7 +45,7 @@ struct RAILChunkHandler : ChunkHandler {
 		SlTableHeader(description);
 
 		LabelObject<RailTypeLabel> lo;
-		for (RailType r = RAILTYPE_BEGIN; r != RAILTYPE_END; r++) {
+		for (RailType r : EnumRange(RAILTYPE_END)) {
 			lo.label = GetRailTypeInfo(r)->label;
 
 			SlSetArrayIndex(r);
@@ -63,17 +63,18 @@ struct RAILChunkHandler : ChunkHandler {
 
 		while (SlIterateArray() != -1) {
 			SlObject(&lo, slt);
+			 if (IsSavegameVersionBefore(SaveLoadVersion::LabelOrientationUnification)) std::ranges::reverse(lo.label);
 			_railtype_list.push_back(lo);
 		}
 	}
 };
 
 struct ROTTChunkHandler : ChunkHandler {
-	ROTTChunkHandler() : ChunkHandler('ROTT', CH_TABLE) {}
+	ROTTChunkHandler() : ChunkHandler("ROTT", ChunkType::Table) {}
 
 	static inline const SaveLoad description[] = {
-		SLE_VAR(LabelObject<RoadTypeLabel>, label, SLE_UINT32),
-		SLE_VAR(LabelObject<RoadTypeLabel>, subtype, SLE_UINT8),
+		SaveLoad::Variable<VarFileType::Label>("label", SLE_OBJECT_ADDRESS(LabelObject<RoadTypeLabel>, label)),
+		SaveLoad::Variable<VarFileType::U8>("subtype", SLE_OBJECT_ADDRESS(LabelObject<RoadTypeLabel>, subtype)),
 	};
 
 	void Save() const override
@@ -81,10 +82,10 @@ struct ROTTChunkHandler : ChunkHandler {
 		SlTableHeader(description);
 
 		LabelObject<RoadTypeLabel> lo;
-		for (RoadType r = ROADTYPE_BEGIN; r != ROADTYPE_END; r++) {
+		for (RoadType r : EnumRange(ROADTYPE_END)) {
 			const RoadTypeInfo *rti = GetRoadTypeInfo(r);
 			lo.label = rti->label;
-			lo.subtype = GetRoadTramType(r);
+			lo.subtype = to_underlying(GetRoadTramType(r));
 
 			SlSetArrayIndex(r);
 			SlObject(&lo, description);
@@ -101,6 +102,7 @@ struct ROTTChunkHandler : ChunkHandler {
 
 		while (SlIterateArray() != -1) {
 			SlObject(&lo, slt);
+			 if (IsSavegameVersionBefore(SaveLoadVersion::LabelOrientationUnification)) std::ranges::reverse(lo.label);
 			_roadtype_list.push_back(lo);
 		}
 	}

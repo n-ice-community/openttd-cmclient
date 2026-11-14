@@ -5,7 +5,7 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <https://www.gnu.org/licenses/old-licenses/gpl-2.0>.
  */
 
-/** @file sound_opus.cpp Loading of opus sounds. */
+/** @file soundloader_opus.cpp Loading of opus sounds. */
 
 #include "stdafx.h"
 
@@ -27,11 +27,13 @@ public:
 	static constexpr uint16_t OPUS_SAMPLE_RATE = 48000; ///< OpusFile always decodes at 48kHz.
 	static constexpr uint8_t OPUS_SAMPLE_BITS = 16; ///< OpusFile op_read() uses 16 bits per sample.
 
-	/* For good results, you will need at least 57 bytes (for a pure Opus-only stream). */
+	/** For good results, you will need at least 57 bytes (for a pure Opus-only stream). */
 	static constexpr size_t MIN_OPUS_FILE_SIZE = 57U;
 
-	/* It is recommended that this be large enough for at least 120 ms of data at 48 kHz per channel (5760 values per channel).
-	 * Smaller buffers will simply return less data, possibly consuming more memory to buffer the data internally. */
+	/**
+	 * It is recommended that this be large enough for at least 120 ms of data at 48 kHz per channel (5760 values per channel).
+	 * Smaller buffers will simply return less data, possibly consuming more memory to buffer the data internally.
+	 */
 	static constexpr size_t DECODE_BUFFER_SAMPLES = 5760 * 2;
 	static constexpr size_t DECODE_BUFFER_BYTES = DECODE_BUFFER_SAMPLES * sizeof(opus_int16);
 
@@ -56,7 +58,7 @@ public:
 		int error = 0;
 		auto of = AutoRelease<OggOpusFile, op_free>(op_open_memory(tmp.data(), tmp.size(), &error));
 		if (error != 0) {
-			Debug(grf, 0, "SoundLoader_Opus: Unable to open stream.");
+			Debug(Facility::Grf, Severity::Critical, "SoundLoader_Opus: Unable to open stream.");
 			return false;
 		}
 
@@ -69,14 +71,14 @@ public:
 			if (read == 0) break;
 
 			if (read < 0) {
-				Debug(grf, 0, "SoundLoader_Opus: Unexpected end of stream.");
+				Debug(Facility::Grf, Severity::Critical, "SoundLoader_Opus: Unexpected end of stream.");
 				data.clear();
 				return false;
 			}
 
 			int channels = op_channel_count(of.get(), link_index);
 			if (channels != 1) {
-				Debug(grf, 0, "SoundLoader_Opus: Unsupported channels {}, expected 1.", channels);
+				Debug(Facility::Grf, Severity::Critical, "SoundLoader_Opus: Unsupported channels {}, expected 1.", channels);
 				data.clear();
 				return false;
 			}

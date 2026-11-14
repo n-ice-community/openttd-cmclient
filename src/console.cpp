@@ -16,7 +16,8 @@
 #include "network/network_admin.h"
 #include "debug.h"
 #include "console_func.h"
-#include "settings_type.h"
+#include "fileio_type.h"
+#include "string_func.h"
 
 #include "safeguards.h"
 
@@ -40,7 +41,7 @@ std::optional<FileHandle> _iconsole_output_file;
 void IConsoleInit()
 {
 	_iconsole_output_file = std::nullopt;
-	_redirect_console_to_client = INVALID_CLIENT_ID;
+	_redirect_console_to_client = ClientID::Invalid;
 	_redirect_console_to_admin  = AdminID::Invalid();
 
 	IConsoleGUIInit();
@@ -87,11 +88,11 @@ void IConsoleFree()
  * @param colour_code The colour of the command.
  * @param string The message to output on the console (notice, error, etc.)
  */
-void IConsolePrint(TextColour colour_code, const std::string &string)
+void IConsolePrint(ExtendedTextColour colour_code, const std::string &string)
 {
 	assert(IsValidConsoleColour(colour_code));
 
-	if (_redirect_console_to_client != INVALID_CLIENT_ID) {
+	if (_redirect_console_to_client != ClientID::Invalid) {
 		/* Redirect the string to the client */
 		NetworkServerSendRcon(_redirect_console_to_client, colour_code, string);
 		return;
@@ -133,6 +134,7 @@ static std::string RemoveUnderscores(std::string name)
  * Register a new command to be used in the console
  * @param name name of the command that will be used
  * @param proc function that will be called upon execution of command
+ * @param hook Callback to check whether the command is allowed to run in the current context.
  */
 /* static */ void IConsole::CmdRegister(const std::string &name, IConsoleCmdProc *proc, IConsoleHook *hook)
 {
@@ -183,7 +185,7 @@ static std::string RemoveUnderscores(std::string name)
  */
 static void IConsoleAliasExec(const IConsoleAlias *alias, std::span<std::string> tokens, uint recurse_count)
 {
-	Debug(console, 6, "Requested command is an alias; parsing...");
+	Debug(Facility::Console, Severity::Debug2, "Requested command is an alias; parsing...");
 
 	if (recurse_count > ICON_MAX_RECURSE) {
 		IConsolePrint(CC_ERROR, "Too many alias expansions, recursion limit reached.");
@@ -265,12 +267,13 @@ static void IConsoleAliasExec(const IConsoleAlias *alias, std::span<std::string>
  * Execute a given command passed to us. First chop it up into
  * individual tokens (separated by spaces), then execute it if possible
  * @param command_string string to be parsed and executed
+ * @param recurse_count The number of re-entrant calls to this function.
  */
 void IConsoleCmdExec(std::string_view command_string, const uint recurse_count)
 {
 	if (command_string[0] == '#') return; // comments
 
-	Debug(console, 4, "Executing cmdline: '{}'", command_string);
+	Debug(Facility::Console, Severity::Info, "Executing cmdline: '{}'", command_string);
 
 	std::string buffer;
 	StringBuilder builder{buffer};
@@ -329,7 +332,7 @@ void IConsoleCmdExec(std::string_view command_string, const uint recurse_count)
 	}
 
 	for (size_t i = 0; i < tokens.size(); i++) {
-		Debug(console, 8, "Token {} is: '{}'", i, tokens[i]);
+		Debug(Facility::Console, Severity::Trace2, "Token {} is: '{}'", i, tokens[i]);
 	}
 
 	if (tokens.empty() || tokens[0].empty()) return; // don't execute empty commands
@@ -339,9 +342,9 @@ void IConsoleCmdExec(std::string_view command_string, const uint recurse_count)
 	 */
 	IConsoleCmd *cmd = IConsole::CmdGet(tokens[0]);
 	if (cmd != nullptr) {
-		ConsoleHookResult chr = (cmd->hook == nullptr ? CHR_ALLOW : cmd->hook(true));
+		ConsoleHookResult chr = (cmd->hook == nullptr ? ConsoleHookResult::Allow : cmd->hook(true));
 		switch (chr) {
-			case CHR_ALLOW: {
+			case ConsoleHookResult::Allow: {
 				std::vector<std::string_view> views;
 				for (auto &token : tokens) views.emplace_back(token);
 				if (!cmd->proc(views)) { // index started with 0
@@ -350,8 +353,8 @@ void IConsoleCmdExec(std::string_view command_string, const uint recurse_count)
 				return;
 			}
 
-			case CHR_DISALLOW: return;
-			case CHR_HIDE: break;
+			case ConsoleHookResult::Disallow: return;
+			case ConsoleHookResult::Hide: break;
 		}
 	}
 

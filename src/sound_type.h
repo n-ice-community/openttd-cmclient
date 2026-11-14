@@ -10,10 +10,11 @@
 #ifndef SOUND_TYPE_H
 #define SOUND_TYPE_H
 
+/** Source of loaded sound data. */
 enum class SoundSource : uint8_t {
-	BasesetOldFormat,
-	BasesetNewFormat,
-	NewGRF,
+	BasesetOldFormat, ///< The TTD format with certain internal bugs (incorrect frequency, WAV without headers, ...).
+	BasesetNewFormat, ///< New format with Opus and WAV files.
+	NewGRF, ///< Contained within a NewGRF.
 };
 
 struct SoundEntry {
@@ -25,7 +26,6 @@ struct SoundEntry {
 	uint8_t bits_per_sample;
 	uint8_t channels;
 	uint8_t volume;
-	uint8_t priority;
 	SoundSource source;
 	uint8_t grf_container_ver; ///< NewGRF container version if the sound is from a NewGRF.
 };

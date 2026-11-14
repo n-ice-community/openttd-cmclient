@@ -16,9 +16,7 @@
 #include "vehicle_type.h"
 #include "economy_func.h"
 #include "rail.h"
-#include "road.h"
 #include "linkgraph/linkgraph_type.h"
-#include "industry_type.h"
 
 void ModifyStationRatingAround(TileIndex tile, Owner owner, int amount, uint radius);
 
@@ -26,12 +24,14 @@ void ShowStationViewWindow(StationID station);
 void UpdateAllStationVirtCoords();
 void ClearAllStationCachedNames();
 
+CommandCost CheckStationSpread(TileArea area, const TileArea &new_area);
+
 CargoArray GetProductionAroundTiles(TileIndex tile, int w, int h, int rad);
-CargoArray GetAcceptanceAroundTiles(TileIndex tile, int w, int h, int rad, CargoTypes *always_accepted = nullptr);
+std::pair<CargoArray, CargoTypes> GetAcceptanceAroundTiles(TileIndex tile, int w, int h, int rad);
 
 void UpdateStationAcceptance(Station *st, bool show_msg);
 CargoTypes GetAcceptanceMask(const Station *st);
-CargoTypes GetEmptyMask(const Station *st);
+CargoTypes GetCargoWaitingMask(const Station *st);
 
 void SetRailStationTileFlags(TileIndex tile, const StationSpec *statspec);
 const DrawTileSprites *GetStationTileLayout(StationType st, uint8_t gfx);
@@ -59,7 +59,7 @@ void RerouteCargo(Station *st, CargoType cargo, StationID avoid, StationID avoid
  */
 inline Money StationMaintenanceCost(uint32_t num)
 {
-	return (_price[PR_INFRASTRUCTURE_STATION] * num * (1 + IntSqrt(num))) >> 7; // 7 bits scaling.
+	return (_price[Price::InfrastructureStation] * num * (1 + IntSqrt(num))) >> 7; // 7 bits scaling.
 }
 
 Money AirportMaintenanceCost(Owner owner);

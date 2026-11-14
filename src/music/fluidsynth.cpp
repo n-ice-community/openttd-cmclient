@@ -26,6 +26,7 @@ static struct {
 	fluid_synth_t *synth; ///< FluidSynth synthesizer handle
 	fluid_player_t *player; ///< FluidSynth MIDI player handle
 	std::mutex synth_mutex; ///< Guard mutex for synth access
+	double max_gain; ///< Default max gain.
 } _midi; ///< Metadata about the midi we're playing.
 
 /** Factory for the FluidSynth driver. */
@@ -63,12 +64,12 @@ static void RenderMusicStream(int16_t *buffer, size_t samples)
 static void load_and_execute_config_file(fluid_cmd_handler_t *cmd_handler, const char *config_file)
 {
 	if (std::filesystem::exists(config_file)) {
-		Debug(driver, 2, "Fluidsynth: Attempting to load config file '{}'", config_file);
+		Debug(Facility::Driver, Severity::Warning, "Fluidsynth: Attempting to load config file '{}'", config_file);
 		if (fluid_source(cmd_handler, config_file) < 0) {
-			Debug(driver, 0, "Fluidsynth: Failed to execute command configuration file '{}'", config_file);
+			Debug(Facility::Driver, Severity::Critical, "Fluidsynth: Failed to execute command configuration file '{}'", config_file);
 		}
 	} else {
-		Debug(driver, 1, "Fluidsynth: Failed to load config file '{}' - file doesn't exist", config_file);
+		Debug(Facility::Driver, Severity::Error, "Fluidsynth: Failed to load config file '{}' - file doesn't exist", config_file);
 	}
 }
 
@@ -79,7 +80,7 @@ std::optional<std::string_view> MusicDriver_FluidSynth::Start(const StringList &
 	auto sfont_name = GetDriverParam(param, "soundfont");
 	int sfont_id;
 
-	Debug(driver, 1, "Fluidsynth: sf {}", sfont_name.has_value() ? *sfont_name : "(null)");
+	Debug(Facility::Driver, Severity::Error, "Fluidsynth: sf {}", sfont_name.has_value() ? *sfont_name : "(null)");
 
 	/* Create the settings. */
 	_midi.settings = new_fluid_settings();
@@ -103,7 +104,7 @@ std::optional<std::string_view> MusicDriver_FluidSynth::Start(const StringList &
 	/* Install the music render routine and set up the samplerate */
 	uint32_t samplerate = MxSetMusicSource(RenderMusicStream);
 	fluid_settings_setnum(_midi.settings, "synth.sample-rate", samplerate);
-	Debug(driver, 1, "Fluidsynth: samplerate {:.0f}", (float)samplerate);
+	Debug(Facility::Driver, Severity::Error, "Fluidsynth: samplerate {:.0f}", (float)samplerate);
 
 	/* Create the synthesizer. */
 	_midi.synth = new_fluid_synth(_midi.settings);
@@ -135,6 +136,14 @@ std::optional<std::string_view> MusicDriver_FluidSynth::Start(const StringList &
 		std::string name{sfont_name.value()};
 		sfont_id = fluid_synth_sfload(_midi.synth, name.c_str(), 1);
 		if (sfont_id == FLUID_FAILED) return "Could not open sound font";
+	}
+
+	/* Treat a configured synth gain as the maximum gain to use. */
+	if (fluid_settings_getnum(_midi.settings, "synth.gain", &_midi.max_gain) != FLUID_OK) {
+		if (fluid_settings_getnum_default(_midi.settings, "synth.gain", &_midi.max_gain) != FLUID_OK) {
+			/* No synth.gain value present for some reason, use FluidSynth's default value. */
+			_midi.max_gain = 0.2;
+		}
 	}
 
 	_midi.player = nullptr;
@@ -172,18 +181,18 @@ void MusicDriver_FluidSynth::PlaySong(const MusicSongInfo &song)
 
 	_midi.player = new_fluid_player(_midi.synth);
 	if (_midi.player == nullptr) {
-		Debug(driver, 0, "Could not create midi player");
+		Debug(Facility::Driver, Severity::Critical, "Could not create midi player");
 		return;
 	}
 
 	if (fluid_player_add(_midi.player, filename.c_str()) != FLUID_OK) {
-		Debug(driver, 0, "Could not open music file");
+		Debug(Facility::Driver, Severity::Critical, "Could not open music file");
 		delete_fluid_player(_midi.player);
 		_midi.player = nullptr;
 		return;
 	}
 	if (fluid_player_play(_midi.player) != FLUID_OK) {
-		Debug(driver, 0, "Could not start midi player");
+		Debug(Facility::Driver, Severity::Critical, "Could not start midi player");
 		delete_fluid_player(_midi.player);
 		_midi.player = nullptr;
 		return;
@@ -217,12 +226,9 @@ void MusicDriver_FluidSynth::SetVolume(uint8_t vol)
 	std::lock_guard<std::mutex> lock{_midi.synth_mutex};
 	if (_midi.settings == nullptr) return;
 
-	/* Allowed range of synth.gain is 0.0 to 10.0 */
-	/* fluidsynth's default gain is 0.2, so use this as "full
-	 * volume". Set gain using OpenTTD's volume, as a number between 0
-	 * and 0.2. */
-	double gain = (1.0 * vol) / (128.0 * 5.0);
+	/* Set gain using OpenTTD's volume, as a number between 0 and max_gain. */
+	double gain = (1.0 * vol) / 128.0 * _midi.max_gain;
 	if (fluid_settings_setnum(_midi.settings, "synth.gain", gain) != FLUID_OK) {
-		Debug(driver, 0, "Could not set volume");
+		Debug(Facility::Driver, Severity::Critical, "Could not set volume");
 	}
 }

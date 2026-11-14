@@ -93,7 +93,14 @@ template <>
 bool CargoRemoval<VehicleCargoList>::operator()(CargoPacket *cp)
 {
 	uint remove = this->Preprocess(cp);
-	this->source->RemoveFromMeta(cp, VehicleCargoList::MTA_KEEP, remove);
+
+	uint remaining = remove;
+	for (VehicleCargoList::MoveToAction action : {VehicleCargoList::MoveToAction::Keep, VehicleCargoList::MoveToAction::Transfer, VehicleCargoList::MoveToAction::Deliver, VehicleCargoList::MoveToAction::Load}) {
+		remaining -= this->source->TryRemoveFromMeta(cp, action, remaining);
+		if (remaining == 0) break;
+	}
+	assert(remaining == 0);
+
 	return this->Postprocess(cp, remove);
 }
 
@@ -106,7 +113,7 @@ bool CargoRemoval<VehicleCargoList>::operator()(CargoPacket *cp)
 bool CargoDelivery::operator()(CargoPacket *cp)
 {
 	uint remove = this->Preprocess(cp);
-	this->source->RemoveFromMeta(cp, VehicleCargoList::MTA_DELIVER, remove);
+	this->source->RemoveFromMeta(cp, VehicleCargoList::MoveToAction::Deliver, remove);
 	this->payment->PayFinalDelivery(this->cargo, cp, remove, this->current_tile);
 	return this->Postprocess(cp, remove);
 }
@@ -122,7 +129,7 @@ bool CargoLoad::operator()(CargoPacket *cp)
 	if (cp_new == nullptr) return false;
 	cp_new->UpdateLoadingTile(this->current_tile);
 	this->source->RemoveFromCache(cp_new, cp_new->Count());
-	this->destination->Append(cp_new, VehicleCargoList::MTA_KEEP);
+	this->destination->Append(cp_new, VehicleCargoList::MoveToAction::Keep);
 	return cp_new == cp;
 }
 
@@ -138,7 +145,7 @@ bool CargoReservation::operator()(CargoPacket *cp)
 	cp_new->UpdateLoadingTile(this->current_tile);
 	this->source->reserved_count += cp_new->Count();
 	this->source->RemoveFromCache(cp_new, cp_new->Count());
-	this->destination->Append(cp_new, VehicleCargoList::MTA_LOAD);
+	this->destination->Append(cp_new, VehicleCargoList::MoveToAction::Load);
 	return cp_new == cp;
 }
 
@@ -153,7 +160,7 @@ bool CargoReturn::operator()(CargoPacket *cp)
 	if (cp_new == nullptr) cp_new = cp;
 	assert(cp_new->Count() <= this->destination->reserved_count);
 	cp_new->UpdateUnloadingTile(this->current_tile);
-	this->source->RemoveFromMeta(cp_new, VehicleCargoList::MTA_LOAD, cp_new->Count());
+	this->source->RemoveFromMeta(cp_new, VehicleCargoList::MoveToAction::Load, cp_new->Count());
 	this->destination->reserved_count -= cp_new->Count();
 	this->destination->Append(cp_new, this->next);
 	return cp_new == cp;
@@ -169,7 +176,7 @@ bool CargoTransfer::operator()(CargoPacket *cp)
 	CargoPacket *cp_new = this->Preprocess(cp);
 	if (cp_new == nullptr) return false;
 	cp_new->UpdateUnloadingTile(this->current_tile);
-	this->source->RemoveFromMeta(cp_new, VehicleCargoList::MTA_TRANSFER, cp_new->Count());
+	this->source->RemoveFromMeta(cp_new, VehicleCargoList::MoveToAction::Transfer, cp_new->Count());
 	/* No transfer credits here as they were already granted during Stage(). */
 	this->destination->Append(cp_new, cp_new->GetNextHop());
 	return cp_new == cp;
@@ -184,8 +191,8 @@ bool CargoShift::operator()(CargoPacket *cp)
 {
 	CargoPacket *cp_new = this->Preprocess(cp);
 	if (cp_new == nullptr) cp_new = cp;
-	this->source->RemoveFromMeta(cp_new, VehicleCargoList::MTA_KEEP, cp_new->Count());
-	this->destination->Append(cp_new, VehicleCargoList::MTA_KEEP);
+	this->source->RemoveFromMeta(cp_new, VehicleCargoList::MoveToAction::Keep, cp_new->Count());
+	this->destination->Append(cp_new, VehicleCargoList::MoveToAction::Keep);
 	return cp_new == cp;
 }
 
@@ -225,8 +232,8 @@ bool VehicleCargoReroute::operator()(CargoPacket *cp)
 		cp->SetNextHop(this->ge->GetVia(cp_new->GetFirstStation(), this->avoid, this->avoid2));
 	}
 	if (this->source != this->destination) {
-		this->source->RemoveFromMeta(cp_new, VehicleCargoList::MTA_TRANSFER, cp_new->Count());
-		this->destination->AddToMeta(cp_new, VehicleCargoList::MTA_TRANSFER);
+		this->source->RemoveFromMeta(cp_new, VehicleCargoList::MoveToAction::Transfer, cp_new->Count());
+		this->destination->AddToMeta(cp_new, VehicleCargoList::MoveToAction::Transfer);
 	}
 
 	/* Legal, as front pushing doesn't invalidate iterators in std::list. */

@@ -5,6 +5,8 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <https://www.gnu.org/licenses/old-licenses/gpl-2.0>.
  */
 
+/** @file game_changelog.hpp Lists all changes / additions to the game script API. */
+
 /**
  * @page game_changelog Lists all changes / additions to the API.
  *
@@ -12,6 +14,16 @@
  * bug fixes can be found in the normal changelog. Note that removed API
  * functions may still be available if you return an older API version
  * in GetAPIVersion() in info.nut.
+ *
+ * \b 16.0
+ *
+ * API additions:
+ * \li GSRail::RemoveRailDepot
+ * \li GSDepot
+ * \li GSError::ERR_CAT_DEPOT
+ *
+ * Other changes:
+ * \li GSTown::ExpandTown Change to town expansion to match expected behaviour with the 'allow_town_roads' setting
  *
  * \b 15.0
  *

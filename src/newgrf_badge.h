@@ -23,7 +23,7 @@ public:
 	BadgeID index; ///< Index assigned to badge.
 	BadgeClassID class_index; ///< Index of class this badge belongs to.
 	BadgeFlags flags = {}; ///< Display flags
-	StringID name = 0; ///< Short name.
+	StringID name{}; ///< Short name.
 	GrfSpecFeatures features{}; ///< Bitmask of which features use this badge.
 	VariableGRFFileProps<GrfSpecFeature> grf_prop; ///< Sprite information.
 
@@ -47,7 +47,7 @@ public:
 	}
 
 private:
-	GrfSpecFeature feature;
+	GrfSpecFeature feature{};
 	std::vector<BadgeClassID> classes; ///< List of badge classes.
 };
 
@@ -64,7 +64,7 @@ Badge *GetBadgeByLabel(std::string_view label);
 Badge *GetClassBadge(BadgeClassID class_index);
 std::span<const BadgeID> GetClassBadges();
 
-uint32_t GetBadgeVariableResult(const struct GRFFile &grffile, std::span<const BadgeID> badges, uint32_t parameter);
+uint32_t GetBadgeVariableResult(const GRFFile &grffile, std::span<const BadgeID> badges, uint32_t parameter);
 
 PalSpriteID GetBadgeSprite(const Badge &badge, GrfSpecFeature feature, std::optional<TimerGameCalendar::Date> introduction_date, PaletteID remap);
 

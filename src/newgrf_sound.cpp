@@ -78,6 +78,7 @@ size_t GetSoundPoolAllocatedMemory()
 /**
  * Extract meta data from a NewGRF sound.
  * @param sound Sound to load.
+ * @param sound_id Identifier of the sound to load.
  * @return True if a valid sound was loaded.
  */
 bool LoadNewGRFSound(SoundEntry &sound, SoundID sound_id)
@@ -103,13 +104,13 @@ bool LoadNewGRFSound(SoundEntry &sound, SoundID sound_id)
 
 	/* Test string termination */
 	if (name[name_len] != '\0') {
-		Debug(grf, 2, "LoadNewGRFSound [{}]: Name not properly terminated", file.GetSimplifiedFilename());
+		Debug(Facility::Grf, Severity::Warning, "LoadNewGRFSound [{}]: Name not properly terminated", file.GetSimplifiedFilename());
 		return false;
 	}
 
 	if (LoadSoundData(sound, true, sound_id, StrMakeValid(name))) return true;
 
-	Debug(grf, 1, "LoadNewGRFSound [{}]: does not contain any sound data", file.GetSimplifiedFilename());
+	Debug(Facility::Grf, Severity::Error, "LoadNewGRFSound [{}]: does not contain any sound data", file.GetSimplifiedFilename());
 
 	/* Clear everything that was read */
 	sound = {};
@@ -153,7 +154,7 @@ bool PlayVehicleSound(const Vehicle *v, VehicleSoundEvent event, bool force)
 	/* Check that the vehicle type uses the sound effect callback */
 	if (!EngInfo(v->engine_type)->callback_mask.Test(VehicleCallbackMask::SoundEffect)) return false;
 
-	callback = GetVehicleCallback(CBID_VEHICLE_SOUND_EFFECT, event, 0, v->engine_type, v);
+	callback = GetVehicleCallback(CBID_VEHICLE_SOUND_EFFECT, to_underlying(event), 0, v->engine_type, v);
 	/* Play default sound if callback fails */
 	if (callback == CALLBACK_FAILED) return false;
 

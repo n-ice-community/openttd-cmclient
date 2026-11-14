@@ -28,6 +28,7 @@ struct AirportTileScopeResolver : public ScopeResolver {
 
 	/**
 	 * Constructor of the scope resolver specific for airport tiles.
+	 * @param ro Surrounding resolver.
 	 * @param ats Specification of the airport tiles.
 	 * @param tile %Tile for the callback, only valid for airporttile callbacks.
 	 * @param st Station of the airport for which the callback is run, or \c nullptr for build gui.
@@ -51,11 +52,11 @@ struct AirportTileResolverObject : public ResolverObject {
 	AirportTileResolverObject(const AirportTileSpec *ats, TileIndex tile, Station *st,
 			CallbackID callback = CBID_NO_CALLBACK, uint32_t callback_param1 = 0, uint32_t callback_param2 = 0);
 
-	ScopeResolver *GetScope(VarSpriteGroupScope scope = VSG_SCOPE_SELF, uint8_t relative = 0) override
+	ScopeResolver *GetScope(VarSpriteGroupScope scope = VarSpriteGroupScope::Self, uint8_t relative = 0) override
 	{
 		switch (scope) {
-			case VSG_SCOPE_SELF: return &tiles_scope;
-			case VSG_SCOPE_PARENT: return &airport_scope;
+			case VarSpriteGroupScope::Self: return &tiles_scope;
+			case VarSpriteGroupScope::Parent: return &airport_scope;
 			default: return ResolverObject::GetScope(scope, relative);
 		}
 	}
@@ -68,13 +69,13 @@ struct AirportTileResolverObject : public ResolverObject {
  * Defines the data structure of each individual tile of an airport.
  */
 struct AirportTileSpec {
-	AnimationInfo<AirportAnimationTriggers> animation; ///< Information about the animation.
-	StringID name;                        ///< Tile Subname string, land information on this tile will give you "AirportName (TileSubname)"
-	AirportTileCallbackMasks callback_mask;                  ///< Bitmask telling which grf callback is set
-	uint8_t animation_special_flags;        ///< Extra flags to influence the animation
-	bool enabled;                         ///< entity still available (by default true). newgrf can disable it, though
-	SubstituteGRFFileProps grf_prop; ///< properties related the the grf file
-	std::vector<BadgeID> badges;
+	AnimationInfo<AirportAnimationTriggers> animation{}; ///< Information about the animation.
+	StringID name{}; ///< Tile Subname string, land information on this tile will give you "AirportName (TileSubname)"
+	AirportTileCallbackMasks callback_mask{}; ///< Bitmask telling which grf callback is set
+	uint8_t animation_special_flags = 0; ///< Extra flags to influence the animation
+	bool enabled = true; ///< entity still available (by default true). newgrf can disable it, though
+	SubstituteGRFFileProps grf_prop{INVALID_AIRPORTTILE}; ///< properties related the the grf file
+	std::vector<BadgeID> badges{}; ///< Badge list.
 
 	static const AirportTileSpec *Get(StationGfx gfx);
 	static const AirportTileSpec *GetByTile(TileIndex tile);

@@ -9,24 +9,26 @@
 
 #include "../stdafx.h"
 #include "network_survey.h"
-#include "../settings_table.h"
-#include "network.h"
+#include "core/config.h"
 #include "network_func.h"
 #include "../debug.h"
+#include "../settings_type.h"
 #include "../survey.h"
 #include "../3rdparty/fmt/chrono.h"
-#include "../3rdparty/fmt/std.h"
 
 #include "../safeguards.h"
 
-NetworkSurveyHandler _survey = {};
-
+#ifndef DOXYGEN_API
+/* Mapping to a string representation of the Reason enumeration. */
 NLOHMANN_JSON_SERIALIZE_ENUM(NetworkSurveyHandler::Reason, {
-	{NetworkSurveyHandler::Reason::PREVIEW, "preview"},
-	{NetworkSurveyHandler::Reason::LEAVE, "leave"},
-	{NetworkSurveyHandler::Reason::EXIT, "exit"},
-	{NetworkSurveyHandler::Reason::CRASH, "crash"},
+	{NetworkSurveyHandler::Reason::Preview, "preview"},
+	{NetworkSurveyHandler::Reason::Leave, "leave"},
+	{NetworkSurveyHandler::Reason::Exit, "exit"},
+	{NetworkSurveyHandler::Reason::Crash, "crash"},
 })
+#endif /* DOXYGEN_API */
+
+NetworkSurveyHandler _survey = {};
 
 /**
  * Create the payload for the survey.
@@ -86,16 +88,16 @@ std::string NetworkSurveyHandler::CreatePayload(Reason reason, bool for_preview)
 void NetworkSurveyHandler::Transmit(Reason reason, bool blocking)
 {
 	if constexpr (!NetworkSurveyHandler::IsSurveyPossible()) {
-		Debug(net, 4, "Survey: not possible to send survey; most likely due to missing JSON library at compile-time");
+		Debug(Facility::Net, Severity::Info, "Survey: not possible to send survey; most likely due to missing JSON library at compile-time");
 		return;
 	}
 
-	if (_settings_client.network.participate_survey != PS_YES) {
-		Debug(net, 5, "Survey: user is not participating in survey; skipping survey");
+	if (_settings_client.network.participate_survey != ParticipateSurvey::Yes) {
+		Debug(Facility::Net, Severity::Debug1, "Survey: user is not participating in survey; skipping survey");
 		return;
 	}
 
-	Debug(net, 1, "Survey: sending survey results");
+	Debug(Facility::Net, Severity::Error, "Survey: sending survey results");
 	NetworkHTTPSocketHandler::Connect(NetworkSurveyUriString(), this, this->CreatePayload(reason));
 
 	if (blocking) {
@@ -113,7 +115,7 @@ void NetworkSurveyHandler::Transmit(Reason reason, bool blocking)
 
 void NetworkSurveyHandler::OnFailure()
 {
-	Debug(net, 1, "Survey: failed to send survey results");
+	Debug(Facility::Net, Severity::Error, "Survey: failed to send survey results");
 	this->transmitted = true;
 	this->transmitted_cv.notify_all();
 }
@@ -121,7 +123,7 @@ void NetworkSurveyHandler::OnFailure()
 void NetworkSurveyHandler::OnReceiveData(std::unique_ptr<char[]> data, size_t)
 {
 	if (data == nullptr) {
-		Debug(net, 1, "Survey: survey results sent");
+		Debug(Facility::Net, Severity::Error, "Survey: survey results sent");
 		this->transmitted = true;
 		this->transmitted_cv.notify_all();
 	}

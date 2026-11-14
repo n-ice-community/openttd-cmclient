@@ -16,9 +16,8 @@
 #include "order_type.h"
 #include "cargo_type.h"
 #include "source_type.h"
-#include "vehicle_type.h"
 #include "core/multimap.hpp"
-#include "saveload/saveload.h"
+#include "saveload/saveload_type.h"
 
 /** Unique identifier for a single cargo packet. */
 using CargoPacketID = PoolID<uint32_t, struct CargoPacketIDTag, 0xFFF000, 0xFFFFFF>;
@@ -40,19 +39,13 @@ extern SaveLoadTable GetCargoPacketDesc();
  */
 struct CargoPacket : CargoPacketPool::PoolItem<&_cargopacket_pool> {
 private:
-	/* A mathematical vector from (0,0). */
-	struct Vector {
-		int16_t x;
-		int16_t y;
-	};
-
 	uint16_t count = 0; ///< The amount of cargo in this packet.
 	uint16_t periods_in_transit = 0; ///< Amount of cargo aging periods this packet has been in transit.
 
 	Money feeder_share = 0; ///< Value of feeder pickup to be paid for on delivery of cargo.
 
 	TileIndex source_xy = INVALID_TILE; ///< The origin of the cargo.
-	Vector travelled{0, 0}; ///< If cargo is in station: the vector from the unload tile to the source tile. If in vehicle: an intermediate value.
+	Coord2D<int16_t> travelled{0, 0}; ///< If cargo is in station: the vector from the unload tile to the source tile. If in vehicle: an intermediate value.
 
 	Source source{Source::Invalid, SourceType::Industry}; ///< Source of the cargo
 
@@ -73,13 +66,10 @@ public:
 	/** Maximum number of items in a single cargo packet. */
 	static const uint16_t MAX_COUNT = UINT16_MAX;
 
-	CargoPacket();
-	CargoPacket(StationID first_station, uint16_t count, Source source);
-	CargoPacket(uint16_t count, uint16_t periods_in_transit, StationID first_station, TileIndex source_xy, Money feeder_share);
-	CargoPacket(uint16_t count, Money feeder_share, CargoPacket &original);
-
-	/** Destroy the packet. */
-	~CargoPacket() { }
+	CargoPacket(CargoPacketID index);
+	CargoPacket(CargoPacketID index, StationID first_station, uint16_t count, Source source);
+	CargoPacket(CargoPacketID index, uint16_t count, uint16_t periods_in_transit, StationID first_station, TileIndex source_xy, Money feeder_share);
+	CargoPacket(CargoPacketID index, uint16_t count, Money feeder_share, CargoPacket &original);
 
 	CargoPacket *Split(uint new_size);
 	void Merge(CargoPacket *cp);
@@ -261,6 +251,20 @@ public:
 		return this->next_hop;
 	}
 
+	/**
+	 * Are the two CargoPackets mergeable.
+	 * @param cp1 First cargo packet to check.
+	 * @param cp2 Second cargo packet to check.
+	 * @return \c true iff they are mergeable.
+	 */
+	static bool AreMergable(const CargoPacket *cp1, const CargoPacket *cp2)
+	{
+		return cp1->source_xy == cp2->source_xy &&
+				cp1->periods_in_transit == cp2->periods_in_transit &&
+				cp1->first_station == cp2->first_station &&
+				cp1->source == cp2->source;
+	}
+
 	static void InvalidateAllFrom(Source src);
 	static void InvalidateAllFrom(StationID sid);
 	static void AfterLoad();
@@ -283,14 +287,12 @@ public:
 	typedef typename Tcont::const_reverse_iterator ConstReverseIterator;
 
 	/** Kind of actions that could be done with packets on move. */
-	enum MoveToAction : uint8_t {
-		MTA_BEGIN = 0,
-		MTA_TRANSFER = 0, ///< Transfer the cargo to the station.
-		MTA_DELIVER,      ///< Deliver the cargo to some town or industry.
-		MTA_KEEP,         ///< Keep the cargo in the vehicle.
-		MTA_LOAD,         ///< Load the cargo from the station.
-		MTA_END,
-		NUM_MOVE_TO_ACTION = MTA_END
+	enum class MoveToAction : uint8_t {
+		Transfer, ///< Transfer the cargo to the station.
+		Deliver, ///< Deliver the cargo to some town or industry.
+		Keep, ///< Keep the cargo in the vehicle.
+		Load, ///< Load the cargo from the station.
+		End, ///< End marker.
 	};
 
 protected:
@@ -344,8 +346,8 @@ protected:
 	/** The (direct) parent of this class. */
 	typedef CargoList<VehicleCargoList, CargoPacketList> Parent;
 
-	Money feeder_share;                     ///< Cache for the feeder share.
-	uint action_counts[NUM_MOVE_TO_ACTION]; ///< Counts of cargo to be transferred, delivered, kept and loaded.
+	Money feeder_share; ///< Cache for the feeder share.
+	EnumIndexArray<uint, MoveToAction, MoveToAction::End> action_counts{}; ///< Counts of cargo to be transferred, delivered, kept and loaded.
 
 	template <class Taction>
 	void ShiftCargo(Taction action);
@@ -358,10 +360,10 @@ protected:
 	 */
 	inline void AssertCountConsistency() const
 	{
-		assert(this->action_counts[MTA_KEEP] +
-				this->action_counts[MTA_DELIVER] +
-				this->action_counts[MTA_TRANSFER] +
-				this->action_counts[MTA_LOAD] == this->count);
+		assert(this->action_counts[MoveToAction::Keep] +
+				this->action_counts[MoveToAction::Deliver] +
+				this->action_counts[MoveToAction::Transfer] +
+				this->action_counts[MoveToAction::Load] == this->count);
 	}
 
 	void AddToCache(const CargoPacket *cp);
@@ -369,6 +371,7 @@ protected:
 
 	void AddToMeta(const CargoPacket *cp, MoveToAction action);
 	void RemoveFromMeta(const CargoPacket *cp, MoveToAction action, uint count);
+	uint TryRemoveFromMeta(const CargoPacket *cp, MoveToAction action, uint count);
 
 	static MoveToAction ChooseAction(const CargoPacket *cp, StationID cargo_next,
 			StationID current_station, bool accepted, std::span<const StationID> next_station);
@@ -424,7 +427,7 @@ public:
 	 */
 	inline uint StoredCount() const
 	{
-		return this->count - this->action_counts[MTA_LOAD];
+		return this->count - this->action_counts[MoveToAction::Load];
 	}
 
 	/**
@@ -442,7 +445,7 @@ public:
 	 */
 	inline uint ReservedCount() const
 	{
-		return this->action_counts[MTA_LOAD];
+		return this->action_counts[MoveToAction::Load];
 	}
 
 	/**
@@ -451,7 +454,7 @@ public:
 	 */
 	inline uint UnloadCount() const
 	{
-		return this->action_counts[MTA_TRANSFER] + this->action_counts[MTA_DELIVER];
+		return this->action_counts[MoveToAction::Transfer] + this->action_counts[MoveToAction::Deliver];
 	}
 
 	/**
@@ -460,10 +463,10 @@ public:
 	 */
 	inline uint RemainingCount() const
 	{
-		return this->action_counts[MTA_KEEP] + this->action_counts[MTA_LOAD];
+		return this->action_counts[MoveToAction::Keep] + this->action_counts[MoveToAction::Load];
 	}
 
-	void Append(CargoPacket *cp, MoveToAction action = MTA_KEEP);
+	void Append(CargoPacket *cp, MoveToAction action = MoveToAction::Keep);
 
 	void AgeCargo();
 
@@ -478,8 +481,10 @@ public:
 	 */
 	inline void KeepAll()
 	{
-		this->action_counts[MTA_DELIVER] = this->action_counts[MTA_TRANSFER] = this->action_counts[MTA_LOAD] = 0;
-		this->action_counts[MTA_KEEP] = this->count;
+		this->action_counts[MoveToAction::Deliver] = 0;
+		this->action_counts[MoveToAction::Transfer] = 0;
+		this->action_counts[MoveToAction::Load] = 0;
+		this->action_counts[MoveToAction::Keep] = this->count;
 	}
 
 	/* Methods for moving cargo around. First parameter is always maximum
@@ -493,21 +498,6 @@ public:
 	uint Shift(uint max_move, VehicleCargoList *dest);
 	uint Truncate(uint max_move = UINT_MAX);
 	uint Reroute(uint max_move, VehicleCargoList *dest, StationID avoid, StationID avoid2, const GoodsEntry *ge);
-
-	/**
-	 * Are the two CargoPackets mergeable in the context of
-	 * a list of CargoPackets for a Vehicle?
-	 * @param cp1 First CargoPacket.
-	 * @param cp2 Second CargoPacket.
-	 * @return True if they are mergeable.
-	 */
-	static bool AreMergable(const CargoPacket *cp1, const CargoPacket *cp2)
-	{
-		return cp1->source_xy == cp2->source_xy &&
-				cp1->periods_in_transit == cp2->periods_in_transit &&
-				cp1->first_station == cp2->first_station &&
-				cp1->source == cp2->source;
-	}
 };
 
 typedef MultiMap<StationID, CargoPacket *> StationCargoPacketMap;
@@ -607,21 +597,6 @@ public:
 	uint Load(uint max_move, VehicleCargoList *dest, std::span<const StationID> next, TileIndex current_tile);
 	uint Truncate(uint max_move = UINT_MAX, StationCargoAmountMap *cargo_per_source = nullptr);
 	uint Reroute(uint max_move, StationCargoList *dest, StationID avoid, StationID avoid2, const GoodsEntry *ge);
-
-	/**
-	 * Are the two CargoPackets mergeable in the context of
-	 * a list of CargoPackets for a Station?
-	 * @param cp1 First CargoPacket.
-	 * @param cp2 Second CargoPacket.
-	 * @return True if they are mergeable.
-	 */
-	static bool AreMergable(const CargoPacket *cp1, const CargoPacket *cp2)
-	{
-		return cp1->source_xy == cp2->source_xy &&
-				cp1->periods_in_transit == cp2->periods_in_transit &&
-				cp1->first_station == cp2->first_station &&
-				cp1->source == cp2->source;
-	}
 };
 
 #endif /* CARGOPACKET_H */

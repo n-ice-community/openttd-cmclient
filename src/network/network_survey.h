@@ -24,17 +24,22 @@ protected:
 	bool IsCancelled() const override { return false; }
 
 public:
+	/** Reason why the survey data is being sent. */
 	enum class Reason : uint8_t {
-		PREVIEW, ///< User is previewing the survey result.
-		LEAVE, ///< User is leaving the game (but not exiting the application).
-		EXIT, ///< User is exiting the application.
-		CRASH, ///< Game crashed.
+		Preview, ///< User is previewing the survey result.
+		Leave, ///< User is leaving the game (but not exiting the application).
+		Exit, ///< User is exiting the application.
+		Crash, ///< Game crashed.
 	};
 
 	void Transmit(Reason reason, bool blocking = false);
 	std::string CreatePayload(Reason reason, bool for_preview = false);
 
-	constexpr static bool IsSurveyPossible()
+	/**
+	 * Check whether a survey is possible.
+	 * @return \c true.
+	 */
+	static constexpr bool IsSurveyPossible()
 	{
 		return true;
 	}
@@ -45,6 +50,7 @@ private:
 	std::condition_variable transmitted_cv; ///< Condition variable to inform changes to transmitted.
 };
 
+/** The handler for sending surveys for statistics. */
 extern NetworkSurveyHandler _survey;
 
 #endif /* NETWORK_SURVEY_H */

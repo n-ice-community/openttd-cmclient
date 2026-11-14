@@ -10,9 +10,7 @@
 #ifndef GENWORLD_H
 #define GENWORLD_H
 
-#include "company_type.h"
 #include "landscape_type.h"
-#include <thread>
 
 /** Constants related to world generation */
 enum LandscapeGenerator : uint8_t {
@@ -43,8 +41,6 @@ enum TgenSmoothness : uint8_t {
 	TGEN_SMOOTHNESS_END,        ///< Used to iterate.
 };
 
-static const uint CUSTOM_TERRAIN_TYPE_NUMBER_DIFFICULTY = 5; ///< Value for custom terrain type in difficulty settings.
-
 static const uint CUSTOM_SEA_LEVEL_NUMBER_DIFFICULTY = 4; ///< Value for custom sea level in difficulty settings.
 static const uint CUSTOM_SEA_LEVEL_MIN_PERCENTAGE = 1;    ///< Minimum percentage a user can specify for custom sea level.
 static const uint CUSTOM_SEA_LEVEL_MAX_PERCENTAGE = 90;   ///< Maximum percentage a user can specify for custom sea level.
@@ -58,22 +54,23 @@ typedef void GWDoneProc();  ///< Procedure called when the genworld process fini
 typedef void GWAbortProc(); ///< Called when genworld is aborted
 
 /** Current stage of world generation process */
-enum GenWorldProgress : uint8_t {
-	GWP_MAP_INIT,    ///< Initialize/allocate the map, start economy
-	GWP_LANDSCAPE,   ///< Create the landscape
-	GWP_RIVER,       ///< Create the rivers
-	GWP_ROUGH_ROCKY, ///< Make rough and rocky areas
-	GWP_TOWN,        ///< Generate towns
-	GWP_LAND_INDUSTRY, ///< Generate industries
-	GWP_WATER_INDUSTRY, ///< Generate industries
-	GWP_OBJECT,      ///< Generate objects (radio tower, light houses)
-	GWP_TREE,        ///< Generate trees
-	GWP_GAME_INIT,   ///< Initialize the game
-	GWP_RUNTILELOOP, ///< Runs the tile loop 1280 times to make snow etc
-	GWP_RUNSCRIPT,   ///< Runs the game script at most 2500 times, or when ever the script sleeps
-	GWP_GAME_START,  ///< Really prepare to start the game
-	GWP_CLASS_COUNT
+enum class GenWorldProgress : uint8_t {
+	Init, ///< Initialize/allocate the map, start economy.
+	Landscape, ///< Create the landscape.
+	Rivers, ///< Create the rivers.
+	RoughAndRocks, ///< Make rough and rocky areas.
+	Towns, ///< Generate towns.
+	LandIndustries, ///< Generate industries.
+	WaterIndustries, ///< Generate industries.
+	Objects, ///< Generate objects (radio tower, light houses).
+	Trees, ///< Generate trees.
+	GameInit, ///< Initialize the game.
+	RunTileLoop, ///< Runs the tile loop 1280 times to make snow etc.
+	GameScript, ///< Runs the game script at most 2500 times, or when ever the script sleeps.
+	GameStart, ///< Really prepare to start the game.
+	End, ///< End marker.
 };
+DECLARE_ENUM_AS_SEQUENTIAL(GenWorldProgress)
 
 /* genworld.cpp */
 void GenerateWorldSetCallback(GWDoneProc *proc);

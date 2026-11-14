@@ -8,11 +8,12 @@
 /** @file gfxinit.cpp Initializing of the (GRF) graphics. */
 
 #include "stdafx.h"
-#include "fios.h"
 #include "newgrf.h"
+#include "newgrf_config.h"
 #include "3rdparty/md5/md5.h"
 #include "fontcache.h"
 #include "gfx_func.h"
+#include "spritecache.h"
 #include "transparency.h"
 #include "blitter/factory.hpp"
 #include "video/video_driver.hpp"
@@ -47,9 +48,9 @@ static uint LoadGrfFile(const std::string &filename, SpriteID load_index, bool n
 	SpriteID load_index_org = load_index;
 	SpriteID sprite_id = 0;
 
-	SpriteFile &file = OpenCachedSpriteFile(filename, BASESET_DIR, needs_palette_remap);
+	SpriteFile &file = OpenCachedSpriteFile(filename, Subdirectory::Baseset, needs_palette_remap);
 
-	Debug(sprite, 2, "Reading grf-file '{}'", filename);
+	Debug(Facility::Sprite, Severity::Warning, "Reading grf-file '{}'", filename);
 
 	uint8_t container_ver = file.GetContainerVersion();
 	if (container_ver == 0) UserError("Base grf '{}' is corrupt", filename);
@@ -67,7 +68,7 @@ static uint LoadGrfFile(const std::string &filename, SpriteID load_index, bool n
 			UserError("Too many sprites. Recompile with higher MAX_SPRITES value or remove some custom GRF files.");
 		}
 	}
-	Debug(sprite, 2, "Currently {} sprites are loaded", load_index);
+	Debug(Facility::Sprite, Severity::Warning, "Currently {} sprites are loaded", load_index);
 
 	return load_index - load_index_org;
 }
@@ -77,15 +78,14 @@ static uint LoadGrfFile(const std::string &filename, SpriteID load_index, bool n
  * @param filename   The name of the file to open.
  * @param index_tbl  The offsets of each of the sprites.
  * @param needs_palette_remap Whether the colours in the GRF file need a palette remap.
- * @return The number of loaded sprites.
  */
 static void LoadGrfFileIndexed(const std::string &filename, std::span<const std::pair<SpriteID, SpriteID>> index_tbl, bool needs_palette_remap)
 {
 	uint sprite_id = 0;
 
-	SpriteFile &file = OpenCachedSpriteFile(filename, BASESET_DIR, needs_palette_remap);
+	SpriteFile &file = OpenCachedSpriteFile(filename, Subdirectory::Baseset, needs_palette_remap);
 
-	Debug(sprite, 2, "Reading indexed grf-file '{}'", filename);
+	Debug(Facility::Sprite, Severity::Warning, "Reading indexed grf-file '{}'", filename);
 
 	uint8_t container_ver = file.GetContainerVersion();
 	if (container_ver == 0) UserError("Base grf '{}' is corrupt", filename);
@@ -116,7 +116,7 @@ void CheckExternalFiles()
 
 	const GraphicsSet *used_set = BaseGraphics::GetUsedSet();
 
-	Debug(grf, 1, "Using the {} base graphics set", used_set->name);
+	Debug(Facility::Grf, Severity::Error, "Using the {} base graphics set", used_set->name);
 
 	std::string error_msg;
 	auto output_iterator = std::back_inserter(error_msg);
@@ -124,8 +124,8 @@ void CheckExternalFiles()
 		/* Not all files were loaded successfully, see which ones */
 		fmt::format_to(output_iterator, "Trying to load graphics set '{}', but it is incomplete. The game will probably not run correctly until you properly install this set or select another one. See section 1.4 of README.md.\n\nThe following files are corrupted or missing:\n", used_set->name);
 		for (const auto &file : used_set->files) {
-			MD5File::ChecksumResult res = GraphicsSet::CheckMD5(&file, BASESET_DIR);
-			if (res != MD5File::CR_MATCH) fmt::format_to(output_iterator, "\t{} is {} ({})\n", file.filename, res == MD5File::CR_MISMATCH ? "corrupt" : "missing", file.missing_warning);
+			MD5File::ChecksumResult res = GraphicsSet::CheckMD5(&file, Subdirectory::Baseset);
+			if (res != MD5File::ChecksumResult::Match) fmt::format_to(output_iterator, "\t{} is {} ({})\n", file.filename, res == MD5File::ChecksumResult::Mismatch ? "corrupt" : "missing", file.missing_warning);
 		}
 		fmt::format_to(output_iterator, "\n");
 	}
@@ -137,7 +137,7 @@ void CheckExternalFiles()
 		static_assert(SoundsSet::NUM_FILES == 1);
 		/* No need to loop each file, as long as there is only a single
 		 * sound file. */
-		fmt::format_to(output_iterator, "\t{} is {} ({})\n", sounds_set->files[0].filename, SoundsSet::CheckMD5(&sounds_set->files[0], BASESET_DIR) == MD5File::CR_MISMATCH ? "corrupt" : "missing", sounds_set->files[0].missing_warning);
+		fmt::format_to(output_iterator, "\t{} is {} ({})\n", sounds_set->files[0].filename, SoundsSet::CheckMD5(&sounds_set->files[0], Subdirectory::Baseset) == MD5File::ChecksumResult::Mismatch ? "corrupt" : "missing", sounds_set->files[0].missing_warning);
 	}
 
 	if (!error_msg.empty()) ShowInfoI(error_msg);
@@ -151,7 +151,7 @@ static std::unique_ptr<GRFConfig> GetDefaultExtraGRFConfig()
 {
 	auto gc = std::make_unique<GRFConfig>("OPENTTD.GRF");
 	gc->palette |= GRFP_GRF_DOS;
-	FillGRFDetails(*gc, false, BASESET_DIR);
+	FillGRFDetails(*gc, false, Subdirectory::Baseset);
 	gc->flags.Reset(GRFConfigFlag::InitOnly);
 	return gc;
 }
@@ -173,7 +173,7 @@ static void LoadSpriteTables()
 {
 	const GraphicsSet *used_set = BaseGraphics::GetUsedSet();
 
-	LoadGrfFile(used_set->files[GFT_BASE].filename, 0, PAL_DOS != used_set->palette);
+	LoadGrfFile(used_set->files[to_underlying(GraphicsFileType::Base)].filename, 0, PaletteType::DOS != used_set->palette);
 
 	/*
 	 * The second basic file always starts at the given location and does
@@ -181,7 +181,7 @@ static void LoadSpriteTables()
 	 * has a few sprites less. However, we do not care about those missing
 	 * sprites as they are not shown anyway (logos in intro game).
 	 */
-	LoadGrfFile(used_set->files[GFT_LOGOS].filename, 4793, PAL_DOS != used_set->palette);
+	LoadGrfFile(used_set->files[to_underlying(GraphicsFileType::Logos)].filename, 4793, PaletteType::DOS != used_set->palette);
 
 	/*
 	 * Load additional sprites for climates other than temperate.
@@ -190,9 +190,9 @@ static void LoadSpriteTables()
 	 */
 	if (_settings_game.game_creation.landscape != LandscapeType::Temperate) {
 		LoadGrfFileIndexed(
-			used_set->files[GFT_ARCTIC + to_underlying(_settings_game.game_creation.landscape) - 1].filename,
+			used_set->files[to_underlying(GraphicsFileType::Arctic) + to_underlying(_settings_game.game_creation.landscape) - 1].filename,
 			_landscape_spriteindexes[to_underlying(_settings_game.game_creation.landscape) - 1],
-			PAL_DOS != used_set->palette
+			PaletteType::DOS != used_set->palette
 		);
 	}
 	LoadGrfFile("cmclient-6.grf", CM_SPR_CITYMANIA_BASE, PAL_DOS != used_set->palette);
@@ -216,9 +216,9 @@ static void LoadSpriteTables()
 	LoadNewGRF(SPR_NEWGRFS_BASE, 2);
 
 	uint total_extra_graphics = SPR_NEWGRFS_BASE - SPR_OPENTTD_BASE;
-	Debug(sprite, 4, "Checking sprites from fallback grf");
+	Debug(Facility::Sprite, Severity::Info, "Checking sprites from fallback grf");
 	_missing_extra_graphics = GetSpriteCountForFile(default_filename, SPR_OPENTTD_BASE, SPR_NEWGRFS_BASE);
-	Debug(sprite, 1, "{} extra sprites, {} from baseset, {} from fallback", total_extra_graphics, total_extra_graphics - _missing_extra_graphics, _missing_extra_graphics);
+	Debug(Facility::Sprite, Severity::Error, "{} extra sprites, {} from baseset, {} from fallback", total_extra_graphics, total_extra_graphics - _missing_extra_graphics, _missing_extra_graphics);
 
 	/* The original baseset extra graphics intentionally make use of the fallback graphics.
 	 * Let's say everything which provides less than 500 sprites misses the rest intentionally. */
@@ -234,10 +234,10 @@ static void RealChangeBlitter(std::string_view repl_blitter)
 	std::string_view cur_blitter = BlitterFactory::GetCurrentBlitter()->GetName();
 	if (cur_blitter == repl_blitter) return;
 
-	Debug(driver, 1, "Switching blitter from '{}' to '{}'... ", cur_blitter, repl_blitter);
+	Debug(Facility::Driver, Severity::Error, "Switching blitter from '{}' to '{}'... ", cur_blitter, repl_blitter);
 	Blitter *new_blitter = BlitterFactory::SelectBlitter(repl_blitter);
 	if (new_blitter == nullptr) NOT_REACHED();
-	Debug(driver, 1, "Successfully switched to {}.", repl_blitter);
+	Debug(Facility::Driver, Severity::Error, "Successfully switched to {}.", repl_blitter);
 
 	if (!VideoDriver::GetInstance()->AfterBlitterChange()) {
 		/* Failed to switch blitter, let's hope we can return to the old one. */
@@ -270,9 +270,9 @@ static bool SwitchNewGRFBlitter()
 	 * between multiple 32bpp blitters, which perform differently with 8bpp sprites.
 	 */
 	uint depth_wanted_by_base = BaseGraphics::GetUsedSet()->blitter == BLT_32BPP ? 32 : 8;
-	uint depth_wanted_by_grf = _support8bpp != S8BPP_NONE ? 8 : 32;
+	uint depth_wanted_by_grf = _support8bpp != Support8bpp::None ? 8 : 32;
 	for (const auto &c : _grfconfig) {
-		if (c->status == GCS_DISABLED || c->status == GCS_NOT_FOUND || c->flags.Test(GRFConfigFlag::InitOnly)) continue;
+		if (c->status == GRFStatus::Disabled || c->status == GRFStatus::NotFound || c->flags.Test(GRFConfigFlag::InitOnly)) continue;
 		if (c->palette & GRFP_BLT_32BPP) depth_wanted_by_grf = 32;
 	}
 	/* We need a 32bpp blitter for font anti-alias. */
@@ -299,7 +299,7 @@ static bool SwitchNewGRFBlitter()
 		{ "32bpp-anim",      1,  8, 32,  8, 32 },
 	};
 
-	const bool animation_wanted = HasBit(_display_opt, DO_FULL_ANIMATION);
+	const bool animation_wanted = _display_opt.Test(DisplayOption::FullAnimation);
 	std::string_view cur_blitter = BlitterFactory::GetCurrentBlitter()->GetName();
 
 	for (const auto &replacement_blitter : replacement_blitters) {
@@ -335,7 +335,7 @@ void CheckBlitter()
 /** Initialise and load all the sprites. */
 void GfxLoadSprites()
 {
-	Debug(sprite, 2, "Loading sprite set {}", _settings_game.game_creation.landscape);
+	Debug(Facility::Sprite, Severity::Warning, "Loading sprite set {}", _settings_game.game_creation.landscape);
 
 	SwitchNewGRFBlitter();
 	VideoDriver::GetInstance()->ClearSystemSprites();
@@ -363,7 +363,7 @@ bool GraphicsSet::FillSetDetails(const IniFile &ini, const std::string &path, co
 
 	item = this->GetMandatoryItem(full_filename, *metadata, "palette");
 	if (item == nullptr) return false;
-	this->palette = ((*item->value)[0] == 'D' || (*item->value)[0] == 'd') ? PAL_DOS : PAL_WINDOWS;
+	this->palette = ((*item->value)[0] == 'D' || (*item->value)[0] == 'd') ? PaletteType::DOS : PaletteType::Windows;
 
 	/* Get optional blitter information. */
 	item = metadata->GetItem("blitter");
@@ -379,22 +379,26 @@ bool GraphicsSet::FillSetDetails(const IniFile &ini, const std::string &path, co
 GRFConfig &GraphicsSet::GetOrCreateExtraConfig() const
 {
 	if (!this->extra_cfg) {
-		this->extra_cfg = std::make_unique<GRFConfig>(this->files[GFT_EXTRA].filename);
+		this->extra_cfg = std::make_unique<GRFConfig>(this->files[to_underlying(GraphicsFileType::Extra)].filename);
 
 		/* We know the palette of the base set, so if the base NewGRF is not
 		 * setting one, use the palette of the base set and not the global
 		 * one which might be the wrong palette for this base NewGRF.
 		 * The value set here might be overridden via action14 later. */
 		switch (this->palette) {
-			case PAL_DOS:     this->extra_cfg->palette |= GRFP_GRF_DOS;     break;
-			case PAL_WINDOWS: this->extra_cfg->palette |= GRFP_GRF_WINDOWS; break;
+			case PaletteType::DOS: this->extra_cfg->palette |= GRFP_GRF_DOS; break;
+			case PaletteType::Windows: this->extra_cfg->palette |= GRFP_GRF_WINDOWS; break;
 			default: break;
 		}
-		FillGRFDetails(*this->extra_cfg, false, BASESET_DIR);
+		FillGRFDetails(*this->extra_cfg, false, Subdirectory::Baseset);
 	}
 	return *this->extra_cfg;
 }
 
+/**
+ * Checks whether this set has configuration options.
+ * @return \c true iff there are parameters for this graphics set.
+ */
 bool GraphicsSet::IsConfigurable() const
 {
 	const GRFConfig &cfg = this->GetOrCreateExtraConfig();
@@ -417,15 +421,15 @@ void GraphicsSet::CopyCompatibleConfig(const GraphicsSet &src)
  * @param file The file get the hash of.
  * @param subdir The sub directory to get the files from.
  * @return
- * - #CR_MATCH if the MD5 hash matches
- * - #CR_MISMATCH if the MD5 does not match
- * - #CR_NO_FILE if the file misses
+ * - #MD5File::ChecksumResult::Match if the MD5 hash matches
+ * - #MD5File::ChecksumResult::Mismatch if the MD5 does not match
+ * - #MD5File::ChecksumResult::NoFile if the file misses
  */
 /* static */ MD5File::ChecksumResult GraphicsSet::CheckMD5(const MD5File *file, Subdirectory subdir)
 {
 	size_t size = 0;
 	auto f = FioFOpenFile(file->filename, "rb", subdir, &size);
-	if (!f.has_value()) return MD5File::CR_NO_FILE;
+	if (!f.has_value()) return MD5File::ChecksumResult::NoFile;
 
 	size_t max = GRFGetSizeOfDataSection(*f);
 
@@ -438,15 +442,15 @@ void GraphicsSet::CopyCompatibleConfig(const GraphicsSet &src)
  * @param subdir The sub directory to get the files from
  * @param max_size Only calculate the hash for this many bytes from the file start.
  * @return
- * - #CR_MATCH if the MD5 hash matches
- * - #CR_MISMATCH if the MD5 does not match
- * - #CR_NO_FILE if the file misses
+ * - #MD5File::ChecksumResult::Match if the MD5 hash matches
+ * - #MD5File::ChecksumResult::Mismatch if the MD5 does not match
+ * - #MD5File::ChecksumResult::NoFile if the file misses
  */
 MD5File::ChecksumResult MD5File::CheckMD5(Subdirectory subdir, size_t max_size) const
 {
 	size_t size;
 	auto f = FioFOpenFile(this->filename, "rb", subdir, &size);
-	if (!f.has_value()) return CR_NO_FILE;
+	if (!f.has_value()) return ChecksumResult::NoFile;
 
 	size = std::min(size, max_size);
 
@@ -461,19 +465,22 @@ MD5File::ChecksumResult MD5File::CheckMD5(Subdirectory subdir, size_t max_size) 
 	}
 
 	checksum.Finish(digest);
-	return this->hash == digest ? CR_MATCH : CR_MISMATCH;
+	return this->hash == digest ? ChecksumResult::Match : ChecksumResult::Mismatch;
 }
 
 /** Names corresponding to the GraphicsFileType */
 static const std::string_view _graphics_file_names[] = { "base", "logos", "arctic", "tropical", "toyland", "extra" };
 
-/** Implementation */
+/* Implementation */
+
+/** @copydoc BaseSet::GetFilenames */
 template <>
 /* static */ std::span<const std::string_view> BaseSet<GraphicsSet>::GetFilenames()
 {
 	return _graphics_file_names;
 }
 
+/** @copydoc BaseMedia::DetermineBestSet */
 template <>
 /* static */ bool BaseMedia<GraphicsSet>::DetermineBestSet()
 {
@@ -493,7 +500,7 @@ template <>
 		/* Having a later version of the same base set is better. */
 		if (best->shortname == current->shortname && best->version < current->version) return true;
 		/* The DOS palette is the better palette. */
-		return best->palette != PAL_DOS && current->palette == PAL_DOS;
+		return best->palette != PaletteType::DOS && current->palette == PaletteType::DOS;
 	};
 
 	for (const auto &c : BaseMedia<GraphicsSet>::available_sets) {
@@ -507,6 +514,7 @@ template <>
 	return BaseMedia<GraphicsSet>::used_set != nullptr;
 }
 
+/** @copydoc BaseMedia::GetExtension */
 template <>
 /* static */ std::string_view BaseMedia<GraphicsSet>::GetExtension()
 {

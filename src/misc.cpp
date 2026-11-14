@@ -13,7 +13,6 @@
 #include "ai/ai.hpp"
 #include "script/script_gui.h"
 #include "newgrf.h"
-#include "newgrf_house.h"
 #include "economy_func.h"
 #include "timer/timer_game_calendar.h"
 #include "timer/timer_game_economy.h"
@@ -28,8 +27,7 @@
 #include "core/pool_type.hpp"
 #include "game/game.hpp"
 #include "linkgraph/linkgraphschedule.h"
-#include "station_kdtree.h"
-#include "town_kdtree.h"
+#include "town.h"
 #include "viewport_kdtree.h"
 #include "newgrf_profiling.h"
 #include "3rdparty/monocypher/monocypher.h"
@@ -62,6 +60,8 @@ void InitializeOldNames();
  * It isn't as much of an unique ID but more a hashed digest of a random
  * string and a time. It is very likely to be unique, but it does not follow
  * any UUID standard.
+ * @param subject What to create the ID for.
+ * @return The generated ID.
  */
 std::string GenerateUid(std::string_view subject)
 {
@@ -165,7 +165,7 @@ void InitializeGame(uint size_x, uint size_y, bool reset_date, bool reset_settin
 	ResetRailPlacementEndpoints();
 
 	_gamelog.Reset();
-	_gamelog.StartAction(GLAT_START);
+	_gamelog.StartAction(GamelogActionType::Start);
 	_gamelog.Revision();
 	_gamelog.Mode();
 	_gamelog.GRFAddList(_grfconfig);

@@ -14,11 +14,13 @@
 
 /** Landscape types */
 enum class LandscapeType : uint8_t {
-	Temperate = 0,
-	Arctic    = 1,
-	Tropic    = 2,
-	Toyland   = 3,
+	Temperate = 0, ///< Base landscape.
+	Arctic = 1, ///< Landscape with snow levels.
+	Tropic = 2, ///< Landscape with distinct rainforests and deserts,
+	Toyland = 3, ///< Landscape with funky industries and vehicles.
 };
+
+/** Bitset of \c LandscapeType elements. */
 using LandscapeTypes = EnumBitSet<LandscapeType, uint8_t>;
 
 static constexpr uint NUM_LANDSCAPE = 4;
@@ -33,6 +35,8 @@ enum class BorderFlag : uint8_t {
 	NorthWest, ///< Border on North West.
 	Random, ///< Randomise borders.
 };
+
+/** Bitset of \c BorderFlag elements. */
 using BorderFlags = EnumBitSet<BorderFlag, uint8_t>;
 
 static constexpr BorderFlags BORDERFLAGS_ALL = BorderFlags{BorderFlag::NorthEast, BorderFlag::SouthEast, BorderFlag::SouthWest, BorderFlag::NorthWest}; ///< Border on all sides.

@@ -5,12 +5,11 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <https://www.gnu.org/licenses/old-licenses/gpl-2.0>.
  */
 
- /** @file newgrf_profiling.h Profiling of NewGRF action 2 handling. */
+/** @file newgrf_profiling.h Profiling of NewGRF action 2 handling. */
 
 #ifndef NEWGRF_PROFILING_H
 #define NEWGRF_PROFILING_H
 
-#include "timer/timer_game_calendar.h"
 #include "newgrf.h"
 #include "newgrf_callbacks.h"
 #include "newgrf_spritegroup.h"
@@ -21,7 +20,6 @@
  */
 struct NewGRFProfiler {
 	NewGRFProfiler(const GRFFile *grffile);
-	~NewGRFProfiler();
 
 	void BeginResolve(const ResolverObject &resolver);
 	void EndResolve(const ResolverResult &result);

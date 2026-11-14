@@ -526,7 +526,7 @@ STR_SEA_LEVEL_CUSTOM_PERCENTAGE                                 :Харпӑр х
 ###length 4
 
 ###length 3
-STR_DISASTER_NONE                                               :Ҫук
+STR_BREAKDOWNS_NONE                                             :Ҫук
 
 ###length 4
 STR_SUBSIDY_X1_5                                                :x1.5
@@ -586,6 +586,8 @@ STR_CONFIG_SETTING_HORIZONTAL_POS_RIGHT                         :Сылтӑмр�
 ###length 3
 
 
+
+###length 3
 
 
 
@@ -655,6 +657,8 @@ STR_CONFIG_SETTING_NEVER_EXPIRE_AIRPORTS                        :Аэропор�
 ###setting-zero-is-special
 
 
+###setting-zero-is-special
+
 
 ###length 2
 
@@ -675,6 +679,8 @@ STR_CONFIG_SETTING_LAND_GENERATOR_TERRA_GENESIS                 :TerraGenesis
 
 
 
+
+###length 4
 
 ###length 4
 
@@ -786,6 +792,7 @@ STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES_ISO                :ISO (2008-12-31
 
 
 
+
 STR_CONFIG_SETTING_NEWS_SUBSIDIES                               :Грантсем: {STRING}
 
 ###length 3
@@ -865,7 +872,7 @@ STR_CONFIG_SETTING_AI                                           :Ӑмӑртуҫ�
 
 # Config errors
 
-# Video initalization errors
+# Video initialization errors
 
 # Intro window
 
@@ -988,7 +995,7 @@ STR_NETWORK_START_SERVER_SET_PASSWORD                           :{BLACK}Вырн
 # Network connecting window
 
 
-###length 8
+###length 6
 
 
 
@@ -1059,6 +1066,8 @@ STR_CONTENT_DETAIL_VERSION                                      :{SILVER}Вер�
 # Rail waypoint construction window
 
 # Rail station construction window
+
+
 
 
 
@@ -1307,6 +1316,7 @@ STR_LOCAL_AUTHORITY_COMPANY_RATING                              :{YELLOW}{COMPAN
 STR_GOALS_TEXT                                                  :{ORANGE}{STRING}
 
 # Goal question window
+###length 4
 
 # Goal Question button list
 ###length 18
@@ -1399,6 +1409,8 @@ STR_INDUSTRY_DIRECTORY_NONE                                     :{ORANGE}- Ҫу�
 ###length VEHICLE_TYPES
 
 
+# Vehicle sort details
+
 ###length 3
 
 ###length VEHICLE_TYPES
@@ -1462,6 +1474,7 @@ STR_DEPOT_VEHICLE_TOOLTIP_CARGO                                 :{}{CARGO_LONG} 
 
 
 
+
 # Autoreplace window
 
 
@@ -1507,7 +1520,6 @@ STR_VEHICLE_VIEW_CAPTION                                        :{WHITE}{VEHICLE
 
 
 
-STR_VEHICLE_INFO_NO_CAPACITY                                    :{BLACK}Савӑт: {LTBLUE}Ҫук пул{STRING}
 
 
 
@@ -1515,6 +1527,8 @@ STR_VEHICLE_INFO_NO_CAPACITY                                    :{BLACK}Савӑ
 ###length VEHICLE_TYPES
 
 # Extra buttons for train details windows
+
+
 
 
 
@@ -1545,7 +1559,7 @@ STR_ORDER_INDEX                                                 :{COMMA}:{NBSP}
 
 
 # Conditional order variables, must follow order of OrderConditionVariable enum
-###length 8
+###length 9
 ###next-name-looks-similar
 
 

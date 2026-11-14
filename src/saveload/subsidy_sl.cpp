@@ -5,7 +5,7 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <https://www.gnu.org/licenses/old-licenses/gpl-2.0>.
  */
 
-/** @file subsidy_sl.cpp Code handling saving and loading of subsidies */
+/** @file subsidy_sl.cpp Code handling saving and loading of subsidies. */
 
 #include "../stdafx.h"
 
@@ -17,20 +17,20 @@
 #include "../safeguards.h"
 
 static const SaveLoad _subsidies_desc[] = {
-	    SLE_VAR(Subsidy, cargo_type, SLE_UINT8),
-	SLE_CONDVAR(Subsidy, remaining,  SLE_FILE_U8 | SLE_VAR_U16, SL_MIN_VERSION, SLV_CUSTOM_SUBSIDY_DURATION),
-	SLE_CONDVAR(Subsidy, remaining,  SLE_UINT16,                SLV_CUSTOM_SUBSIDY_DURATION, SL_MAX_VERSION),
-	SLE_CONDVAR(Subsidy, awarded,    SLE_UINT8,                                     SLV_125, SL_MAX_VERSION),
-	SLE_CONDVARNAME(Subsidy, src.type, "src_type", SLE_UINT8,                       SLV_125, SL_MAX_VERSION),
-	SLE_CONDVARNAME(Subsidy, dst.type, "dst_type", SLE_UINT8,                       SLV_125, SL_MAX_VERSION),
-	SLE_CONDVARNAME(Subsidy, src.id, "src",  SLE_FILE_U8 | SLE_VAR_U16,             SL_MIN_VERSION, SLV_5),
-	SLE_CONDVARNAME(Subsidy, src.id, "src",  SLE_UINT16,                            SLV_5, SL_MAX_VERSION),
-	SLE_CONDVARNAME(Subsidy, dst.id, "dst",  SLE_FILE_U8 | SLE_VAR_U16,             SL_MIN_VERSION, SLV_5),
-	SLE_CONDVARNAME(Subsidy, dst.id, "dst",  SLE_UINT16,                            SLV_5, SL_MAX_VERSION),
+	SaveLoad::Variable<VarFileType::U8>("cargo_type", SLE_OBJECT_ADDRESS(Subsidy, cargo_type)),
+	SaveLoad::Variable<VarFileType::U8>("remaining", SLE_OBJECT_ADDRESS(Subsidy, remaining), SaveLoadVersion::MinVersion, SaveLoadVersion::CustomSubsidyDuration),
+	SaveLoad::Variable<VarFileType::U16>("remaining", SLE_OBJECT_ADDRESS(Subsidy, remaining), SaveLoadVersion::CustomSubsidyDuration),
+	SaveLoad::Variable<VarFileType::U8>("awarded", SLE_OBJECT_ADDRESS(Subsidy, awarded), SaveLoadVersion::RemoveSubsidyStationBinding),
+	SaveLoad::Variable<VarFileType::U8>("src_type", SLE_OBJECT_ADDRESS(Subsidy, src.type), SaveLoadVersion::RemoveSubsidyStationBinding),
+	SaveLoad::Variable<VarFileType::U8>("dst_type", SLE_OBJECT_ADDRESS(Subsidy, dst.type), SaveLoadVersion::RemoveSubsidyStationBinding),
+	SaveLoad::Variable<VarFileType::U8>("src", SLE_OBJECT_ADDRESS(Subsidy, src.id), SaveLoadVersion::MinVersion, SaveLoadVersion::BigMap),
+	SaveLoad::Variable<VarFileType::U16>("src", SLE_OBJECT_ADDRESS(Subsidy, src.id), SaveLoadVersion::BigMap),
+	SaveLoad::Variable<VarFileType::U8>("dst", SLE_OBJECT_ADDRESS(Subsidy, dst.id), SaveLoadVersion::MinVersion, SaveLoadVersion::BigMap),
+	SaveLoad::Variable<VarFileType::U16>("dst", SLE_OBJECT_ADDRESS(Subsidy, dst.id), SaveLoadVersion::BigMap),
 };
 
 struct SUBSChunkHandler : ChunkHandler {
-	SUBSChunkHandler() : ChunkHandler('SUBS', CH_TABLE) {}
+	SUBSChunkHandler() : ChunkHandler("SUBS", ChunkType::Table) {}
 
 	void Save() const override
 	{
@@ -48,7 +48,7 @@ struct SUBSChunkHandler : ChunkHandler {
 
 		int index;
 		while ((index = SlIterateArray()) != -1) {
-			Subsidy *s = new (SubsidyID(index)) Subsidy();
+			Subsidy *s = Subsidy::CreateAtIndex(SubsidyID(index));
 			SlObject(s, slt);
 		}
 	}

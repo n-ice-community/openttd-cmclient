@@ -10,12 +10,9 @@
 #include "../../stdafx.h"
 #include "../../script/squirrel.hpp"
 #include "../../company_func.h"
-#include "../../company_base.h"
 #include "../../network/network.h"
 #include "../../genworld.h"
 #include "../../string_func.h"
-#include "../../strings_func.h"
-#include "../../command_func.h"
 
 #include "../script_storage.hpp"
 #include "../script_instance.hpp"
@@ -121,7 +118,7 @@ ScriptObject::DisableDoCommandScope::DisableDoCommandScope()
 /* static */ void ScriptObject::SetLastCommand(const CommandDataBuffer &data, Commands cmd)
 {
 	ScriptStorage &s = GetStorage();
-	Debug(script, 6, "SetLastCommand company={:02d} cmd={} data={}", s.root_company, cmd, FormatArrayAsHex(data));
+	Debug(Facility::Script, Severity::Debug2, "SetLastCommand company={:02d} cmd={} data={}", s.root_company, cmd, FormatArrayAsHex(data));
 	s.last_data = data;
 	s.last_cmd = cmd;
 }
@@ -129,7 +126,7 @@ ScriptObject::DisableDoCommandScope::DisableDoCommandScope()
 /* static */ bool ScriptObject::CheckLastCommand(const CommandDataBuffer &data, Commands cmd)
 {
 	ScriptStorage &s = GetStorage();
-	Debug(script, 6, "CheckLastCommand company={:02d} cmd={} data={}", s.root_company, cmd, FormatArrayAsHex(data));
+	Debug(Facility::Script, Severity::Debug2, "CheckLastCommand company={:02d} cmd={} data={}", s.root_company, cmd, FormatArrayAsHex(data));
 	if (s.last_cmd != cmd) return false;
 	if (s.last_data != data) return false;
 	return true;
@@ -137,7 +134,7 @@ ScriptObject::DisableDoCommandScope::DisableDoCommandScope()
 
 /* static */ void ScriptObject::SetDoCommandCosts(Money value)
 {
-	GetStorage().costs = CommandCost(INVALID_EXPENSES, value); // Expense type is never read.
+	GetStorage().costs = CommandCost(ExpensesType::Invalid, value); // Expense type is never read.
 }
 
 /* static */ void ScriptObject::IncreaseDoCommandCosts(Money value)

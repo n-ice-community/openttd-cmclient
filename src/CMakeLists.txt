@@ -38,7 +38,7 @@ add_files(
 add_files(
     gfx_layout_icu.cpp
     gfx_layout_icu.h
-    CONDITION ICU_i18n_FOUND AND HARFBUZZ_FOUND
+    CONDITION ICU_I18N_FOUND AND HARFBUZZ_FOUND
 )
 
 add_files(
@@ -49,6 +49,11 @@ add_files(
 add_files(
     soundloader_opus.cpp
     CONDITION OpusFile_FOUND
+)
+
+add_files(
+    soundresampler_soxr.cpp
+    CONDITION Soxr_FOUND
 )
 
 add_files(
@@ -84,7 +89,6 @@ add_files(
     base_media_music.h
     base_media_sounds.h
     base_station_base.h
-    bitmap_type.h
     bmp.cpp
     bmp.h
     bootstrap_gui.cpp
@@ -134,11 +138,13 @@ add_files(
     crashlog.cpp
     crashlog.h
     currency.cpp
-    currency.h
+    currency_func.h
+    currency_type.h
     date_gui.cpp
     date_gui.h
     debug.cpp
     debug.h
+    debug_type.h
     dedicated.cpp
     depot.cpp
     depot_base.h
@@ -210,6 +216,7 @@ add_files(
     goal_base.h
     goal_cmd.h
     goal_gui.cpp
+    goal_gui.h
     goal_type.h
     graph_gui.cpp
     graph_gui.h
@@ -335,6 +342,7 @@ add_files(
     newgrf_town.h
     newgrf_townname.cpp
     newgrf_townname.h
+    newgrf_type.h
     news_cmd.h
     news_func.h
     news_gui.cpp
@@ -398,6 +406,8 @@ add_files(
     roadveh_cmd.h
     roadveh_gui.cpp
     safeguards.h
+    screensaver.cpp
+    screensaver.h
     screenshot_bmp.cpp
     screenshot_gui.cpp
     screenshot_gui.h
@@ -449,6 +459,7 @@ add_files(
     soundloader_type.h
     soundloader_raw.cpp
     soundloader_wav.cpp
+    soundresampler_type.h
     source_type.h
     sprite.cpp
     sprite.h
@@ -514,7 +525,18 @@ add_files(
     tile_map.h
     tile_type.h
     tilearea.cpp
+    tilearea_airport.h
+    tilearea_airportlayout.h
+    tilearea_bitmap.cpp
+    tilearea_bitmap.h
+    tilearea_diagonal.cpp
+    tilearea_diagonal.h
+    tilearea_orthogonal.cpp
+    tilearea_orthogonal.h
+    tilearea_spiral.cpp
+    tilearea_spiral.h
     tilearea_type.h
+    tilearea_wrapper.h
     tilehighlight_func.h
     tilehighlight_type.h
     timetable.h

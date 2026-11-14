@@ -10,14 +10,13 @@
 #include "stdafx.h"
 #include "debug.h"
 #include "ini_type.h"
-#include "string_func.h"
 #include "fileio_func.h"
 #include <fstream>
 #ifdef __EMSCRIPTEN__
 #	include <emscripten.h>
 #endif
 
-#if (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 199309L) || (defined(_XOPEN_SOURCE) && _XOPEN_SOURCE >= 500)
+#if (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 199309L) || (defined(_XOPEN_SOURCE) && _XOPEN_SOURCE >= 500) || defined(__HAIKU__) || defined(__ANDROID__)
 # include <unistd.h>
 # include <fcntl.h>
 #endif
@@ -28,7 +27,7 @@
 
 /**
  * Create a new ini file with given group names.
- * @param list_group_names A list with group names that should be loaded as lists instead of variables. @see IGT_LIST
+ * @param list_group_names A list with group names that should be loaded as lists instead of variables. @see IniGroupType::List
  */
 IniFile::IniFile(const IniGroupNameList &list_group_names) : IniLoadFile(list_group_names)
 {
@@ -91,7 +90,7 @@ bool IniFile::SaveToDisk(const std::string &filename)
 	std::error_code ec;
 	std::filesystem::rename(OTTD2FS(file_new), OTTD2FS(filename), ec);
 	if (ec) {
-		Debug(misc, 0, "Renaming {} to {} failed; configuration not saved: {}", file_new, filename, ec.message());
+		Debug(Facility::Misc, Severity::Critical, "Renaming {} to {} failed; configuration not saved: {}", file_new, filename, ec.message());
 	}
 
 #ifdef __EMSCRIPTEN__

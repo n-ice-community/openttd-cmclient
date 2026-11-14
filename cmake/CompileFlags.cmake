@@ -57,11 +57,6 @@ macro(compile_flags)
             # This flag disables the broken optimisation to work around the bug
             add_compile_options(/d2ssa-rse-)
         endif()
-        if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-            add_compile_options(
-                -Wno-multichar
-            )
-        endif()
     elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
         add_compile_options(
             -W
@@ -78,9 +73,6 @@ macro(compile_flags)
             -Winit-self
             -Wnon-virtual-dtor
             -Wsuggest-override
-
-            # We use 'ABCD' multichar for SaveLoad chunks identifiers
-            -Wno-multichar
 
             # Prevent optimisation supposing enums are in a range specified by the standard
             # For details, see http://gcc.gnu.org/PR43680 and PR#5246.
@@ -101,19 +93,12 @@ macro(compile_flags)
         endif()
 
         if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-            include(CheckCXXCompilerFlag)
-            check_cxx_compiler_flag("-flifetime-dse=1" LIFETIME_DSE_FOUND)
-
             add_compile_options(
                 # GCC 4.2+ automatically assumes that signed overflows do
                 # not occur in signed arithmetics, whereas we are not
                 # sure that they will not happen. It furthermore complains
                 # about its own optimized code in some places.
                 "-fno-strict-overflow"
-
-                # -flifetime-dse=2 (default since GCC 6) doesn't play
-                # well with our custom pool item allocator
-                "$<$<BOOL:${LIFETIME_DSE_FOUND}>:-flifetime-dse=1>"
 
                 # We have a fight between clang wanting std::move() and gcc not wanting it
                 # and of course they both warn when the other compiler is happy
@@ -134,18 +119,6 @@ macro(compile_flags)
                 endif()
             endif()
         endif()
-    elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
-        add_compile_options(
-            -Wall
-            # warning #873: function ... ::operator new ... has no corresponding operator delete ...
-            -wd873
-            # warning #1292: unknown attribute "fallthrough"
-            -wd1292
-            # warning #1899: multicharacter character literal (potential portability problem)
-            -wd1899
-            # warning #2160: anonymous union qualifier is ignored
-            -wd2160
-        )
     else()
         message(FATAL_ERROR "No warning flags are set for this compiler yet; please consider creating a Pull Request to add support for this compiler.")
     endif()

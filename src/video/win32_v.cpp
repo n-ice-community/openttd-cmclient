@@ -27,6 +27,7 @@
 #include "win32_v.h"
 #include <windows.h>
 #include <imm.h>
+#include <objbase.h>
 #include <versionhelpers.h>
 #if defined(_MSC_VER) && defined(NTDDI_WIN10_RS4)
 #include <winrt/Windows.UI.ViewManagement.h>
@@ -62,10 +63,9 @@ DWORD _imm_props;
 
 static Palette _local_palette; ///< Current palette to use for drawing.
 
-bool VideoDriver_Win32Base::ClaimMousePointer()
+void VideoDriver_Win32Base::ClaimMousePointer()
 {
 	MyShowCursor(false, true);
-	return true;
 }
 
 struct Win32VkMapping {
@@ -135,11 +135,14 @@ static uint MapWindowsKey(uint sym)
 	return key;
 }
 
-/** Colour depth to use for fullscreen display modes. */
+/**
+ * Colour depth to use for fullscreen display modes.
+ * @return The colour depth in bits per pixel.
+ */
 uint8_t VideoDriver_Win32Base::GetFullscreenBpp()
 {
 	/* Check modes for the relevant fullscreen bpp */
-	return _support8bpp != S8BPP_HARDWARE ? 32 : BlitterFactory::GetCurrentBlitter()->GetScreenDepth();
+	return _support8bpp != Support8bpp::Hardware ? 32 : BlitterFactory::GetCurrentBlitter()->GetScreenDepth();
 }
 
 /**
@@ -249,14 +252,19 @@ bool VideoDriver_Win32Base::MakeWindow(bool full_screen, bool resize)
 	return true;
 }
 
-/** Forward key presses to the window system. */
+/**
+ * Forward key presses to the window system.
+ * @param keycode The pressed key code.
+ * @param charcode The pressed char code.
+ * @return Always \c \0 to denote it was handled.
+ */
 static LRESULT HandleCharMsg(uint keycode, char32_t charcode)
 {
 	static char32_t prev_char = 0;
 
 	/* Did we get a lead surrogate? If yes, store and exit. */
 	if (Utf16IsLeadSurrogate(charcode)) {
-		if (prev_char != 0) Debug(driver, 1, "Got two UTF-16 lead surrogates, dropping the first one");
+		if (prev_char != 0) Debug(Facility::Driver, Severity::Error, "Got two UTF-16 lead surrogates, dropping the first one");
 		prev_char = charcode;
 		return 0;
 	}
@@ -266,7 +274,7 @@ static LRESULT HandleCharMsg(uint keycode, char32_t charcode)
 		if (Utf16IsTrailSurrogate(charcode)) {
 			charcode = Utf16DecodeSurrogate(prev_char, charcode);
 		} else {
-			Debug(driver, 1, "Got an UTF-16 lead surrogate without a trail surrogate, dropping the lead surrogate");
+			Debug(Facility::Driver, Severity::Error, "Got an UTF-16 lead surrogate without a trail surrogate, dropping the lead surrogate");
 		}
 	}
 	prev_char = 0;
@@ -276,13 +284,19 @@ static LRESULT HandleCharMsg(uint keycode, char32_t charcode)
 	return 0;
 }
 
-/** Should we draw the composition string ourself, i.e is this a normal IME? */
+/**
+ * Should we draw the composition string ourself, i.e is this a normal IME?
+ * @return \c true when the window is at the caret and does not a non-standard UI.
+ */
 static bool DrawIMECompositionString()
 {
 	return (_imm_props & IME_PROP_AT_CARET) && !(_imm_props & IME_PROP_SPECIAL_UI);
 }
 
-/** Set position of the composition window to the caret position. */
+/**
+ * Set position of the composition window to the caret position.
+ * @param hwnd Handle to the window.
+ */
 static void SetCompositionPos(HWND hwnd)
 {
 	HIMC hIMC = ImmGetContext(hwnd);
@@ -304,7 +318,10 @@ static void SetCompositionPos(HWND hwnd)
 	ImmReleaseContext(hwnd, hIMC);
 }
 
-/** Set the position of the candidate window. */
+/**
+ * Set the position of the candidate window.
+ * @param hwnd Handle to the window.
+ */
 static void SetCandidatePos(HWND hwnd)
 {
 	HIMC hIMC = ImmGetContext(hwnd);
@@ -317,7 +334,7 @@ static void SetCandidatePos(HWND hwnd)
 			Point pt = _focused_window->GetCaretPosition();
 			cf.ptCurrentPos.x = _focused_window->left + pt.x;
 			cf.ptCurrentPos.y = _focused_window->top  + pt.y;
-			if (_focused_window->window_class == WC_CONSOLE) {
+			if (_focused_window->window_class == WindowClass::Console) {
 				cf.rcArea.left   = _focused_window->left;
 				cf.rcArea.top    = _focused_window->top;
 				cf.rcArea.right  = _focused_window->left + _focused_window->width;
@@ -338,7 +355,13 @@ static void SetCandidatePos(HWND hwnd)
 	ImmReleaseContext(hwnd, hIMC);
 }
 
-/** Handle WM_IME_COMPOSITION messages. */
+/**
+ * Handle WM_IME_COMPOSITION messages.
+ * @param hwnd The handle to the window.
+ * @param wParam The latest change in the composition.
+ * @param lParam How the composition was changed.
+ * @return Always \0 to denote it was handled.
+ */
 static LRESULT HandleIMEComposition(HWND hwnd, WPARAM wParam, LPARAM lParam)
 {
 	HIMC hIMC = ImmGetContext(hwnd);
@@ -400,7 +423,10 @@ static LRESULT HandleIMEComposition(HWND hwnd, WPARAM wParam, LPARAM lParam)
 	return lParam != 0 ? DefWindowProc(hwnd, WM_IME_COMPOSITION, wParam, lParam) : 0;
 }
 
-/** Clear the current composition string. */
+/**
+ * Clear the current composition string.
+ * @param hwnd Handle to the window to cancel the composition for.
+ */
 static void CancelIMEComposition(HWND hwnd)
 {
 	HIMC hIMC = ImmGetContext(hwnd);
@@ -953,8 +979,11 @@ static void FindResolutions(uint8_t bpp)
 	SortResolutions();
 }
 
-void VideoDriver_Win32Base::Initialize()
+std::optional<std::string_view> VideoDriver_Win32Base::Initialize()
 {
+	/* Initialize COM */
+	if (FAILED(CoInitializeEx(nullptr, COINIT_MULTITHREADED))) return "COM initialization failed";
+
 	this->UpdateAutoResolution();
 
 	RegisterWndClass();
@@ -964,7 +993,8 @@ void VideoDriver_Win32Base::Initialize()
 	this->width  = this->width_org  = _cur_resolution.width;
 	this->height = this->height_org = _cur_resolution.height;
 
-	Debug(driver, 2, "Resolution for display: {}x{}", _cur_resolution.width, _cur_resolution.height);
+	Debug(Facility::Driver, Severity::Warning, "Resolution for display: {}x{}", _cur_resolution.width, _cur_resolution.height);
+	return std::nullopt;
 }
 
 void VideoDriver_Win32Base::Stop()
@@ -1000,13 +1030,12 @@ void VideoDriver_Win32Base::InputLoop()
 
 	/* Determine which directional keys are down. */
 	if (this->has_focus) {
-		_dirkeys =
-			(GetAsyncKeyState(VK_LEFT) < 0 ? 1 : 0) +
-			(GetAsyncKeyState(VK_UP) < 0 ? 2 : 0) +
-			(GetAsyncKeyState(VK_RIGHT) < 0 ? 4 : 0) +
-			(GetAsyncKeyState(VK_DOWN) < 0 ? 8 : 0);
+		_dirkeys.Set(DirectionKey::Left, GetAsyncKeyState(VK_LEFT));
+		_dirkeys.Set(DirectionKey::Up, GetAsyncKeyState(VK_UP));
+		_dirkeys.Set(DirectionKey::Right, GetAsyncKeyState(VK_RIGHT));
+		_dirkeys.Set(DirectionKey::Down, GetAsyncKeyState(VK_DOWN));
 	} else {
-		_dirkeys = 0;
+		_dirkeys.Reset();
 	}
 
 	// CM if (old_ctrl_pressed != _ctrl_pressed) HandleCtrlChanged();
@@ -1040,6 +1069,12 @@ void VideoDriver_Win32Base::MainLoop()
 	this->StopGameThread();
 }
 
+/**
+ * Indicate to the driver the client-size might have changed.
+ * @param w The new width of the window.
+ * @param h The new height of the window.
+ * @param force Whether to force full reallocation, instead of not reallocating when size did not change.
+ */
 void VideoDriver_Win32Base::ClientSizeChanged(int w, int h, bool force)
 {
 	/* Allocate backing store of the new size. */
@@ -1066,7 +1101,7 @@ bool VideoDriver_Win32Base::ToggleFullscreen(bool full_screen)
 {
 	bool res = this->MakeWindow(full_screen);
 
-	InvalidateWindowClassesData(WC_GAME_OPTIONS, 3);
+	InvalidateWindowClassesData(WindowClass::GameOptions, 3);
 	return res;
 }
 
@@ -1136,7 +1171,8 @@ std::optional<std::string_view> VideoDriver_Win32GDI::Start(const StringList &pa
 {
 	if (BlitterFactory::GetCurrentBlitter()->GetScreenDepth() == 0) return "Only real blitters supported";
 
-	this->Initialize();
+	auto err = this->Initialize();
+	if (err) return err;
 
 	this->MakePalette();
 	this->AllocateBackingStore(_cur_resolution.width, _cur_resolution.height);
@@ -1249,7 +1285,7 @@ void VideoDriver_Win32GDI::PaletteChanged(HWND hWnd)
 
 void VideoDriver_Win32GDI::Paint()
 {
-	PerformanceMeasurer framerate(PFE_VIDEO);
+	PerformanceMeasurer framerate(PerformanceElement::Video);
 
 	if (IsEmptyRect(this->dirty_rect)) return;
 
@@ -1320,7 +1356,11 @@ static PFNWGLCREATECONTEXTATTRIBSARBPROC _wglCreateContextAttribsARB = nullptr;
 static PFNWGLSWAPINTERVALEXTPROC _wglSwapIntervalEXT = nullptr;
 static bool _hasWGLARBCreateContextProfile = false; ///< Is WGL_ARB_create_context_profile supported?
 
-/** Platform-specific callback to get an OpenGL function pointer. */
+/**
+ * Platform-specific callback to get an OpenGL function pointer.
+ * @param proc The name of the function.
+ * @return The function pointer, or \c nullptr when it could not be found.
+ */
 static OGLProc GetOGLProcAddressCallback(const char *proc)
 {
 	OGLProc ret = reinterpret_cast<OGLProc>(wglGetProcAddress(proc));
@@ -1425,11 +1465,16 @@ std::optional<std::string_view> VideoDriver_Win32OpenGL::Start(const StringList 
 
 	LoadWGLExtensions();
 
-	this->Initialize();
+	auto err = this->Initialize();
+	if (err) {
+		this->Stop();
+		_cur_resolution = old_res;
+		return err;
+	}
 	this->MakeWindow(_fullscreen);
 
 	/* Create and initialize OpenGL context. */
-	auto err = this->AllocateContext();
+	err = this->AllocateContext();
 	if (err) {
 		this->Stop();
 		_cur_resolution = old_res;
@@ -1484,7 +1529,7 @@ void VideoDriver_Win32OpenGL::ToggleVsync(bool vsync)
 	if (_wglSwapIntervalEXT != nullptr) {
 		_wglSwapIntervalEXT(vsync);
 	} else if (vsync) {
-		Debug(driver, 0, "OpenGL: Vsync requested, but not supported by driver");
+		Debug(Facility::Driver, Severity::Critical, "OpenGL: Vsync requested, but not supported by driver");
 	}
 }
 
@@ -1503,7 +1548,7 @@ std::optional<std::string_view> VideoDriver_Win32OpenGL::AllocateContext()
 		int attribs[] = {
 			WGL_CONTEXT_MAJOR_VERSION_ARB, 4,
 			WGL_CONTEXT_MINOR_VERSION_ARB, 5,
-			WGL_CONTEXT_FLAGS_ARB, _debug_driver_level >= 8 ? WGL_CONTEXT_DEBUG_BIT_ARB : 0,
+			WGL_CONTEXT_FLAGS_ARB, IsVisibleSeverity(Facility::Driver, Severity::Trace2) ? WGL_CONTEXT_DEBUG_BIT_ARB : 0,
 			_hasWGLARBCreateContextProfile ? WGL_CONTEXT_PROFILE_MASK_ARB : 0, WGL_CONTEXT_CORE_PROFILE_BIT_ARB, // Terminate list if WGL_ARB_create_context_profile isn't supported.
 			0
 		};
@@ -1595,7 +1640,7 @@ void VideoDriver_Win32OpenGL::ReleaseVideoPointer()
 
 void VideoDriver_Win32OpenGL::Paint()
 {
-	PerformanceMeasurer framerate(PFE_VIDEO);
+	PerformanceMeasurer framerate(PerformanceElement::Video);
 
 	if (_local_palette.count_dirty != 0) {
 		Blitter *blitter = BlitterFactory::GetCurrentBlitter();
