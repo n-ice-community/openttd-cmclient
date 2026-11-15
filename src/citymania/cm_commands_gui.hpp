@@ -11,6 +11,7 @@ void ShowAdminCompanyButtons(int left, int top, int width, int company2, bool dr
 void CreateCommunityServerList();
 void ShowServerButtons(int left, int top, int height, int width);
 void ResetRegularAdvertise();
+void AutoServerLogin();
 
 bool GetAdmin();
 } // namespace citymania

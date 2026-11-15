@@ -1208,6 +1208,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_CONFIG_UPDATE(P
 	CSleep(3 * MILLISECONDS_PER_TICK);
 	citymania::ShowLoginWindow(); //@cm_commands_gui.cpp
     citymania::ResetRegularAdvertise();  //@cm_town_gui.cpp: reset cm.ad_rating_goal
+    citymania::AutoServerLogin();  //@cm_commands_gui.cpp
 
 	Debug(net, 9, "Client::Receive_SERVER_CONFIG_UPDATE(): max_companies={}", _network_server_max_companies);
 

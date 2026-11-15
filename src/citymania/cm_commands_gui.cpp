@@ -68,6 +68,7 @@ static constexpr std::string_view BTPRO_PW        = "btpro_pw";
 static constexpr std::string_view NICE_ADMIN_PW   = "nice_admin_pw";
 static constexpr std::string_view BTPRO_ADMIN_PW  = "btpro_admin_pw";
 static constexpr std::string_view ADMIN           = "admin";
+static constexpr std::string_view AUTOLOGIN       = "autologin";
 static constexpr std::string_view COMMUNITY		  = "community";
 
 static constexpr std::string_view INI_LOGIN_KEYS[] = {
@@ -80,6 +81,7 @@ static constexpr std::string_view INI_LOGIN_KEYS[] = {
 	NICE_ADMIN_PW,
 	BTPRO_ADMIN_PW,
 	ADMIN,
+	AUTOLOGIN,
 };
 
 static constexpr std::string_view INI_SERVER_KEYS[] = {
@@ -236,6 +238,7 @@ enum IniLoginKeys {
     NICEADMINPW,
     BTPROADMINPW,
     IS_ADMIN,
+    IS_AUTOLOGIN,
 };
 
 char _inilogindata[10][MAX_COMMUNITY_STRING_LEN];
@@ -1798,5 +1801,19 @@ void CreateCommunityServerList() {
     IniLoginInitiate();
     CheckCommunity();
 };
+
+void AutoServerLogin() {
+    IniLoginInitiate();
+    CheckCommunity();
+    
+	if (GetServerItem(COMMUNITY) == "1")
+        AccountLogin(NICE);
+    else if (GetServerItem(COMMUNITY) == "2")
+        AccountLogin(BTPRO);
+    else if (GetServerItem(COMMUNITY) == "3")
+        AccountLogin(CITYMANIA);
+
+	CloseWindowById(CM_WC_LOGIN_WINDOW, 0);
+}
 
 } // namespace citymania
